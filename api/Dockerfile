@@ -21,7 +21,9 @@ FROM python:3.13-slim-bookworm
 # Put the app back in
 COPY --from=builder --chown=app:app /app /app
 
+WORKDIR /app
+
 # Add to path
 ENV PATH="/app/.venv/bin:$PATH"
 
-CMD ["fastapi", "run", "--host", "0.0.0.0", "--port", "8080", "/app/src/expenseflow/main.py"]
+CMD ["fastapi", "run", "--host", "0.0.0.0", "--port", "8080", "src/expenseflow/main.py"]
