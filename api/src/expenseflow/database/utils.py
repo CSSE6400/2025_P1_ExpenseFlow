@@ -27,6 +27,15 @@ session_factory = async_sessionmaker(
 
 async def initialise_database() -> None:
     """Create tables if they don't exist already."""
+    # Importing as now sqlalchemy will know about them when creating the schema
+    from expenseflow.database.entities import EntityModel, GroupUserModel  # noqa: F401
+    from expenseflow.database.expenses import (  # noqa: F401
+        ExpenseAttachmentModel,
+        ExpenseItemModel,
+        ExpenseItemSplitModel,
+        ExpenseModel,
+    )
+
     async with engine.begin() as conn:
         await conn.run_sync(BaseDBModel.metadata.create_all)
 

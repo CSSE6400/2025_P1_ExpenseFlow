@@ -12,3 +12,30 @@ class EntityKind(ExpenseFlowEnum):
 
     user = "user"
     group = "group"
+
+
+class GroupRole(ExpenseFlowEnum):
+    """Enum for group roles."""
+
+    admin = "admin"
+    user = "user"
+
+
+class ExpenseCategory(ExpenseFlowEnum):
+    """Enum for expense category."""
+
+    takeaway = "food"
+    education = "education"
+    entertainment = "entertainment"
+    donations = "donations"
+    groceries = "groceries"
+    health = "health"
+    home = "home"
+    bills = "bills"
+    insurance = "insurance"
+    subscriptions = "subscriptions"
+    transfers = "transfers"
+    travel = "travel"
+    utilities = "utilities"
+    transport = "transport"
+    other = "other"
