@@ -1,0 +1,7 @@
+# Other bits
+.mypy
+.ruff_cache
+.venv
+
+# Ignore the __pycache__ directory
+__pycache__/
