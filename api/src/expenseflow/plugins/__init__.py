@@ -20,8 +20,6 @@ class PluginError(Exception):
 class PluginSettings(BaseModel):
     """Settings for each plugin."""
 
-    # Maybe do something with yaml???
-
 
 SettingsType = TypeVar("SettingsType", bound=PluginSettings)
 
