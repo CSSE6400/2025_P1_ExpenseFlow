@@ -22,6 +22,8 @@ class ExpenseModel(BaseDBModel, TimestampMixin):
     name: Mapped[str]
     description: Mapped[str]
     category: Mapped[ExpenseCategory]
+    # updated_at (automatic)
+    # created_at (automatic)
 
     # Relationships
     uploader: Mapped[UserModel] = relationship(foreign_keys=[uploader_id])
@@ -40,6 +42,8 @@ class ExpenseItemModel(BaseDBModel, TimestampMixin):
     name: Mapped[str]
     quantity: Mapped[int]
     price: Mapped[float]
+    # updated_at (automatic)
+    # created_at (automatic)
 
     # relationships
     expense: Mapped[ExpenseModel] = relationship(back_populates="items")
@@ -57,6 +61,8 @@ class ExpenseItemSplitModel(BaseDBModel, TimestampMixin):
     )
     user_id: Mapped[UUID] = mapped_column(ForeignKey("user.user_id"), primary_key=True)
     proportion: Mapped[float]
+    # updated_at (automatic)
+    # created_at (automatic)
 
     # Relationships
     item: Mapped[ExpenseItemModel] = relationship()
@@ -71,3 +77,5 @@ class ExpenseAttachmentModel(BaseDBModel, TimestampMixin):
     attachment_id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
     expense_id: Mapped[UUID] = mapped_column(ForeignKey("expense.expense_id"))
     name: Mapped[str]
+    # updated_at (automatic)
+    # created_at (automatic)

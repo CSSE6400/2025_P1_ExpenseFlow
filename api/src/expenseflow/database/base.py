@@ -8,10 +8,11 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy.sql import func
 
 
+# base table
 class BaseDBModel(DeclarativeBase, AsyncAttrs):
     """Base model for db tables."""
 
-
+# automatically adds created_at and updated at to tables
 class TimestampMixin:
     """Timestamp Mixin."""
 

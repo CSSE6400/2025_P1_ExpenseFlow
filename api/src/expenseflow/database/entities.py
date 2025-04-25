@@ -23,7 +23,9 @@ class EntityModel(BaseDBModel, TimestampMixin):
     }
 
     entity_id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
-    kind: Mapped[EntityKind]
+    kind: Mapped[EntityKind]  # either user or group
+    # created_at (automatic)
+    # updated_at (automatic)
 
     def __repr__(self) -> str:
         """Representation of an entity - not useful."""
@@ -43,7 +45,7 @@ class UserModel(EntityModel):
         primary_key=True,
         default=uuid4,
     )
-    username: Mapped[str] = mapped_column(unique=True)
+    username: Mapped[str] = mapped_column(unique=True, index=True)
     first_name: Mapped[str]
     last_name: Mapped[str]
 
