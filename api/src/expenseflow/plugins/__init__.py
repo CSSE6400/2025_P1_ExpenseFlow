@@ -87,7 +87,7 @@ class PluginRegistry:
             msg = f"Failed to retrieve plugin config from '{config_file_path}'"
             raise PluginError(msg) from e
         for plugin_name, plugin_config in config.items():
-            if type(plugin_config) is not dict and type(plugin_config) is not None:
+            if type(plugin_config) is not dict and plugin_config is not None:
                 msg = f"Config for plugin '{plugin_name}' is invalid: {plugin_config}"
                 raise PluginError(msg)
         return cls(config)

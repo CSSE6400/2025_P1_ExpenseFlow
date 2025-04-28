@@ -1,2 +1,1 @@
-test_plugin:
-  print_value: "Hello there"
+healthcheck:
