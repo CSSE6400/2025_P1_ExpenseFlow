@@ -1,0 +1,16 @@
+name: Static Analysis
+on:
+  push:
+
+jobs:
+  backend_lint_and_format:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Ruff
+        uses: astral-sh/ruff-action@v3
+        with:
+          args: "--version"
+      - name: Run Ruff Formatter
+        run: ruff format --diff api
+      - name: Run Ruff Linter
+        run: ruff check --fix api
