@@ -14,6 +14,7 @@ jobs:
         uses: astral-sh/ruff-action@v3
         with:
           args: "--version"
+          src: "api"
 
       - name: Run Ruff Formatter
         run: ruff format --diff api
