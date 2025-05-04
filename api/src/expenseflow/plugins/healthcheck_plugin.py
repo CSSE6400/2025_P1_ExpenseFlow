@@ -22,7 +22,6 @@ class HealthCheckPlugin(Plugin[PluginSettings]):
         """Do this method on call."""
 
     def _on_init(self) -> None:
-
         async def get_health() -> HealthCheckPlugin.HealthCheckModel:
             """Query the health of the service."""
             return HealthCheckPlugin.HealthCheckModel(status="healthy")
