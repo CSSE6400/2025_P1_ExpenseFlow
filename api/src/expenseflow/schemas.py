@@ -1,9 +1,8 @@
 """Base schema information."""
 
 import datetime as dt
-from typing import Any, ClassVar
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 # Serialize datetime values to local format
@@ -15,9 +14,8 @@ def _serialize_datetime(v: dt.datetime) -> str:
 class ExpenseFlowBase(BaseModel):
     """Base pydantic schema."""
 
-    class Config:
-        """Pydantic config."""
-
-        json_encoders: ClassVar[dict[type, Any | None]] = {
+    model_config = ConfigDict(
+        json_encoders={
             dt.datetime: _serialize_datetime,
         }
+    )
