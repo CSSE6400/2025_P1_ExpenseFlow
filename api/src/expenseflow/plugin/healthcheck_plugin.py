@@ -2,7 +2,7 @@
 
 from typing import Literal
 
-from expenseflow.plugins import Plugin, PluginSettings, register_plugin
+from expenseflow.plugin import Plugin, PluginSettings, register_plugin
 
 
 @register_plugin("healthcheck")

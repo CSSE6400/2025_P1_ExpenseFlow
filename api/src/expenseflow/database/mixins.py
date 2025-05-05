@@ -1,16 +1,10 @@
-"""Base database module."""
+"""Database mixins."""
 
 import datetime as dt
 
 from sqlalchemy import DateTime as SQLDatetime
-from sqlalchemy.ext.asyncio import AsyncAttrs
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
-
-
-# Base database model/table
-class BaseDBModel(DeclarativeBase, AsyncAttrs):
-    """Base model for db tables."""
 
 
 # Mixin to add created_at and updated at fields

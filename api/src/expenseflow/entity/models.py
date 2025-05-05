@@ -9,7 +9,8 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 
-from expenseflow.database.base import BaseDBModel, TimestampMixin
+from expenseflow.database.core import BaseDBModel
+from expenseflow.database.mixins import TimestampMixin
 from expenseflow.enums import EntityKind, GroupRole
 
 

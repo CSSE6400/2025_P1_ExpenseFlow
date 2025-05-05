@@ -6,9 +6,9 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from expenseflow.config import CONFIG
-from expenseflow.database import initialise_database
-from expenseflow.plugins import PluginRegistry
-from expenseflow.routers import base_router
+from expenseflow.database.core import initialise_database
+from expenseflow.expense.routes import router as expense_router
+from expenseflow.plugin import PluginRegistry
 
 
 @asynccontextmanager
@@ -22,4 +22,4 @@ async def lifespan(app: FastAPI) -> AsyncGenerator:
 
 
 app = FastAPI(lifespan=lifespan)
-app.include_router(base_router, prefix="/api/v1")
+app.include_router(expense_router, prefix="/v1/expenses")
