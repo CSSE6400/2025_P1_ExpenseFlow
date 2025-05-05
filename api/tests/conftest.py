@@ -22,8 +22,8 @@ from sqlalchemy_utils import create_database, database_exists, drop_database
 from tests.factories import UserCreateFactory, UserFactory
 
 # Hardcoded docker compose db so that no-one runs tests on prod db
-TEST_DB_URL = "postgresql+asyncpg://admin:password@localhost:5432/test_expense_db"
-SYNC_TEST_DB_URL = "postgresql://admin:password@localhost:5432/test_expense_db"
+TEST_DB_URL = "postgresql+asyncpg://admin:password@localhost:5432/expense_db"
+SYNC_TEST_DB_URL = "postgresql://admin:password@localhost:5432/expense_db"
 
 # Initialise db
 test_engine: AsyncEngine = create_async_engine(
