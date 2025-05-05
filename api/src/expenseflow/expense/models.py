@@ -5,7 +5,7 @@ from uuid import UUID, uuid4
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from expenseflow.database.core import BaseDBModel
+from expenseflow.database.base import BaseDBModel
 from expenseflow.database.mixins import TimestampMixin
 from expenseflow.entity.models import EntityModel, UserModel
 from expenseflow.enums import ExpenseCategory

@@ -1,45 +1,24 @@
 """Base database module."""
 
-import re
 from collections.abc import AsyncGenerator
-from typing import Any
 
 from loguru import logger
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import (
-    AsyncAttrs,
     AsyncEngine,
     AsyncSession,
     async_sessionmaker,
     create_async_engine,
 )
-from sqlalchemy.ext.declarative import declared_attr
-from sqlalchemy.orm import DeclarativeBase
 
 from expenseflow.config import CONFIG
 
-
-# Base database model/table
-class BaseDBModel(DeclarativeBase, AsyncAttrs):
-    """Base model for db tables."""
-
-    @declared_attr
-    def __tablename__(self):  # noqa: ANN204
-        """Automatically get table name."""
-        names = re.split("(?=[A-Z])", self.__name__)
-        return "_".join([x.lower() for x in names if x])
-
-    def to_dict(self) -> dict[Any, Any]:
-        """Return dict representation of a model."""
-        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
-
-
-engine: AsyncEngine = create_async_engine(
+db_engine: AsyncEngine = create_async_engine(
     CONFIG.db_url,
     pool_pre_ping=True,
 )
 session_factory = async_sessionmaker(
-    engine,
+    db_engine,
     class_=AsyncSession,
     expire_on_commit=False,
 )
@@ -62,45 +41,3 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
             await session.rollback()
             await session.close()
             raise
-
-
-async def initialise_database() -> None:
-    """Initialise database."""
-    # Importing as now sqlalchemy will know about them when creating the schema
-    from expenseflow.entity.models import (
-        EntityModel,  # noqa: F401
-        GroupUserModel,  # noqa: F401
-        UserModel,
-    )
-    from expenseflow.expense.models import (  # noqa: F401
-        ExpenseAttachmentModel,
-        ExpenseItemModel,
-        ExpenseItemSplitModel,
-        ExpenseModel,
-    )
-
-    async with engine.begin() as conn:
-        await conn.run_sync(BaseDBModel.metadata.create_all)
-
-        # HERE
-
-        # Create default user
-    async with session_factory() as session:
-        from sqlalchemy import select
-
-        default_user = UserModel(
-            email="test@gmail.com", first_name="test", last_name="accont"
-        )
-
-        user = (
-            await session.execute(
-                select(UserModel).where(UserModel.email == default_user.email)
-            )
-        ).scalar_one_or_none()
-
-        if not user:
-            session.add(default_user)
-            await session.commit()
-            logger.success("Created default admin user.")
-
-    logger.success("Initialising database was successful.")

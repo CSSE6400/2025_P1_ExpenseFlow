@@ -1,0 +1,113 @@
+"""Config file to provide fixtures for test directory."""
+
+import asyncio
+from collections.abc import AsyncGenerator
+from uuid import uuid4
+
+import pytest
+import pytest_asyncio
+from expenseflow.database.service import initialise_database
+from expenseflow.user.schemas import UserCreateSchema, UserSchema
+from fastapi import FastAPI
+from fastapi.testclient import TestClient
+from loguru import logger
+from sqlalchemy.ext.asyncio import (
+    AsyncEngine,
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
+)
+from sqlalchemy_utils import create_database, database_exists, drop_database
+
+from tests.factories import UserCreateFactory, UserFactory
+
+# Hardcoded docker compose db so that no-one runs tests on prod db
+TEST_DB_URL = "postgresql+asyncpg://admin:password@localhost:5432/test_expense_db"
+SYNC_TEST_DB_URL = "postgresql://admin:password@localhost:5432/test_expense_db"
+
+# Initialise db
+test_engine: AsyncEngine = create_async_engine(
+    TEST_DB_URL,
+    pool_pre_ping=True,
+)
+
+
+@pytest.fixture(scope="session")
+def event_loop():
+    """Override default function scoped event loop."""
+    policy = asyncio.get_event_loop_policy()
+    loop = policy.new_event_loop()
+    yield loop
+    loop.close()
+
+
+@pytest.fixture(scope="session")
+def test_app() -> FastAPI:
+    """FastAPI App fixture."""
+    from expenseflow.main import app
+
+    return app
+
+
+@pytest_asyncio.fixture(scope="session")
+async def db() -> AsyncGenerator[None]:
+    """Database fixture."""
+    if database_exists(SYNC_TEST_DB_URL):
+        logger.warning(f"Already found db at {SYNC_TEST_DB_URL}. Dropping now...")
+        drop_database(SYNC_TEST_DB_URL)
+
+    # Create test database
+    create_database(SYNC_TEST_DB_URL)
+
+    await initialise_database(test_engine)
+    yield
+    drop_database(SYNC_TEST_DB_URL)
+
+
+@pytest_asyncio.fixture(scope="function", autouse=True)
+async def session(db) -> AsyncGenerator[AsyncSession]:
+    """Session fixture for test duration."""
+    async_session_factory = async_sessionmaker(
+        test_engine, class_=AsyncSession, expire_on_commit=False
+    )
+
+    async with async_session_factory() as session:
+        yield session
+
+
+@pytest.fixture(scope="session")
+def default_user() -> UserSchema:
+    """Default user fixture."""
+    return UserSchema(
+        user_id=uuid4(), email="email@gmail.com", first_name="test", last_name="account"
+    )
+
+
+@pytest_asyncio.fixture(scope="function")
+async def test_client(
+    test_app: FastAPI, session: AsyncSession, default_user: UserSchema
+) -> TestClient:
+    """Test client fixture."""
+    # Need to override
+
+    from expenseflow.auth.deps import get_current_user
+    from expenseflow.database.deps import get_db
+
+    # Override dependencies
+    test_app.dependency_overrides[get_current_user] = lambda: default_user
+    test_app.dependency_overrides[get_db] = lambda: session
+
+    return TestClient(test_app)
+
+
+# Factory fixtures
+
+
+@pytest.fixture()
+def user() -> UserSchema:
+    return UserFactory.build()
+
+
+@pytest.fixture()
+def user_create() -> UserCreateSchema:
+    return UserCreateFactory.build()
