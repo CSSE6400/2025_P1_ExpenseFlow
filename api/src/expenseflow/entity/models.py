@@ -44,7 +44,7 @@ class UserModel(EntityModel):
         primary_key=True,
         default=uuid4,
     )
-    username: Mapped[str] = mapped_column(unique=True, index=True)
+    email: Mapped[str] = mapped_column(unique=True, index=True)
     first_name: Mapped[str]
     last_name: Mapped[str]
 
