@@ -6,8 +6,6 @@ from uuid import uuid4
 
 import pytest
 import pytest_asyncio
-from expenseflow.database.service import initialise_database
-from expenseflow.user.schemas import UserCreateSchema, UserSchema
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from loguru import logger
@@ -19,6 +17,8 @@ from sqlalchemy.ext.asyncio import (
 )
 from sqlalchemy_utils import create_database, database_exists, drop_database
 
+from expenseflow.database.service import initialise_database
+from expenseflow.user.schemas import UserCreateSchema, UserSchema
 from tests.factories import UserCreateFactory, UserFactory
 
 # Hardcoded docker compose db so that no-one runs tests on prod db
@@ -65,7 +65,7 @@ async def db() -> AsyncGenerator[None]:
 
 
 @pytest_asyncio.fixture(scope="function", autouse=True)
-async def session(db) -> AsyncGenerator[AsyncSession]:
+async def session(db) -> AsyncGenerator[AsyncSession]:  # noqa: ANN001
     """Session fixture for test duration."""
     async_session_factory = async_sessionmaker(
         test_engine, class_=AsyncSession, expire_on_commit=False

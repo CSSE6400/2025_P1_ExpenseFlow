@@ -1,8 +1,9 @@
 """Test user service."""
 
 import pytest
-from expenseflow.user.schemas import UserCreateSchema
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from expenseflow.user.schemas import UserCreateSchema
 
 
 @pytest.mark.asyncio()

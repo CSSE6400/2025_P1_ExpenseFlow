@@ -62,4 +62,6 @@ convention = "google"
     "INP001",  # No __init__.py files
     "ANN201",
     "D103",
+    "PT023",
+    "PT001",
 ]
