@@ -28,7 +28,7 @@ async def get_user_by_email(session: AsyncSession, email: str) -> UserSchema | N
 
 async def create_user(session: AsyncSession, user_in: UserCreateSchema) -> UserSchema:
     """Create user."""
-    existing_user = get_user_by_email(session, user_in.email)
+    existing_user = await get_user_by_email(session, user_in.email)
     if existing_user is not None:
         msg = "User under the email '{}' already exists."
         raise ExistsError(msg)
@@ -37,6 +37,6 @@ async def create_user(session: AsyncSession, user_in: UserCreateSchema) -> UserS
         email=user_in.email, first_name=user_in.first_name, last_name=user_in.last_name
     )
 
-    await session.add(new_user)
-    session.commit()
+    session.add(new_user)
+    await session.commit()
     return new_user.to_schema()
