@@ -11,7 +11,7 @@ class HealthCheckPlugin(Plugin[PluginSettings]):
 
     _settings_type = PluginSettings
 
-    from expenseflow.models import ExpenseFlowBase
+    from expenseflow.schemas import ExpenseFlowBase
 
     class HealthCheckModel(ExpenseFlowBase):
         """Response body for health check."""

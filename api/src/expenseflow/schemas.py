@@ -13,7 +13,7 @@ def _serialize_datetime(v: dt.datetime) -> str:
 
 
 class ExpenseFlowBase(BaseModel):
-    """Base pydantic model."""
+    """Base pydantic schema."""
 
     class Config:
         """Pydantic config."""
