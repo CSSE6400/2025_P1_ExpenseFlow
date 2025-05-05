@@ -1,6 +1,7 @@
 name: Static Analysis
 on:
   push:
+  pull_request:
 
 jobs:
   backend_lint_and_format:
