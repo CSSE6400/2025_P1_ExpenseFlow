@@ -2,4 +2,5 @@
 
 
 def get_email_from_token(token: str) -> str:
-    return "email"
+    # TODO: Reach into token and grab out email.
+    return "test@gmail.com"

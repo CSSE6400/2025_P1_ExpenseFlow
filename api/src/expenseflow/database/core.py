@@ -67,7 +67,11 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
 async def initialise_database() -> None:
     """Initialise database."""
     # Importing as now sqlalchemy will know about them when creating the schema
-    from expenseflow.entity.models import EntityModel, GroupUserModel  # noqa: F401
+    from expenseflow.entity.models import (
+        EntityModel,  # noqa: F401
+        GroupUserModel,  # noqa: F401
+        UserModel,
+    )
     from expenseflow.expense.models import (  # noqa: F401
         ExpenseAttachmentModel,
         ExpenseItemModel,
@@ -78,4 +82,25 @@ async def initialise_database() -> None:
     async with engine.begin() as conn:
         await conn.run_sync(BaseDBModel.metadata.create_all)
 
-        logger.success("Initialising database was successful.")
+        # HERE
+
+        # Create default user
+    async with session_factory() as session:
+        from sqlalchemy import select
+
+        default_user = UserModel(
+            email="test@gmail.com", first_name="test", last_name="accont"
+        )
+
+        user = (
+            await session.execute(
+                select(UserModel).where(UserModel.email == default_user.email)
+            )
+        ).scalar_one_or_none()
+
+        if not user:
+            session.add(default_user)
+            await session.commit()
+            logger.success("Created default admin user.")
+
+    logger.success("Initialising database was successful.")

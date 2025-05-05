@@ -36,4 +36,4 @@ async def get_current_user(
     return user
 
 
-CurrentUser = Annotated[UserSchema, get_current_user]
+CurrentUser = Annotated[UserSchema, Depends(get_current_user)]
