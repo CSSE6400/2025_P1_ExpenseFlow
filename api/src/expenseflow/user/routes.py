@@ -15,14 +15,7 @@ r = router = APIRouter()
 
 @r.get("")
 async def get_me(user: CurrentUser) -> UserSchema:
-    """Get current user.
-
-    Args:
-        user (CurrentUser): current user
-
-    Returns:
-        UserSchema: current user
-    """
+    """Get current user."""
     return user
 
 
@@ -40,18 +33,7 @@ async def get_user(db: DbSession, _: CurrentUser, user_id: UUID) -> UserSchema:
 
 @r.post("")
 async def create(db: DbSession, user_in: UserCreateSchema) -> UserSchema:
-    """Create a new user.
-
-    Args:
-        db (DbSession): db dependency
-        user_in (UserCreateSchema): new user payload
-
-    Raises:
-        HTTPException: Raised if user already exists under the same email.
-
-    Returns:
-        UserSchema: new user
-    """
+    """Create a new user."""
     try:
         return await create_user(db, user_in)
     except ExistsError as e:

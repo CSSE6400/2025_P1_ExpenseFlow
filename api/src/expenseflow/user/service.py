@@ -11,15 +11,7 @@ from expenseflow.user.schemas import UserCreateSchema, UserSchema
 
 
 async def get_user_by_id(session: AsyncSession, user_id: UUID) -> UserSchema | None:
-    """Get a user by their id.
-
-    Args:
-        session (AsyncSession): db session
-        user_id (UUID): user id
-
-    Returns:
-        UserSchema | None: user if found else None
-    """
+    """Get a user by their id."""
     user_model = await session.get(UserModel, user_id)
     if user_model is None:
         return None
@@ -27,15 +19,7 @@ async def get_user_by_id(session: AsyncSession, user_id: UUID) -> UserSchema | N
 
 
 async def get_user_by_email(session: AsyncSession, email: str) -> UserSchema | None:
-    """Get user by their email.
-
-    Args:
-        session (AsyncSession): db session
-        email (str): user email
-
-    Returns:
-        UserSchema | None: user if found else None
-    """
+    """Get user by their email."""
     user = (
         await session.execute(select(UserModel).where(UserModel.email == email))
     ).scalar_one_or_none()
@@ -43,18 +27,7 @@ async def get_user_by_email(session: AsyncSession, email: str) -> UserSchema | N
 
 
 async def create_user(session: AsyncSession, user_in: UserCreateSchema) -> UserSchema:
-    """Create user.
-
-    Args:
-        session (AsyncSession): db session
-        user_in (UserCreateSchema): user to be created
-
-    Raises:
-        ExistsError: Raised if user with same email already exists.
-
-    Returns:
-        UserSchema: newly created user
-    """
+    """Create user."""
     existing_user = get_user_by_email(session, user_in.email)
     if existing_user is not None:
         msg = "User under the email '{}' already exists."
