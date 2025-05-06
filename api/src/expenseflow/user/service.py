@@ -5,8 +5,8 @@ from uuid import UUID
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from expenseflow.entity.models import UserModel
 from expenseflow.errors import ExistsError
+from expenseflow.user.models import UserModel
 from expenseflow.user.schemas import UserCreateSchema, UserSchema
 
 

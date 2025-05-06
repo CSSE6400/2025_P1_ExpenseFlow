@@ -20,6 +20,7 @@ async def get_me(user: CurrentUser) -> UserSchema:
 
 
 @r.get("/{user_id}")
+# TODO: Need to replace CurrentUser  # noqa: FIX002, TD002, TD003
 async def get_user(db: DbSession, _: CurrentUser, user_id: UUID) -> UserSchema:
     """Endpoint to get user by id."""
     user = await get_user_by_id(db, user_id)

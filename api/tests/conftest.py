@@ -1,13 +1,16 @@
 """Config file to provide fixtures for test directory."""
 
 import asyncio
+import os
 from collections.abc import AsyncGenerator
 from uuid import uuid4
 
 import pytest
 import pytest_asyncio
+from expenseflow.database.service import initialise_database
+from expenseflow.user.schemas import UserCreateSchema, UserSchema
 from fastapi import FastAPI
-from fastapi.testclient import TestClient
+from httpx import ASGITransport, AsyncClient
 from loguru import logger
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
@@ -17,13 +20,15 @@ from sqlalchemy.ext.asyncio import (
 )
 from sqlalchemy_utils import create_database, database_exists, drop_database
 
-from expenseflow.database.service import initialise_database
-from expenseflow.user.schemas import UserCreateSchema, UserSchema
 from tests.factories import UserCreateFactory, UserFactory
 
 # Hardcoded docker compose db so that no-one runs tests on prod db
 TEST_DB_URL = "postgresql+asyncpg://admin:password@localhost:5432/expense_db"
 SYNC_TEST_DB_URL = "postgresql://admin:password@localhost:5432/expense_db"
+
+
+os.environ["DB_URL"] = TEST_DB_URL
+
 
 # Initialise db
 test_engine: AsyncEngine = create_async_engine(
@@ -86,7 +91,7 @@ def default_user() -> UserSchema:
 @pytest_asyncio.fixture(scope="function")
 async def test_client(
     test_app: FastAPI, session: AsyncSession, default_user: UserSchema
-) -> TestClient:
+) -> AsyncGenerator[AsyncClient, None]:
     """Test client fixture."""
     # Need to override
 
@@ -97,7 +102,10 @@ async def test_client(
     test_app.dependency_overrides[get_current_user] = lambda: default_user
     test_app.dependency_overrides[get_db] = lambda: session
 
-    return TestClient(test_app)
+    async with AsyncClient(
+        transport=ASGITransport(app=test_app), base_url="http://test"
+    ) as client:
+        yield client
 
 
 # Factory fixtures
