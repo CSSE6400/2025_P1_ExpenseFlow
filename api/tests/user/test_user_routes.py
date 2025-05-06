@@ -1,7 +1,5 @@
 """User routes test module."""
 
-import json
-
 import pytest
 from expenseflow.user.schemas import UserCreateSchema, UserSchema
 from httpx import AsyncClient
@@ -63,9 +61,9 @@ async def test_create_user(
 
     from expenseflow.user.service import get_user_by_id
 
-    req_body = json.loads(user_create.model_dump_json())
-
-    req = test_client.build_request(method="post", url="/users", json=req_body)
+    req = test_client.build_request(
+        method="post", url="/users", json=user_create.model_dump(mode="json")
+    )
 
     resp = await test_client.send(req)
 
@@ -82,7 +80,7 @@ async def test_create_user_invalid_body(
     test_client: AsyncClient, user_create: UserCreateSchema
 ):
 
-    req_body = json.loads(user_create.model_dump_json())
+    req_body = user_create.model_dump(mode="json")
 
     _ = req_body.pop("email")
 
@@ -100,11 +98,12 @@ async def test_create_user_exists(
 
     from expenseflow.user.service import create_user
 
+    # Create a user in db
     _ = await create_user(session, user_create)
 
-    req_body = json.loads(user_create.model_dump_json())
-
-    req = test_client.build_request(method="post", url="/users", json=req_body)
+    req = test_client.build_request(
+        method="post", url="/users", json=user_create.model_dump(mode="json")
+    )
 
     resp = await test_client.send(req)
 
