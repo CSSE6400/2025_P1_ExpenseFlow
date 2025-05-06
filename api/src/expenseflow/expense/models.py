@@ -7,8 +7,9 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from expenseflow.database.base import BaseDBModel
 from expenseflow.database.mixins import TimestampMixin
-from expenseflow.entity.models import EntityModel, UserModel
+from expenseflow.entity.models import EntityModel
 from expenseflow.enums import ExpenseCategory
+from expenseflow.user.models import UserModel
 
 
 class ExpenseModel(BaseDBModel, TimestampMixin):
