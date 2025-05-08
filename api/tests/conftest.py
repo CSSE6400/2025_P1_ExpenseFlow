@@ -7,6 +7,8 @@ from collections.abc import AsyncGenerator
 import pytest
 import pytest_asyncio
 from expenseflow.database.service import initialise_database
+from expenseflow.group.models import GroupModel, GroupUserModel
+from expenseflow.group.schemas import GroupCreate, GroupRead, GroupUpdate
 from expenseflow.user.models import UserModel
 from expenseflow.user.schemas import UserCreate, UserRead
 from fastapi import FastAPI
@@ -21,6 +23,11 @@ from sqlalchemy.ext.asyncio import (
 from sqlalchemy_utils import create_database, database_exists, drop_database
 
 from tests.factories import (
+    GroupCreateFactory,
+    GroupModelFactory,
+    GroupReadFactory,
+    GroupUpdateFactory,
+    GroupUserModelFactory,
     UserCreateFactory,
     UserModelFactory,
     UserReadFactory,
@@ -110,9 +117,10 @@ async def test_client(
         yield client
 
 
-# Factory fixtures
+## Factory fixtures
 
 
+# User factories
 @pytest.fixture()
 def user_model() -> UserModel:
     return UserModelFactory.build()
@@ -126,3 +134,31 @@ def user_read() -> UserRead:
 @pytest.fixture()
 def user_create() -> UserCreate:
     return UserCreateFactory.build()
+
+
+# Group factories
+
+
+@pytest.fixture()
+def group_model() -> GroupModel:
+    return GroupModelFactory.build()
+
+
+@pytest.fixture()
+def group_create() -> GroupCreate:
+    return GroupCreateFactory.build()
+
+
+@pytest.fixture()
+def group_read() -> GroupRead:
+    return GroupReadFactory.build()
+
+
+@pytest.fixture()
+def group_update() -> GroupUpdate:
+    return GroupUpdateFactory.build()
+
+
+@pytest.fixture()
+def group_user_model() -> GroupUserModel:
+    return GroupUserModelFactory.build()

@@ -8,6 +8,7 @@ from fastapi import APIRouter, FastAPI
 from expenseflow.database.core import db_engine
 from expenseflow.database.service import initialise_database
 from expenseflow.expense.routes import router as expense_router
+from expenseflow.group.routes import router as group_router
 from expenseflow.plugin import PluginRegistry
 from expenseflow.user.routes import router as user_router
 
@@ -28,3 +29,4 @@ app = FastAPI(lifespan=lifespan)
 v1_router = APIRouter(prefix="/api/v1")
 app.include_router(expense_router, prefix="/expenses")
 app.include_router(user_router, prefix="/users")
+app.include_router(group_router, prefix="/groups")
