@@ -12,7 +12,7 @@ from sqlalchemy.sql import func
 from expenseflow.database.base import BaseDBModel
 from expenseflow.entity.models import EntityModel
 from expenseflow.enums import EntityKind, GroupRole
-from expenseflow.group.schemas import GroupSchema
+from expenseflow.group.schemas import UserGroupRead
 from expenseflow.user.models import UserModel
 
 
@@ -34,12 +34,6 @@ class GroupModel(EntityModel):
 
     # Relationships
     users: Mapped[list["GroupUserModel"]] = relationship(back_populates="group")
-
-    def to_schema(self) -> GroupSchema:
-        """Convert model to schema."""
-        return GroupSchema(
-            group_id=self.group_id, name=self.name, description=self.description
-        )
 
 
 class GroupUserModel(BaseDBModel):
@@ -67,3 +61,13 @@ class GroupUserModel(BaseDBModel):
     # Relationships
     user: Mapped[UserModel] = relationship(back_populates="groups")
     group: Mapped[GroupModel] = relationship(back_populates="users")
+
+    def to_read(self) -> UserGroupRead:
+        """To read schema."""
+        return UserGroupRead(
+            group_id=self.group_id,
+            name=self.group.name,
+            description=self.group.description,
+            role=self.role,
+            joined_at=self.joined_at,
+        )
