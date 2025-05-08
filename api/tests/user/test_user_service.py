@@ -1,13 +1,12 @@
 """Test user service."""
 
 import pytest
+from expenseflow.user.schemas import UserCreate
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from expenseflow.user.schemas import UserCreateSchema
 
 
 @pytest.mark.asyncio()
-async def test_get_user_by_id(session: AsyncSession, user_create: UserCreateSchema):
+async def test_get_user_by_id(session: AsyncSession, user_create: UserCreate):
     from expenseflow.user.service import create_user, get_user_by_id
 
     created = await create_user(session, user_create)
@@ -30,7 +29,7 @@ async def test_get_user_by_id_not_found(session: AsyncSession):
 
 
 @pytest.mark.asyncio()
-async def test_get_user_by_email(session: AsyncSession, user_create: UserCreateSchema):
+async def test_get_user_by_email(session: AsyncSession, user_create: UserCreate):
     from expenseflow.user.service import create_user, get_user_by_email
 
     created = await create_user(session, user_create)
@@ -53,7 +52,7 @@ async def test_get_user_by_email_not_found(session: AsyncSession):
 
 
 @pytest.mark.asyncio()
-async def test_create_user(session: AsyncSession, user_create: UserCreateSchema):
+async def test_create_user(session: AsyncSession, user_create: UserCreate):
     from expenseflow.user.service import create_user
 
     new_user = await create_user(session, user_create)
@@ -65,7 +64,7 @@ async def test_create_user(session: AsyncSession, user_create: UserCreateSchema)
 
 @pytest.mark.asyncio()
 async def test_create_user_already_exists(
-    session: AsyncSession, user_create: UserCreateSchema
+    session: AsyncSession, user_create: UserCreate
 ):
     from expenseflow.errors import ExistsError
     from expenseflow.user.service import create_user

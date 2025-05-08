@@ -3,12 +3,12 @@
 import asyncio
 import os
 from collections.abc import AsyncGenerator
-from uuid import uuid4
 
 import pytest
 import pytest_asyncio
 from expenseflow.database.service import initialise_database
-from expenseflow.user.schemas import UserCreateSchema, UserSchema
+from expenseflow.user.models import UserModel
+from expenseflow.user.schemas import UserCreate, UserRead
 from fastapi import FastAPI
 from httpx import ASGITransport, AsyncClient
 from loguru import logger
@@ -20,7 +20,11 @@ from sqlalchemy.ext.asyncio import (
 )
 from sqlalchemy_utils import create_database, database_exists, drop_database
 
-from tests.factories import UserCreateFactory, UserFactory
+from tests.factories import (
+    UserCreateFactory,
+    UserModelFactory,
+    UserReadFactory,
+)
 
 # Hardcoded docker compose db so that no-one runs tests on prod db
 TEST_DB_URL = "postgresql+asyncpg://admin:password@localhost:5432/expense_db"
@@ -81,16 +85,14 @@ async def session(db) -> AsyncGenerator[AsyncSession]:  # noqa: ANN001
 
 
 @pytest.fixture(scope="session")
-def default_user() -> UserSchema:
+def default_user() -> UserModel:
     """Default user fixture."""
-    return UserSchema(
-        user_id=uuid4(), email="email@gmail.com", first_name="test", last_name="account"
-    )
+    return UserModelFactory.build()
 
 
 @pytest_asyncio.fixture(scope="function")
 async def test_client(
-    test_app: FastAPI, session: AsyncSession, default_user: UserSchema
+    test_app: FastAPI, session: AsyncSession, default_user: UserModel
 ) -> AsyncGenerator[AsyncClient, None]:
     """Test client fixture."""
     # Need to override
@@ -112,10 +114,15 @@ async def test_client(
 
 
 @pytest.fixture()
-def user() -> UserSchema:
-    return UserFactory.build()
+def user_model() -> UserModel:
+    return UserModelFactory.build()
 
 
 @pytest.fixture()
-def user_create() -> UserCreateSchema:
+def user_read() -> UserRead:
+    return UserReadFactory.build()
+
+
+@pytest.fixture()
+def user_create() -> UserCreate:
     return UserCreateFactory.build()

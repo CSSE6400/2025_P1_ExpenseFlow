@@ -5,8 +5,8 @@ from uuid import UUID
 from expenseflow.schemas import ExpenseFlowBase
 
 
-class UserSchema(ExpenseFlowBase):
-    """User schema."""
+class UserRead(ExpenseFlowBase):
+    """User read schema."""
 
     user_id: UUID
     email: str
@@ -14,7 +14,7 @@ class UserSchema(ExpenseFlowBase):
     last_name: str
 
 
-class UserCreateSchema(ExpenseFlowBase):
+class UserCreate(ExpenseFlowBase):
     """Create user schema."""
 
     email: str
