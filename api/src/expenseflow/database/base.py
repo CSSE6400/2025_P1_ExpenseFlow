@@ -1,7 +1,10 @@
 """Base DB Model."""
 
+import datetime as dt
 import re
+from decimal import Decimal
 from typing import Any
+from uuid import UUID
 
 from sqlalchemy.ext.asyncio import (
     AsyncAttrs,
@@ -22,4 +25,12 @@ class BaseDBModel(DeclarativeBase, AsyncAttrs):
 
     def to_dict(self) -> dict[Any, Any]:
         """Return dict representation of a model."""
-        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+        def _serialize(value):  # noqa: ANN001, ANN202
+            if isinstance(value, UUID | dt.datetime | Decimal):
+                return str(value)
+            return value
+
+        return {
+            c.name: _serialize(getattr(self, c.name)) for c in self.__table__.columns
+        }

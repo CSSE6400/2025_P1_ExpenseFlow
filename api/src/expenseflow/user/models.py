@@ -8,7 +8,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from expenseflow.entity.models import EntityModel
 from expenseflow.enums import EntityKind
-from expenseflow.user.schemas import UserSchema
 
 if TYPE_CHECKING:
     from expenseflow.group.models import GroupUserModel
@@ -32,13 +31,6 @@ class UserModel(EntityModel):
     last_name: Mapped[str]
 
     # Relationships
-    groups: Mapped[list["GroupUserModel"]] = relationship(back_populates="user")
-
-    def to_schema(self) -> UserSchema:
-        """Convert model to schema."""
-        return UserSchema(
-            user_id=self.user_id,
-            email=self.email,
-            first_name=self.first_name,
-            last_name=self.last_name,
-        )
+    groups: Mapped[list["GroupUserModel"]] = relationship(
+        back_populates="user", lazy="select"
+    )

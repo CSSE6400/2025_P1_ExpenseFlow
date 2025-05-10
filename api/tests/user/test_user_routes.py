@@ -1,25 +1,26 @@
 """User routes test module."""
 
 import pytest
-from expenseflow.user.schemas import UserCreateSchema, UserSchema
+from expenseflow.user.models import UserModel
+from expenseflow.user.schemas import UserCreate
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
 @pytest.mark.asyncio
-async def test_get_me(test_client: AsyncClient, default_user: UserSchema):
+async def test_get_me(test_client: AsyncClient, default_user: UserModel):
     req = test_client.build_request(method="get", url="/users")
 
     resp = await test_client.send(req)
 
     assert resp.status_code == 200
 
-    assert default_user.model_dump_json() == resp.text
+    assert default_user.to_dict() == resp.json()
 
 
 @pytest.mark.asyncio
 async def test_get_user(
-    test_client: AsyncClient, session: AsyncSession, user_create: UserCreateSchema
+    test_client: AsyncClient, session: AsyncSession, user_create: UserCreate
 ):
     from expenseflow.user.service import create_user
 
@@ -31,7 +32,7 @@ async def test_get_user(
 
     assert resp.status_code == 200
 
-    assert new_user.model_dump_json() == resp.text
+    assert new_user.to_dict() == resp.json()
 
 
 @pytest.mark.asyncio
@@ -56,7 +57,7 @@ async def test_get_user_not_found(test_client: AsyncClient):
 
 @pytest.mark.asyncio
 async def test_create_user(
-    session: AsyncSession, test_client: AsyncClient, user_create: UserCreateSchema
+    session: AsyncSession, test_client: AsyncClient, user_create: UserCreate
 ):
 
     from expenseflow.user.service import get_user_by_id
@@ -72,12 +73,12 @@ async def test_create_user(
     user = await get_user_by_id(session, resp.json()["user_id"])
     assert user is not None
 
-    assert resp.text == user.model_dump_json()
+    assert resp.json() == user.to_dict()
 
 
 @pytest.mark.asyncio
 async def test_create_user_invalid_body(
-    test_client: AsyncClient, user_create: UserCreateSchema
+    test_client: AsyncClient, user_create: UserCreate
 ):
 
     req_body = user_create.model_dump(mode="json")
@@ -93,7 +94,7 @@ async def test_create_user_invalid_body(
 
 @pytest.mark.asyncio
 async def test_create_user_exists(
-    session: AsyncSession, test_client: AsyncClient, user_create: UserCreateSchema
+    session: AsyncSession, test_client: AsyncClient, user_create: UserCreate
 ):
 
     from expenseflow.user.service import create_user
