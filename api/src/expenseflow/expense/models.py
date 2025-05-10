@@ -1,5 +1,6 @@
 """Expense db module."""
 
+from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
 from sqlalchemy import ForeignKey
@@ -10,6 +11,10 @@ from expenseflow.database.mixins import TimestampMixin
 from expenseflow.entity.models import EntityModel
 from expenseflow.enums import ExpenseCategory
 from expenseflow.user.models import UserModel
+
+if TYPE_CHECKING:
+    from expenseflow.expense_attachment.models import ExpenseAttachmentModel
+    from expenseflow.expense_item.models import ExpenseItemModel
 
 
 class ExpenseModel(BaseDBModel, TimestampMixin):
@@ -30,46 +35,3 @@ class ExpenseModel(BaseDBModel, TimestampMixin):
     parent: Mapped[EntityModel] = relationship(foreign_keys=[parent_id])
     attachments: Mapped[list["ExpenseAttachmentModel"]] = relationship()
     items: Mapped[list["ExpenseItemModel"]] = relationship(back_populates="expense")
-
-
-class ExpenseItemModel(BaseDBModel, TimestampMixin):
-    """Db model for items in an expense."""
-
-    __tablename__ = "expense_item"
-
-    expense_item_id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
-    expense_id: Mapped[UUID] = mapped_column(ForeignKey("expense.expense_id"))
-    name: Mapped[str]
-    quantity: Mapped[int]
-    price: Mapped[float]
-
-    # relationships
-    expense: Mapped[ExpenseModel] = relationship(back_populates="items")
-    splits: Mapped[list["ExpenseItemSplitModel"]] = relationship(back_populates="item")
-
-
-class ExpenseItemSplitModel(BaseDBModel, TimestampMixin):
-    """Db model for expense item split."""
-
-    __tablename__ = "expense_item_split"
-
-    expense_item_id: Mapped[UUID] = mapped_column(
-        ForeignKey("expense_item.expense_item_id"),
-        primary_key=True,
-    )
-    user_id: Mapped[UUID] = mapped_column(ForeignKey("user.user_id"), primary_key=True)
-    proportion: Mapped[float]
-
-    # Relationships
-    item: Mapped[ExpenseItemModel] = relationship()
-    user: Mapped[UserModel] = relationship()
-
-
-class ExpenseAttachmentModel(BaseDBModel, TimestampMixin):
-    """DB Model for expense attachments."""
-
-    __tablename__ = "expense_attachment"
-
-    attachment_id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
-    expense_id: Mapped[UUID] = mapped_column(ForeignKey("expense.expense_id"))
-    name: Mapped[str]
