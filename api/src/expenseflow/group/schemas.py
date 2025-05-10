@@ -5,6 +5,7 @@ from uuid import UUID
 
 from expenseflow.enums import GroupRole
 from expenseflow.schemas import ExpenseFlowBase
+from expenseflow.user.schemas import UserRead
 
 
 class GroupRead(ExpenseFlowBase):
@@ -25,12 +26,19 @@ class GroupCreate(ExpenseFlowBase):
 class GroupUpdate(ExpenseFlowBase):
     """Group update schema."""
 
-    name: str | None = None
-    description: str | None = None
+    name: str
+    description: str
 
 
-class UserGroupRead(GroupRead):
-    """User group membership."""
+class GroupUserRead(GroupRead):
+    """User group membership with extra group details."""
+
+    role: GroupRole
+    joined_at: dt.datetime
+
+
+class UserGroupRead(UserRead):
+    """User group membership with extra user details."""
 
     role: GroupRole
     joined_at: dt.datetime

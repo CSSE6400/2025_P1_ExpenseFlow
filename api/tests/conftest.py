@@ -8,7 +8,13 @@ import pytest
 import pytest_asyncio
 from expenseflow.database.service import initialise_database
 from expenseflow.group.models import GroupModel, GroupUserModel
-from expenseflow.group.schemas import GroupCreate, GroupRead, GroupUpdate
+from expenseflow.group.schemas import (
+    GroupCreate,
+    GroupRead,
+    GroupUpdate,
+    GroupUserRead,
+    UserGroupRead,
+)
 from expenseflow.user.models import UserModel
 from expenseflow.user.schemas import UserCreate, UserRead
 from fastapi import FastAPI
@@ -28,7 +34,9 @@ from tests.factories import (
     GroupReadFactory,
     GroupUpdateFactory,
     GroupUserModelFactory,
+    GroupUserReadFactory,
     UserCreateFactory,
+    UserGroupReadFactory,
     UserModelFactory,
     UserReadFactory,
 )
@@ -162,3 +170,13 @@ def group_update() -> GroupUpdate:
 @pytest.fixture()
 def group_user_model() -> GroupUserModel:
     return GroupUserModelFactory.build()
+
+
+@pytest.fixture()
+def user_group_read() -> UserGroupRead:
+    return UserGroupReadFactory.build()
+
+
+@pytest.fixture()
+def group_user_read() -> GroupUserRead:
+    return GroupUserReadFactory.build()
