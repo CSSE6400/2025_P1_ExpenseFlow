@@ -23,8 +23,10 @@ class ExpenseItemModel(BaseDBModel, TimestampMixin):
     price: Mapped[float]
 
     # relationships
-    expense: Mapped[ExpenseModel] = relationship(back_populates="items")
-    splits: Mapped[list["ExpenseItemSplitModel"]] = relationship(back_populates="item")
+    expense: Mapped[ExpenseModel] = relationship(back_populates="items", lazy="select")
+    splits: Mapped[list["ExpenseItemSplitModel"]] = relationship(
+        back_populates="item", lazy="select"
+    )
 
 
 class ExpenseItemSplitModel(BaseDBModel, TimestampMixin):

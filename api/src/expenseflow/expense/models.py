@@ -31,7 +31,11 @@ class ExpenseModel(BaseDBModel, TimestampMixin):
     category: Mapped[ExpenseCategory]
 
     # Relationships
-    uploader: Mapped[UserModel] = relationship(foreign_keys=[uploader_id])
-    parent: Mapped[EntityModel] = relationship(foreign_keys=[parent_id])
-    attachments: Mapped[list["ExpenseAttachmentModel"]] = relationship()
-    items: Mapped[list["ExpenseItemModel"]] = relationship(back_populates="expense")
+    uploader: Mapped[UserModel] = relationship(
+        foreign_keys=[uploader_id], lazy="joined"
+    )
+    parent: Mapped[EntityModel] = relationship(foreign_keys=[parent_id], lazy="joined")
+    items: Mapped[list["ExpenseItemModel"]] = relationship(
+        back_populates="expense", lazy="subquery"
+    )
+    attachments: Mapped[list["ExpenseAttachmentModel"]] = relationship(lazy="select")

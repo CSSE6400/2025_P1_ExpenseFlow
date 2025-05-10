@@ -31,4 +31,6 @@ class UserModel(EntityModel):
     last_name: Mapped[str]
 
     # Relationships
-    groups: Mapped[list["GroupUserModel"]] = relationship(back_populates="user")
+    groups: Mapped[list["GroupUserModel"]] = relationship(
+        back_populates="user", lazy="select"
+    )

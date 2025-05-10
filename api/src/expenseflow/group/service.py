@@ -30,12 +30,12 @@ async def create_group(
 
 async def get_user_groups(user: UserModel) -> list[GroupUserModel]:
     """Get a users groups."""
-    return user.groups
+    return await user.awaitable_attrs.groups
 
 
 async def get_group_users(group: GroupModel) -> list[GroupUserModel]:
     """Get a users groups."""
-    return group.users
+    return await group.awaitable_attrs.users
 
 
 async def get_group(

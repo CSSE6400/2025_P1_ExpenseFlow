@@ -32,7 +32,9 @@ class GroupModel(EntityModel):
     description: Mapped[str]
 
     # Relationships
-    users: Mapped[list["GroupUserModel"]] = relationship(back_populates="group")
+    users: Mapped[list["GroupUserModel"]] = relationship(
+        back_populates="group", lazy="select"
+    )
 
 
 class GroupUserModel(BaseDBModel):
@@ -58,5 +60,5 @@ class GroupUserModel(BaseDBModel):
     )
 
     # Relationships
-    user: Mapped[UserModel] = relationship(back_populates="groups")
-    group: Mapped[GroupModel] = relationship(back_populates="users")
+    user: Mapped[UserModel] = relationship(back_populates="groups", lazy="joined")
+    group: Mapped[GroupModel] = relationship(back_populates="users", lazy="joined")
