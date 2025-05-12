@@ -14,3 +14,7 @@ class ExpenseAttachmentManager(Protocol):
 
     async def download_attachment(self, attachment_id: str) -> BinaryIO | None:
         """Download expense attachment."""
+
+
+class InfileExpenseAttachmentManager:
+    pass
