@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 // Third-party imports
 import 'package:google_fonts/google_fonts.dart';
 // Common
-import '../../../../common/color_palette.dart';
-import '../../../../common/proportional_sizes.dart';
-import '../../../../common/fields/general_field.dart';
-import '../../../../common/custom_divider.dart';
+import '../../../common/color_palette.dart';
+import '../../../common/proportional_sizes.dart';
+import '../../../common/fields/general_field.dart';
+import '../../../common/custom_divider.dart';
 import '../../../common/custom_button.dart';
 
 class ProfileSetupScreenSubRectangle extends StatefulWidget {
@@ -73,8 +73,8 @@ class _ProfileSetupScreenSubRectangleState
                 fontSize: proportionalSizes.scaleText(22),
                 fontWeight: FontWeight.bold,
                 color: widget.isDarkMode
-                    ? ColorPalette.buttonText
-                    : ColorPalette.buttonTextDark,
+                    ? ColorPalette.primaryTextDark
+                    : ColorPalette.primaryText,
               ),
             ),
             SizedBox(height: proportionalSizes.scaleHeight(12)),
@@ -92,7 +92,7 @@ class _ProfileSetupScreenSubRectangleState
               },
               onValidityChanged: updateNameValidity,
             ),
-            const CustomDivider(),
+            CustomDivider(isDarkMode: widget.isDarkMode),
 
             // Email field
             GeneralField(
@@ -108,22 +108,7 @@ class _ProfileSetupScreenSubRectangleState
               },
               onValidityChanged: updateEmailValidity,
             ),
-            const CustomDivider(),
-
-            // Username field
-            GeneralField(
-              label: 'Username*',
-              initialValue: 'abcd1234',
-              isDarkMode: widget.isDarkMode,
-              isEditable: true,
-              showStatusIcon: true,
-              validationRule: (value) {
-                final usernameRegex = RegExp(r"^[a-zA-Z0-9_]{3,16}$");
-                return usernameRegex.hasMatch(value.trim());
-              },
-              onValidityChanged: updateUsernameValidity,
-            ),
-            const CustomDivider(),
+            CustomDivider(isDarkMode: widget.isDarkMode),
 
             // Budget field
             GeneralField(
@@ -138,7 +123,7 @@ class _ProfileSetupScreenSubRectangleState
               },
               onValidityChanged: updateBudgetValidity,
             ),
-            SizedBox(height: proportionalSizes.scaleHeight(12)),
+            SizedBox(height: proportionalSizes.scaleHeight(24)),
 
             // Save button
             CustomButton(

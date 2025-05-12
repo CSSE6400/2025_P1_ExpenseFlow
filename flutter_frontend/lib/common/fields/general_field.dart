@@ -1,7 +1,9 @@
+// Flutter imports
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+// Third-party imports
 import 'package:google_fonts/google_fonts.dart';
-
+// Common
 import '../../../../../common/color_palette.dart';
 import '../../../../../common/proportional_sizes.dart';
 
@@ -89,6 +91,12 @@ class _GeneralFieldState extends State<GeneralField> {
   @override
   Widget build(BuildContext context) {
     final proportionalSizes = ProportionalSizes(context: context);
+    final labelColor = widget.isDarkMode
+        ? ColorPalette.primaryTextDark
+        : ColorPalette.primaryText;
+    final hintColor = widget.isDarkMode
+        ? ColorPalette.secondaryTextDark
+        : ColorPalette.secondaryText;
     final iconColor = _isValid
         ? (widget.isDarkMode
             ? ColorPalette.primaryActionDark
@@ -109,11 +117,9 @@ class _GeneralFieldState extends State<GeneralField> {
                 Text(
                   widget.label,
                   style: GoogleFonts.roboto(
-                    fontSize: proportionalSizes.scaleText(14),
+                    fontSize: proportionalSizes.scaleText(17),
                     fontWeight: FontWeight.w500,
-                    color: widget.isDarkMode
-                        ? Colors.white.withOpacity(0.9)
-                        : ColorPalette.backgroundDark,
+                    color: labelColor
                   ),
                 ),
                 SizedBox(height: proportionalSizes.scaleHeight(4)),
@@ -123,7 +129,7 @@ class _GeneralFieldState extends State<GeneralField> {
                   inputFormatters: _getInputFormatters(),
                   style: GoogleFonts.roboto(
                     fontSize: proportionalSizes.scaleText(17),
-                    color: widget.isEditable ? null : Colors.grey[600],
+                    color: labelColor,
                   ),
                   decoration: InputDecoration(
                     isDense: true,
@@ -131,7 +137,7 @@ class _GeneralFieldState extends State<GeneralField> {
                     border: InputBorder.none,
                     hintText: widget.initialValue,
                     hintStyle: GoogleFonts.roboto(
-                      color: Colors.grey[500],
+                      color: hintColor,
                       fontSize: proportionalSizes.scaleText(17),
                     ),
                   ),
@@ -150,7 +156,7 @@ class _GeneralFieldState extends State<GeneralField> {
               child: Icon(
                 _isValid ? Icons.check_circle : Icons.cancel,
                 color: iconColor,
-                size: 20,
+                size: proportionalSizes.scaleWidth(24),
               ),
             ),
         ],
