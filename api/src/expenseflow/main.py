@@ -4,6 +4,7 @@ from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.responses import RedirectResponse
 
 from expenseflow.database.core import db_engine
 from expenseflow.database.service import initialise_database
@@ -35,3 +36,9 @@ app.include_router(group_router, prefix="/groups")
 def get_health() -> dict:
     """Health status endpoint."""
     return {"status": "healthy"}
+
+
+@app.get("/", include_in_schema=False)
+def redirect_to_docs() -> RedirectResponse:
+    """Redirect to docs page."""
+    return RedirectResponse(url="/docs")
