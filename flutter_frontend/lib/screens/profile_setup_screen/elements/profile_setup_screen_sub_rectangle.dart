@@ -9,15 +9,46 @@ import '../../../../common/fields/general_field.dart';
 import '../../../../common/custom_divider.dart';
 import '../../../common/custom_button.dart';
 
-class ProfileSetupScreenSubRectangle extends StatelessWidget {
+class ProfileSetupScreenSubRectangle extends StatefulWidget {
   final bool isDarkMode;
 
   const ProfileSetupScreenSubRectangle({super.key, required this.isDarkMode});
 
   @override
+  State<ProfileSetupScreenSubRectangle> createState() =>
+      _ProfileSetupScreenSubRectangleState();
+}
+
+class _ProfileSetupScreenSubRectangleState
+    extends State<ProfileSetupScreenSubRectangle> {
+  bool isNameValid = false;
+  bool isEmailValid = false;
+  bool isUsernameValid = false;
+  bool isBudgetValid = false;
+
+  bool get isFormValid =>
+      isNameValid && isEmailValid && isUsernameValid && isBudgetValid;
+
+  void updateNameValidity(bool isValid) {
+    setState(() => isNameValid = isValid);
+  }
+
+  void updateEmailValidity(bool isValid) {
+    setState(() => isEmailValid = isValid);
+  }
+
+  void updateUsernameValidity(bool isValid) {
+    setState(() => isUsernameValid = isValid);
+  }
+
+  void updateBudgetValidity(bool isValid) {
+    setState(() => isBudgetValid = isValid);
+  }
+
+  @override
   Widget build(BuildContext context) {
     final proportionalSizes = ProportionalSizes(context: context);
-    final backgroundColor = isDarkMode
+    final backgroundColor = widget.isDarkMode
         ? ColorPalette.buttonTextDark
         : ColorPalette.buttonText;
 
@@ -41,69 +72,84 @@ class ProfileSetupScreenSubRectangle extends StatelessWidget {
               style: GoogleFonts.roboto(
                 fontSize: proportionalSizes.scaleText(22),
                 fontWeight: FontWeight.bold,
-                color: isDarkMode
+                color: widget.isDarkMode
                     ? ColorPalette.buttonText
                     : ColorPalette.buttonTextDark,
               ),
             ),
             SizedBox(height: proportionalSizes.scaleHeight(12)),
+
+            // Name field
             GeneralField(
               label: 'Name*',
               initialValue: 'ABC',
-              isDarkMode: isDarkMode,
+              isDarkMode: widget.isDarkMode,
               isEditable: true,
               showStatusIcon: true,
               validationRule: (value) {
                 final nameRegex = RegExp(r"^[A-Za-z ]+$");
                 return nameRegex.hasMatch(value.trim());
               },
+              onValidityChanged: updateNameValidity,
             ),
             const CustomDivider(),
 
+            // Email field
             GeneralField(
               label: 'Email ID*',
               initialValue: 'example@email.com',
-              isDarkMode: isDarkMode,
+              isDarkMode: widget.isDarkMode,
               isEditable: true,
               showStatusIcon: true,
               validationRule: (value) {
-                const pattern = r'^[a-zA-Z\d._%+-]+@[a-zA-Z\d.-]+\.[a-zA-Z]{2,}$';
+                const pattern =
+                    r'^[a-zA-Z\d._%+-]+@[a-zA-Z\d.-]+\.[a-zA-Z]{2,}$';
                 return RegExp(pattern).hasMatch(value.trim());
               },
+              onValidityChanged: updateEmailValidity,
             ),
             const CustomDivider(),
+
+            // Username field
             GeneralField(
               label: 'Username*',
               initialValue: 'abcd1234',
-              isDarkMode: isDarkMode,
+              isDarkMode: widget.isDarkMode,
               isEditable: true,
               showStatusIcon: true,
               validationRule: (value) {
                 final usernameRegex = RegExp(r"^[a-zA-Z0-9_]{3,16}$");
                 return usernameRegex.hasMatch(value.trim());
               },
+              onValidityChanged: updateUsernameValidity,
             ),
             const CustomDivider(),
 
+            // Budget field
             GeneralField(
               label: 'Monthly Budget (\$)*',
               initialValue: '1000',
-              isDarkMode: isDarkMode,
+              isDarkMode: widget.isDarkMode,
               isEditable: true,
               showStatusIcon: true,
               validationRule: (value) {
                 final number = double.tryParse(value.trim());
                 return number != null && number > 0;
               },
+              onValidityChanged: updateBudgetValidity,
             ),
             SizedBox(height: proportionalSizes.scaleHeight(12)),
+
+            // Save button
             CustomButton(
               label: 'Save',
-              onPressed: () {},
-              isDarkMode: false,
+              onPressed: isFormValid ? () => {} : () {},
+              isDarkMode: widget.isDarkMode,
               sizeType: ButtonSizeType.full,
-              state: ButtonState.disabled,
+              state:
+                  isFormValid ? ButtonState.enabled : ButtonState.disabled,
             ),
+
             SizedBox(height: proportionalSizes.scaleHeight(72)),
           ],
         ),

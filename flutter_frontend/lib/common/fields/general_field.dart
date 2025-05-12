@@ -19,6 +19,9 @@ class GeneralField extends StatefulWidget {
   /// Whether field is editable
   final bool isEditable;
 
+  /// Callback to inform parent when validity changes
+  final void Function(bool isValid)? onValidityChanged;
+
   const GeneralField({
     super.key,
     required this.label,
@@ -27,6 +30,7 @@ class GeneralField extends StatefulWidget {
     this.showStatusIcon = false,
     this.validationRule,
     this.isEditable = true,
+    this.onValidityChanged,
   });
 
   @override
@@ -42,19 +46,22 @@ class _GeneralFieldState extends State<GeneralField> {
     super.initState();
     _controller = TextEditingController(); // Leave empty, use hintText only
     _updateValidation('');
-
     _controller.addListener(() {
       _updateValidation(_controller.text);
     });
   }
 
   void _updateValidation(String text) {
+    final trimmed = text.trim();
     if (widget.validationRule != null) {
-      final isNowValid = widget.validationRule!(text.trim());
+      final isNowValid = widget.validationRule!(trimmed);
       if (isNowValid != _isValid) {
         setState(() {
           _isValid = isNowValid;
         });
+        if (widget.onValidityChanged != null) {
+          widget.onValidityChanged!(isNowValid);
+        }
       }
     }
   }
