@@ -1,10 +1,10 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 // Third-party imports
 import 'package:google_fonts/google_fonts.dart';
 // Common
 import '../../common/color_palette.dart';
 import '../../common/proportional_sizes.dart';
+import '../../common/custom_button.dart';
 
 class InitialStartupScreen extends StatefulWidget {
   final bool isDarkMode;
@@ -17,19 +17,6 @@ class InitialStartupScreen extends StatefulWidget {
 
 class InitialStartupScreenState extends State<InitialStartupScreen> {
   @override
-  void initState() {
-    super.initState();
-    Timer(const Duration(seconds: 5), () {
-      // TODO: Uncomment the following line to navigate to the next screen. Specify the screen you want to navigate to.
-      // Navigate to the next screen after a delay
-      /* Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const <Screen Name>), // Replace with your screen
-      ); */
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     final logoColor = ColorPalette.logoColor;
     final backgroundColor = widget.isDarkMode
@@ -39,26 +26,53 @@ class InitialStartupScreenState extends State<InitialStartupScreen> {
 
     return Scaffold(
       backgroundColor: backgroundColor,
-      body: Center(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset(
-              'assets/logo/expenseflow_logo.png',
-              width: proportionalSizes.scaleWidth(60),
-              height: proportionalSizes.scaleHeight(60),
-              color: logoColor,
-            ),
-            Text(
-              'ExpenseFlow',
-              style: GoogleFonts.roboto(
-                fontSize: proportionalSizes.scaleText(24),
-                fontWeight: FontWeight.bold,
-                color: logoColor,
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: proportionalSizes.scaleWidth(20),
+            vertical: proportionalSizes.scaleHeight(20),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // Centered Logo + App Name
+              Expanded(
+                child: Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        'assets/logo/expenseflow_logo.png',
+                        width: proportionalSizes.scaleWidth(60),
+                        height: proportionalSizes.scaleHeight(60),
+                        color: logoColor,
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        'ExpenseFlow',
+                        style: GoogleFonts.roboto(
+                          fontSize: proportionalSizes.scaleText(24),
+                          fontWeight: FontWeight.bold,
+                          color: logoColor,
+                        ),
+                        textAlign: TextAlign.left,
+                      ),
+                    ],
+                  ),
+                ),
               ),
-              textAlign: TextAlign.left,
-            ),
-          ],
+
+              // Log In Button at bottom
+              CustomButton(
+                label: 'Log In',
+                onPressed: () {
+                  // TODO: Navigate to log in screen
+                },
+                sizeType: ButtonSizeType.full,
+                isDarkMode: widget.isDarkMode,
+              ),
+            ],
+          ),
         ),
       ),
     );
