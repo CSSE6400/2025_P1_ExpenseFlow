@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../../common/color_palette.dart';
@@ -39,7 +40,7 @@ class _GeneralFieldState extends State<GeneralField> {
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController(); // No pre-filled value
+    _controller = TextEditingController(); // Leave empty, use hintText only
     _updateValidation('');
 
     _controller.addListener(() {
@@ -62,6 +63,20 @@ class _GeneralFieldState extends State<GeneralField> {
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+
+  /// Returns input formatter based on the field's label
+  List<TextInputFormatter>? _getInputFormatters() {
+    final labelLower = widget.label.toLowerCase();
+
+    if (labelLower.contains('username')) {
+      return [FilteringTextInputFormatter.deny(RegExp(r'\s'))]; // disallow spaces
+    } else if (labelLower.contains('budget')) {
+      return [
+        FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')), // allow decimals
+      ];
+    }
+    return null; // no restrictions
   }
 
   @override
@@ -98,11 +113,10 @@ class _GeneralFieldState extends State<GeneralField> {
                 TextField(
                   controller: _controller,
                   readOnly: !widget.isEditable,
+                  inputFormatters: _getInputFormatters(),
                   style: GoogleFonts.roboto(
                     fontSize: proportionalSizes.scaleText(17),
-                    color: widget.isEditable
-                        ? null
-                        : Colors.grey[600],
+                    color: widget.isEditable ? null : Colors.grey[600],
                   ),
                   decoration: InputDecoration(
                     isDense: true,

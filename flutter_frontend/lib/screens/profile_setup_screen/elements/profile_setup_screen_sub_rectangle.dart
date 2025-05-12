@@ -53,16 +53,23 @@ class ProfileSetupScreenSubRectangle extends StatelessWidget {
               isDarkMode: isDarkMode,
               isEditable: true,
               showStatusIcon: true,
-              validationRule: (value) => value.isNotEmpty,
+              validationRule: (value) {
+                final nameRegex = RegExp(r"^[A-Za-z ]+$");
+                return nameRegex.hasMatch(value.trim());
+              },
             ),
             const CustomDivider(),
+
             GeneralField(
               label: 'Email ID*',
               initialValue: 'example@email.com',
               isDarkMode: isDarkMode,
               isEditable: true,
               showStatusIcon: true,
-              validationRule: (value) => value.isNotEmpty,
+              validationRule: (value) {
+                const pattern = r'^[a-zA-Z\d._%+-]+@[a-zA-Z\d.-]+\.[a-zA-Z]{2,}$';
+                return RegExp(pattern).hasMatch(value.trim());
+              },
             ),
             const CustomDivider(),
             GeneralField(
@@ -71,19 +78,25 @@ class ProfileSetupScreenSubRectangle extends StatelessWidget {
               isDarkMode: isDarkMode,
               isEditable: true,
               showStatusIcon: true,
-              validationRule: (value) => value.isNotEmpty,
+              validationRule: (value) {
+                final usernameRegex = RegExp(r"^[a-zA-Z0-9_]{3,16}$");
+                return usernameRegex.hasMatch(value.trim());
+              },
             ),
             const CustomDivider(),
+
             GeneralField(
               label: 'Monthly Budget (\$)*',
               initialValue: '1000',
               isDarkMode: isDarkMode,
               isEditable: true,
               showStatusIcon: true,
-              validationRule: (value) => value.isNotEmpty,
+              validationRule: (value) {
+                final number = double.tryParse(value.trim());
+                return number != null && number > 0;
+              },
             ),
             const CustomDivider(),
-            // TODO: Add profile input fields and save button here
           ],
         ),
       ),
