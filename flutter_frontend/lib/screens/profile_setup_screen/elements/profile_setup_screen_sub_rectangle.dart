@@ -8,6 +8,8 @@ import '../../../common/proportional_sizes.dart';
 import '../../../common/fields/general_field.dart';
 import '../../../common/custom_divider.dart';
 import '../../../common/custom_button.dart';
+// Screens
+import '../../home_screen/home_screen.dart';
 
 class ProfileSetupScreenSubRectangle extends StatefulWidget {
   final bool isDarkMode;
@@ -38,6 +40,17 @@ class _ProfileSetupScreenSubRectangleState
 
   void updateBudgetValidity(bool isValid) {
     setState(() => isBudgetValid = isValid);
+  }
+
+  Future <void> onSave() async {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => HomeScreen(
+          isDarkMode: widget.isDarkMode,
+          ),
+        ),
+      );
   }
 
   @override
@@ -123,7 +136,7 @@ class _ProfileSetupScreenSubRectangleState
             // Save button
             CustomButton(
               label: 'Save',
-              onPressed: isFormValid ? () => {} : () {},
+              onPressed: isFormValid ? onSave : () {},
               isDarkMode: widget.isDarkMode,
               sizeType: ButtonSizeType.full,
               state:
