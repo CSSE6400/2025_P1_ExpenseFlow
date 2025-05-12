@@ -18,6 +18,9 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 # Final Image
 FROM python:3.13-slim-bookworm
 
+# Install curl
+RUN apt-get update && apt-get install -y --no-install-recommends curl
+
 # Put the app back in
 COPY --from=builder --chown=app:app /app /app
 

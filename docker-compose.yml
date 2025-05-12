@@ -23,6 +23,12 @@ services:
     build: api
     ports:
       - 8080:8080
+    healthcheck:
+      test: curl --fail http://localhost:8080/health || exit 1
+      interval: 2s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
     environment:
       - DB_URL=postgresql+asyncpg://admin:password@database:5432/expense_db
     depends_on:
