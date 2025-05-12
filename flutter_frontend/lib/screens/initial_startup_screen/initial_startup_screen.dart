@@ -1,3 +1,4 @@
+// Flutter imports
 import 'package:flutter/material.dart';
 // Third-party imports
 import 'package:google_fonts/google_fonts.dart';
@@ -5,6 +6,8 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../common/color_palette.dart';
 import '../../common/proportional_sizes.dart';
 import '../../common/custom_button.dart';
+// Screens
+import '../profile_setup_screen/profile_setup_screen.dart';
 
 class InitialStartupScreen extends StatefulWidget {
   // Flag to determine if dark mode is enabled
@@ -69,7 +72,16 @@ class InitialStartupScreenState extends State<InitialStartupScreen> {
               CustomButton(
                 label: 'Log In',
                 onPressed: () {
-                  // TODO: Navigate to log in screen
+                  // TODO: Navigate to log in functionality
+                  // Currently naviagtes to the profile setup screen
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ProfileSetupScreen(
+                        isDarkMode: widget.isDarkMode,
+                      ),
+                    ),
+                  );
                 },
                 sizeType: ButtonSizeType.full,
                 isDarkMode: widget.isDarkMode,
