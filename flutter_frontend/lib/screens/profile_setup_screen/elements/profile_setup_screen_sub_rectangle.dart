@@ -1,8 +1,12 @@
+// Flutter imports
 import 'package:flutter/material.dart';
+// Third-party imports
 import 'package:google_fonts/google_fonts.dart';
-
+// Common
 import '../../../../common/color_palette.dart';
 import '../../../../common/proportional_sizes.dart';
+import '../../../../common/fields/general_field.dart';
+import '../../../../common/custom_divider.dart';
 
 class ProfileSetupScreenSubRectangle extends StatelessWidget {
   final bool isDarkMode;
@@ -43,7 +47,42 @@ class ProfileSetupScreenSubRectangle extends StatelessWidget {
               ),
             ),
             SizedBox(height: proportionalSizes.scaleHeight(12)),
-
+            GeneralField(
+              label: 'Name*',
+              initialValue: 'ABC',
+              isDarkMode: isDarkMode,
+              isEditable: true,
+              showStatusIcon: true,
+              validationRule: (value) => value.isNotEmpty,
+            ),
+            const CustomDivider(),
+            GeneralField(
+              label: 'Email ID*',
+              initialValue: 'example@email.com',
+              isDarkMode: isDarkMode,
+              isEditable: true,
+              showStatusIcon: true,
+              validationRule: (value) => value.isNotEmpty,
+            ),
+            const CustomDivider(),
+            GeneralField(
+              label: 'Username*',
+              initialValue: 'abcd1234',
+              isDarkMode: isDarkMode,
+              isEditable: true,
+              showStatusIcon: true,
+              validationRule: (value) => value.isNotEmpty,
+            ),
+            const CustomDivider(),
+            GeneralField(
+              label: 'Monthly Budget (\$)*',
+              initialValue: '1000',
+              isDarkMode: isDarkMode,
+              isEditable: true,
+              showStatusIcon: true,
+              validationRule: (value) => value.isNotEmpty,
+            ),
+            const CustomDivider(),
             // TODO: Add profile input fields and save button here
           ],
         ),

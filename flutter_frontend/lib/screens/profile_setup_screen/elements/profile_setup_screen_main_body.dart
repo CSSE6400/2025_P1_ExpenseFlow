@@ -14,26 +14,31 @@ class ProfileSetupScreenMainBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final proportionalSizes = ProportionalSizes(context: context);
 
-    return SafeArea(
-      child: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(
-          horizontal: proportionalSizes.scaleWidth(20),
-          vertical: proportionalSizes.scaleHeight(20),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Avatar Icon
-            Align(
-              alignment: Alignment.topLeft,
-              child: ProfileSetupScreenAvatarIcon(isDarkMode: isDarkMode),
-            ),
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus(); // Dismiss keyboard
+      },
+      child: SafeArea(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.symmetric(
+            horizontal: proportionalSizes.scaleWidth(20),
+            vertical: proportionalSizes.scaleHeight(20),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Avatar Icon
+              Align(
+                alignment: Alignment.topLeft,
+                child: ProfileSetupScreenAvatarIcon(isDarkMode: isDarkMode),
+              ),
 
-            SizedBox(height: proportionalSizes.scaleHeight(20)),
+              SizedBox(height: proportionalSizes.scaleHeight(20)),
 
-            // Sub Rectangle
-            ProfileSetupScreenSubRectangle(isDarkMode: isDarkMode),
-          ],
+              // Sub Rectangle
+              ProfileSetupScreenSubRectangle(isDarkMode: isDarkMode),
+            ],
+          ),
         ),
       ),
     );
