@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 
 class ColorPalette {
+  // Colors for Darks Mode need to be tested. They are not final yet.
   // Primary Action Colors
   static const Color primaryAction = Color(0xFF0C2D62);      // Light mode
   static const Color primaryActionDark = Color(0xFF3B82F6);  // Dark mode
@@ -32,7 +33,7 @@ class ColorPalette {
   // Logo Color
   static const Color logoColor = Color(0xFF0C2D62);
 
-  // Button Text Colors
+  // Button Text & Widget Colors
   static const Color buttonText = Color(0xFFFFFFFF);       // Light mode
   static const Color buttonTextDark = Color(0xFF0C2D62);   // Dark mode
 }
