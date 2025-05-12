@@ -14,18 +14,23 @@ enum ButtonSizeType {
   custom,   // Custom dimensions provided manually
 }
 
+/// Enum to control whether the button is enabled or disabled.
+enum ButtonState {
+  enabled,
+  disabled,
+}
+
 /// A highly reusable and responsive button widget
 /// Supports full, half, quarter, and custom sizes
-/// Adapts to dark mode and accepts optional border-only styling
+/// Adapts to dark mode and supports enabled/disabled state
 class CustomButton extends StatelessWidget {
   /// Text shown on the button
   final String label;
 
-  /// Action to execute when button is tapped
+  /// Action to execute when button is tapped (only if enabled)
   final VoidCallback onPressed;
 
   /// Background color override (optional)
-  /// If not provided, primaryAction/primaryActionDark is used based on dark mode
   final Color? backgroundColor;
 
   /// Button size type (full, half, quarter, or custom)
@@ -34,8 +39,11 @@ class CustomButton extends StatelessWidget {
   /// If true, button will show only border with white background
   final bool boundary;
 
-  /// Determines whether to use dark or light theme styles
+  /// Whether the app is in dark mode
   final bool isDarkMode;
+
+  /// Current state of the button (enabled or disabled)
+  final ButtonState state;
 
   // Only used when sizeType == custom
   final double? customWidth;
@@ -53,51 +61,60 @@ class CustomButton extends StatelessWidget {
     this.customFontSize,
     this.boundary = false,
     required this.isDarkMode,
+    this.state = ButtonState.enabled,
   });
 
   @override
   Widget build(BuildContext context) {
     // Initialize proportional scaler to adjust sizes responsively
-    final proportionalSizes = ProportionalSizes(context: context);
+    final scaler = ProportionalSizes(context: context);
 
-    // Fallback to default primary colors if no backgroundColor provided
-    final Color bgColor = backgroundColor ??
-        (isDarkMode
-            ? ColorPalette.primaryActionDark
-            : ColorPalette.primaryAction);
-
-    // Determine appropriate text color for dark/light mode
-    final Color textColor = isDarkMode
-        ? ColorPalette.buttonTextDark
-        : ColorPalette.buttonText;
-
+    // Set size and font based on button type
     double width;
     double height;
     double fontSize;
-
-    // Set size and font based on enum type or custom inputs
     switch (sizeType) {
       case ButtonSizeType.full:
-        width = proportionalSizes.scaleWidth(363);
-        height = proportionalSizes.scaleHeight(50);
-        fontSize = proportionalSizes.scaleText(18);
+        width = scaler.scaleWidth(363);
+        height = scaler.scaleHeight(50);
+        fontSize = scaler.scaleText(18);
         break;
       case ButtonSizeType.half:
-        width = proportionalSizes.scaleWidth(220);
-        height = proportionalSizes.scaleHeight(40);
-        fontSize = proportionalSizes.scaleText(18);
+        width = scaler.scaleWidth(220);
+        height = scaler.scaleHeight(40);
+        fontSize = scaler.scaleText(18);
         break;
       case ButtonSizeType.quarter:
-        width = proportionalSizes.scaleWidth(90);
-        height = proportionalSizes.scaleHeight(30);
-        fontSize = proportionalSizes.scaleText(12);
+        width = scaler.scaleWidth(90);
+        height = scaler.scaleHeight(30);
+        fontSize = scaler.scaleText(12);
         break;
       case ButtonSizeType.custom:
-        width = proportionalSizes.scaleWidth(customWidth ?? 220);
-        height = proportionalSizes.scaleHeight(customHeight ?? 40);
-        fontSize = proportionalSizes.scaleText(customFontSize ?? 18);
+        width = scaler.scaleWidth(customWidth ?? 220);
+        height = scaler.scaleHeight(customHeight ?? 40);
+        fontSize = scaler.scaleText(customFontSize ?? 18);
         break;
     }
+
+    // Determine actual background and text color based on state
+    final bool isEnabled = state == ButtonState.enabled;
+
+    final Color bgColor = isEnabled
+        ? (backgroundColor ??
+            (isDarkMode
+                ? ColorPalette.primaryActionDark
+                : ColorPalette.primaryAction))
+        : (isDarkMode
+            ? ColorPalette.secondaryActionDark
+            : ColorPalette.secondaryAction);
+
+    final Color textColor = isEnabled
+        ? (isDarkMode
+            ? ColorPalette.buttonTextDark
+            : ColorPalette.buttonText)
+        : (isDarkMode
+            ? ColorPalette.secondaryTextDark
+            : ColorPalette.secondaryText);
 
     return SizedBox(
       width: width,
@@ -108,16 +125,14 @@ class CustomButton extends StatelessWidget {
           side: boundary
               ? BorderSide(
                   color: bgColor,
-                  width: proportionalSizes.scaleWidth(2),
+                  width: scaler.scaleWidth(2),
                 )
               : BorderSide.none,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(
-              proportionalSizes.scaleWidth(8),
-            ),
+            borderRadius: BorderRadius.circular(scaler.scaleWidth(8)),
           ),
         ),
-        onPressed: onPressed,
+        onPressed: isEnabled ? onPressed : null,
         child: Text(
           label,
           style: GoogleFonts.roboto(

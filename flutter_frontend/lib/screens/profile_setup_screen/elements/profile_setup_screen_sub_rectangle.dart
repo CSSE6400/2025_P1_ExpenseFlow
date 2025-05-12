@@ -7,6 +7,7 @@ import '../../../../common/color_palette.dart';
 import '../../../../common/proportional_sizes.dart';
 import '../../../../common/fields/general_field.dart';
 import '../../../../common/custom_divider.dart';
+import '../../../common/custom_button.dart';
 
 class ProfileSetupScreenSubRectangle extends StatelessWidget {
   final bool isDarkMode;
@@ -22,7 +23,6 @@ class ProfileSetupScreenSubRectangle extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      height: proportionalSizes.scaleHeight(611),
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(proportionalSizes.scaleWidth(44)),
@@ -96,7 +96,15 @@ class ProfileSetupScreenSubRectangle extends StatelessWidget {
                 return number != null && number > 0;
               },
             ),
-            const CustomDivider(),
+            SizedBox(height: proportionalSizes.scaleHeight(12)),
+            CustomButton(
+              label: 'Save',
+              onPressed: () {},
+              isDarkMode: false,
+              sizeType: ButtonSizeType.full,
+              state: ButtonState.disabled,
+            ),
+            SizedBox(height: proportionalSizes.scaleHeight(72)),
           ],
         ),
       ),
