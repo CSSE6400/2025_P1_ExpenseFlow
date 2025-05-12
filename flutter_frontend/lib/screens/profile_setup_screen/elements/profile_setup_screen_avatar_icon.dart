@@ -8,6 +8,9 @@ class ProfileSetupScreenAvatarIcon extends StatelessWidget {
 
   const ProfileSetupScreenAvatarIcon({super.key, required this.isDarkMode});
 
+  /// Returns a circular avatar icon for the profile setup screen.
+  /// The icon is a placeholder image and can be replaced with a user-uploaded image.
+  /// The icon is sized proportionally based on the screen size.
   @override
   Widget build(BuildContext context) {
     final proportionalSizes = ProportionalSizes(context: context);

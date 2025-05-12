@@ -23,11 +23,10 @@ class _ProfileSetupScreenSubRectangleState
     extends State<ProfileSetupScreenSubRectangle> {
   bool isNameValid = false;
   bool isEmailValid = false;
-  bool isUsernameValid = false;
   bool isBudgetValid = false;
 
   bool get isFormValid =>
-      isNameValid && isEmailValid && isUsernameValid && isBudgetValid;
+      isNameValid && isEmailValid && isBudgetValid;
 
   void updateNameValidity(bool isValid) {
     setState(() => isNameValid = isValid);
@@ -35,10 +34,6 @@ class _ProfileSetupScreenSubRectangleState
 
   void updateEmailValidity(bool isValid) {
     setState(() => isEmailValid = isValid);
-  }
-
-  void updateUsernameValidity(bool isValid) {
-    setState(() => isUsernameValid = isValid);
   }
 
   void updateBudgetValidity(bool isValid) {
@@ -135,7 +130,7 @@ class _ProfileSetupScreenSubRectangleState
                   isFormValid ? ButtonState.enabled : ButtonState.disabled,
             ),
 
-            SizedBox(height: proportionalSizes.scaleHeight(72)),
+            SizedBox(height: proportionalSizes.scaleHeight(96)),
           ],
         ),
       ),

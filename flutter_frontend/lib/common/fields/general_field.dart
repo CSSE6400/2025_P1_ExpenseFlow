@@ -7,9 +7,17 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../../common/color_palette.dart';
 import '../../../../../common/proportional_sizes.dart';
 
+// Custom field for user input.
+/// This widget is used to create a general input field with validation
+/// and optional status icons. It is designed to be reusable across different screens.
 class GeneralField extends StatefulWidget {
+  /// Label for the input field
   final String label;
+
+  /// Initial value for the input field
   final String initialValue;
+
+  /// Dark mode toggle passed from screen
   final bool isDarkMode;
 
   /// Whether to show a check/cross icon
@@ -36,13 +44,15 @@ class GeneralField extends StatefulWidget {
   });
 
   @override
-  State<GeneralField> createState() => _GeneralFieldState();
+  State<GeneralField> createState() => GeneralFieldState();
 }
 
-class _GeneralFieldState extends State<GeneralField> {
+class GeneralFieldState extends State<GeneralField> {
   late TextEditingController _controller;
   bool _isValid = false;
 
+  /// Initializes the TextEditingController and sets up a listener to update validation
+  /// status based on the input text.
   @override
   void initState() {
     super.initState();
@@ -53,6 +63,11 @@ class _GeneralFieldState extends State<GeneralField> {
     });
   }
 
+  /// Updates the validation status based on the current text in the field.
+  /// If the validation rule is provided, it checks if the trimmed text is valid.
+  /// If the validity changes, it updates the state and calls the callback if provided.
+  /// This method is called whenever the text in the field changes.
+  /// It also trims the text to remove leading and trailing spaces.
   void _updateValidation(String text) {
     final trimmed = text.trim();
     if (widget.validationRule != null) {
@@ -68,6 +83,8 @@ class _GeneralFieldState extends State<GeneralField> {
     }
   }
 
+  /// Disposes the TextEditingController when the widget is removed from the widget tree.
+  /// This is important to free up resources and avoid memory leaks.
   @override
   void dispose() {
     _controller.dispose();
@@ -109,11 +126,11 @@ class _GeneralFieldState extends State<GeneralField> {
       ),
       child: Row(
         children: [
-          // Label and TextField
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Label
                 Text(
                   widget.label,
                   style: GoogleFonts.roboto(
@@ -123,6 +140,7 @@ class _GeneralFieldState extends State<GeneralField> {
                   ),
                 ),
                 SizedBox(height: proportionalSizes.scaleHeight(4)),
+                // Input field
                 TextField(
                   controller: _controller,
                   readOnly: !widget.isEditable,
@@ -131,6 +149,7 @@ class _GeneralFieldState extends State<GeneralField> {
                     fontSize: proportionalSizes.scaleText(17),
                     color: labelColor,
                   ),
+                  // Hint Text
                   decoration: InputDecoration(
                     isDense: true,
                     contentPadding: const EdgeInsets.symmetric(vertical: 8),

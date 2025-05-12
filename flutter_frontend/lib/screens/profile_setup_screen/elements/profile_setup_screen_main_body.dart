@@ -20,6 +20,7 @@ class ProfileSetupScreenMainBody extends StatelessWidget {
       },
       child: SafeArea(
         child: SingleChildScrollView(
+          // Prevents overflow
           padding: EdgeInsets.symmetric(
             horizontal: proportionalSizes.scaleWidth(20),
             vertical: proportionalSizes.scaleHeight(20),
