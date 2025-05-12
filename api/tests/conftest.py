@@ -1,13 +1,24 @@
 """Config file to provide fixtures for test directory."""
 
 import asyncio
+import os
 from collections.abc import AsyncGenerator
-from uuid import uuid4
 
 import pytest
 import pytest_asyncio
+from expenseflow.database.service import initialise_database
+from expenseflow.group.models import GroupModel, GroupUserModel
+from expenseflow.group.schemas import (
+    GroupCreate,
+    GroupRead,
+    GroupUpdate,
+    GroupUserRead,
+    UserGroupRead,
+)
+from expenseflow.user.models import UserModel
+from expenseflow.user.schemas import UserCreate, UserRead
 from fastapi import FastAPI
-from fastapi.testclient import TestClient
+from httpx import ASGITransport, AsyncClient
 from loguru import logger
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
@@ -17,13 +28,26 @@ from sqlalchemy.ext.asyncio import (
 )
 from sqlalchemy_utils import create_database, database_exists, drop_database
 
-from expenseflow.database.service import initialise_database
-from expenseflow.user.schemas import UserCreateSchema, UserSchema
-from tests.factories import UserCreateFactory, UserFactory
+from tests.factories import (
+    GroupCreateFactory,
+    GroupModelFactory,
+    GroupReadFactory,
+    GroupUpdateFactory,
+    GroupUserModelFactory,
+    GroupUserReadFactory,
+    UserCreateFactory,
+    UserGroupReadFactory,
+    UserModelFactory,
+    UserReadFactory,
+)
 
 # Hardcoded docker compose db so that no-one runs tests on prod db
 TEST_DB_URL = "postgresql+asyncpg://admin:password@localhost:5432/expense_db"
 SYNC_TEST_DB_URL = "postgresql://admin:password@localhost:5432/expense_db"
+
+
+os.environ["DB_URL"] = TEST_DB_URL
+
 
 # Initialise db
 test_engine: AsyncEngine = create_async_engine(
@@ -76,17 +100,15 @@ async def session(db) -> AsyncGenerator[AsyncSession]:  # noqa: ANN001
 
 
 @pytest.fixture(scope="session")
-def default_user() -> UserSchema:
+def default_user() -> UserModel:
     """Default user fixture."""
-    return UserSchema(
-        user_id=uuid4(), email="email@gmail.com", first_name="test", last_name="account"
-    )
+    return UserModelFactory.build()
 
 
 @pytest_asyncio.fixture(scope="function")
 async def test_client(
-    test_app: FastAPI, session: AsyncSession, default_user: UserSchema
-) -> TestClient:
+    test_app: FastAPI, session: AsyncSession, default_user: UserModel
+) -> AsyncGenerator[AsyncClient, None]:
     """Test client fixture."""
     # Need to override
 
@@ -97,17 +119,64 @@ async def test_client(
     test_app.dependency_overrides[get_current_user] = lambda: default_user
     test_app.dependency_overrides[get_db] = lambda: session
 
-    return TestClient(test_app)
+    async with AsyncClient(
+        transport=ASGITransport(app=test_app), base_url="http://test"
+    ) as client:
+        yield client
 
 
-# Factory fixtures
+## Factory fixtures
+
+
+# User factories
+@pytest.fixture()
+def user_model() -> UserModel:
+    return UserModelFactory.build()
 
 
 @pytest.fixture()
-def user() -> UserSchema:
-    return UserFactory.build()
+def user_read() -> UserRead:
+    return UserReadFactory.build()
 
 
 @pytest.fixture()
-def user_create() -> UserCreateSchema:
+def user_create() -> UserCreate:
     return UserCreateFactory.build()
+
+
+# Group factories
+
+
+@pytest.fixture()
+def group_model() -> GroupModel:
+    return GroupModelFactory.build()
+
+
+@pytest.fixture()
+def group_create() -> GroupCreate:
+    return GroupCreateFactory.build()
+
+
+@pytest.fixture()
+def group_read() -> GroupRead:
+    return GroupReadFactory.build()
+
+
+@pytest.fixture()
+def group_update() -> GroupUpdate:
+    return GroupUpdateFactory.build()
+
+
+@pytest.fixture()
+def group_user_model() -> GroupUserModel:
+    return GroupUserModelFactory.build()
+
+
+@pytest.fixture()
+def user_group_read() -> UserGroupRead:
+    return UserGroupReadFactory.build()
+
+
+@pytest.fixture()
+def group_user_read() -> GroupUserRead:
+    return GroupUserReadFactory.build()

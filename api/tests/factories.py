@@ -1,11 +1,47 @@
 """Factories module."""
 
+from expenseflow.group.models import GroupModel, GroupUserModel
+from expenseflow.group.schemas import (
+    GroupCreate,
+    GroupRead,
+    GroupUpdate,
+    GroupUserRead,
+    UserGroupRead,
+)
+from expenseflow.user.models import UserModel
+from expenseflow.user.schemas import UserCreate, UserRead
 from polyfactory.factories.pydantic_factory import ModelFactory
-
-from expenseflow.user.schemas import UserCreateSchema, UserSchema
-
-
-class UserFactory(ModelFactory[UserSchema]): ...
+from polyfactory.factories.sqlalchemy_factory import SQLAlchemyFactory
 
 
-class UserCreateFactory(ModelFactory[UserCreateSchema]): ...
+# Users
+class UserModelFactory(SQLAlchemyFactory[UserModel]): ...
+
+
+class UserReadFactory(ModelFactory[UserRead]): ...
+
+
+class UserCreateFactory(ModelFactory[UserCreate]): ...
+
+
+# Groups
+class GroupModelFactory(SQLAlchemyFactory[GroupModel]): ...
+
+
+class GroupCreateFactory(ModelFactory[GroupCreate]): ...
+
+
+class GroupUpdateFactory(ModelFactory[GroupUpdate]): ...
+
+
+class GroupReadFactory(ModelFactory[GroupRead]): ...
+
+
+# Groups user membership
+class GroupUserModelFactory(SQLAlchemyFactory[GroupUserModel]): ...
+
+
+class UserGroupReadFactory(ModelFactory[UserGroupRead]): ...
+
+
+class GroupUserReadFactory(ModelFactory[GroupUserRead]): ...

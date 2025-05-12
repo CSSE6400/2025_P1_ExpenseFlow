@@ -7,20 +7,21 @@ from fastapi import APIRouter, HTTPException, status
 from expenseflow.auth.deps import CurrentUser
 from expenseflow.database.deps import DbSession
 from expenseflow.errors import ExistsError
-from expenseflow.user.schemas import UserCreateSchema, UserSchema
+from expenseflow.user.models import UserModel
+from expenseflow.user.schemas import UserCreate, UserRead
 from expenseflow.user.service import create_user, get_user_by_id
 
 r = router = APIRouter()
 
 
-@r.get("")
-async def get_me(user: CurrentUser) -> UserSchema:
+@r.get("", response_model=UserRead)
+async def get_me(user: CurrentUser) -> UserModel:
     """Get current user."""
     return user
 
 
-@r.get("/{user_id}")
-async def get_user(db: DbSession, _: CurrentUser, user_id: UUID) -> UserSchema:
+@r.get("/{user_id}", response_model=UserRead)
+async def get_user(db: DbSession, _: CurrentUser, user_id: UUID) -> UserModel:
     """Endpoint to get user by id."""
     user = await get_user_by_id(db, user_id)
     if user is None:
@@ -31,8 +32,9 @@ async def get_user(db: DbSession, _: CurrentUser, user_id: UUID) -> UserSchema:
     return user
 
 
-@r.post("")
-async def create(db: DbSession, user_in: UserCreateSchema) -> UserSchema:
+@r.post("", response_model=UserRead)
+# TODO: Need to replace CurrentUser  # noqa: FIX002, TD002, TD003
+async def create(db: DbSession, user_in: UserCreate) -> UserModel:
     """Create a new user."""
     try:
         return await create_user(db, user_in)

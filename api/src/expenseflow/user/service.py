@@ -5,28 +5,24 @@ from uuid import UUID
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from expenseflow.entity.models import UserModel
 from expenseflow.errors import ExistsError
-from expenseflow.user.schemas import UserCreateSchema, UserSchema
+from expenseflow.user.models import UserModel
+from expenseflow.user.schemas import UserCreate
 
 
-async def get_user_by_id(session: AsyncSession, user_id: UUID) -> UserSchema | None:
+async def get_user_by_id(session: AsyncSession, user_id: UUID) -> UserModel | None:
     """Get a user by their id."""
-    user_model = await session.get(UserModel, user_id)
-    if user_model is None:
-        return None
-    return user_model.to_schema()
+    return await session.get(UserModel, user_id)
 
 
-async def get_user_by_email(session: AsyncSession, email: str) -> UserSchema | None:
+async def get_user_by_email(session: AsyncSession, email: str) -> UserModel | None:
     """Get user by their email."""
-    user = (
+    return (
         await session.execute(select(UserModel).where(UserModel.email == email))
     ).scalar_one_or_none()
-    return None if user is None else user.to_schema()
 
 
-async def create_user(session: AsyncSession, user_in: UserCreateSchema) -> UserSchema:
+async def create_user(session: AsyncSession, user_in: UserCreate) -> UserModel:
     """Create user."""
     existing_user = await get_user_by_email(session, user_in.email)
     if existing_user is not None:
@@ -39,4 +35,4 @@ async def create_user(session: AsyncSession, user_in: UserCreateSchema) -> UserS
 
     session.add(new_user)
     await session.commit()
-    return new_user.to_schema()
+    return new_user
