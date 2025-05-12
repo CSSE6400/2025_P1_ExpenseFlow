@@ -1,84 +1,31 @@
 // Flutter imports
 import 'package:flutter/material.dart';
-// Third-party imports
-import 'package:google_fonts/google_fonts.dart';
 // Common
 import '../../common/color_palette.dart';
-import '../../common/proportional_sizes.dart';
-import '../../common/custom_button.dart';
+import '../../common/app_bar.dart';
 
 class HomeScreen extends StatefulWidget {
-  // Flag to determine if dark mode is enabled
   final bool isDarkMode;
 
-  /// Constructor for HomeScreen
   const HomeScreen({super.key, required this.isDarkMode});
 
   @override
-  State<HomeScreen> createState() => HomeScreenState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
-    // Colors and sizes
-    final logoColor = ColorPalette.logoColor;
     final backgroundColor = widget.isDarkMode
         ? ColorPalette.backgroundDark
         : ColorPalette.background;
-    final proportionalSizes = ProportionalSizes(context: context);
 
     return Scaffold(
       backgroundColor: backgroundColor,
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: proportionalSizes.scaleWidth(20),
-            vertical: proportionalSizes.scaleHeight(20),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              // Centered Logo + App Name
-              Expanded(
-                child: Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        'assets/logo/expenseflow_logo.png',
-                        width: proportionalSizes.scaleWidth(60),
-                        height: proportionalSizes.scaleHeight(60),
-                        color: logoColor,
-                      ),
-                      const SizedBox(width: 12),
-                      Text(
-                        'ExpenseFlow',
-                        style: GoogleFonts.roboto(
-                          fontSize: proportionalSizes.scaleText(24),
-                          fontWeight: FontWeight.bold,
-                          color: logoColor,
-                        ),
-                        textAlign: TextAlign.left,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              // Log In Button at bottom
-              CustomButton(
-                label: 'Log In',
-                onPressed: () {
-                  // TODO: Navigate to log in functionality
-                  // Currently naviagtes to the profile setup screen
-                },
-                sizeType: ButtonSizeType.full,
-                isDarkMode: widget.isDarkMode,
-              ),
-            ],
-          ),
-        ),
+      appBar: AppBarWidget(
+        screenName: '',
+        showBackButton: true,
+        isDarkMode: widget.isDarkMode,
       ),
     );
   }
