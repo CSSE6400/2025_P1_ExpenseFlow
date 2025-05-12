@@ -30,5 +30,9 @@ class ColorPalette {
   static const Color error = Color(0xFFEF4444);
 
   // Logo Color
-  static const Color logoColor = Color(0xFF0C2D62);        // Light mode
+  static const Color logoColor = Color(0xFF0C2D62);
+
+  // Button Text Colors
+  static const Color buttonText = Color(0xFFFFFFFF);       // Light mode
+  static const Color buttonTextDark = Color(0xFF0C2D62);   // Dark mode
 }

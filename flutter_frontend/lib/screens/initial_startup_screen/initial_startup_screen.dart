@@ -7,8 +7,10 @@ import '../../common/proportional_sizes.dart';
 import '../../common/custom_button.dart';
 
 class InitialStartupScreen extends StatefulWidget {
+  // Flag to determine if dark mode is enabled
   final bool isDarkMode;
 
+  /// Constructor for InitialStartupScreen
   const InitialStartupScreen({super.key, required this.isDarkMode});
 
   @override
@@ -18,6 +20,7 @@ class InitialStartupScreen extends StatefulWidget {
 class InitialStartupScreenState extends State<InitialStartupScreen> {
   @override
   Widget build(BuildContext context) {
+    // Colors and sizes
     final logoColor = ColorPalette.logoColor;
     final backgroundColor = widget.isDarkMode
         ? ColorPalette.backgroundDark

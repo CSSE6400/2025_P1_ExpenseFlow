@@ -1,33 +1,43 @@
+// Flutter imports
 import 'package:flutter/material.dart';
+// Third-party imports
 import 'package:google_fonts/google_fonts.dart';
 // Common
 import '../common/proportional_sizes.dart';
 import '../common/color_palette.dart';
 
+/// Enum representing predefined button sizes.
 enum ButtonSizeType {
-  full,
-  half,
-  quarter,
-  custom,
+  full,     // 363x50, fontSize 18
+  half,     // 220x40, fontSize 18
+  quarter,  // 90x30, fontSize 12
+  custom,   // Custom dimensions provided manually
 }
 
+/// A highly reusable and responsive button widget
+/// Supports full, half, quarter, and custom sizes
+/// Adapts to dark mode and accepts optional border-only styling
 class CustomButton extends StatelessWidget {
+  /// Text shown on the button
   final String label;
+
+  /// Action to execute when button is tapped
   final VoidCallback onPressed;
 
-  /// Optional override for background color. If null, primary color will be used.
+  /// Background color override (optional)
+  /// If not provided, primaryAction/primaryActionDark is used based on dark mode
   final Color? backgroundColor;
 
-  /// Button style type (full, half, quarter, or custom)
+  /// Button size type (full, half, quarter, or custom)
   final ButtonSizeType sizeType;
 
-  /// Whether the button should use border-only (outline) style
+  /// If true, button will show only border with white background
   final bool boundary;
 
-  /// Dark mode status (passed down from screen)
+  /// Determines whether to use dark or light theme styles
   final bool isDarkMode;
 
-  // Only used if sizeType == custom
+  // Only used when sizeType == custom
   final double? customWidth;
   final double? customHeight;
   final double? customFontSize;
@@ -47,21 +57,25 @@ class CustomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Choose color based on dark mode and overrides
+    // Initialize proportional scaler to adjust sizes responsively
+    final proportionalSizes = ProportionalSizes(context: context);
+
+    // Fallback to default primary colors if no backgroundColor provided
     final Color bgColor = backgroundColor ??
         (isDarkMode
             ? ColorPalette.primaryActionDark
             : ColorPalette.primaryAction);
+
+    // Determine appropriate text color for dark/light mode
     final Color textColor = isDarkMode
-        ? ColorPalette.primaryTextDark
-        : ColorPalette.primaryText;
-    final proportionalSizes = ProportionalSizes(context: context);
+        ? ColorPalette.buttonTextDark
+        : ColorPalette.buttonText;
 
     double width;
     double height;
     double fontSize;
 
-    // Determine size & font based on type
+    // Set size and font based on enum type or custom inputs
     switch (sizeType) {
       case ButtonSizeType.full:
         width = proportionalSizes.scaleWidth(363);
@@ -92,10 +106,15 @@ class CustomButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: boundary ? Colors.white : bgColor,
           side: boundary
-              ? BorderSide(color: bgColor, width: proportionalSizes.scaleWidth(2))
+              ? BorderSide(
+                  color: bgColor,
+                  width: proportionalSizes.scaleWidth(2),
+                )
               : BorderSide.none,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(proportionalSizes.scaleWidth(8)),
+            borderRadius: BorderRadius.circular(
+              proportionalSizes.scaleWidth(8),
+            ),
           ),
         ),
         onPressed: onPressed,
