@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../common/color_palette.dart';
 import '../../common/proportional_sizes.dart';
 import '../../common/custom_button.dart';
+import '../../common/app_bar.dart';
 
 class ProfileSetupScreen extends StatefulWidget {
   final bool isDarkMode;
@@ -27,6 +28,11 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
 
     return Scaffold(
       backgroundColor: backgroundColor,
+      appBar: AppBarWidget(
+        screenName: '',
+        showBackButton: true,
+        isDarkMode: widget.isDarkMode,
+      ),
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(

@@ -15,8 +15,8 @@ class ColorPalette {
   static const Color accentDark = Color(0xFF22C55E);       // Dark mode
 
   // Primary Text Colors
-  static const Color primaryText = Color(0xFFF3F4F6);      // Light mode
-  static const Color primaryTextDark = Color(0xFF0C2D62);  // Dark mode
+  static const Color primaryText = Color(0xFF0C2D62);      // Light mode
+  static const Color primaryTextDark = Color(0xFFF3F4F6);  // Dark mode
 
   // Secondary Text Colors
   static const Color secondaryText = Color(0xFF6B7280);    // Light mode
