@@ -31,13 +31,11 @@ class InitialStartupScreenState extends State<InitialStartupScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final logoColor = widget.isDarkMode
-        ? ColorPalette.primaryActionDark
-        : ColorPalette.primaryAction;
+    final logoColor = ColorPalette.logoColor;
     final backgroundColor = widget.isDarkMode
         ? ColorPalette.backgroundDark
         : ColorPalette.background;
-    final scaler = ProportionalSizes(context: context);
+    final proportionalSizes = ProportionalSizes(context: context);
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -47,15 +45,14 @@ class InitialStartupScreenState extends State<InitialStartupScreen> {
           children: [
             Image.asset(
               'assets/logo/expenseflow_logo.png',
-              width: scaler.scaleWidth(60),
-              height: scaler.scaleHeight(60),
+              width: proportionalSizes.scaleWidth(60),
+              height: proportionalSizes.scaleHeight(60),
               color: logoColor,
             ),
-            const SizedBox(width: 12),
             Text(
-              'Expense\nFlow',
+              'ExpenseFlow',
               style: GoogleFonts.roboto(
-                fontSize: scaler.scaleText(24),
+                fontSize: proportionalSizes.scaleText(24),
                 fontWeight: FontWeight.bold,
                 color: logoColor,
               ),
