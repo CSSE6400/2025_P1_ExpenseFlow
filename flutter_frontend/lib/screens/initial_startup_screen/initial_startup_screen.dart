@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+// Third-party imports
+import 'package:google_fonts/google_fonts.dart';
 // Common
 import '../../common/color_palette.dart';
+import '../../common/proportional_sizes.dart';
 
 class InitialStartupScreen extends StatefulWidget {
   final bool isDarkMode;
@@ -34,6 +37,7 @@ class InitialStartupScreenState extends State<InitialStartupScreen> {
     final backgroundColor = widget.isDarkMode
         ? ColorPalette.backgroundDark
         : ColorPalette.background;
+    final scaler = ProportionalSizes(context: context);
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -43,15 +47,15 @@ class InitialStartupScreenState extends State<InitialStartupScreen> {
           children: [
             Image.asset(
               'assets/logo/expenseflow_logo.png',
-              width: 60,
-              height: 60,
+              width: scaler.scaleWidth(60),
+              height: scaler.scaleHeight(60),
               color: logoColor,
             ),
             const SizedBox(width: 12),
             Text(
               'Expense\nFlow',
-              style: TextStyle(
-                fontSize: 24,
+              style: GoogleFonts.roboto(
+                fontSize: scaler.scaleText(24),
                 fontWeight: FontWeight.bold,
                 color: logoColor,
               ),
