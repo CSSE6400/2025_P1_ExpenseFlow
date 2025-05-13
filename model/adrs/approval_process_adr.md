@@ -13,5 +13,4 @@
 ## Decision 
 - Explain how the decision will solve the problem, in light of the facts presented in the context.
 ## Consequences 
-- Describe the impact of the decision. What becomes easier and harder to do? There will
-be positive, neutral and negative consequences, identify all of them.
+- Describe the impact of the decision. What becomes easier and harder to do? There will be positive, neutral and negative consequences, identify all of them.
