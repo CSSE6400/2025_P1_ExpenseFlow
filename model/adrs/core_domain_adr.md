@@ -1,4 +1,6 @@
-# Title 
+- the choice to seperate the core into domain partitioning (including wiht the persistence layer)
+
+# Core Domain Partitioning
 - Short phrase that describes the key decision.
 #### Date 
 - When the decision was made.

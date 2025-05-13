@@ -1,3 +1,5 @@
+- Use of plugins for the architecture
+
 # Title 
 - Short phrase that describes the key decision.
 #### Date 
