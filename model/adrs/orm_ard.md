@@ -1,4 +1,4 @@
-- Use of sqlalchemy for database transactions.
+- Use of plugins for the architecture
 
 # Title 
 - Short phrase that describes the key decision.
