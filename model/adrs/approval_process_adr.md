@@ -1,9 +1,10 @@
+- Adding in an approval process for users to accept expenses.
+- kinda ehh, not sure it really impacts the architecture beyond the db and some more communcation between parts.
+
 # Title 
 - Short phrase that describes the key decision.
-#### Date 
-- When the decision was made.
-#### Status 
-- Current status of the decision (i.e. proposed, accepted, deprecated, superseded or rejected).
+#### Date: 13/05/2025
+#### Status : Accepted
 ## Summary 
 - Summarise the decision and its rationale.
 ## Context 

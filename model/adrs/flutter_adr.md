@@ -1,9 +1,8 @@
-# Title 
-- Short phrase that describes the key decision.
-#### Date 
+# Use of Flutter for frontend
+- To use react over flutter
+#### Date: 01/05/2025
 - When the decision was made.
-#### Status 
-- Current status of the decision (i.e. proposed, accepted, deprecated, superseded or rejected).
+#### Status: accepted
 ## Summary 
 - Summarise the decision and its rationale.
 ## Context 
