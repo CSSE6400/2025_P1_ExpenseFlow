@@ -1,6 +1,8 @@
+// Flutter imports
 import 'package:flutter/material.dart';
-import '../../common/color_palette.dart';
-import '../../common/proportional_sizes.dart';
+// Common
+import 'color_palette.dart';
+import 'proportional_sizes.dart';
 
 /// A custom bottom navigation bar widget for navigating between Groups, Add, and Expenses.
 class BottomNavBar extends StatelessWidget {
@@ -30,6 +32,9 @@ class BottomNavBar extends StatelessWidget {
         : (isDarkMode
             ? ColorPalette.primaryActionDark
             : ColorPalette.primaryAction);
+    final backgroundColor = isDarkMode 
+        ? ColorPalette.buttonTextDark 
+        : ColorPalette.buttonText;
 
     final double iconSize = proportionalSizes.scaleWidth(36);
 
@@ -64,7 +69,7 @@ class BottomNavBar extends StatelessWidget {
     ];
 
     return BottomAppBar(
-      color: isDarkMode ? const Color(0xFF0D0D0D) : Colors.white,
+      color: backgroundColor,
       child: Padding(
         padding: EdgeInsets.symmetric(
           vertical: proportionalSizes.scaleHeight(8),

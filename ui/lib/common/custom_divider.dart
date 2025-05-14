@@ -1,8 +1,8 @@
 // Flutter imports
 import 'package:flutter/material.dart';
 // Common
-import '../common/proportional_sizes.dart';
-import '../common/color_palette.dart';
+import 'proportional_sizes.dart';
+import 'color_palette.dart';
 
 /// A reusable divider widget for separating profile fields.
 /// - Thin grey line

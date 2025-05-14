@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 // Third-party imports
 import 'package:google_fonts/google_fonts.dart';
 // Common
-import '../common/proportional_sizes.dart';
-import '../common/color_palette.dart';
+import 'proportional_sizes.dart';
+import 'color_palette.dart';
 
 /// Enum representing predefined button sizes.
 enum ButtonSizeType {

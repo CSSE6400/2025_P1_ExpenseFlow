@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../common/color_palette.dart';
 import '../../common/bottom_nav_bar.dart';
 // Elements
+import '../home_screen/elements/home_screen_main_body.dart';
 import '../home_screen/elements/home_screen_app_bar.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -27,6 +28,8 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: HomeScreenAppBarWidget(
         isDarkMode: widget.isDarkMode,
       ),
+
+      body: HomeScreenMainBody(isDarkMode: widget.isDarkMode),
 
       bottomNavigationBar: BottomNavBar(
         currentScreen: 'Home',
