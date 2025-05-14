@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 // Common
 import 'color_palette.dart';
 import 'proportional_sizes.dart';
+// Screens
+import '../screens/add_expense_screen/add_expense_screen.dart';
 
 /// A custom bottom navigation bar widget for navigating between Groups, Add, and Expenses.
 class BottomNavBar extends StatelessWidget {
@@ -53,7 +55,12 @@ class BottomNavBar extends StatelessWidget {
         'icon': 'assets/icons/add.png',
         'onTap': () {
           if (!inactive && currentScreen != 'Add') {
-            // TODO: Navigate to Add Screen
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AddExpenseScreen(isDarkMode: isDarkMode),
+                ),
+              );
           }
         },
       },

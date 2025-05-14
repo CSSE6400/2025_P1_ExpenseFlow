@@ -6,6 +6,8 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../common/color_palette.dart';
 import '../../../common/proportional_sizes.dart';
 import '../../../common/icon_maker.dart';
+// Screens
+import '../../add_expense_screen/add_expense_screen.dart';
 
 class HomeScreenAddAnExpense extends StatelessWidget {
   final bool isDarkMode;
@@ -75,7 +77,12 @@ class HomeScreenAddAnExpense extends StatelessWidget {
                 ),
               ),
               onTap: () {
-                // TODO: Navigate to Manual Entry Screen
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddExpenseScreen(isDarkMode: isDarkMode),
+                  ),
+                );
               },
             ),
           ),
