@@ -1,7 +1,8 @@
 // Flutter imports
 import 'package:flutter/material.dart';
 // Screens
-import '../../screens/initial_startup_screen/initial_startup_screen.dart';
+// import '../../screens/initial_startup_screen/initial_startup_screen.dart';
+import '../../screens/home_screen/home_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
       title: 'Expense Flow',
       debugShowCheckedModeBanner: false,
 
-      home: const InitialStartupScreen(isDarkMode: isDarkMode,), // default screen
+      home: const HomeScreen(isDarkMode: isDarkMode,), // default screen
 
       // TODO: Add login check and show appropriate screen
       // if (isLoggedIn) {

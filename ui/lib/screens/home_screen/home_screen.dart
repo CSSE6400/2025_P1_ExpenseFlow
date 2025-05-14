@@ -2,7 +2,9 @@
 import 'package:flutter/material.dart';
 // Common
 import '../../common/color_palette.dart';
-import '../../common/app_bar.dart';
+import '../../common/bottom_nav_bar.dart';
+// Elements
+import '../home_screen/elements/home_screen_app_bar.dart';
 
 class HomeScreen extends StatefulWidget {
   final bool isDarkMode;
@@ -22,10 +24,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       backgroundColor: backgroundColor,
-      appBar: AppBarWidget(
-        screenName: '',
-        showBackButton: true,
+      appBar: HomeScreenAppBarWidget(
         isDarkMode: widget.isDarkMode,
+      ),
+
+      bottomNavigationBar: BottomNavBar(
+        currentScreen: 'Home',
+        isDarkMode: widget.isDarkMode,
+        inactive: false,
       ),
     );
   }
