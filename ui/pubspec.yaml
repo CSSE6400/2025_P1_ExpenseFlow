@@ -66,6 +66,8 @@ flutter:
     - assets/icons/cross.png
     - assets/icons/expenses.png
     - assets/icons/group.png
+    - assets/icons/manual_entry.png
+    - assets/icons/scan.png
     - assets/icons/user.png
     - assets/logo/expenseflow_logo.png
     - assets/stickers/user.png
