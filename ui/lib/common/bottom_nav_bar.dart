@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'color_palette.dart';
 import 'proportional_sizes.dart';
 // Screens
+import '../screens/home_screen/home_screen.dart';
 import '../screens/add_expense_screen/add_expense_screen.dart';
 
 /// A custom bottom navigation bar widget for navigating between Groups, Add, and Expenses.
@@ -41,6 +42,20 @@ class BottomNavBar extends StatelessWidget {
     final double iconSize = proportionalSizes.scaleWidth(36);
 
     final List<Map<String, dynamic>> navItems = [
+      {
+        'screen': 'Home',
+        'icon': 'assets/icons/home.png',
+        'onTap': () {
+          if (!inactive && currentScreen != 'Home') {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => HomeScreen(isDarkMode: isDarkMode),
+                ),
+              );
+          }
+        },
+      },
       {
         'screen': 'Groups',
         'icon': 'assets/icons/group.png',

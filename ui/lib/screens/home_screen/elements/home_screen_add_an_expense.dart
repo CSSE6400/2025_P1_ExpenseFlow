@@ -2,28 +2,51 @@
 import 'package:flutter/material.dart';
 // Third-party imports
 import 'package:google_fonts/google_fonts.dart';
-// Common
 import '../../../common/color_palette.dart';
 import '../../../common/proportional_sizes.dart';
 import '../../../common/icon_maker.dart';
-// Screens
+import '../../../common/dialog_box.dart';
 import '../../add_expense_screen/add_expense_screen.dart';
+import '../../../common/web_file_helper.dart';
+import '../../../common/snack_bar.dart';
 
 class HomeScreenAddAnExpense extends StatelessWidget {
   final bool isDarkMode;
 
   const HomeScreenAddAnExpense({super.key, required this.isDarkMode});
 
+  Future<void> _pickImage(BuildContext context) async {
+    final imageInfo = await WebImageInfo.pickImage();
+
+    // TODO: Modify this code to save and process the image
+    // Currently, it only shows a dialog with the filename.
+    if (imageInfo != null) {
+      await AppDialogBox.show(
+        context,
+        isDarkMode: isDarkMode,
+        heading: 'Image Captured',
+        description: 'Filename: ${imageInfo.filename}',
+        buttonCount: 1,
+        button1Text: 'OK',
+        onButton1Pressed: () => Navigator.of(context).pop(),
+      );
+    } else {
+      showCustomSnackBar(
+        context,
+        boldText: 'Error:',
+        normalText: 'Something went wrong while uploading.',
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final proportionalSizes = ProportionalSizes(context: context);
 
-    // Outer background remains same as original (for the full widget)
     final outerBackgroundColor = isDarkMode
         ? ColorPalette.buttonTextDark
         : ColorPalette.buttonText;
 
-    // Button background (for the two clickable buttons)
     final buttonBackgroundColor = isDarkMode
         ? ColorPalette.backgroundDark
         : ColorPalette.background;
@@ -36,7 +59,7 @@ class HomeScreenAddAnExpense extends StatelessWidget {
       width: double.infinity,
       padding: EdgeInsets.all(proportionalSizes.scaleWidth(16)),
       decoration: BoxDecoration(
-        color: outerBackgroundColor, // ← This stays as buttonText / buttonTextDark
+        color: outerBackgroundColor,
         borderRadius: BorderRadius.circular(
           proportionalSizes.scaleWidth(16),
         ),
@@ -44,7 +67,6 @@ class HomeScreenAddAnExpense extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Title
           Text(
             'Add a Transaction',
             style: GoogleFonts.roboto(
@@ -53,13 +75,10 @@ class HomeScreenAddAnExpense extends StatelessWidget {
               color: textColor,
             ),
           ),
-
           SizedBox(height: proportionalSizes.scaleHeight(8)),
-
-          // Manual Entry Button
           Container(
             decoration: BoxDecoration(
-              color: buttonBackgroundColor, // ← Correct background for button
+              color: buttonBackgroundColor,
               borderRadius: BorderRadius.circular(
                 proportionalSizes.scaleWidth(12),
               ),
@@ -86,13 +105,10 @@ class HomeScreenAddAnExpense extends StatelessWidget {
               },
             ),
           ),
-
           SizedBox(height: proportionalSizes.scaleHeight(8)),
-
-          // Camera Scan Button
           Container(
             decoration: BoxDecoration(
-              color: buttonBackgroundColor, // ← Correct background for button
+              color: buttonBackgroundColor,
               borderRadius: BorderRadius.circular(
                 proportionalSizes.scaleWidth(12),
               ),
@@ -109,9 +125,7 @@ class HomeScreenAddAnExpense extends StatelessWidget {
                   color: textColor,
                 ),
               ),
-              onTap: () {
-                // TODO: Navigate to Camera Scan Screen
-              },
+              onTap: () => _pickImage(context),
             ),
           ),
         ],
