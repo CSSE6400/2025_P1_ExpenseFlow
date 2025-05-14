@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 // Common
 import '../../../../../common/color_palette.dart';
 import '../../../../../common/proportional_sizes.dart';
+import '../../../../../common/icon_maker.dart';
 
 enum InputRuleType {
   noSpaces,
@@ -207,10 +208,10 @@ class GeneralFieldState extends State<GeneralField> {
               padding: EdgeInsets.only(
                 left: proportionalSizes.scaleWidth(8),
               ),
-              child: Icon(
-                _isValid ? Icons.check_circle : Icons.cancel,
+              child: IconMaker(
+                assetPath: _isValid ? 'assets/icons/check.png' : 'assets/icons/cross.png',
+                isDarkMode: widget.isDarkMode,
                 color: iconColor,
-                size: proportionalSizes.scaleWidth(24),
               ),
             ),
         ],

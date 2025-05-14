@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 // Common
 import '../common/proportional_sizes.dart';
 import '../common/color_palette.dart';
+import '../common/icon_maker.dart';
 
 /// A customizable AppBar used across screens in the app.
 /// Supports optional back navigation and dynamic styling based on screen size.
@@ -34,9 +35,6 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
     final proportionalSizes = ProportionalSizes(context: context);
 
     // Set colors according to dark mode status
-    final iconColor = isDarkMode
-        ? ColorPalette.primaryActionDark
-        : ColorPalette.primaryAction;
     final textColor = isDarkMode
         ? ColorPalette.primaryActionDark
         : ColorPalette.primaryAction;
@@ -49,11 +47,9 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
       // Back button if enabled
       leading: showBackButton
           ? IconButton(
-              icon: Image.asset(
-                'assets/icons/back_button.png',
-                width: proportionalSizes.scaleWidth(24),
-                height: proportionalSizes.scaleHeight(24),
-                color: iconColor, // Icon uses primaryAction or primaryActionDark
+              icon: IconMaker(
+                assetPath: 'assets/icons/back_button.png',
+                isDarkMode: isDarkMode,
               ),
               onPressed: onBackPressed ?? () {
                 Navigator.pop(context);
