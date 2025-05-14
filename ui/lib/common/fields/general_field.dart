@@ -7,7 +7,14 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../../common/color_palette.dart';
 import '../../../../../common/proportional_sizes.dart';
 
-// Custom field for user input.
+enum InputRuleType {
+  noSpaces,
+  numericOnly,
+  decimalWithTwoPlaces,
+  lettersOnly,
+}
+
+/// Custom field for user input.
 /// This widget is used to create a general input field with validation
 /// and optional status icons. It is designed to be reusable across different screens.
 class GeneralField extends StatefulWidget {
@@ -22,6 +29,9 @@ class GeneralField extends StatefulWidget {
 
   /// Whether to show a check/cross icon
   final bool showStatusIcon;
+
+  /// Function to validate the input
+  final List<InputRuleType>? inputRules;
 
   /// Rule to decide if input is valid
   final bool Function(String value)? validationRule;
@@ -40,6 +50,7 @@ class GeneralField extends StatefulWidget {
     this.showStatusIcon = false,
     this.validationRule,
     this.isEditable = true,
+    this.inputRules,
     this.onValidityChanged,
   });
 
@@ -50,6 +61,7 @@ class GeneralField extends StatefulWidget {
 class GeneralFieldState extends State<GeneralField> {
   late TextEditingController _controller;
   bool _isValid = false;
+  bool isLabelExpanded = false;
 
   /// Initializes the TextEditingController and sets up a listener to update validation
   /// status based on the input text.
@@ -92,17 +104,33 @@ class GeneralFieldState extends State<GeneralField> {
   }
 
   /// Returns input formatter based on the field's label
-  List<TextInputFormatter>? _getInputFormatters() {
-    final labelLower = widget.label.toLowerCase();
+    List<TextInputFormatter>? _buildInputFormatters() {
+    if (widget.inputRules == null) return null;
 
-    if (labelLower.contains('username')) {
-      return [FilteringTextInputFormatter.deny(RegExp(r'\s'))]; // disallow spaces
-    } else if (labelLower.contains('budget')) {
-      return [
-        FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')), // allow decimals
-      ];
+    List<TextInputFormatter> formatters = [];
+
+    for (final rule in widget.inputRules!) {
+      switch (rule) {
+        case InputRuleType.noSpaces:
+          formatters.add(FilteringTextInputFormatter.deny(RegExp(r'\s')));
+          break;
+        case InputRuleType.numericOnly:
+          formatters.add(FilteringTextInputFormatter.digitsOnly);
+          break;
+        case InputRuleType.decimalWithTwoPlaces:
+          formatters.add(
+            FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
+          );
+          break;
+        case InputRuleType.lettersOnly:
+          formatters.add(
+            FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z ]')),
+          );
+          break;
+      }
     }
-    return null; // no restrictions
+
+    return formatters;
   }
 
   @override
@@ -125,44 +153,51 @@ class GeneralFieldState extends State<GeneralField> {
         vertical: proportionalSizes.scaleHeight(10),
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          // Label aligned to the left
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                isLabelExpanded = !isLabelExpanded;
+              });
+            },
+            child: SizedBox(
+              width: proportionalSizes.scaleWidth(110),
+              child: Text(
+                widget.label,
+                maxLines: isLabelExpanded ? null : 1,
+                overflow: isLabelExpanded ? TextOverflow.visible : TextOverflow.ellipsis,
+                style: GoogleFonts.roboto(
+                  fontSize: proportionalSizes.scaleText(17),
+                  fontWeight: FontWeight.w500,
+                  color: labelColor,
+                ),
+              ),
+            ),
+          ),
+
+          // TextField fills remaining horizontal space
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Label
-                Text(
-                  widget.label,
-                  style: GoogleFonts.roboto(
-                    fontSize: proportionalSizes.scaleText(17),
-                    fontWeight: FontWeight.w500,
-                    color: labelColor
-                  ),
+            child: TextField(
+              controller: _controller,
+              readOnly: !widget.isEditable,
+              inputFormatters: _buildInputFormatters(),
+              style: GoogleFonts.roboto(
+                fontSize: proportionalSizes.scaleText(17),
+                color: widget.isEditable ? labelColor : Colors.grey[600],
+              ),
+              decoration: InputDecoration(
+                isDense: true,
+                contentPadding: const EdgeInsets.symmetric(vertical: 8),
+                border: InputBorder.none,
+                hintText: widget.initialValue,
+                hintStyle: GoogleFonts.roboto(
+                  color: hintColor,
+                  fontSize: proportionalSizes.scaleText(17),
                 ),
-                SizedBox(height: proportionalSizes.scaleHeight(4)),
-                // Input field
-                TextField(
-                  controller: _controller,
-                  readOnly: !widget.isEditable,
-                  inputFormatters: _getInputFormatters(),
-                  style: GoogleFonts.roboto(
-                    fontSize: proportionalSizes.scaleText(17),
-                    color: labelColor,
-                  ),
-                  // Hint Text
-                  decoration: InputDecoration(
-                    isDense: true,
-                    contentPadding: const EdgeInsets.symmetric(vertical: 8),
-                    border: InputBorder.none,
-                    hintText: widget.initialValue,
-                    hintStyle: GoogleFonts.roboto(
-                      color: hintColor,
-                      fontSize: proportionalSizes.scaleText(17),
-                    ),
-                  ),
-                  cursorColor: Colors.blue,
-                ),
-              ],
+              ),
+              cursorColor: Colors.blue,
             ),
           ),
 

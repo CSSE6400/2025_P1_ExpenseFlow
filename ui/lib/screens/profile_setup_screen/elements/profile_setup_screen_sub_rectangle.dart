@@ -72,17 +72,20 @@ class _ProfileSetupScreenSubRectangleState
       ),
       child: SingleChildScrollView(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // Heading text
-            Text(
-              'Setup Your Account',
-              style: GoogleFonts.roboto(
-                fontSize: proportionalSizes.scaleText(22),
-                fontWeight: FontWeight.bold,
-                color: widget.isDarkMode
-                    ? ColorPalette.primaryTextDark
-                    : ColorPalette.primaryText,
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Setup Your Account',
+                style: GoogleFonts.roboto(
+                  fontSize: proportionalSizes.scaleText(22),
+                  fontWeight: FontWeight.bold,
+                  color: widget.isDarkMode
+                      ? ColorPalette.primaryTextDark
+                      : ColorPalette.primaryText,
+                ),
               ),
             ),
             SizedBox(height: proportionalSizes.scaleHeight(12)),
@@ -94,6 +97,7 @@ class _ProfileSetupScreenSubRectangleState
               isDarkMode: widget.isDarkMode,
               isEditable: true,
               showStatusIcon: true,
+              inputRules: [InputRuleType.lettersOnly],
               validationRule: (value) {
                 final nameRegex = RegExp(r"^[A-Za-z ]+$");
                 return nameRegex.hasMatch(value.trim());
@@ -125,6 +129,7 @@ class _ProfileSetupScreenSubRectangleState
               isDarkMode: widget.isDarkMode,
               isEditable: true,
               showStatusIcon: true,
+              inputRules: [InputRuleType.decimalWithTwoPlaces],
               validationRule: (value) {
                 final number = double.tryParse(value.trim());
                 return number != null && number > 0;

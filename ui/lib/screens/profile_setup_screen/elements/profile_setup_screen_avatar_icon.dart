@@ -17,15 +17,10 @@ class ProfileSetupScreenAvatarIcon extends StatelessWidget {
 
     return Stack(
       children: [
-        SizedBox(
-          width: proportionalSizes.scaleWidth(120),
-          height: proportionalSizes.scaleHeight(120),
-          child: ClipOval(
-            child: Image.asset(
-              'assets/stickers/user.png',
-              fit: BoxFit.cover,
-            ),
-          ),
+        CircleAvatar(
+          radius: proportionalSizes.scaleWidth(60),
+          backgroundImage: AssetImage('assets/stickers/user.png'),
+          backgroundColor: Colors.transparent,
         ),
 
         // An Icon to indicate the user can change the avatar can be added here
