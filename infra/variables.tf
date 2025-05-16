@@ -1,7 +1,3 @@
-locals {
-  db_username = "administrator"
-}
-
 variable "db_password" {
   description = "Password for the database"
 }
