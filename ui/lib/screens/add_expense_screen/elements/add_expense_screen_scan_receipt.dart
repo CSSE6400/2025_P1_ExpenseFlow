@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 // Third-party imports
 import 'package:google_fonts/google_fonts.dart';
-// Common
+// Common imports
 import '../../../common/color_palette.dart';
 import '../../../common/proportional_sizes.dart';
 import '../../../common/icon_maker.dart';
@@ -32,7 +32,7 @@ class AddExpenseScreenScanReceipt extends StatelessWidget {
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 4,
               offset: const Offset(0, 2),
             ),

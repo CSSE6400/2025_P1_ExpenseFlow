@@ -1,5 +1,6 @@
 // Flutter Packages
 import 'dart:io';
+// Third-party imports
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 

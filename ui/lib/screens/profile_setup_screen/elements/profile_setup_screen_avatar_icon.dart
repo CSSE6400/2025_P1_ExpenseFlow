@@ -1,6 +1,6 @@
 // Flutter imports
 import 'package:flutter/material.dart';
-// Common
+// Common imports
 import '../../../common/proportional_sizes.dart';
 
 class ProfileSetupScreenAvatarIcon extends StatelessWidget {

@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 // Third-party imports
 import 'package:google_fonts/google_fonts.dart';
+// Common imports
 import '../../../common/color_palette.dart';
 import '../../../common/proportional_sizes.dart';
 import '../../../common/icon_maker.dart';
@@ -9,14 +10,19 @@ import '../../../common/dialog_box.dart';
 import '../../../common/web_file_helper.dart';
 import '../../../common/snack_bar.dart';
 
-class HomeScreenAddAnExpense extends StatelessWidget {
+class HomeScreenAddAnExpense extends StatefulWidget {
   const HomeScreenAddAnExpense({super.key});
 
-  Future<void> _pickImage(BuildContext context) async {
+  @override
+  State<HomeScreenAddAnExpense> createState() => _HomeScreenAddAnExpenseState();
+}
+
+class _HomeScreenAddAnExpenseState extends State<HomeScreenAddAnExpense> {
+  Future<void> _pickImage() async {
     final imageInfo = await WebImageInfo.pickImage();
 
-    // TODO: Modify this code to save and process the image
-    // Currently, it only shows a dialog with the filename.
+    if (!mounted) return;
+
     if (imageInfo != null) {
       await AppDialogBox.show(
         context,
@@ -108,7 +114,7 @@ class HomeScreenAddAnExpense extends StatelessWidget {
                   color: textColor,
                 ),
               ),
-              onTap: () => _pickImage(context),
+              onTap: () => _pickImage(),
             ),
           ),
         ],

@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
         '/add_expense': (context) => const AddExpenseScreen(),
       },
 
-      // TODO: Add login check and show appropriate screen
+      // TODO: Add login check and show appropriate screen. Use "isLoggedIn" method to determine if the user is logged in or not.
       // if (isLoggedIn) {
       //   return const HomeScreen();
       // } else {

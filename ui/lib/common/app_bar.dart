@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 // // Third-party imports
 import 'package:google_fonts/google_fonts.dart';
-// Common
+// Common imports
 import 'proportional_sizes.dart';
 import 'color_palette.dart';
 import 'icon_maker.dart';
@@ -34,9 +34,9 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
     final textColor = ColorPalette.primaryAction;
 
     return AppBar(
-      backgroundColor: Colors.transparent, // Flat look
-      elevation: 0, // No shadow
-      titleSpacing: 0, // Title aligns closer to the left edge
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      titleSpacing: 0,
 
       // Back button if enabled
       leading: showBackButton
@@ -58,7 +58,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
           style: GoogleFonts.roboto(
             fontSize: proportionalSizes.scaleText(24),
             fontWeight: FontWeight.w700,
-            color: textColor, // Text uses primaryAction or primaryActionDark
+            color: textColor,
           ),
         ),
       ),

@@ -1,5 +1,8 @@
+// Flutter imports
 import 'package:flutter/material.dart';
+// Third-party imports
 import 'package:google_fonts/google_fonts.dart';
+// Common Files
 import '../../proportional_sizes.dart';
 import '../../color_palette.dart';
 import 'open_calender_popup.dart';
@@ -12,13 +15,13 @@ class DateField extends StatefulWidget {
   final DateTime? initialDate;
 
   /// Callback when a new date is selected
-  final ValueChanged<DateTime>? onDateSelected;
+  final ValueChanged<DateTime>? onChanged;
 
   const DateField({
     super.key,
     required this.label,
     this.initialDate,
-    this.onDateSelected,
+    this.onChanged,
   });
 
   @override
@@ -78,12 +81,12 @@ class _DateFieldState extends State<DateField> {
               openCalendarPopup(
                 context: context,
                 initialDate: _selectedDate,
-                onDateSelected: (selectedDate) {
+                onChanged: (selectedDate) {
                   setState(() {
                     _selectedDate = selectedDate;
                   });
-                  if (widget.onDateSelected != null) {
-                    widget.onDateSelected!(selectedDate);
+                  if (widget.onChanged != null) {
+                    widget.onChanged!(selectedDate);
                   }
                 },
               );

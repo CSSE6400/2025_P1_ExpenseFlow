@@ -1,6 +1,9 @@
+// Flutter imports
 import 'dart:ui';
 import 'package:flutter/material.dart';
+// Third-party imports
 import 'package:google_fonts/google_fonts.dart';
+// Common imports
 import '../proportional_sizes.dart';
 import '../color_palette.dart';
 import '../icon_maker.dart';

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 // Third-party imports
 import 'package:google_fonts/google_fonts.dart';
-// Common
+// Common imports
 import '../../common/color_palette.dart';
 import '../../common/proportional_sizes.dart';
 import '../../common/icon_maker.dart';
@@ -40,6 +40,9 @@ class GeneralField extends StatefulWidget {
   /// Callback to inform parent when validity changes
   final void Function(bool isValid)? onValidityChanged;
 
+  /// Constructor for the GeneralField widget.
+  final ValueChanged<String>? onChanged;
+
   const GeneralField({
     super.key,
     required this.label,
@@ -49,6 +52,7 @@ class GeneralField extends StatefulWidget {
     this.isEditable = true,
     this.inputRules,
     this.onValidityChanged,
+    this.onChanged,
   });
 
   @override
@@ -68,7 +72,11 @@ class GeneralFieldState extends State<GeneralField> {
     _controller = TextEditingController(); // Leave empty, use hintText only
     _updateValidation('');
     _controller.addListener(() {
-      _updateValidation(_controller.text);
+      final currentText = _controller.text;
+      _updateValidation(currentText);
+      if (widget.onChanged != null) {
+        widget.onChanged!(currentText);
+      }
     });
   }
 

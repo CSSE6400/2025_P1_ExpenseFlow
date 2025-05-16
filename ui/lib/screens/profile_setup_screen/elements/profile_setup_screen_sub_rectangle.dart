@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 // Third-party imports
 import 'package:google_fonts/google_fonts.dart';
-// Common
+// Common imports
 import '../../../common/color_palette.dart';
 import '../../../common/proportional_sizes.dart';
 import '../../../common/fields/general_field.dart';
@@ -39,6 +39,7 @@ class _ProfileSetupScreenSubRectangleState
   }
 
   Future <void> onSave() async {
+    // TODO: Handle save functionality
     Navigator.pushNamed(context, '/home');
   }
 
@@ -87,6 +88,9 @@ class _ProfileSetupScreenSubRectangleState
                 return nameRegex.hasMatch(value.trim());
               },
               onValidityChanged: updateNameValidity,
+              onChanged: (value) {
+                // TODO: Save name field value
+              },
             ),
             CustomDivider(),
 
@@ -102,6 +106,9 @@ class _ProfileSetupScreenSubRectangleState
                 return RegExp(pattern).hasMatch(value.trim());
               },
               onValidityChanged: updateEmailValidity,
+              onChanged: (value) {
+                // TODO: Save email field value
+              },
             ),
             CustomDivider(),
 
@@ -117,6 +124,9 @@ class _ProfileSetupScreenSubRectangleState
                 return number != null && number > 0;
               },
               onValidityChanged: updateBudgetValidity,
+              onChanged: (value) {
+                // TODO: Save monthly budget field value
+              },
             ),
             SizedBox(height: proportionalSizes.scaleHeight(24)),
 

@@ -1,6 +1,6 @@
 // Flutter imports
 import 'package:flutter/material.dart';
-// Common
+// Common imports
 import '../../common/color_palette.dart';
 import '../../common/app_bar.dart';
 // Elements
@@ -20,10 +20,12 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
 
     return Scaffold(
       backgroundColor: backgroundColor,
+
       appBar: AppBarWidget(
         screenName: '',
         showBackButton: true,
       ),
+
       body: ProfileSetupScreenMainBody(),
     );
   }

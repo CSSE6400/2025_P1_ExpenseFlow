@@ -1,6 +1,6 @@
 // Flutter imports
 import 'package:flutter/material.dart';
-// Common
+// Common imports
 import 'proportional_sizes.dart';
 import 'color_palette.dart';
 

@@ -1,10 +1,11 @@
+// Flutter imports
 import 'dart:ui';
 import 'package:flutter/material.dart';
+// Third-party imports
 import 'package:google_fonts/google_fonts.dart';
 import 'package:table_calendar/table_calendar.dart';
-// Elements
-import 'custom_pop_menu.dart';
 // Common Files
+import 'custom_pop_menu.dart';
 import '../../proportional_sizes.dart';
 import '../../color_palette.dart';
 
@@ -17,7 +18,7 @@ import '../../color_palette.dart';
 void openCalendarPopup({
   required BuildContext context,
   required DateTime initialDate,
-  required ValueChanged<DateTime> onDateSelected,
+  required ValueChanged<DateTime> onChanged,
 }) {
   DateTime focusedDate = initialDate;
   DateTime selectedDate = initialDate;
@@ -201,7 +202,7 @@ void openCalendarPopup({
                             setState(() {
                               selectedDate = selectedDay;
                             });
-                            onDateSelected(selectedDay);
+                            onChanged(selectedDay);
                             Navigator.pop(context);
                           }
                         },

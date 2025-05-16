@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-// Common
+// Common imports
 import '../../../common/proportional_sizes.dart';
 // Elements
 import 'home_screen_overview.dart';

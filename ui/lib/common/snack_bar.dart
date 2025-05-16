@@ -1,5 +1,8 @@
+// Flutter imports
 import 'package:flutter/material.dart';
+// Third-party imports
 import 'package:google_fonts/google_fonts.dart';
+// Common imports
 import 'color_palette.dart';
 
 /// Shows a customizable snackbar with optional bold and normal text,
