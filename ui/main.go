@@ -30,6 +30,8 @@ func main() {
 
 	config = map[string]string{
 		"BACKEND_BASE_URL": mustEnv("BACKEND_BASE_URL"),
+		"AUTH0_DOMAIN":     mustEnv("AUTH0_DOMAIN"),
+		"AUTH0_CLIENT_ID":  mustEnv("AUTH0_CLIENT_ID"),
 	}
 
 	fs := http.FileServer(http.Dir("./static"))
