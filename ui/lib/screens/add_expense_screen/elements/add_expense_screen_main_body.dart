@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../common/proportional_sizes.dart';
 // Elements
 import 'add_expense_screen_scan_receipt.dart';
+import 'add_expense_screen_fields.dart';
 
 class AddExpenseScreenMainBody extends StatelessWidget {
   final bool isDarkMode;
@@ -26,8 +27,10 @@ class AddExpenseScreenMainBody extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Scan receipt
-              AddExpenseScreenScanReceipt(isDarkMode: isDarkMode)
+              AddExpenseScreenScanReceipt(isDarkMode: isDarkMode),
+              SizedBox(height: proportionalSizes.scaleHeight(20)),
+              
+              AddExpenseScreenFields(isDarkMode: isDarkMode),
             ],
           ),
         ),

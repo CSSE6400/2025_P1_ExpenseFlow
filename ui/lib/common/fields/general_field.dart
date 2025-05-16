@@ -105,7 +105,7 @@ class GeneralFieldState extends State<GeneralField> {
   }
 
   /// Returns input formatter based on the field's label
-    List<TextInputFormatter>? _buildInputFormatters() {
+  List<TextInputFormatter>? _buildInputFormatters() {
     if (widget.inputRules == null) return null;
 
     List<TextInputFormatter> formatters = [];
