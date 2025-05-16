@@ -6,7 +6,6 @@ import '../../../common/color_palette.dart';
 import '../../../common/proportional_sizes.dart';
 import '../../../common/icon_maker.dart';
 import '../../../common/dialog_box.dart';
-import '../../add_expense_screen/add_expense_screen.dart';
 import '../../../common/web_file_helper.dart';
 import '../../../common/snack_bar.dart';
 
@@ -86,12 +85,7 @@ class HomeScreenAddAnExpense extends StatelessWidget {
                 ),
               ),
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => AddExpenseScreen(),
-                  ),
-                );
+                Navigator.pushNamed(context, '/add_expense');
               },
             ),
           ),

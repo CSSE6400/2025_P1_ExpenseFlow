@@ -6,8 +6,6 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../common/color_palette.dart';
 import '../../common/proportional_sizes.dart';
 import '../../common/custom_button.dart';
-// Screens
-import '../profile_setup_screen/profile_setup_screen.dart';
 
 class InitialStartupScreen extends StatefulWidget {
   /// Constructor for InitialStartupScreen
@@ -69,12 +67,7 @@ class InitialStartupScreenState extends State<InitialStartupScreen> {
                 onPressed: () {
                   // TODO: Navigate to log in functionality
                   // Currently naviagtes to the profile setup screen
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ProfileSetupScreen(),
-                    ),
-                  );
+                  Navigator.pushNamed(context, '/profile_setup');
                 },
                 sizeType: ButtonSizeType.full,
               ),

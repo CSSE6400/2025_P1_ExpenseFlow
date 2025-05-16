@@ -8,8 +8,6 @@ import '../../../common/proportional_sizes.dart';
 import '../../../common/fields/general_field.dart';
 import '../../../common/custom_divider.dart';
 import '../../../common/custom_button.dart';
-// Screens
-import '../../home_screen/home_screen.dart';
 
 class ProfileSetupScreenSubRectangle extends StatefulWidget {
   const ProfileSetupScreenSubRectangle({super.key});
@@ -41,12 +39,7 @@ class _ProfileSetupScreenSubRectangleState
   }
 
   Future <void> onSave() async {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => HomeScreen(),
-        ),
-      );
+    Navigator.pushNamed(context, '/home');
   }
 
   @override

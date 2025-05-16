@@ -18,6 +18,7 @@ class HomeScreenAppBarWidget extends StatelessWidget implements PreferredSizeWid
     final logoColor = ColorPalette.logoColor;
 
     return AppBar(
+      automaticallyImplyLeading: false,
       backgroundColor: Colors.transparent,
       elevation: 0,
 
