@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import '../../common/color_palette.dart';
 import '../../common/bottom_nav_bar.dart';
 import '../../common/app_bar.dart';
+// Elements
+import '../add_expense_screen/elements/add_expense_screen_main_body.dart';
 
 class AddExpenseScreen extends StatefulWidget {
   final bool isDarkMode;
@@ -28,6 +30,8 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
         showBackButton: true,
         isDarkMode: widget.isDarkMode,
       ),
+
+      body: AddExpenseScreenMainBody(isDarkMode: widget.isDarkMode),
 
       bottomNavigationBar: BottomNavBar(
         currentScreen: 'Add',
