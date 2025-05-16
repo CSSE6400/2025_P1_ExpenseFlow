@@ -3,14 +3,14 @@
 from uuid import UUID
 
 import boto3
-from api.src.expenseflow.auth.deps import CurrentUser
-from api.src.expenseflow.database.deps import DbSession
-from api.src.expenseflow.entity.service import get_entity
-from api.src.expenseflow.expense.service import create_expense  # noqa: F401
 from fastapi import HTTPException, status
 
+from expenseflow.auth.deps import CurrentUser
+from expenseflow.database.deps import DbSession
+from expenseflow.entity.service import get_entity
 from expenseflow.expense.models import ExpenseModel
 from expenseflow.expense.schemas import ExpenseCreate, ExpenseRead  # noqa: F401
+from expenseflow.expense.service import create_expense  # noqa: F401
 from expenseflow.expense_item.schemas import ExpenseItemCreate  # noqa: F401
 from expenseflow.plugin import Plugin, PluginSettings, register_plugin
 
@@ -29,7 +29,7 @@ class TextractPlugin(Plugin[PluginSettings]):
 
     def _on_init(self) -> None:
         """Do this on init."""
-        self.textract_client = boto3.client("textract")
+        # self.textract_client = boto3.client("textract")
         self._app.add_api_route(
             "/expenses/auto",
             self.handle_receipt,
