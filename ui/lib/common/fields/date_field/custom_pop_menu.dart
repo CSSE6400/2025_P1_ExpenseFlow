@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 // Common Files
 import '../../proportional_sizes.dart';
+import '../../color_palette.dart';
 
 /// Returns the full English month name (e.g., "January") from its 1-based index.
 String monthName(int month) {
@@ -47,12 +48,19 @@ class CustomPopupMenu<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final proportionalSizes = ProportionalSizes(context: context);
+      final primaryColor = isDarkMode
+        ? ColorPalette.primaryTextDark
+        : ColorPalette.primaryText;
+  final backgroundColor = isDarkMode
+        ? ColorPalette.buttonTextDark
+        : ColorPalette.buttonText;
+
     return GestureDetector(
       // Displays the text for the currently selected item.
       child: Text(
         itemBuilder(initialValue),
         style: GoogleFonts.roboto(
-          color: isDarkMode ? Colors.white : Colors.black,
+          color: primaryColor,
           fontSize: proportionalSizes.scaleText(16),
         ),
       ),
@@ -88,7 +96,7 @@ class CustomPopupMenu<T> extends StatelessWidget {
                       child: Container(
                         height: proportionalSizes.scaleHeight(360),
                         width: proportionalSizes.scaleWidth(120),
-                        color: isDarkMode ? Colors.grey[900] : Colors.white,
+                        color: backgroundColor,
                         child: ListView.builder(
                           controller: scrollController,
                           itemCount: items.length,
@@ -109,14 +117,14 @@ class CustomPopupMenu<T> extends StatelessWidget {
                                 ),
                                 decoration: BoxDecoration(
                                   color: isSelected
-                                      ? (isDarkMode ? Colors.blue[900] : Colors.blue[100])
+                                      ? primaryColor.withValues(alpha: 0.1)
                                       : Colors.transparent,
                                 ),
                                 alignment: Alignment.centerLeft,
                                 child: Text(
                                   itemBuilder(item),
                                   style: GoogleFonts.roboto(
-                                    color: isDarkMode ? Colors.white : Colors.black,
+                                    color: primaryColor,
                                     fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                                     fontSize: proportionalSizes.scaleText(16),
                                   ),

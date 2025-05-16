@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../proportional_sizes.dart';
+import '../../color_palette.dart';
 import 'open_calender_popup.dart';
 
 class DateField extends StatefulWidget {
@@ -51,6 +52,9 @@ class _DateFieldState extends State<DateField> {
   @override
   Widget build(BuildContext context) {
     final proportionalSizes = ProportionalSizes(context: context);
+    final labelColor = widget.isDarkMode
+        ? ColorPalette.primaryTextDark
+        : ColorPalette.primaryText;
 
     return Padding(
       padding: EdgeInsets.symmetric(
@@ -64,7 +68,7 @@ class _DateFieldState extends State<DateField> {
             child: Text(
               widget.label,
               style: GoogleFonts.roboto(
-                color: const Color(0xFF007AFF),
+                color: labelColor,
                 fontSize: proportionalSizes.scaleText(16),
                 fontWeight: FontWeight.w500,
               ),
@@ -96,7 +100,7 @@ class _DateFieldState extends State<DateField> {
                 vertical: proportionalSizes.scaleHeight(8),
               ),
               decoration: BoxDecoration(
-                color: const Color(0xFF007AFF).withAlpha(25),
+                color: labelColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(
                   proportionalSizes.scaleWidth(10),
                 ),
@@ -104,7 +108,7 @@ class _DateFieldState extends State<DateField> {
               child: Text(
                 _formatDate(_selectedDate),
                 style: GoogleFonts.roboto(
-                  color: const Color(0xFF007AFF),
+                  color: labelColor,
                   fontSize: proportionalSizes.scaleText(16),
                 ),
               ),

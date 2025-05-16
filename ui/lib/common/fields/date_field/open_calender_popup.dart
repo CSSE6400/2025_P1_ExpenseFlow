@@ -6,6 +6,7 @@ import 'package:table_calendar/table_calendar.dart';
 import 'custom_pop_menu.dart';
 // Common Files
 import '../../proportional_sizes.dart';
+import '../../color_palette.dart';
 
 /// Opens a dialog-based calendar for selecting dates, restricted to between 1905 and the current year.
 ///
@@ -25,6 +26,9 @@ void openCalendarPopup({
   final DateTime lastViewableDate = DateTime(currentDate.year, 12, 31);
   final DateTime firstViewableDate = DateTime(1905, 1, 1);
   final proportionalSizes = ProportionalSizes(context: context);
+  final primaryColor = isDarkMode
+        ? ColorPalette.primaryTextDark
+        : ColorPalette.primaryText;
 
   // Checks if the focused date is the earliest allowed month.
   bool isFirstMonth(DateTime date) {
@@ -67,7 +71,7 @@ void openCalendarPopup({
                     children: [
                       // Dialog Title
                       Text(
-                        'Select Date of Birth',
+                        'Select Date',
                         style: GoogleFonts.roboto(
                           color: isDarkMode ? Colors.white : Colors.black,
                           fontSize: proportionalSizes.scaleText(18),
@@ -219,15 +223,15 @@ void openCalendarPopup({
                         },
                         calendarStyle: CalendarStyle(
                           todayDecoration: BoxDecoration(
-                            color: Colors.blue.withValues(alpha: 0.3),
+                            color: primaryColor.withValues(alpha: 0.3),
                             shape: BoxShape.circle,
                           ),
                           todayTextStyle: GoogleFonts.roboto(
                             color: isDarkMode ? Colors.white : Colors.black,
                             fontWeight: FontWeight.bold,
                           ),
-                          selectedDecoration: const BoxDecoration(
-                            color: Color(0xFF007AFF),
+                          selectedDecoration: BoxDecoration(
+                            color: primaryColor,
                             shape: BoxShape.circle,
                           ),
                           selectedTextStyle: GoogleFonts.roboto(
