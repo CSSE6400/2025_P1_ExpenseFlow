@@ -22,11 +22,31 @@ services:
   backend:
     build: api
     ports:
-      - 8080:8080
+      - 6400:6400
+    healthcheck:
+      test: curl --fail http://localhost:6400/health || exit 1
+      interval: 5s
+      retries: 5
+      start_period: 20s
+      timeout: 10s
     environment:
       - DB_URL=postgresql+asyncpg://admin:password@database:5432/expense_db
     depends_on:
       database:
+        condition: service_healthy
+        restart: true
+
+  frontend:
+    build: ui
+    ports:
+      - 80:80
+    environment:
+      - BACKEND_URL=backend:6400
+    depends_on:
+      database:
+        condition: service_healthy
+        restart: true
+      backend:
         condition: service_healthy
         restart: true
 

@@ -18,6 +18,9 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 # Final Image
 FROM python:3.13-slim-bookworm
 
+# Install curl
+RUN apt-get update && apt-get install -y --no-install-recommends curl
+
 # Put the app back in
 COPY --from=builder --chown=app:app /app /app
 
@@ -26,4 +29,6 @@ WORKDIR /app
 # Add to path
 ENV PATH="/app/.venv/bin:$PATH"
 
-CMD ["fastapi", "run", "--host", "0.0.0.0", "--port", "8080", "src/expenseflow/main.py"]
+EXPOSE 6400
+
+CMD ["fastapi", "run", "--host", "0.0.0.0", "--port", "6400", "src/expenseflow/main.py"]
