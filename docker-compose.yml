@@ -39,9 +39,15 @@ services:
   frontend:
     build: ui
     ports:
-      - 80:80
+      - 3000:3000
     environment:
-      - BACKEND_URL=backend:6400
+      - BACKEND_BASE_URL=backend:6400
+    healthcheck:
+      test: curl --fail http://localhost:3000/health || exit 1
+      interval: 5s
+      retries: 5
+      start_period: 20s
+      timeout: 10s
     depends_on:
       database:
         condition: service_healthy
