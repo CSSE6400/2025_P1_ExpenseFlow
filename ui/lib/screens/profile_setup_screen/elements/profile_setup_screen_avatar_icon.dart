@@ -4,9 +4,7 @@ import 'package:flutter/material.dart';
 import '../../../common/proportional_sizes.dart';
 
 class ProfileSetupScreenAvatarIcon extends StatelessWidget {
-  final bool isDarkMode;
-
-  const ProfileSetupScreenAvatarIcon({super.key, required this.isDarkMode});
+  const ProfileSetupScreenAvatarIcon({super.key});
 
   /// Returns a circular avatar icon for the profile setup screen.
   /// The icon is a placeholder image and can be replaced with a user-uploaded image.

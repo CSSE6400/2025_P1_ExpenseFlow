@@ -6,9 +6,7 @@ import '../../../common/fields/date_field/date_field.dart';
 import '../../../common/fields/dropdown_field.dart';
 
 class AddExpenseScreenFields extends StatefulWidget {
-  final bool isDarkMode;
-
-  const AddExpenseScreenFields({super.key, required this.isDarkMode});
+  const AddExpenseScreenFields({super.key});
 
   @override
   State<AddExpenseScreenFields> createState() => _AddExpenseScreenFieldsState();
@@ -37,28 +35,25 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
         GeneralField(
           label: 'Name',
           initialValue: 'Shopping at Coles',
-          isDarkMode: widget.isDarkMode,
           isEditable: true,
           showStatusIcon: true,
           validationRule: (value) => value.trim().isNotEmpty,
           onValidityChanged: updateNameValidity,
         ),
-        CustomDivider(isDarkMode: widget.isDarkMode),
+        CustomDivider(),
 
         DateField(
-          isDarkMode: widget.isDarkMode,
           label: 'Date',
           initialDate: DateTime.now(),
           onDateSelected: (selectedDate) {
             // TODO: handle selected date (e.g., save it to a controller or variable)
           },
         ),
-        CustomDivider(isDarkMode: widget.isDarkMode),
+        CustomDivider(),
 
         GeneralField(
           label: 'Amount (\$)*',
           initialValue: '1000',
-          isDarkMode: widget.isDarkMode,
           isEditable: true,
           showStatusIcon: true,
           inputRules: [InputRuleType.decimalWithTwoPlaces],
@@ -68,12 +63,11 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
           },
           onValidityChanged: updateAmountValidity,
         ),
-        CustomDivider(isDarkMode: widget.isDarkMode),
+        CustomDivider(),
 
         DropdownField(
           label: 'Category',
           options: ['Groceries', 'Transport', 'Bills', 'Entertainment'],
-          isDarkMode: widget.isDarkMode,
           placeholder: 'Select Category',
           onChanged: (value) {
             // TODO: Handle selected value

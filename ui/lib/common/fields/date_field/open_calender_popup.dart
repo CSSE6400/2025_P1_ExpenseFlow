@@ -17,7 +17,6 @@ import '../../color_palette.dart';
 void openCalendarPopup({
   required BuildContext context,
   required DateTime initialDate,
-  required bool isDarkMode,
   required ValueChanged<DateTime> onDateSelected,
 }) {
   DateTime focusedDate = initialDate;
@@ -26,9 +25,7 @@ void openCalendarPopup({
   final DateTime lastViewableDate = DateTime(currentDate.year, 12, 31);
   final DateTime firstViewableDate = DateTime(1905, 1, 1);
   final proportionalSizes = ProportionalSizes(context: context);
-  final primaryColor = isDarkMode
-        ? ColorPalette.primaryTextDark
-        : ColorPalette.primaryText;
+  final primaryColor = ColorPalette.primaryText;
 
   // Checks if the focused date is the earliest allowed month.
   bool isFirstMonth(DateTime date) {
@@ -58,9 +55,7 @@ void openCalendarPopup({
             ),
             child: Container(
               decoration: BoxDecoration(
-                color: isDarkMode
-                    ? Colors.grey.withValues(alpha: 0.3)
-                    : Colors.white.withValues(alpha: 0.4),
+                color: Colors.white.withValues(alpha: 0.4),
                 borderRadius: BorderRadius.circular(proportionalSizes.scaleWidth(20)),
               ),
               padding: EdgeInsets.all(proportionalSizes.scaleWidth(20)),
@@ -73,7 +68,7 @@ void openCalendarPopup({
                       Text(
                         'Select Date',
                         style: GoogleFonts.roboto(
-                          color: isDarkMode ? Colors.white : Colors.black,
+                          color: Colors.black,
                           fontSize: proportionalSizes.scaleText(18),
                           fontWeight: FontWeight.w500,
                         ),
@@ -99,7 +94,6 @@ void openCalendarPopup({
                                     );
                                   });
                                 },
-                                isDarkMode: isDarkMode,
                               ),
                               SizedBox(width: proportionalSizes.scaleWidth(10)),
                               CustomPopupMenu<int>(
@@ -118,7 +112,6 @@ void openCalendarPopup({
                                     );
                                   });
                                 },
-                                isDarkMode: isDarkMode,
                               ),
                             ],
                           ),
@@ -143,15 +136,13 @@ void openCalendarPopup({
                                   padding: EdgeInsets.all(proportionalSizes.scaleWidth(8.0)),
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    color: isDarkMode
-                                        ? Colors.white.withValues(alpha: 0.1)
-                                        : Colors.black.withValues(alpha: 0.1),
+                                    color: Colors.black.withValues(alpha: 0.1),
                                   ),
                                   child: Image.asset(
                                     'assets/icons/back_button.png',
                                     width: proportionalSizes.scaleWidth(12),
                                     height: proportionalSizes.scaleHeight(12),
-                                    color: isDarkMode ? Colors.white : Colors.black,
+                                    color: Colors.black,
                                   ),
                                 ),
                               ),
@@ -177,9 +168,7 @@ void openCalendarPopup({
                                   padding: EdgeInsets.all(proportionalSizes.scaleWidth(8.0)),
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    color: isDarkMode
-                                        ? Colors.white.withValues(alpha: 0.1)
-                                        : Colors.black.withValues(alpha: 0.1),
+                                    color: Colors.black.withValues(alpha: 0.1),
                                   ),
                                   child: Transform.rotate(
                                     angle: 3.14159, // Flip the back button horizontally
@@ -187,7 +176,7 @@ void openCalendarPopup({
                                       'assets/icons/back_button.png',
                                       width: proportionalSizes.scaleWidth(12),
                                       height: proportionalSizes.scaleHeight(12),
-                                      color: isDarkMode ? Colors.white : Colors.black,
+                                      color: Colors.black,
                                     ),
                                   ),
                                 ),
@@ -227,7 +216,7 @@ void openCalendarPopup({
                             shape: BoxShape.circle,
                           ),
                           todayTextStyle: GoogleFonts.roboto(
-                            color: isDarkMode ? Colors.white : Colors.black,
+                            color: Colors.black,
                             fontWeight: FontWeight.bold,
                           ),
                           selectedDecoration: BoxDecoration(
@@ -239,20 +228,16 @@ void openCalendarPopup({
                             fontWeight: FontWeight.bold,
                           ),
                           defaultTextStyle: GoogleFonts.roboto(
-                            color: isDarkMode ? Colors.white : Colors.black,
+                            color: Colors.black,
                           ),
                           weekendTextStyle: GoogleFonts.roboto(
-                            color: isDarkMode ? Colors.white70 : Colors.black54,
+                            color: Colors.black54,
                           ),
                           disabledTextStyle: GoogleFonts.roboto(
-                            color: isDarkMode
-                                ? Colors.white.withValues(alpha: 0.3)
-                                : Colors.black.withValues(alpha: 0.3),
+                            color: Colors.black.withValues(alpha: 0.3),
                           ),
                           outsideTextStyle: GoogleFonts.roboto(
-                            color: isDarkMode
-                                ? Colors.white.withValues(alpha: 0.3)
-                                : Colors.black.withValues(alpha: 0.3),
+                            color: Colors.black.withValues(alpha: 0.3),
                           ),
                         ),
                         headerVisible: false, // Hide default calendar header

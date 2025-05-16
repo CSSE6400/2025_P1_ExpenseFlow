@@ -9,12 +9,7 @@ import '../../../common/icon_maker.dart';
 
 /// A customized HomeScreenAppBar specifically styled for the Home Screen.
 class HomeScreenAppBarWidget extends StatelessWidget implements PreferredSizeWidget {
-  final bool isDarkMode;
-
-  const HomeScreenAppBarWidget({
-    super.key,
-    required this.isDarkMode,
-  });
+  const HomeScreenAppBarWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +49,6 @@ class HomeScreenAppBarWidget extends StatelessWidget implements PreferredSizeWid
           IconButton(
             icon: IconMaker(
               assetPath: 'assets/icons/user.png',
-              isDarkMode: isDarkMode,
             ),
             onPressed: () {
               // TODO: Navigate to General Screen

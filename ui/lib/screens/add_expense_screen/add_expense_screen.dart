@@ -8,9 +8,7 @@ import '../../common/app_bar.dart';
 import '../add_expense_screen/elements/add_expense_screen_main_body.dart';
 
 class AddExpenseScreen extends StatefulWidget {
-  final bool isDarkMode;
-
-  const AddExpenseScreen({super.key, required this.isDarkMode});
+  const AddExpenseScreen({super.key});
 
   @override
   State<AddExpenseScreen> createState() => _AddExpenseScreenState();
@@ -19,23 +17,19 @@ class AddExpenseScreen extends StatefulWidget {
 class _AddExpenseScreenState extends State<AddExpenseScreen> {
   @override
   Widget build(BuildContext context) {
-    final backgroundColor = widget.isDarkMode
-        ? ColorPalette.backgroundDark
-        : ColorPalette.background;
+    final backgroundColor = ColorPalette.background;
 
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBarWidget(
         screenName: 'Add Expense',
         showBackButton: true,
-        isDarkMode: widget.isDarkMode,
       ),
 
-      body: AddExpenseScreenMainBody(isDarkMode: widget.isDarkMode),
+      body: AddExpenseScreenMainBody(),
 
       bottomNavigationBar: BottomNavBar(
         currentScreen: 'Add',
-        isDarkMode: widget.isDarkMode,
         inactive: false,
       ),
     );

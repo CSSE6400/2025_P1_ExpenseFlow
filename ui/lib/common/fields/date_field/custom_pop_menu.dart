@@ -33,27 +33,19 @@ class CustomPopupMenu<T> extends StatelessWidget {
   /// Callback for when a user selects an item.
   final ValueChanged<T> onSelected;
 
-  /// Whether to apply dark mode styling.
-  final bool isDarkMode;
-
   const CustomPopupMenu({
     super.key,
     required this.initialValue,
     required this.items,
     required this.itemBuilder,
     required this.onSelected,
-    required this.isDarkMode,
   });
 
   @override
   Widget build(BuildContext context) {
     final proportionalSizes = ProportionalSizes(context: context);
-      final primaryColor = isDarkMode
-        ? ColorPalette.primaryTextDark
-        : ColorPalette.primaryText;
-  final backgroundColor = isDarkMode
-        ? ColorPalette.buttonTextDark
-        : ColorPalette.buttonText;
+    final primaryColor = ColorPalette.primaryText;
+    final backgroundColor = ColorPalette.buttonText;
 
     return GestureDetector(
       // Displays the text for the currently selected item.

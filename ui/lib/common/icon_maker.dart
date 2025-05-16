@@ -11,9 +11,6 @@ class IconMaker extends StatelessWidget {
   /// Path to the image asset, e.g., 'assets/icons/back_button.png'
   final String assetPath;
 
-  /// Whether dark mode is active
-  final bool isDarkMode;
-
   /// Optional override for width
   final double? width;
 
@@ -26,7 +23,6 @@ class IconMaker extends StatelessWidget {
   const IconMaker({
     super.key,
     required this.assetPath,
-    required this.isDarkMode,
     this.width,
     this.height,
     this.color,
@@ -36,9 +32,7 @@ class IconMaker extends StatelessWidget {
   Widget build(BuildContext context) {
     final proportionalSizes = ProportionalSizes(context: context);
     final iconColor = color ??
-        (isDarkMode
-            ? ColorPalette.primaryActionDark
-            : ColorPalette.primaryAction);
+        ColorPalette.primaryAction;
 
     return Image.asset(
       assetPath,

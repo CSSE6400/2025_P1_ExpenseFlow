@@ -39,9 +39,6 @@ class CustomButton extends StatelessWidget {
   /// If true, button will show only border with white background
   final bool boundary;
 
-  /// Whether the app is in dark mode
-  final bool isDarkMode;
-
   /// Current state of the button (enabled or disabled)
   final ButtonState state;
 
@@ -60,7 +57,6 @@ class CustomButton extends StatelessWidget {
     this.customHeight,
     this.customFontSize,
     this.boundary = false,
-    required this.isDarkMode,
     this.state = ButtonState.enabled,
   });
 
@@ -100,21 +96,12 @@ class CustomButton extends StatelessWidget {
     final bool isEnabled = state == ButtonState.enabled;
 
     final Color bgColor = isEnabled
-        ? (backgroundColor ??
-            (isDarkMode
-                ? ColorPalette.primaryActionDark
-                : ColorPalette.primaryAction))
-        : (isDarkMode
-            ? ColorPalette.secondaryActionDark
-            : ColorPalette.secondaryAction);
+        ? (backgroundColor ?? ColorPalette.primaryAction)
+        : ColorPalette.secondaryAction;
 
     final Color textColor = isEnabled
-        ? (isDarkMode
-            ? ColorPalette.buttonTextDark
-            : ColorPalette.buttonText)
-        : (isDarkMode
-            ? ColorPalette.secondaryTextDark
-            : ColorPalette.secondaryText);
+        ? ColorPalette.buttonText
+        : ColorPalette.secondaryText;
 
     return SizedBox(
       width: width,

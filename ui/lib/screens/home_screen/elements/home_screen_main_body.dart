@@ -7,9 +7,7 @@ import 'home_screen_add_an_expense.dart';
 import 'home_screen_recent_expenses.dart';
 
 class HomeScreenMainBody extends StatelessWidget {
-  final bool isDarkMode;
-
-  const HomeScreenMainBody({super.key, required this.isDarkMode});
+  const HomeScreenMainBody({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -29,15 +27,15 @@ class HomeScreenMainBody extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Overview
-              HomeScreenOverview(isDarkMode: isDarkMode),
+              HomeScreenOverview(),
               SizedBox(height: proportionalSizes.scaleHeight(20)),
 
               // Add an expense
-              HomeScreenAddAnExpense(isDarkMode: isDarkMode),
+              HomeScreenAddAnExpense(),
               SizedBox(height: proportionalSizes.scaleHeight(20)),
 
               // Recent expenses
-              HomeScreenRecentExpenses(isDarkMode: isDarkMode),
+              HomeScreenRecentExpenses(),
             ],
           ),
         ),

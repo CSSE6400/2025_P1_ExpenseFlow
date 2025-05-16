@@ -6,9 +6,7 @@ import 'add_expense_screen_scan_receipt.dart';
 import 'add_expense_screen_fields.dart';
 
 class AddExpenseScreenMainBody extends StatelessWidget {
-  final bool isDarkMode;
-
-  const AddExpenseScreenMainBody({super.key, required this.isDarkMode});
+  const AddExpenseScreenMainBody({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,10 +25,10 @@ class AddExpenseScreenMainBody extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              AddExpenseScreenScanReceipt(isDarkMode: isDarkMode),
+              AddExpenseScreenScanReceipt(),
               SizedBox(height: proportionalSizes.scaleHeight(20)),
               
-              AddExpenseScreenFields(isDarkMode: isDarkMode),
+              AddExpenseScreenFields(),
             ],
           ),
         ),

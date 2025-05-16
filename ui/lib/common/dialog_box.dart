@@ -8,7 +8,6 @@ import 'custom_button.dart';
 
 /// A reusable dialog box that supports 1 or 2 buttons with custom text, styling, and behavior.
 class AppDialogBox extends StatelessWidget {
-  final bool isDarkMode;
   final String heading;
   final String description;
   final int buttonCount; // Accepts 1 or 2
@@ -21,7 +20,6 @@ class AppDialogBox extends StatelessWidget {
 
   const AppDialogBox({
     super.key,
-    required this.isDarkMode,
     required this.heading,
     required this.description,
     required this.buttonCount,
@@ -52,9 +50,7 @@ class AppDialogBox extends StatelessWidget {
           child: Container(
             padding: EdgeInsets.all(scaler.scaleWidth(20)),
             decoration: BoxDecoration(
-              color: isDarkMode
-                  ? Colors.grey.withValues(alpha: 0.3)
-                  : Colors.white.withValues(alpha: 0.4),
+              color: Colors.white.withValues(alpha: 0.4),
               borderRadius: BorderRadius.circular(scaler.scaleWidth(20)),
               border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
             ),
@@ -66,7 +62,7 @@ class AppDialogBox extends StatelessWidget {
                   style: GoogleFonts.roboto(
                     fontSize: scaler.scaleText(18),
                     fontWeight: FontWeight.w600,
-                    color: isDarkMode ? Colors.white : Colors.black,
+                    color: Colors.black,
                   ),
                 ),
                 SizedBox(height: scaler.scaleHeight(12)),
@@ -75,7 +71,7 @@ class AppDialogBox extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: GoogleFonts.roboto(
                     fontSize: scaler.scaleText(15),
-                    color: isDarkMode ? Colors.white70 : Colors.black87,
+                    color: Colors.black87,
                   ),
                 ),
                 SizedBox(height: scaler.scaleHeight(20)),
@@ -85,7 +81,6 @@ class AppDialogBox extends StatelessWidget {
                     onPressed: onButton1Pressed,
                     backgroundColor: button1Color,
                     sizeType: ButtonSizeType.quarter,
-                    isDarkMode: isDarkMode,
                   )
                 else
                   Row(
@@ -96,14 +91,12 @@ class AppDialogBox extends StatelessWidget {
                         onPressed: onButton1Pressed,
                         backgroundColor: button1Color,
                         sizeType: ButtonSizeType.quarter,
-                        isDarkMode: isDarkMode,
                       ),
                       CustomButton(
                         label: button2Text ?? '',
                         onPressed: onButton2Pressed ?? () {},
                         backgroundColor: button2Color,
                         sizeType: ButtonSizeType.quarter,
-                        isDarkMode: isDarkMode,
                       ),
                     ],
                   ),
@@ -118,7 +111,6 @@ class AppDialogBox extends StatelessWidget {
   /// Call this method to show the dialog
   static Future<void> show(
     BuildContext context, {
-    required bool isDarkMode,
     required String heading,
     required String description,
     required int buttonCount,
@@ -134,7 +126,6 @@ class AppDialogBox extends StatelessWidget {
       barrierDismissible: false,
       barrierColor: Colors.black.withValues(alpha: 0.2),
       builder: (_) => AppDialogBox(
-        isDarkMode: isDarkMode,
         heading: heading,
         description: description,
         buttonCount: buttonCount,

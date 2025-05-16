@@ -10,11 +10,8 @@ import '../../common/custom_button.dart';
 import '../profile_setup_screen/profile_setup_screen.dart';
 
 class InitialStartupScreen extends StatefulWidget {
-  // Flag to determine if dark mode is enabled
-  final bool isDarkMode;
-
   /// Constructor for InitialStartupScreen
-  const InitialStartupScreen({super.key, required this.isDarkMode});
+  const InitialStartupScreen({super.key});
 
   @override
   State<InitialStartupScreen> createState() => InitialStartupScreenState();
@@ -25,9 +22,7 @@ class InitialStartupScreenState extends State<InitialStartupScreen> {
   Widget build(BuildContext context) {
     // Colors and sizes
     final logoColor = ColorPalette.logoColor;
-    final backgroundColor = widget.isDarkMode
-        ? ColorPalette.backgroundDark
-        : ColorPalette.background;
+    final backgroundColor = ColorPalette.background;
     final proportionalSizes = ProportionalSizes(context: context);
 
     return Scaffold(
@@ -77,14 +72,11 @@ class InitialStartupScreenState extends State<InitialStartupScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => ProfileSetupScreen(
-                        isDarkMode: widget.isDarkMode,
-                      ),
+                      builder: (context) => ProfileSetupScreen(),
                     ),
                   );
                 },
                 sizeType: ButtonSizeType.full,
-                isDarkMode: widget.isDarkMode,
               ),
             ],
           ),

@@ -7,22 +7,13 @@ import '../../../common/proportional_sizes.dart';
 import '../../../common/icon_maker.dart';
 
 class AddExpenseScreenScanReceipt extends StatelessWidget {
-  final bool isDarkMode;
-
-  const AddExpenseScreenScanReceipt({
-    super.key,
-    required this.isDarkMode,
-  });
+  const AddExpenseScreenScanReceipt({super.key});
 
   @override
   Widget build(BuildContext context) {
     final proportionalSizes = ProportionalSizes(context: context);
-    final backgroundColor = isDarkMode 
-        ? ColorPalette.buttonTextDark 
-        : ColorPalette.buttonText;
-    final textColor = isDarkMode
-        ? ColorPalette.primaryTextDark
-        : ColorPalette.primaryText;
+    final backgroundColor = ColorPalette.buttonText;
+    final textColor = ColorPalette.primaryText;
 
     return InkWell(
       onTap: () {
@@ -51,7 +42,6 @@ class AddExpenseScreenScanReceipt extends StatelessWidget {
           children: [
             IconMaker(
               assetPath: 'assets/icons/scan.png',
-              isDarkMode: isDarkMode,
             ),
             SizedBox(width: proportionalSizes.scaleWidth(12)),
             Text(

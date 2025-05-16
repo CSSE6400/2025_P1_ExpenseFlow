@@ -25,9 +25,6 @@ class GeneralField extends StatefulWidget {
   /// Initial value for the input field
   final String initialValue;
 
-  /// Dark mode toggle passed from screen
-  final bool isDarkMode;
-
   /// Whether to show a check/cross icon
   final bool showStatusIcon;
 
@@ -47,7 +44,6 @@ class GeneralField extends StatefulWidget {
     super.key,
     required this.label,
     required this.initialValue,
-    required this.isDarkMode,
     this.showStatusIcon = false,
     this.validationRule,
     this.isEditable = true,
@@ -137,16 +133,10 @@ class GeneralFieldState extends State<GeneralField> {
   @override
   Widget build(BuildContext context) {
     final proportionalSizes = ProportionalSizes(context: context);
-    final labelColor = widget.isDarkMode
-        ? ColorPalette.primaryTextDark
-        : ColorPalette.primaryText;
-    final hintColor = widget.isDarkMode
-        ? ColorPalette.secondaryTextDark
-        : ColorPalette.secondaryText;
+    final labelColor = ColorPalette.primaryText;
+    final hintColor = ColorPalette.secondaryText;
     final iconColor = _isValid
-        ? (widget.isDarkMode
-            ? ColorPalette.primaryActionDark
-            : ColorPalette.primaryAction)
+        ? ColorPalette.primaryAction
         : ColorPalette.error;
 
     return Padding(
@@ -210,7 +200,6 @@ class GeneralFieldState extends State<GeneralField> {
               ),
               child: IconMaker(
                 assetPath: _isValid ? 'assets/icons/check.png' : 'assets/icons/cross.png',
-                isDarkMode: widget.isDarkMode,
                 color: iconColor,
               ),
             ),

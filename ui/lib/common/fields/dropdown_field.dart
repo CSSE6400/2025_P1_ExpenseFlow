@@ -8,7 +8,6 @@ import '../icon_maker.dart';
 class DropdownField extends StatefulWidget {
   final String label;
   final List<String> options;
-  final bool isDarkMode;
   final ValueChanged<String?>? onChanged;
   final String? placeholder;
 
@@ -16,7 +15,6 @@ class DropdownField extends StatefulWidget {
     super.key,
     required this.label,
     required this.options,
-    required this.isDarkMode,
     this.onChanged,
     this.placeholder,
   });
@@ -32,12 +30,8 @@ class _DropdownFieldState extends State<DropdownField> {
     final RenderBox button = context.findRenderObject() as RenderBox;
     final Offset position = button.localToGlobal(Offset.zero);
     final proportionalSizes = ProportionalSizes(context: context);
-    final labelColor = widget.isDarkMode
-        ? ColorPalette.primaryTextDark
-        : ColorPalette.primaryText;
-    final hintColor = widget.isDarkMode
-        ? ColorPalette.secondaryTextDark
-        : ColorPalette.secondaryText;
+    final labelColor = ColorPalette.primaryText;
+    final hintColor = ColorPalette.secondaryText;
 
     showDialog(
       context: context,
@@ -66,9 +60,7 @@ class _DropdownFieldState extends State<DropdownField> {
                         width: button.size.width -
                             proportionalSizes.scaleWidth(150),
                         decoration: BoxDecoration(
-                          color: widget.isDarkMode
-                              ? Colors.grey.withAlpha(80)
-                              : Colors.grey.withAlpha(30),
+                          color: Colors.grey.withAlpha(30),
                           borderRadius: BorderRadius.circular(
                             proportionalSizes.scaleWidth(8),
                           ),
@@ -151,12 +143,8 @@ class _DropdownFieldState extends State<DropdownField> {
   @override
   Widget build(BuildContext context) {
     final proportionalSizes = ProportionalSizes(context: context);
-    final labelColor = widget.isDarkMode
-        ? ColorPalette.primaryTextDark
-        : ColorPalette.primaryText;
-    final hintColor = widget.isDarkMode
-        ? ColorPalette.secondaryTextDark
-        : ColorPalette.secondaryText;
+    final labelColor = ColorPalette.primaryText;
+    final hintColor = ColorPalette.secondaryText;
 
     return Padding(
       padding: EdgeInsets.symmetric(
@@ -204,7 +192,6 @@ class _DropdownFieldState extends State<DropdownField> {
                       ),
                       child: IconMaker(
                         assetPath: 'assets/icons/dropdown.png',
-                        isDarkMode: widget.isDarkMode,
                       ),
                     ),
                   ],

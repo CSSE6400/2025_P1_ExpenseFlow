@@ -11,9 +11,7 @@ import '../../../common/web_file_helper.dart';
 import '../../../common/snack_bar.dart';
 
 class HomeScreenAddAnExpense extends StatelessWidget {
-  final bool isDarkMode;
-
-  const HomeScreenAddAnExpense({super.key, required this.isDarkMode});
+  const HomeScreenAddAnExpense({super.key});
 
   Future<void> _pickImage(BuildContext context) async {
     final imageInfo = await WebImageInfo.pickImage();
@@ -23,7 +21,6 @@ class HomeScreenAddAnExpense extends StatelessWidget {
     if (imageInfo != null) {
       await AppDialogBox.show(
         context,
-        isDarkMode: isDarkMode,
         heading: 'Image Captured',
         description: 'Filename: ${imageInfo.filename}',
         buttonCount: 1,
@@ -43,17 +40,11 @@ class HomeScreenAddAnExpense extends StatelessWidget {
   Widget build(BuildContext context) {
     final proportionalSizes = ProportionalSizes(context: context);
 
-    final outerBackgroundColor = isDarkMode
-        ? ColorPalette.buttonTextDark
-        : ColorPalette.buttonText;
+    final outerBackgroundColor = ColorPalette.buttonText;
 
-    final buttonBackgroundColor = isDarkMode
-        ? ColorPalette.backgroundDark
-        : ColorPalette.background;
+    final buttonBackgroundColor = ColorPalette.background;
 
-    final textColor = isDarkMode
-        ? ColorPalette.primaryTextDark
-        : ColorPalette.primaryText;
+    final textColor = ColorPalette.primaryText;
 
     return Container(
       width: double.infinity,
@@ -86,7 +77,6 @@ class HomeScreenAddAnExpense extends StatelessWidget {
             child: ListTile(
               leading: IconMaker(
                 assetPath: 'assets/icons/manual_entry.png',
-                isDarkMode: isDarkMode,
               ),
               title: Text(
                 'Manual Entry',
@@ -99,7 +89,7 @@ class HomeScreenAddAnExpense extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => AddExpenseScreen(isDarkMode: isDarkMode),
+                    builder: (context) => AddExpenseScreen(),
                   ),
                 );
               },
@@ -116,7 +106,6 @@ class HomeScreenAddAnExpense extends StatelessWidget {
             child: ListTile(
               leading: IconMaker(
                 assetPath: 'assets/icons/scan.png',
-                isDarkMode: isDarkMode,
               ),
               title: Text(
                 'Camera Scan',

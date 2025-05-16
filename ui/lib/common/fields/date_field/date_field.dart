@@ -5,8 +5,6 @@ import '../../color_palette.dart';
 import 'open_calender_popup.dart';
 
 class DateField extends StatefulWidget {
-  final bool isDarkMode;
-
   /// Label shown to the left of the date (e.g., "Date of Birth", "Expense Date")
   final String label;
 
@@ -18,7 +16,6 @@ class DateField extends StatefulWidget {
 
   const DateField({
     super.key,
-    required this.isDarkMode,
     required this.label,
     this.initialDate,
     this.onDateSelected,
@@ -52,9 +49,7 @@ class _DateFieldState extends State<DateField> {
   @override
   Widget build(BuildContext context) {
     final proportionalSizes = ProportionalSizes(context: context);
-    final labelColor = widget.isDarkMode
-        ? ColorPalette.primaryTextDark
-        : ColorPalette.primaryText;
+    final labelColor = ColorPalette.primaryText;
 
     return Padding(
       padding: EdgeInsets.symmetric(
@@ -83,7 +78,6 @@ class _DateFieldState extends State<DateField> {
               openCalendarPopup(
                 context: context,
                 initialDate: _selectedDate,
-                isDarkMode: widget.isDarkMode,
                 onDateSelected: (selectedDate) {
                   setState(() {
                     _selectedDate = selectedDate;

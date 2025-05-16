@@ -12,16 +12,12 @@ class BottomNavBar extends StatelessWidget {
   /// The name of the currently active screen.
   final String currentScreen;
 
-  /// Indicates whether the app is in dark mode.
-  final bool isDarkMode;
-
   /// If `true`, disables navigation and turns all icons grey.
   final bool inactive;
 
   const BottomNavBar({
     super.key,
     required this.currentScreen,
-    required this.isDarkMode,
     this.inactive = false,
   });
 
@@ -29,15 +25,9 @@ class BottomNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final proportionalSizes = ProportionalSizes(context: context);
     final iconColor = inactive
-        ? (isDarkMode
-            ? ColorPalette.primaryActionDark.withValues(alpha: 0.5)
-            : ColorPalette.primaryAction.withValues(alpha: 0.5))
-        : (isDarkMode
-            ? ColorPalette.primaryActionDark
-            : ColorPalette.primaryAction);
-    final backgroundColor = isDarkMode 
-        ? ColorPalette.buttonTextDark 
-        : ColorPalette.buttonText;
+        ? ColorPalette.primaryAction.withValues(alpha: 0.5)
+        : ColorPalette.primaryAction;
+    final backgroundColor = ColorPalette.buttonText;
 
     final double iconSize = proportionalSizes.scaleWidth(36);
 
@@ -50,7 +40,7 @@ class BottomNavBar extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => HomeScreen(isDarkMode: isDarkMode),
+                  builder: (context) => HomeScreen(),
                 ),
               );
           }
@@ -73,7 +63,7 @@ class BottomNavBar extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => AddExpenseScreen(isDarkMode: isDarkMode),
+                  builder: (context) => AddExpenseScreen(),
                 ),
               );
           }

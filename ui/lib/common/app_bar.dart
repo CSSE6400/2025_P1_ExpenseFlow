@@ -19,15 +19,11 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   /// Optional custom back button handler. Defaults to Navigator.pop().
   final VoidCallback? onBackPressed;
 
-  /// Dark mode toggle passed from screen.
-  final bool isDarkMode;
-
   const AppBarWidget({
     super.key,
     required this.screenName,
     this.showBackButton = false,
     this.onBackPressed,
-    required this.isDarkMode,
   });
 
   @override
@@ -35,9 +31,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
     final proportionalSizes = ProportionalSizes(context: context);
 
     // Set colors according to dark mode status
-    final textColor = isDarkMode
-        ? ColorPalette.primaryActionDark
-        : ColorPalette.primaryAction;
+    final textColor = ColorPalette.primaryAction;
 
     return AppBar(
       backgroundColor: Colors.transparent, // Flat look
@@ -49,7 +43,6 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
           ? IconButton(
               icon: IconMaker(
                 assetPath: 'assets/icons/back_button.png',
-                isDarkMode: isDarkMode,
               ),
               onPressed: onBackPressed ?? () {
                 Navigator.pop(context);

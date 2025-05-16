@@ -12,9 +12,7 @@ import '../../../common/custom_button.dart';
 import '../../home_screen/home_screen.dart';
 
 class ProfileSetupScreenSubRectangle extends StatefulWidget {
-  final bool isDarkMode;
-
-  const ProfileSetupScreenSubRectangle({super.key, required this.isDarkMode});
+  const ProfileSetupScreenSubRectangle({super.key});
 
   @override
   State<ProfileSetupScreenSubRectangle> createState() =>
@@ -46,9 +44,7 @@ class _ProfileSetupScreenSubRectangleState
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => HomeScreen(
-          isDarkMode: widget.isDarkMode,
-          ),
+        builder: (context) => HomeScreen(),
         ),
       );
   }
@@ -56,9 +52,7 @@ class _ProfileSetupScreenSubRectangleState
   @override
   Widget build(BuildContext context) {
     final proportionalSizes = ProportionalSizes(context: context);
-    final backgroundColor = widget.isDarkMode
-        ? ColorPalette.buttonTextDark
-        : ColorPalette.buttonText;
+    final backgroundColor = ColorPalette.buttonText;
 
     return Container(
       width: double.infinity,
@@ -82,9 +76,7 @@ class _ProfileSetupScreenSubRectangleState
                 style: GoogleFonts.roboto(
                   fontSize: proportionalSizes.scaleText(22),
                   fontWeight: FontWeight.bold,
-                  color: widget.isDarkMode
-                      ? ColorPalette.primaryTextDark
-                      : ColorPalette.primaryText,
+                  color: ColorPalette.primaryText,
                 ),
               ),
             ),
@@ -94,7 +86,6 @@ class _ProfileSetupScreenSubRectangleState
             GeneralField(
               label: 'Name*',
               initialValue: 'ABC',
-              isDarkMode: widget.isDarkMode,
               isEditable: true,
               showStatusIcon: true,
               inputRules: [InputRuleType.lettersOnly],
@@ -104,13 +95,12 @@ class _ProfileSetupScreenSubRectangleState
               },
               onValidityChanged: updateNameValidity,
             ),
-            CustomDivider(isDarkMode: widget.isDarkMode),
+            CustomDivider(),
 
             // Email field
             GeneralField(
               label: 'Email ID*',
               initialValue: 'example@email.com',
-              isDarkMode: widget.isDarkMode,
               isEditable: true,
               showStatusIcon: true,
               validationRule: (value) {
@@ -120,13 +110,12 @@ class _ProfileSetupScreenSubRectangleState
               },
               onValidityChanged: updateEmailValidity,
             ),
-            CustomDivider(isDarkMode: widget.isDarkMode),
+            CustomDivider(),
 
             // Budget field
             GeneralField(
               label: 'Monthly Budget (\$)*',
               initialValue: '1000',
-              isDarkMode: widget.isDarkMode,
               isEditable: true,
               showStatusIcon: true,
               inputRules: [InputRuleType.decimalWithTwoPlaces],
@@ -142,7 +131,6 @@ class _ProfileSetupScreenSubRectangleState
             CustomButton(
               label: 'Save',
               onPressed: isFormValid ? onSave : () {},
-              isDarkMode: widget.isDarkMode,
               sizeType: ButtonSizeType.full,
               state:
                   isFormValid ? ButtonState.enabled : ButtonState.disabled,

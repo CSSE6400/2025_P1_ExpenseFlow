@@ -6,9 +6,7 @@ import 'profile_setup_screen_avatar_icon.dart';
 import 'profile_setup_screen_sub_rectangle.dart';
 
 class ProfileSetupScreenMainBody extends StatelessWidget {
-  final bool isDarkMode;
-
-  const ProfileSetupScreenMainBody({super.key, required this.isDarkMode});
+  const ProfileSetupScreenMainBody({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -31,13 +29,13 @@ class ProfileSetupScreenMainBody extends StatelessWidget {
               // Avatar Icon
               Align(
                 alignment: Alignment.topLeft,
-                child: ProfileSetupScreenAvatarIcon(isDarkMode: isDarkMode),
+                child: ProfileSetupScreenAvatarIcon(),
               ),
 
               SizedBox(height: proportionalSizes.scaleHeight(20)),
 
               // Sub Rectangle
-              ProfileSetupScreenSubRectangle(isDarkMode: isDarkMode),
+              ProfileSetupScreenSubRectangle(),
             ],
           ),
         ),
