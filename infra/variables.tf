@@ -7,9 +7,9 @@ variable "auth0_domain" {
 }
 
 variable "auth0_client_id" {
-  description = "Auth0 Client ID"
+  description = "Auth0 M2M Application Client ID"
 }
 
 variable "auth0_client_secret" {
-  description = "Auth0 Client Secret"
+  description = "Auth0 M2M Application Client Secret"
 }
