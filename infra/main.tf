@@ -8,6 +8,10 @@ terraform {
       source  = "kreuzwerker/docker"
       version = "3.0.2"
     }
+    auth0 = {
+      source  = "auth0/auth0"
+      version = "1.2.0"
+    }
   }
 }
 
@@ -20,6 +24,12 @@ provider "aws" {
       Automation = "Terraform"
     }
   }
+}
+
+provider "auth0" {
+  domain        = var.auth0_domain
+  client_id     = var.auth0_client_id
+  client_secret = var.auth0_client_secret
 }
 
 data "aws_ecr_authorization_token" "ecr_token" {}
