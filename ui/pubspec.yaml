@@ -66,6 +66,7 @@ flutter:
     - assets/icons/back_button.png
     - assets/icons/check.png
     - assets/icons/cross.png
+    - assets/icons/dropdown.png
     - assets/icons/expenses.png
     - assets/icons/group.png
     - assets/icons/home.png

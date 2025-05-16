@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../common/fields/general_field.dart';
 import '../../../common/custom_divider.dart';
 import '../../../common/fields/date_field/date_field.dart';
+import '../../../common/fields/dropdown_field.dart';
 
 class AddExpenseScreenFields extends StatefulWidget {
   final bool isDarkMode;
@@ -48,6 +49,9 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
           isDarkMode: widget.isDarkMode,
           label: 'Date',
           initialDate: DateTime.now(),
+          onDateSelected: (selectedDate) {
+            // TODO: handle selected date (e.g., save it to a controller or variable)
+          },
         ),
         CustomDivider(isDarkMode: widget.isDarkMode),
 
@@ -65,6 +69,16 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
           onValidityChanged: updateAmountValidity,
         ),
         CustomDivider(isDarkMode: widget.isDarkMode),
+
+        DropdownField(
+          label: 'Category',
+          options: ['Groceries', 'Transport', 'Bills', 'Entertainment'],
+          isDarkMode: widget.isDarkMode,
+          placeholder: 'Select Category',
+          onChanged: (value) {
+            // TODO: Handle selected value
+          },
+        ),
       ],
     );
   }

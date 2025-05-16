@@ -1,0 +1,219 @@
+import 'dart:ui';
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../proportional_sizes.dart';
+import '../color_palette.dart';
+import '../icon_maker.dart';
+
+class DropdownField extends StatefulWidget {
+  final String label;
+  final List<String> options;
+  final bool isDarkMode;
+  final ValueChanged<String?>? onChanged;
+  final String? placeholder;
+
+  const DropdownField({
+    super.key,
+    required this.label,
+    required this.options,
+    required this.isDarkMode,
+    this.onChanged,
+    this.placeholder,
+  });
+
+  @override
+  State<DropdownField> createState() => _DropdownFieldState();
+}
+
+class _DropdownFieldState extends State<DropdownField> {
+  String? selectedOption;
+
+  void _showDropdownDialog(BuildContext context) {
+    final RenderBox button = context.findRenderObject() as RenderBox;
+    final Offset position = button.localToGlobal(Offset.zero);
+    final proportionalSizes = ProportionalSizes(context: context);
+    final labelColor = widget.isDarkMode
+        ? ColorPalette.primaryTextDark
+        : ColorPalette.primaryText;
+    final hintColor = widget.isDarkMode
+        ? ColorPalette.secondaryTextDark
+        : ColorPalette.secondaryText;
+
+    showDialog(
+      context: context,
+      barrierColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return Stack(
+          children: [
+            Positioned(
+              left: position.dx + proportionalSizes.scaleWidth(95),
+              top: position.dy - proportionalSizes.scaleHeight(20),
+              child: GestureDetector(
+                onTap: () {},
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(
+                    proportionalSizes.scaleWidth(8),
+                  ),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(
+                      sigmaX: proportionalSizes.scaleWidth(15),
+                      sigmaY: proportionalSizes.scaleHeight(15),
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: Container(
+                        height: proportionalSizes.scaleHeight(160),
+                        width: button.size.width -
+                            proportionalSizes.scaleWidth(150),
+                        decoration: BoxDecoration(
+                          color: widget.isDarkMode
+                              ? Colors.grey.withAlpha(80)
+                              : Colors.grey.withAlpha(30),
+                          borderRadius: BorderRadius.circular(
+                            proportionalSizes.scaleWidth(8),
+                          ),
+                        ),
+                        child: ListView.builder(
+                          itemCount: widget.options.length + 1,
+                          itemExtent: proportionalSizes.scaleHeight(40),
+                          padding: EdgeInsets.zero,
+                          itemBuilder: (context, index) {
+                            if (index == 0) {
+                              return InkWell(
+                                onTap: () {
+                                  setState(() => selectedOption = null);
+                                  widget.onChanged?.call(null);
+                                  Navigator.pop(context);
+                                },
+                                child: Container(
+                                  alignment: Alignment.centerLeft,
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal:
+                                        proportionalSizes.scaleWidth(16),
+                                  ),
+                                  child: Text(
+                                    widget.placeholder ?? 'Select',
+                                    style: GoogleFonts.roboto(
+                                      color: hintColor,
+                                      fontSize:
+                                          proportionalSizes.scaleText(16),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }
+
+                            final option = widget.options[index - 1];
+                            final isSelected = option == selectedOption;
+
+                            return InkWell(
+                              onTap: () {
+                                setState(() => selectedOption = option);
+                                widget.onChanged?.call(option);
+                                Navigator.pop(context);
+                              },
+                              child: Container(
+                                alignment: Alignment.centerLeft,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal:
+                                      proportionalSizes.scaleWidth(16),
+                                ),
+                                color: isSelected
+                                    ? labelColor.withValues(alpha: 80)
+                                    : Colors.transparent,
+                                child: Text(
+                                  option,
+                                  style: GoogleFonts.roboto(
+                                    color: labelColor,
+                                    fontWeight: isSelected
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
+                                    fontSize:
+                                        proportionalSizes.scaleText(16),
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final proportionalSizes = ProportionalSizes(context: context);
+    final labelColor = widget.isDarkMode
+        ? ColorPalette.primaryTextDark
+        : ColorPalette.primaryText;
+    final hintColor = widget.isDarkMode
+        ? ColorPalette.secondaryTextDark
+        : ColorPalette.secondaryText;
+
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        vertical: proportionalSizes.scaleHeight(10),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(
+            width: proportionalSizes.scaleWidth(100),
+            child: Text(
+              widget.label,
+              style: GoogleFonts.roboto(
+                color: labelColor,
+                fontSize: proportionalSizes.scaleText(16),
+                fontWeight: FontWeight.w500,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.visible,
+            ),
+          ),
+          SizedBox(width: proportionalSizes.scaleWidth(8)),
+          Expanded(
+            child: GestureDetector(
+              onTap: () => _showDropdownDialog(context),
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                  vertical: proportionalSizes.scaleHeight(4),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      selectedOption ?? (widget.placeholder ?? 'Select'),
+                      style: GoogleFonts.roboto(
+                        color: selectedOption == null
+                            ? hintColor
+                            : labelColor,
+                        fontSize: proportionalSizes.scaleText(16),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(
+                        left: proportionalSizes.scaleWidth(8),
+                      ),
+                      child: IconMaker(
+                        assetPath: 'assets/icons/dropdown.png',
+                        isDarkMode: widget.isDarkMode,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
