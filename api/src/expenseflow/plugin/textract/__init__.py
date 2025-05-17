@@ -3,7 +3,7 @@
 from uuid import UUID
 
 import boto3
-from fastapi import HTTPException, status
+from fastapi import HTTPException, status, File, UploadFile
 
 from expenseflow.auth.deps import CurrentUser
 from expenseflow.database.deps import DbSession
@@ -13,6 +13,8 @@ from expenseflow.expense.schemas import ExpenseCreate, ExpenseRead  # noqa: F401
 from expenseflow.expense.service import create_expense  # noqa: F401
 from expenseflow.expense_item.schemas import ExpenseItemCreate  # noqa: F401
 from expenseflow.plugin import Plugin, PluginSettings, register_plugin
+
+import base64
 
 
 class TextractPluginSettings(PluginSettings):
@@ -29,7 +31,7 @@ class TextractPlugin(Plugin[PluginSettings]):
 
     def _on_init(self) -> None:
         """Do this on init."""
-        # self.textract_client = boto3.client("textract")
+        self.textract_client = boto3.client("textract")
         self._app.add_api_route(
             "/expenses/auto",
             self.handle_receipt,
@@ -51,15 +53,27 @@ class TextractPlugin(Plugin[PluginSettings]):
         # Close boto3 client
 
     async def handle_receipt(
-        self, db: DbSession, user: CurrentUser, parent_id: UUID
+        self, db: DbSession, user: CurrentUser, parent_id: UUID, file: UploadFile | None = None
     ) -> ExpenseModel:
         """Route to extract receipt info."""
+        if not file:
+            raise HTTPException(status.HTTP_400_BAD_REQUEST, detail="No file provided")
+        contents = await file.read()
+        bytes64 = base64.b64encode(contents)
+        if (len(bytes64) > 5 * 1024 * 1024):
+            raise HTTPException(status.HTTP_400_BAD_REQUEST, detail="File greater than 5MB")
+        
         parent = await get_entity(db, parent_id)
         if parent is None:
             raise HTTPException(
                 status.HTTP_404_NOT_FOUND,
                 detail=f"Parent under the id '{parent_id}' could not be found",
             )
+        response = self.textract_client.analyze_expense(
+            Document={
+                'Bytes': contents
+            }
+        )
 
         # Do some crazy analysis stuff
 
