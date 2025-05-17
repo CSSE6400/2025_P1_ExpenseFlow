@@ -57,3 +57,7 @@ data "aws_subnets" "private" {
     values = [data.aws_vpc.default.id]
   }
 }
+
+resource "aws_ecs_cluster" "expenseflow" {
+  name = "expenseflow"
+}

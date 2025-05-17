@@ -9,6 +9,7 @@ resource "auth0_client" "expenseflow_ui_client" {
   allowed_origins     = []
   callbacks           = []
   web_origins         = []
+  grant_types         = ["authorization_code", "refresh_token"]
   #   logo_uri            = ""
 
   jwt_configuration {
@@ -31,7 +32,7 @@ resource "auth0_client" "expenseflow_ui_client" {
 }
 
 data "auth0_client" "expenseflow" {
-  name = auth0_client.expenseflow.name
+  name = auth0_client.expenseflow_ui_client.name
 }
 
 resource "auth0_resource_server" "expenseflow_api" {
