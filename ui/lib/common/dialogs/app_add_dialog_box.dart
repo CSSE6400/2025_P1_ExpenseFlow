@@ -21,7 +21,7 @@ Future<String?> showAddCategoryDialog(
   await showDialog(
     context: context,
     barrierDismissible: false,
-    barrierColor: Colors.black.withAlpha(50),
+    barrierColor: Colors.black.withValues(alpha: 50),
     builder: (context) {
       return GestureDetector(
         onTap: () {
@@ -43,9 +43,9 @@ Future<String?> showAddCategoryDialog(
               child: Container(
                 padding: EdgeInsets.all(proportionalSizes.scaleWidth(20)),
                 decoration: BoxDecoration(
-                  color: Colors.white.withAlpha(100),
+                  color: Colors.white.withValues(alpha: 100),
                   borderRadius: BorderRadius.circular(proportionalSizes.scaleWidth(20)),
-                  border: Border.all(color: Colors.white.withAlpha(50)),
+                  border: Border.all(color: Colors.white.withValues(alpha: 50)),
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,

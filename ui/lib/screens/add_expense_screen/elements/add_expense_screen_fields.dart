@@ -6,6 +6,7 @@ import '../../../common/fields/date_field/date_field.dart';
 import '../../../common/fields/dropdown_field.dart';
 import '../../../common/fields/custom_icon_field.dart';
 import '../../../common/proportional_sizes.dart';
+// import '../../../common/show_image.dart';
 
 class AddExpenseScreenFields extends StatefulWidget {
   const AddExpenseScreenFields({super.key});
@@ -126,6 +127,7 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
           trailingIconPath: 'assets/icons/clip.png',
           onTap: () {
             // TODO: Expand to show the receipt
+            // For example, like "showFullScreenImage(context, imageUrl: 'https://example.com/image.png');"
           },
         ),
         SizedBox(height: proportionalSizes.scaleHeight(24)),

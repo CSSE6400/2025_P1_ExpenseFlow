@@ -79,7 +79,7 @@ class _DropdownFieldState extends State<DropdownField> {
                         width: button.size.width -
                             proportionalSizes.scaleWidth(150),
                         decoration: BoxDecoration(
-                          color: Colors.grey.withAlpha(30),
+                          color: Colors.grey.withValues(alpha: 30),
                           borderRadius: BorderRadius.circular(
                             proportionalSizes.scaleWidth(8),
                           ),
@@ -167,7 +167,7 @@ class _DropdownFieldState extends State<DropdownField> {
                                       proportionalSizes.scaleWidth(16),
                                 ),
                                 color: isSelected
-                                    ? labelColor.withAlpha(80)
+                                    ? labelColor.withValues(alpha: 80)
                                     : Colors.transparent,
                                 child: Text(
                                   option,
