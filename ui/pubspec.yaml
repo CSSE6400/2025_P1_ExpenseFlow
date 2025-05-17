@@ -40,6 +40,7 @@ dependencies:
   provider: ^6.1.5
   image_picker: ^1.1.2
   table_calendar: ^3.2.0
+  photo_view: ^0.15.0
 
 dev_dependencies:
   flutter_test:
@@ -84,6 +85,7 @@ flutter:
     - assets/icons/add.png
     - assets/icons/back_button.png
     - assets/icons/check.png
+    - assets/icons/clip.png
     - assets/icons/cross.png
     - assets/icons/dropdown.png
     - assets/icons/expenses.png
@@ -91,6 +93,7 @@ flutter:
     - assets/icons/home.png
     - assets/icons/manual_entry.png
     - assets/icons/scan.png
+    - assets/icons/search.png
     - assets/icons/user.png
     - assets/logo/expenseflow_logo.png
     - assets/logo//expenseflow_logo_full.png
