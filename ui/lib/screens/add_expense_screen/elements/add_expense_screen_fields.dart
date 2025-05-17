@@ -7,6 +7,7 @@ import '../../../common/fields/dropdown_field.dart';
 import '../../../common/fields/custom_icon_field.dart';
 import '../../../common/proportional_sizes.dart';
 // import '../../../common/show_image.dart';
+import '../../../common/snack_bar.dart';
 
 class AddExpenseScreenFields extends StatefulWidget {
   final void Function(bool isValid)? onNameValidityChanged;
@@ -109,11 +110,16 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
           hintText: 'Select Group',
           trailingIconPath: 'assets/icons/search.png',
           inactive: !widget.isAmountValid,
-          onTap: !widget.isAmountValid
-            ? null
-            : () {
-                Navigator.pushNamed(context, '/split_with');
-              },
+          onTap: () {
+            if (!widget.isAmountValid) {
+              showCustomSnackBar(
+                context,
+                normalText: 'Please enter a valid amount.',
+              );
+            } else {
+              Navigator.pushNamed(context, '/split_with');
+            }
+          },
         ),
         CustomDivider(),
 
