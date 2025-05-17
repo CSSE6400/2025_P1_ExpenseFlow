@@ -31,4 +31,4 @@ ENV PATH="/app/.venv/bin:$PATH"
 
 EXPOSE 6400
 
-CMD ["fastapi", "run", "--host", "0.0.0.0", "--port", "6400", "src/expenseflow/main.py"]
+CMD ["fastapi", "run", "--host", "0.0.0.0", "--port", "8080", "src/expenseflow/main.py"]
