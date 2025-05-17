@@ -26,6 +26,11 @@ func configHandler(w http.ResponseWriter, _ *http.Request) {
 	}
 }
 
+func healthHandler(w http.ResponseWriter, _ *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("OK"))
+}
+
 func main() {
 
 	config = map[string]string{
@@ -36,6 +41,7 @@ func main() {
 
 	fs := http.FileServer(http.Dir("./static"))
 	http.HandleFunc("/config", configHandler)
+	http.HandleFunc("/health", healthHandler)
 	http.Handle("/", fs)
 
 	s := &http.Server{
