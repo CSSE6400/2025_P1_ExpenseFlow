@@ -4,6 +4,8 @@ import '../../../common/fields/general_field.dart';
 import '../../../common/custom_divider.dart';
 import '../../../common/fields/date_field/date_field.dart';
 import '../../../common/fields/dropdown_field.dart';
+import '../../../common/fields/custom_icon_field.dart';
+import '../../../common/proportional_sizes.dart';
 
 class AddExpenseScreenFields extends StatefulWidget {
   const AddExpenseScreenFields({super.key});
@@ -30,6 +32,8 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
 
   @override
   Widget build(BuildContext context) {
+    final proportionalSizes = ProportionalSizes(context: context);
+
     return Column(
       children: [
         GeneralField(
@@ -84,6 +88,47 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
             // TODO: Save selected category
           },
         ),
+        CustomDivider(),
+
+        CustomIconField(
+          label: 'Split With',
+          // TODO: Fetch the group or friends names from the database & set the value.
+          // For group, the value should be of the form 'Group - Group Name'
+          // For friends, the value should be of the form 'Friend - Friend Name'
+          value: '',
+          hintText: 'Select Group',
+          trailingIconPath: 'assets/icons/search.png',
+          onTap: () {
+            // TODO: Navigate to the Split With screen
+          },
+        ),
+        CustomDivider(),
+
+        CustomIconField(
+          label: 'Items',
+          // TODO: Fetch the enetered items from the database & set the value.
+          // Items should be of the form 'Item 1, Item 2, Item 3'
+          // like 'Milk, Eggs, Bread'
+          value: '',
+          hintText: 'Specify Items',
+          trailingIconPath: 'assets/icons/add.png',
+          onTap: () {
+            // TODO: Navigate to the Add Items screen
+          },
+        ),
+        CustomDivider(),
+
+        CustomIconField(
+          label: 'Receipt',
+          // TODO: Fetch the name of saved receipt from the database.
+          value: '',
+          hintText: 'Save your Receipt here',
+          trailingIconPath: 'assets/icons/clip.png',
+          onTap: () {
+            // TODO: Expand to show the receipt
+          },
+        ),
+        SizedBox(height: proportionalSizes.scaleHeight(24)),
       ],
     );
   }

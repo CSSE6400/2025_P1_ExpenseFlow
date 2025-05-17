@@ -215,7 +215,7 @@ class _DropdownFieldState extends State<DropdownField> {
               widget.label,
               style: GoogleFonts.roboto(
                 color: labelColor,
-                fontSize: proportionalSizes.scaleText(16),
+                fontSize: proportionalSizes.scaleText(18),
                 fontWeight: FontWeight.w500,
               ),
               maxLines: 2,
@@ -239,7 +239,7 @@ class _DropdownFieldState extends State<DropdownField> {
                         color: selectedOption == null
                             ? hintColor
                             : labelColor,
-                        fontSize: proportionalSizes.scaleText(16),
+                        fontSize: proportionalSizes.scaleText(18),
                       ),
                     ),
                     Padding(

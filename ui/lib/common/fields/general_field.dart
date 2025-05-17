@@ -172,7 +172,7 @@ class GeneralFieldState extends State<GeneralField> {
                 maxLines: isLabelExpanded ? null : 1,
                 overflow: isLabelExpanded ? TextOverflow.visible : TextOverflow.ellipsis,
                 style: GoogleFonts.roboto(
-                  fontSize: proportionalSizes.scaleText(17),
+                  fontSize: proportionalSizes.scaleText(18),
                   fontWeight: FontWeight.w500,
                   color: labelColor,
                 ),
@@ -187,7 +187,7 @@ class GeneralFieldState extends State<GeneralField> {
               readOnly: !widget.isEditable,
               inputFormatters: _buildInputFormatters(),
               style: GoogleFonts.roboto(
-                fontSize: proportionalSizes.scaleText(17),
+                fontSize: proportionalSizes.scaleText(18),
                 color: widget.isEditable ? labelColor : Colors.grey[600],
               ),
               maxLength: widget.maxLength,
@@ -199,7 +199,7 @@ class GeneralFieldState extends State<GeneralField> {
                 hintText: widget.initialValue,
                 hintStyle: GoogleFonts.roboto(
                   color: hintColor,
-                  fontSize: proportionalSizes.scaleText(17),
+                  fontSize: proportionalSizes.scaleText(18),
                 ),
               ),
               cursorColor: Colors.blue,
