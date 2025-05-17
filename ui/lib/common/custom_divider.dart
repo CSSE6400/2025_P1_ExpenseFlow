@@ -8,8 +8,7 @@ import 'color_palette.dart';
 /// - Thin grey line
 /// - Proportional thickness and spacing
 class CustomDivider extends StatelessWidget {
-  /// Whether the screen is in dark mode
-  const CustomDivider({super.key,});
+  const CustomDivider({super.key});
 
   @override
   Widget build(BuildContext context) {

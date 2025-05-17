@@ -20,7 +20,6 @@ String monthName(int month) {
 ///
 /// Features:
 /// - Highlights the currently selected item.
-/// - Supports dark mode styling.
 /// - Displays items in a compact dialog that appears at the widget's position.
 class CustomPopupMenu<T> extends StatelessWidget {
   /// The current selection in the menu.

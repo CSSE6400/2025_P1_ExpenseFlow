@@ -22,7 +22,6 @@ enum ButtonState {
 
 /// A highly reusable and responsive button widget
 /// Supports full, half, quarter, and custom sizes
-/// Adapts to dark mode and supports enabled/disabled state
 class CustomButton extends StatelessWidget {
   /// Text shown on the button
   final String label;

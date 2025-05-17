@@ -30,7 +30,6 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     final proportionalSizes = ProportionalSizes(context: context);
 
-    // Set colors according to dark mode status
     final textColor = ColorPalette.primaryAction;
 
     return AppBar(

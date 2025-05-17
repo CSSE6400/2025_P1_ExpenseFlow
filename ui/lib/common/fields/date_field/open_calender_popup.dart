@@ -12,7 +12,6 @@ import '../../color_palette.dart';
 /// Opens a dialog-based calendar for selecting dates, restricted to between 1905 and the current year.
 ///
 /// Features:
-/// - Dark mode styling.
 /// - Arrows and a custom year/month dropdown for navigation.
 /// - Disables future dates beyond the current day.
 void openCalendarPopup({

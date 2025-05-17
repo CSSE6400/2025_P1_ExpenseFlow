@@ -6,7 +6,6 @@ import 'proportional_sizes.dart';
 
 /// A common widget for creating consistently styled icons across the app.
 /// - Uses default size 24x24 (scalable)
-/// - Applies dark mode-aware coloring unless overridden
 class IconMaker extends StatelessWidget {
   /// Path to the image asset, e.g., 'assets/icons/back_button.png'
   final String assetPath;
