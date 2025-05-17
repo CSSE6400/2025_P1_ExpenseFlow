@@ -107,7 +107,7 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
           hintText: 'Select Group',
           trailingIconPath: 'assets/icons/search.png',
           onTap: () {
-            // TODO: Navigate to the Split With screen
+            Navigator.pushNamed(context, '/split_with');
           },
         ),
         CustomDivider(),
