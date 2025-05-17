@@ -15,6 +15,7 @@ from expenseflow.expense_item.schemas import ExpenseItemCreate  # noqa: F401
 from expenseflow.plugin import Plugin, PluginSettings, register_plugin
 
 import base64
+from botocore.exceptions import ClientError
 
 
 class TextractPluginSettings(PluginSettings):
@@ -69,11 +70,26 @@ class TextractPlugin(Plugin[PluginSettings]):
                 status.HTTP_404_NOT_FOUND,
                 detail=f"Parent under the id '{parent_id}' could not be found",
             )
-        response = self.textract_client.analyze_expense(
-            Document={
-                'Bytes': contents
-            }
-        )
+        try:
+            response = self.textract_client.analyze_expense(
+                Document={
+                    'Bytes': contents
+                }
+            )
+        except ClientError as e:
+            error_code = e.response['Error']['Code']
+            error_message = e.response['Error']['Message']
+
+            if error_code == 'UnsupportedDocumentException':
+                raise HTTPException(
+                    status.HTTP_400_BAD_REQUEST,
+                    detail="Unsupported document format. Please upload a PNG or JPEG image."
+                )
+            else:
+                raise HTTPException(
+                    status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail=f"Textract error: {error_message}"
+                )
 
         # Do some crazy analysis stuff
 
