@@ -1,13 +1,18 @@
 // Flutter imports
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/utils/config.dart' show Config;
+import 'package:provider/provider.dart' show Provider;
 // Screens
 import '../../screens/initial_startup_screen/initial_startup_screen.dart';
 import '../../screens/profile_setup_screen/profile_setup_screen.dart';
 import '../../screens/home_screen/home_screen.dart';
 import '../../screens/add_expense_screen/add_expense_screen.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final config = await Config.load();
+
+  runApp(Provider<Config>.value(value: config, child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -15,9 +20,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final config = Provider.of<Config>(context, listen: false);
 
     return MaterialApp(
-      title: 'Expense Flow',
+      // title: 'Expense Flow - ${config.backendBaseUrl}',
+      title: 'Expense Flow}',
       debugShowCheckedModeBanner: false,
       themeMode: ThemeMode.light, // Force light mode
 

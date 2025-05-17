@@ -1,5 +1,5 @@
-# Use the Flutter SDK image as base
-FROM dart:stable AS build
+# Build the flutter app
+FROM dart:stable AS ui_build
 
 # Install Flutter dependencies
 RUN apt-get update && \
@@ -27,8 +27,22 @@ RUN flutter pub get
 # Build for web
 RUN flutter build web --release
 
-# Use Nginx to serve the web build
-FROM nginx:stable-alpine
-COPY --from=build /app/build/web /usr/share/nginx/html
-EXPOSE 8080
-CMD ["nginx", "-g", "daemon off;"]
+# Build the server
+FROM golang:1.24-alpine AS server_build
+
+WORKDIR /
+
+# Copy the source code
+COPY main.go go.mod /
+
+# Build the Go application
+RUN CGO_ENABLED=0 GOOS=linux go build
+
+# Use server to serve the flutter app
+FROM alpine:latest
+RUN apk add curl
+WORKDIR /
+COPY --from=ui_build /app/build/web /static
+COPY --from=server_build /ui-server .
+EXPOSE 3000
+CMD ["./ui-server"]
