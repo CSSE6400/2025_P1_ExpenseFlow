@@ -61,8 +61,8 @@ class CustomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Initialize proportional scaler to adjust sizes responsively
-    final scaler = ProportionalSizes(context: context);
+    // Initialize proportional proportionalSizes to adjust sizes responsively
+    final proportionalSizes = ProportionalSizes(context: context);
 
     // Set size and font based on button type
     double width;
@@ -70,24 +70,24 @@ class CustomButton extends StatelessWidget {
     double fontSize;
     switch (sizeType) {
       case ButtonSizeType.full:
-        width = scaler.scaleWidth(363);
-        height = scaler.scaleHeight(50);
-        fontSize = scaler.scaleText(18);
+        width = proportionalSizes.scaleWidth(363);
+        height = proportionalSizes.scaleHeight(50);
+        fontSize = proportionalSizes.scaleText(18);
         break;
       case ButtonSizeType.half:
-        width = scaler.scaleWidth(220);
-        height = scaler.scaleHeight(40);
-        fontSize = scaler.scaleText(18);
+        width = proportionalSizes.scaleWidth(220);
+        height = proportionalSizes.scaleHeight(40);
+        fontSize = proportionalSizes.scaleText(18);
         break;
       case ButtonSizeType.quarter:
-        width = scaler.scaleWidth(90);
-        height = scaler.scaleHeight(30);
-        fontSize = scaler.scaleText(12);
+        width = proportionalSizes.scaleWidth(90);
+        height = proportionalSizes.scaleHeight(30);
+        fontSize = proportionalSizes.scaleText(12);
         break;
       case ButtonSizeType.custom:
-        width = scaler.scaleWidth(customWidth ?? 220);
-        height = scaler.scaleHeight(customHeight ?? 40);
-        fontSize = scaler.scaleText(customFontSize ?? 18);
+        width = proportionalSizes.scaleWidth(customWidth ?? 220);
+        height = proportionalSizes.scaleHeight(customHeight ?? 40);
+        fontSize = proportionalSizes.scaleText(customFontSize ?? 18);
         break;
     }
 
@@ -111,11 +111,11 @@ class CustomButton extends StatelessWidget {
           side: boundary
               ? BorderSide(
                   color: bgColor,
-                  width: scaler.scaleWidth(2),
+                  width: proportionalSizes.scaleWidth(2),
                 )
               : BorderSide.none,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(scaler.scaleWidth(8)),
+            borderRadius: BorderRadius.circular(proportionalSizes.scaleWidth(8)),
           ),
         ),
         onPressed: isEnabled ? onPressed : null,

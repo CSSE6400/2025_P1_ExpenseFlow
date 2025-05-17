@@ -6,7 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../common/color_palette.dart';
 import '../../../common/proportional_sizes.dart';
 import '../../../common/icon_maker.dart';
-import '../../../common/dialog_box.dart';
+import '../../../common/dialogs/app_dialog_box.dart';
 import '../../../common/web_file_helper.dart';
 import '../../../common/snack_bar.dart';
 

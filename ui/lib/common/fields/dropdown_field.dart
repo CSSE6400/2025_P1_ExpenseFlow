@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../proportional_sizes.dart';
 import '../color_palette.dart';
 import '../icon_maker.dart';
+import '../dialogs/app_add_dialog_box.dart';
 
 class DropdownField extends StatefulWidget {
   final String label;
@@ -28,6 +29,13 @@ class DropdownField extends StatefulWidget {
 
 class _DropdownFieldState extends State<DropdownField> {
   String? selectedOption;
+  late List<String> options;
+
+  @override
+  void initState() {
+    super.initState();
+    options = List<String>.from(widget.options);
+  }
 
   void _showDropdownDialog(BuildContext context) {
     final RenderBox button = context.findRenderObject() as RenderBox;
@@ -59,7 +67,7 @@ class _DropdownFieldState extends State<DropdownField> {
                     child: Material(
                       color: Colors.transparent,
                       child: Container(
-                        height: proportionalSizes.scaleHeight(160),
+                        height: proportionalSizes.scaleHeight(200),
                         width: button.size.width -
                             proportionalSizes.scaleWidth(150),
                         decoration: BoxDecoration(
@@ -69,11 +77,12 @@ class _DropdownFieldState extends State<DropdownField> {
                           ),
                         ),
                         child: ListView.builder(
-                          itemCount: widget.options.length + 1,
+                          itemCount: options.length + 2, // +1 for placeholder, +1 for add new
                           itemExtent: proportionalSizes.scaleHeight(40),
                           padding: EdgeInsets.zero,
                           itemBuilder: (context, index) {
                             if (index == 0) {
+                              // Placeholder
                               return InkWell(
                                 onTap: () {
                                   setState(() => selectedOption = null);
@@ -96,9 +105,40 @@ class _DropdownFieldState extends State<DropdownField> {
                                   ),
                                 ),
                               );
+                            } else if (index == options.length + 1) {
+                              // Add new category
+                              return InkWell(
+                                onTap: () async {
+                                  final newCategory = await showAddCategoryDialog(context);
+                                  if (newCategory != null &&
+                                      newCategory.trim().isNotEmpty) {
+                                    setState(() {
+                                      options.add(newCategory);
+                                      selectedOption = newCategory;
+                                    });
+                                    widget.onChanged?.call(newCategory);
+                                    // TODO: Save new category to persistent store
+                                  }
+                                  Navigator.pop(context);
+                                },
+                                child: Container(
+                                  alignment: Alignment.centerLeft,
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: proportionalSizes.scaleWidth(16),
+                                  ),
+                                  child: Text(
+                                    '+ Add New Category',
+                                    style: GoogleFonts.roboto(
+                                      color: ColorPalette.primaryAction,
+                                      fontSize: proportionalSizes.scaleText(16),
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              );
                             }
 
-                            final option = widget.options[index - 1];
+                            final option = options[index - 1];
                             final isSelected = option == selectedOption;
 
                             return InkWell(
@@ -114,7 +154,7 @@ class _DropdownFieldState extends State<DropdownField> {
                                       proportionalSizes.scaleWidth(16),
                                 ),
                                 color: isSelected
-                                    ? labelColor.withValues(alpha: 80)
+                                    ? labelColor.withAlpha(80)
                                     : Colors.transparent,
                                 child: Text(
                                   option,
