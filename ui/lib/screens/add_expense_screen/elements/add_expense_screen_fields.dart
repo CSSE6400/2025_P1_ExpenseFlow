@@ -9,7 +9,14 @@ import '../../../common/proportional_sizes.dart';
 // import '../../../common/show_image.dart';
 
 class AddExpenseScreenFields extends StatefulWidget {
-  const AddExpenseScreenFields({super.key});
+  final void Function(bool isValid)? onNameValidityChanged;
+  final void Function(bool isValid)? onAmountValidityChanged;
+
+  const AddExpenseScreenFields({
+    super.key,
+    this.onNameValidityChanged,
+    this.onAmountValidityChanged,
+  });
 
   @override
   State<AddExpenseScreenFields> createState() => _AddExpenseScreenFieldsState();
@@ -43,7 +50,7 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
           isEditable: true,
           showStatusIcon: true,
           validationRule: (value) => value.trim().isNotEmpty,
-          onValidityChanged: updateNameValidity,
+          onValidityChanged: widget.onNameValidityChanged,
           maxLength: 50,
           onChanged: (value) {
             // TODO: Save name field value
@@ -70,7 +77,7 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
             final number = double.tryParse(value.trim());
             return number != null && number > 0;
           },
-          onValidityChanged: updateAmountValidity,
+          onValidityChanged: widget.onAmountValidityChanged,
           maxLength: 10,
           onChanged: (value) {
             // TODO: Save amount field value
