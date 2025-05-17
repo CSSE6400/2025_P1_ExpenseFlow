@@ -55,6 +55,7 @@ class _AddExpenseScreenMainBodyState extends State<AddExpenseScreenMainBody> {
               AddExpenseScreenFields(
                 onNameValidityChanged: updateNameValidity,
                 onAmountValidityChanged: updateAmountValidity,
+                isAmountValid: isAmountValid,
               ),
               SizedBox(height: proportionalSizes.scaleHeight(24)),
 

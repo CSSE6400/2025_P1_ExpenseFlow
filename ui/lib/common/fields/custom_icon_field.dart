@@ -28,6 +28,9 @@ class CustomIconField extends StatelessWidget {
   /// Whether field is editable
   final bool isEnabled;
 
+  /// If true, dims the label (typically for inactive fields)
+  final bool inactive;
+
   const CustomIconField({
     super.key,
     required this.label,
@@ -36,13 +39,14 @@ class CustomIconField extends StatelessWidget {
     this.trailingIconPath,
     this.onTap,
     this.isEnabled = true,
+    this.inactive = false,
   });
 
   @override
   Widget build(BuildContext context) {
     final proportionalSizes = ProportionalSizes(context: context);
-    final labelColor = ColorPalette.primaryText;
     final hintColor = ColorPalette.secondaryText;
+    final labelColor = inactive ? hintColor : ColorPalette.primaryText;
     final showHint = value.trim().isEmpty;
 
     return GestureDetector(
@@ -86,6 +90,7 @@ class CustomIconField extends StatelessWidget {
                 ),
                 child: IconMaker(
                   assetPath: trailingIconPath!,
+                  color: inactive ? hintColor : null,
                 ),
               ),
           ],

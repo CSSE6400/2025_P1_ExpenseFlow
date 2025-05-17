@@ -11,11 +11,13 @@ import '../../../common/proportional_sizes.dart';
 class AddExpenseScreenFields extends StatefulWidget {
   final void Function(bool isValid)? onNameValidityChanged;
   final void Function(bool isValid)? onAmountValidityChanged;
+  final bool isAmountValid;
 
   const AddExpenseScreenFields({
     super.key,
     this.onNameValidityChanged,
     this.onAmountValidityChanged,
+    this.isAmountValid = false,
   });
 
   @override
@@ -106,9 +108,12 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
           value: '',
           hintText: 'Select Group',
           trailingIconPath: 'assets/icons/search.png',
-          onTap: () {
-            Navigator.pushNamed(context, '/split_with');
-          },
+          inactive: !widget.isAmountValid,
+          onTap: !widget.isAmountValid
+            ? null
+            : () {
+                Navigator.pushNamed(context, '/split_with');
+              },
         ),
         CustomDivider(),
 
@@ -120,10 +125,13 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
           value: '',
           hintText: 'Specify Items',
           trailingIconPath: 'assets/icons/add.png',
-          onTap: () {
-            // TODO: Navigate to the Add Items screen
-          },
-        ),
+          inactive: !widget.isAmountValid,
+          onTap: !widget.isAmountValid
+            ? null
+            : () {
+                // TODO: Navigate to the Add Items screen
+              },
+              ),
         CustomDivider(),
 
         CustomIconField(
@@ -135,6 +143,18 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
           onTap: () {
             // TODO: Expand to show the receipt
             // For example, like "showFullScreenImage(context, imageUrl: 'https://example.com/image.png');"
+          },
+        ),
+        CustomDivider(),
+
+        GeneralField(
+          label: 'Notes',
+          initialValue: 'Enter any notes here',
+          isEditable: true,
+          showStatusIcon: false,
+          maxLength: 200,
+          onChanged: (value) {
+            // TODO: Save notes field value
           },
         ),
         SizedBox(height: proportionalSizes.scaleHeight(24)),
