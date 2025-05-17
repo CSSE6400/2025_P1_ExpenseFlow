@@ -91,7 +91,5 @@ class TextractPlugin(Plugin[PluginSettings]):
                     detail=f"Textract error: {error_message}"
                 )
 
-        # Do some crazy analysis stuff
-
-        # expense_in = ExpenseCreate(........)
-        # return await create_expense(db, user, expense_in, parent)
+        expense_in = ExpenseCreate() # Need to fill this in
+        return await create_expense(db, user, expense_in, parent)
