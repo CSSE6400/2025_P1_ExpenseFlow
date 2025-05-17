@@ -14,7 +14,6 @@ import 'icon_maker.dart';
 Future<void> showFullScreenImage(
   BuildContext context, {
   required String imageUrl,
-  bool isDarkMode = false,
 }) async {
   final proportionalSizes = ProportionalSizes(context: context);
   final backgroundColor = ColorPalette.background;

@@ -84,11 +84,13 @@ flutter:
   assets:
     - assets/icons/add.png
     - assets/icons/back_button.png
+    - assets/icons/camera.png
     - assets/icons/check.png
     - assets/icons/clip.png
     - assets/icons/cross.png
     - assets/icons/dropdown.png
     - assets/icons/expenses.png
+    - assets/icons/gallery.png
     - assets/icons/group.png
     - assets/icons/home.png
     - assets/icons/manual_entry.png
