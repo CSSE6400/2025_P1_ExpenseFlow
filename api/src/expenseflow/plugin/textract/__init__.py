@@ -5,6 +5,8 @@ from uuid import UUID
 import boto3
 from fastapi import HTTPException, status, File, UploadFile
 
+import enums
+
 from expenseflow.auth.deps import CurrentUser
 from expenseflow.database.deps import DbSession
 from expenseflow.entity.service import get_entity
@@ -90,6 +92,31 @@ class TextractPlugin(Plugin[PluginSettings]):
                     status.HTTP_500_INTERNAL_SERVER_ERROR,
                     detail=f"Textract error: {error_message}"
                 )
-
-        expense_in = ExpenseCreate() # Need to fill this in
+        summary_fields = response["ExpenseDocuments"][0].get("SummaryFields", [])
+        item_groups = response["ExpenseDocument"][0].get("LineItemGroups", [])
+        vendor_name = ""
+        category = enums.ExpenseCategory.auto
+        items: list[ExpenseItemCreate]
+        for field in summary_fields:
+            if field["Type"]["Text"] == "VENDOR_NAME":
+                vendor_name = field.get("Value", "")
+                break
+        for item_list in item_groups:
+            for item in item_list.get("LineItems", []):
+                item_name = "Name not detected"
+                item_quantity = -1
+                item_price = -1.0
+                for field in item.get("LineItemExpenseFields", []):
+                    field_type = field.get("Type", []).get("Text", [])
+                    if field_type == "ITEM":
+                        item_name = field.get("ValueDetection", {}).get("Text")
+                    elif field_type == "QUANTITY":
+                        item_quantity = int(field.get("ValueDetection", {}).get("Text"))
+                    elif field_type == "UNIT_PRICE":
+                        item_price = float(field.get("ValueDetection", {}).get("Text"))
+                
+                items.add(ExpenseItemCreate(item_name, item_quantity, item_price))
+        
+        description = f"Auto-generated expense from receipt from {vendor_name}."
+        expense_in = ExpenseCreate(vendor_name, description, category, items) # Need to fill this in
         return await create_expense(db, user, expense_in, parent)
