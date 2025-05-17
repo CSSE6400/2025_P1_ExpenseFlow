@@ -118,5 +118,5 @@ class TextractPlugin(Plugin[PluginSettings]):
                 items.add(ExpenseItemCreate(item_name, item_quantity, item_price))
         
         description = f"Auto-generated expense from receipt from {vendor_name}."
-        expense_in = ExpenseCreate(vendor_name, description, category, items) # Need to fill this in
+        expense_in = ExpenseCreate(vendor_name, description, category, items)
         return await create_expense(db, user, expense_in, parent)
