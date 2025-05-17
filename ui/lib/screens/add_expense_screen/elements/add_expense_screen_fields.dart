@@ -39,6 +39,7 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
           showStatusIcon: true,
           validationRule: (value) => value.trim().isNotEmpty,
           onValidityChanged: updateNameValidity,
+          maxLength: 50,
           onChanged: (value) {
             // TODO: Save name field value
           },
@@ -65,6 +66,7 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
             return number != null && number > 0;
           },
           onValidityChanged: updateAmountValidity,
+          maxLength: 10,
           onChanged: (value) {
             // TODO: Save amount field value
           },
@@ -73,8 +75,11 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
 
         DropdownField(
           label: 'Category',
-          options: ['Groceries', 'Transport', 'Bills', 'Entertainment'],
+          options: ['Groceries', 'Transport', 'Bills', 'Entertainment'], // TODO: Fetch categories from the database
           placeholder: 'Select Category',
+          addDialogHeading: 'New Category',
+          addDialogHintText: 'Enter category name',
+          addDialogMaxLength: 20,
           onChanged: (value) {
             // TODO: Save selected category
           },

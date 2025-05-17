@@ -88,6 +88,7 @@ class _ProfileSetupScreenSubRectangleState
                 return nameRegex.hasMatch(value.trim());
               },
               onValidityChanged: updateNameValidity,
+              maxLength: 50,
               onChanged: (value) {
                 // TODO: Save name field value
               },
@@ -124,6 +125,7 @@ class _ProfileSetupScreenSubRectangleState
                 return number != null && number > 0;
               },
               onValidityChanged: updateBudgetValidity,
+              maxLength: 10,
               onChanged: (value) {
                 // TODO: Save monthly budget field value
               },

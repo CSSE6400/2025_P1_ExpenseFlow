@@ -43,6 +43,9 @@ class GeneralField extends StatefulWidget {
   /// Constructor for the GeneralField widget.
   final ValueChanged<String>? onChanged;
 
+  /// Maximum length of the input
+  final int? maxLength;
+
   const GeneralField({
     super.key,
     required this.label,
@@ -53,6 +56,7 @@ class GeneralField extends StatefulWidget {
     this.inputRules,
     this.onValidityChanged,
     this.onChanged,
+    this.maxLength,
   });
 
   @override
@@ -186,8 +190,10 @@ class GeneralFieldState extends State<GeneralField> {
                 fontSize: proportionalSizes.scaleText(17),
                 color: widget.isEditable ? labelColor : Colors.grey[600],
               ),
+              maxLength: widget.maxLength,
               decoration: InputDecoration(
                 isDense: true,
+                counterText: '',
                 contentPadding: const EdgeInsets.symmetric(vertical: 8),
                 border: InputBorder.none,
                 hintText: widget.initialValue,

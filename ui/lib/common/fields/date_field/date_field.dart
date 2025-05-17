@@ -17,11 +17,15 @@ class DateField extends StatefulWidget {
   /// Callback when a new date is selected
   final ValueChanged<DateTime>? onChanged;
 
+  /// Whether field is editable
+  final bool isEditable;
+
   const DateField({
     super.key,
     required this.label,
     this.initialDate,
     this.onChanged,
+    this.isEditable = true,
   });
 
   @override
@@ -77,20 +81,22 @@ class _DateFieldState extends State<DateField> {
           SizedBox(width: proportionalSizes.scaleWidth(8)),
 
           GestureDetector(
-            onTap: () {
-              openCalendarPopup(
-                context: context,
-                initialDate: _selectedDate,
-                onChanged: (selectedDate) {
-                  setState(() {
-                    _selectedDate = selectedDate;
-                  });
-                  if (widget.onChanged != null) {
-                    widget.onChanged!(selectedDate);
-                  }
-                },
-              );
-            },
+            onTap: widget.isEditable
+              ? () {
+                  openCalendarPopup(
+                    context: context,
+                    initialDate: _selectedDate,
+                    onChanged: (selectedDate) {
+                      setState(() {
+                        _selectedDate = selectedDate;
+                      });
+                      if (widget.onChanged != null) {
+                        widget.onChanged!(selectedDate);
+                      }
+                    },
+                  );
+                }
+              : null,
             child: Container(
               padding: EdgeInsets.symmetric(
                 horizontal: proportionalSizes.scaleWidth(10),

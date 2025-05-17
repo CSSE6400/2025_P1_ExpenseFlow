@@ -14,13 +14,21 @@ class DropdownField extends StatefulWidget {
   final List<String> options;
   final ValueChanged<String?>? onChanged;
   final String? placeholder;
+  final String addDialogHeading;
+  final String addDialogHintText;
+  final int addDialogMaxLength;
+  final bool isEditable;
 
   const DropdownField({
     super.key,
     required this.label,
     required this.options,
+    required this.addDialogHeading,
+    required this.addDialogHintText,
+    required this.addDialogMaxLength,
     this.onChanged,
     this.placeholder,
+    this.isEditable = true,
   });
 
   @override
@@ -109,7 +117,12 @@ class _DropdownFieldState extends State<DropdownField> {
                               // Add new category
                               return InkWell(
                                 onTap: () async {
-                                  final newCategory = await showAddCategoryDialog(context);
+                                  final newCategory = await showAddCategoryDialog(
+                                    context,
+                                    heading: widget.addDialogHeading,
+                                    hintText: widget.addDialogHintText,
+                                    maxLength: widget.addDialogMaxLength,
+                                  );
                                   if (newCategory != null &&
                                       newCategory.trim().isNotEmpty) {
                                     setState(() {
@@ -212,7 +225,7 @@ class _DropdownFieldState extends State<DropdownField> {
           SizedBox(width: proportionalSizes.scaleWidth(8)),
           Expanded(
             child: GestureDetector(
-              onTap: () => _showDropdownDialog(context),
+              onTap: widget.isEditable ? () => _showDropdownDialog(context) : null,
               child: Container(
                 padding: EdgeInsets.symmetric(
                   vertical: proportionalSizes.scaleHeight(4),

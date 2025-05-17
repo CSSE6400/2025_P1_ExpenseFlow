@@ -5,12 +5,17 @@ import '../proportional_sizes.dart';
 import '../custom_button.dart';
 import '../color_palette.dart';
 
-Future<String?> showAddCategoryDialog(BuildContext context) async {
+Future<String?> showAddCategoryDialog(
+  BuildContext context, {
+  required String heading,
+  required String hintText,
+  required int maxLength,
+}) async {
   final proportionalSizes = ProportionalSizes(context: context);
   final TextEditingController controller = TextEditingController();
+  final FocusNode inputFocusNode = FocusNode();
   final boundaryColor = ColorPalette.primaryAction;
   final hintColor = ColorPalette.secondaryText;
-  final FocusNode inputFocusNode = FocusNode();
   String? result;
 
   await showDialog(
@@ -46,7 +51,7 @@ Future<String?> showAddCategoryDialog(BuildContext context) async {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      'New Category',
+                      heading,
                       style: GoogleFonts.roboto(
                         fontSize: proportionalSizes.scaleText(18),
                         fontWeight: FontWeight.w600,
@@ -56,6 +61,13 @@ Future<String?> showAddCategoryDialog(BuildContext context) async {
                     SizedBox(height: proportionalSizes.scaleHeight(12)),
                     TextField(
                       controller: controller,
+                      focusNode: inputFocusNode,
+                      autofocus: true,
+                      maxLength: maxLength,
+                      textCapitalization: TextCapitalization.none,
+                      style: GoogleFonts.roboto(
+                        fontSize: proportionalSizes.scaleText(16),
+                      ),
                       onChanged: (value) {
                         // Filter: keep only letters, numbers, and spaces
                         final cleaned = value.replaceAll(RegExp(r'[^a-zA-Z0-9 ]'), '');
@@ -76,13 +88,8 @@ Future<String?> showAddCategoryDialog(BuildContext context) async {
                           );
                         }
                       },
-                      focusNode: inputFocusNode,
-                      autofocus: true,
-                      style: GoogleFonts.roboto(fontSize: proportionalSizes.scaleText(16)),
-                      maxLength: 20,
-                      textCapitalization: TextCapitalization.words,
                       decoration: InputDecoration(
-                        hintText: 'Enter category name',
+                        hintText: hintText,
                         hintStyle: GoogleFonts.roboto(
                           fontSize: proportionalSizes.scaleText(15),
                           color: hintColor,
