@@ -9,6 +9,7 @@ import '../../screens/home_screen/home_screen.dart';
 import '../../screens/add_expense_screen/add_expense_screen.dart';
 import '../../screens/split_with_screen/split_with_screen.dart';
 import '../../screens/add_items_screen/add_items_screen.dart';
+import 'screens/expenses_screen/expenses_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -44,6 +45,8 @@ class MyApp extends StatelessWidget {
             return MaterialPageRoute(builder: (_) => const AddExpenseScreen());
           case '/split_with':
             return MaterialPageRoute(builder: (_) => const SplitWithScreen());
+          case '/expenses':
+            return MaterialPageRoute(builder: (_) => const ExpensesScreen());
           case '/add_items':
             final args = settings.arguments as Map<String, dynamic>?;
 
