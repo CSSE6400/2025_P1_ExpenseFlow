@@ -54,11 +54,9 @@ class TextractPlugin(Plugin[TextractPluginSettings]):
         # Close boto3 client
 
     async def handle_receipt(
-        self, db: DbSession, user: CurrentUser, parent_id: UUID, file: UploadFile | None = None
+        self, db: DbSession, user: CurrentUser, parent_id: UUID, file: UploadFile
     ) -> ExpenseModel:
         """Route to extract receipt info."""
-        if not file:
-            raise HTTPException(status.HTTP_400_BAD_REQUEST, detail="No file provided")
         contents = await file.read()
         bytes64 = base64.b64encode(contents)
         if (len(bytes64) > 5 * 1024 * 1024):
