@@ -96,6 +96,7 @@ flutter:
     - assets/icons/group.png
     - assets/icons/home.png
     - assets/icons/manual_entry.png
+    - assets/icons/minus.png
     - assets/icons/scan.png
     - assets/icons/search.png
     - assets/icons/user.png
