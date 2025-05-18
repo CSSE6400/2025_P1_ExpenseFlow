@@ -15,7 +15,7 @@ class SplitWithScreenMainBody extends StatelessWidget {
         child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(
             horizontal: proportionalSizes.scaleWidth(20),
-            vertical: proportionalSizes.scaleHeight(20),
+            vertical: proportionalSizes.scaleHeight(0),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
