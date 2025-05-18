@@ -23,8 +23,6 @@ class JWTManager(metaclass=SingletonMeta):
         """Constructor for JWT manager."""
         logger.info("CREATING JWT MANAGER")
         jwks_url = f"https://{domain}/.well-known/jwks.json"
-        logger.info(jwks_url)
-        logger.error(jwks_url)
         self._jwt_audience = jwt_audience
         self._domain = domain
         self.jwks_client = jwt.PyJWKClient(jwks_url)
