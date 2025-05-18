@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../common/color_palette.dart';
 import '../../../common/proportional_sizes.dart';
 import '../../../common/icon_maker.dart';
+import '../../../common/scan_receipt.dart';
 
 class AddExpenseScreenScanReceipt extends StatelessWidget {
   const AddExpenseScreenScanReceipt({super.key});
@@ -17,7 +18,9 @@ class AddExpenseScreenScanReceipt extends StatelessWidget {
 
     return InkWell(
       onTap: () {
-        // TODO: Implement scan receipt functionality
+        handleScanReceiptUpload(
+          context: context,
+        );
       },
       borderRadius: BorderRadius.circular(proportionalSizes.scaleWidth(12)),
       child: Container(

@@ -7,6 +7,7 @@ import '../../screens/initial_startup_screen/initial_startup_screen.dart';
 import '../../screens/profile_setup_screen/profile_setup_screen.dart';
 import '../../screens/home_screen/home_screen.dart';
 import '../../screens/add_expense_screen/add_expense_screen.dart';
+import '../../screens/split_with_screen/split_with_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,6 +36,7 @@ class MyApp extends StatelessWidget {
         '/profile_setup': (context) => const ProfileSetupScreen(),
         '/home': (context) => const HomeScreen(),
         '/add_expense': (context) => const AddExpenseScreen(),
+        '/split_with': (context) => const SplitWithScreen(),
       },
 
       // TODO: Add login check and show appropriate screen. Use "isLoggedIn" method to determine if the user is logged in or not.

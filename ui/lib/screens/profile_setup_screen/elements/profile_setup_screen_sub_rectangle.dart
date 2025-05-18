@@ -30,7 +30,7 @@ class _ProfileSetupScreenSubRectangleState
     setState(() => isNameValid = isValid);
   }
 
-  void updateEmailValidity(bool isValid) {
+  void updateUsernameValidity(bool isValid) {
     setState(() => isEmailValid = isValid);
   }
 
@@ -41,6 +41,11 @@ class _ProfileSetupScreenSubRectangleState
   Future <void> onSave() async {
     // TODO: Handle save functionality
     Navigator.pushNamed(context, '/home');
+  }
+
+  bool isUsernameUnique(String username) {
+    // TODO: Replace with actual backend API call to check uniqueness
+    return true; // temporary mock return
   }
 
   @override
@@ -88,26 +93,37 @@ class _ProfileSetupScreenSubRectangleState
                 return nameRegex.hasMatch(value.trim());
               },
               onValidityChanged: updateNameValidity,
+              maxLength: 50,
               onChanged: (value) {
                 // TODO: Save name field value
               },
             ),
             CustomDivider(),
 
-            // Email field
+            // Username field
             GeneralField(
-              label: 'Email ID*',
-              initialValue: 'example@email.com',
+              label: 'Username*',
+              initialValue: 'user_name',
               isEditable: true,
               showStatusIcon: true,
+              inputRules: [
+                InputRuleType.noSpaces, // prevent accidental space
+              ],
               validationRule: (value) {
-                const pattern =
-                    r'^[a-zA-Z\d._%+-]+@[a-zA-Z\d.-]+\.[a-zA-Z]{2,}$';
-                return RegExp(pattern).hasMatch(value.trim());
+                final username = value.trim();
+                // Rule 1: Length
+                if (username.length < 5 || username.length > 20) return false;
+                // Rule 2: Alphanumeric + - and _
+                final regex = RegExp(r'^[a-zA-Z0-9_-]+$');
+                if (!regex.hasMatch(username)) return false;
+                // Rule 3: Unique username check (mock logic now)
+                return isUsernameUnique(username);
               },
-              onValidityChanged: updateEmailValidity,
+              onValidityChanged: updateUsernameValidity,
+              maxLength: 20,
+              focusInstruction: 'Username must be 5–20 characters and may contain letters, numbers, - or _',
               onChanged: (value) {
-                // TODO: Save email field value
+                // TODO: Save username field value
               },
             ),
             CustomDivider(),
@@ -124,6 +140,7 @@ class _ProfileSetupScreenSubRectangleState
                 return number != null && number > 0;
               },
               onValidityChanged: updateBudgetValidity,
+              maxLength: 10,
               onChanged: (value) {
                 // TODO: Save monthly budget field value
               },

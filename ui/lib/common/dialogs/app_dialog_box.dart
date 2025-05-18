@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 // Third-party imports
 import 'package:google_fonts/google_fonts.dart';
 // Common imports
-import 'proportional_sizes.dart';
-import 'custom_button.dart';
+import '../proportional_sizes.dart';
+import '../custom_button.dart';
 
 /// A reusable dialog box that supports 1 or 2 buttons with custom text, styling, and behavior.
 class AppDialogBox extends StatelessWidget {
@@ -34,25 +34,25 @@ class AppDialogBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scaler = ProportionalSizes(context: context);
+    final proportionalSizes = ProportionalSizes(context: context);
 
     return Dialog(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(scaler.scaleWidth(20)),
+        borderRadius: BorderRadius.circular(proportionalSizes.scaleWidth(20)),
       ),
       backgroundColor: Colors.transparent,
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(scaler.scaleWidth(20)),
+        borderRadius: BorderRadius.circular(proportionalSizes.scaleWidth(20)),
         child: BackdropFilter(
           filter: ImageFilter.blur(
-            sigmaX: scaler.scaleWidth(15.0),
-            sigmaY: scaler.scaleWidth(15.0),
+            sigmaX: proportionalSizes.scaleWidth(15.0),
+            sigmaY: proportionalSizes.scaleWidth(15.0),
           ),
           child: Container(
-            padding: EdgeInsets.all(scaler.scaleWidth(20)),
+            padding: EdgeInsets.all(proportionalSizes.scaleWidth(20)),
             decoration: BoxDecoration(
               color: Colors.white.withValues(alpha: 0.4),
-              borderRadius: BorderRadius.circular(scaler.scaleWidth(20)),
+              borderRadius: BorderRadius.circular(proportionalSizes.scaleWidth(20)),
               border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
             ),
             child: Column(
@@ -61,21 +61,21 @@ class AppDialogBox extends StatelessWidget {
                 Text(
                   heading,
                   style: GoogleFonts.roboto(
-                    fontSize: scaler.scaleText(18),
+                    fontSize: proportionalSizes.scaleText(18),
                     fontWeight: FontWeight.w600,
                     color: Colors.black,
                   ),
                 ),
-                SizedBox(height: scaler.scaleHeight(12)),
+                SizedBox(height: proportionalSizes.scaleHeight(12)),
                 Text(
                   description,
                   textAlign: TextAlign.center,
                   style: GoogleFonts.roboto(
-                    fontSize: scaler.scaleText(15),
+                    fontSize: proportionalSizes.scaleText(15),
                     color: Colors.black87,
                   ),
                 ),
-                SizedBox(height: scaler.scaleHeight(20)),
+                SizedBox(height: proportionalSizes.scaleHeight(20)),
                 if (buttonCount == 1)
                   CustomButton(
                     label: button1Text,
