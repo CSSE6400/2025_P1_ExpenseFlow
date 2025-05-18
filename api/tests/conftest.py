@@ -16,7 +16,7 @@ from expenseflow.group.schemas import (
     UserGroupRead,
 )
 from expenseflow.user.models import UserModel
-from expenseflow.user.schemas import UserCreate, UserRead
+from expenseflow.user.schemas import UserCreate, UserCreateInternal, UserRead
 from fastapi import FastAPI
 from httpx import ASGITransport, AsyncClient
 from loguru import logger
@@ -36,6 +36,7 @@ from tests.factories import (
     GroupUserModelFactory,
     GroupUserReadFactory,
     UserCreateFactory,
+    UserCreateInternalFactory,
     UserGroupReadFactory,
     UserModelFactory,
     UserReadFactory,
@@ -47,6 +48,8 @@ SYNC_TEST_DB_URL = "postgresql://admin:password@localhost:5432/expense_db"
 
 
 os.environ["DB_URL"] = TEST_DB_URL
+os.environ["JWT_AUDIENCE"] = ""
+os.environ["AUTH0_DOMAIN"] = ""
 
 
 # Initialise db
@@ -112,11 +115,12 @@ async def test_client(
     """Test client fixture."""
     # Need to override
 
-    from expenseflow.auth.deps import get_current_user
+    from expenseflow.auth.deps import get_current_user, get_user_token_identifier
     from expenseflow.database.deps import get_db
 
     # Override dependencies
     test_app.dependency_overrides[get_current_user] = lambda: default_user
+    test_app.dependency_overrides[get_user_token_identifier] = lambda: "token_id"
     test_app.dependency_overrides[get_db] = lambda: session
 
     async with AsyncClient(
@@ -142,6 +146,11 @@ def user_read() -> UserRead:
 @pytest.fixture()
 def user_create() -> UserCreate:
     return UserCreateFactory.build()
+
+
+@pytest.fixture()
+def user_create_internal() -> UserCreateInternal:
+    return UserCreateInternalFactory.build()
 
 
 # Group factories

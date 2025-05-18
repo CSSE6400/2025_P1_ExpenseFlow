@@ -4,11 +4,11 @@ from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, status
 
-from expenseflow.auth.deps import CurrentUser
+from expenseflow.auth.deps import CurrentUser, CurrentUserTokenID
 from expenseflow.database.deps import DbSession
 from expenseflow.errors import ExistsError
 from expenseflow.user.models import UserModel
-from expenseflow.user.schemas import UserCreate, UserRead
+from expenseflow.user.schemas import UserCreate, UserCreateInternal, UserRead
 from expenseflow.user.service import create_user, get_user_by_id
 
 r = router = APIRouter()
@@ -33,13 +33,20 @@ async def get_user(db: DbSession, _: CurrentUser, user_id: UUID) -> UserModel:
 
 
 @r.post("", response_model=UserRead)
-# TODO: Need to replace CurrentUser  # noqa: FIX002, TD002, TD003
-async def create(db: DbSession, user_in: UserCreate) -> UserModel:
+async def create(
+    db: DbSession, user_token_id: CurrentUserTokenID, user_in: UserCreate
+) -> UserModel:
     """Create a new user."""
+    data = UserCreateInternal(
+        nickname=user_in.nickname,
+        first_name=user_in.first_name,
+        last_name=user_in.last_name,
+        token_id=user_token_id,
+    )
     try:
-        return await create_user(db, user_in)
+        return await create_user(db, data)
     except ExistsError as e:
         raise HTTPException(
             status.HTTP_409_CONFLICT,
-            detail=f"User already exists under the email '{user_in.email}'",
+            detail=f"User already exists with the nickname '{user_in.nickname}'.",
         ) from e

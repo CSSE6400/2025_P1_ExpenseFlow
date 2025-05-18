@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from expenseflow.errors import ExistsError
 from expenseflow.user.models import UserModel
-from expenseflow.user.schemas import UserCreate
+from expenseflow.user.schemas import UserCreateInternal
 
 
 async def get_user_by_id(session: AsyncSession, user_id: UUID) -> UserModel | None:
@@ -15,22 +15,40 @@ async def get_user_by_id(session: AsyncSession, user_id: UUID) -> UserModel | No
     return await session.get(UserModel, user_id)
 
 
-async def get_user_by_email(session: AsyncSession, email: str) -> UserModel | None:
+async def get_user_by_token_id(
+    session: AsyncSession, token_id: str
+) -> UserModel | None:
     """Get user by their email."""
     return (
-        await session.execute(select(UserModel).where(UserModel.email == email))
+        await session.execute(select(UserModel).where(UserModel.token_id == token_id))
     ).scalar_one_or_none()
 
 
-async def create_user(session: AsyncSession, user_in: UserCreate) -> UserModel:
+async def get_user_by_nickname(
+    session: AsyncSession, nickname: str
+) -> UserModel | None:
+    """Get user by their email."""
+    return (
+        await session.execute(select(UserModel).where(UserModel.nickname == nickname))
+    ).scalar_one_or_none()
+
+
+async def create_user(session: AsyncSession, user_in: UserCreateInternal) -> UserModel:
     """Create user."""
-    existing_user = await get_user_by_email(session, user_in.email)
+    existing_user = await get_user_by_token_id(session, user_in.token_id)
     if existing_user is not None:
-        msg = "User under the email '{}' already exists."
+        return existing_user
+
+    existing_user = await get_user_by_nickname(session, user_in.nickname)
+    if existing_user is not None:
+        msg = f"User already exists with the nickname '{user_in.nickname}'."
         raise ExistsError(msg)
 
     new_user = UserModel(
-        email=user_in.email, first_name=user_in.first_name, last_name=user_in.last_name
+        nickname=user_in.nickname,
+        first_name=user_in.first_name,
+        last_name=user_in.last_name,
+        token_id=user_in.token_id,
     )
 
     session.add(new_user)

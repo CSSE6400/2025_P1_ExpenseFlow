@@ -47,7 +47,7 @@ def to_user_group(model: GroupUserModel) -> UserGroupRead:
         user_id=model.user_id,
         first_name=model.user.first_name,
         last_name=model.user.last_name,
-        email=model.user.email,
+        nickname=model.user.nickname,
         role=model.role,
         joined_at=model.joined_at,
     )

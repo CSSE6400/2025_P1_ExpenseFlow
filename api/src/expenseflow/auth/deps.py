@@ -3,31 +3,44 @@
 from typing import Annotated
 
 from fastapi import Depends, HTTPException, status
-from fastapi.security import HTTPBearer
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from loguru import logger
 
-from expenseflow.auth.utils import get_email_from_token
+from expenseflow.auth.service import JWTError, JWTManager
+from expenseflow.config import CONFIG
 from expenseflow.database.deps import DbSession
 from expenseflow.user.models import UserModel
-from expenseflow.user.service import get_user_by_email
+from expenseflow.user.service import get_user_by_token_id
 
 security_schema = HTTPBearer()
 
+jwt_manager = JWTManager(jwt_audience=CONFIG.jwt_audience, domain=CONFIG.auth0_domain)
+
+
+async def get_user_token_identifier(
+    token: Annotated[HTTPAuthorizationCredentials, Depends(security_schema)]
+) -> str:
+    """Get user identifier from token."""
+    try:
+        new_user_identifier = await jwt_manager.verify(token.credentials)
+    except JWTError as e:
+        logger.info(f"Encountered error with provided token: {e}")
+        raise HTTPException(
+            status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token",
+        ) from e
+
+    return new_user_identifier
+
+
+CurrentUserTokenID = Annotated[str, Depends(get_user_token_identifier)]
+
 
 async def get_current_user(
-    session: DbSession, token: Annotated[str, Depends(security_schema)]
+    session: DbSession, user_token_id: CurrentUserTokenID
 ) -> UserModel:
-    """Dependency to get current user.
-
-    :param session: db session
-    :type session: DbSession
-    :param token: jwt token
-    :type token: Annotated[str, Depends
-    :raises HTTPException: Raised if current user could not be found
-    :return: current user
-    :rtype: UserSchema
-    """
-    email = get_email_from_token(token)
-    user = await get_user_by_email(session, email)
+    """Dependency to get current user."""
+    user = await get_user_by_token_id(session, user_token_id)
     if user is None:
         raise HTTPException(
             status.HTTP_401_UNAUTHORIZED,
