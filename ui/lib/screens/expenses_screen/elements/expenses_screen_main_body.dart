@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/common/time_period_dropdown.dart';
 // Common imports
 import '../../../common/proportional_sizes.dart';
 import 'expenses_screen_segment_control.dart';
@@ -12,11 +13,20 @@ class ExpensesScreenMainBody extends StatefulWidget {
 
 class _ExpensesScreenMainBodyState extends State<ExpensesScreenMainBody> {
   String selectedSegment = 'Active';
+  String selectedPeriod = 'Last 30 Days';
 
   void handleSegmentChange(String newSegment) {
     setState(() {
       selectedSegment = newSegment;
     });
+  }
+
+  void handleTimePeriodChange(String? newPeriod) {
+    if (newPeriod != null) {
+      setState(() {
+        selectedPeriod = newPeriod;
+      });
+    }
   }
 
   @override
@@ -40,6 +50,15 @@ class _ExpensesScreenMainBodyState extends State<ExpensesScreenMainBody> {
               ExpensesScreenSegmentControl(
                 selectedSegment: selectedSegment,
                 onSegmentChanged: handleSegmentChange,
+              ),
+
+              // Time Period Dropdown
+              Align(
+                alignment: Alignment.centerRight,
+                child: TimePeriodDropdown(
+                  selectedPeriod: selectedPeriod,
+                  onChanged: handleTimePeriodChange,
+                ),
               ),
               SizedBox(height: proportionalSizes.scaleHeight(20)),
             ],
