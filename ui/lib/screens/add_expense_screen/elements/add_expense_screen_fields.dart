@@ -28,6 +28,7 @@ class AddExpenseScreenFields extends StatefulWidget {
 class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
   bool isNameValid = false;
   bool isAmountValid = false;
+  double? enteredAmount;
 
   void updateNameValidity(bool isValid) {
     setState(() {
@@ -83,7 +84,17 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
           onValidityChanged: widget.onAmountValidityChanged,
           maxLength: 10,
           onChanged: (value) {
-            // TODO: Save amount field value
+            // TODO: Save amount field value for navigation to Add Items screen
+            final number = double.tryParse(value.trim());
+            if (number != null && number > 0) {
+              setState(() {
+                enteredAmount = number;
+              });
+            } else {
+              setState(() {
+                enteredAmount = null;
+              });
+            }
           },
         ),
         CustomDivider(),
@@ -132,12 +143,23 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
           hintText: 'Specify Items',
           trailingIconPath: 'assets/icons/add.png',
           inactive: !widget.isAmountValid,
-          onTap: !widget.isAmountValid
-            ? null
-            : () {
-                // TODO: Navigate to the Add Items screen
-              },
-              ),
+          onTap: () {
+            if (!widget.isAmountValid || enteredAmount == null) {
+              showCustomSnackBar(
+                context,
+                normalText: 'Please enter a valid amount.',
+              );
+            } else {
+              Navigator.pushNamed(
+                context,
+                '/add_items',
+                arguments: {
+                  'amount': enteredAmount,
+                },
+              );
+            }
+          },
+        ),
         CustomDivider(),
 
         CustomIconField(
