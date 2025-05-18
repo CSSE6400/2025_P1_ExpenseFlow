@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../common/color_palette.dart';
 import '../../common/bottom_nav_bar.dart';
 import '../../common/app_bar.dart';
+import '../expenses_screen/elements/expenses_screen_main_body.dart';
 
 class ExpensesScreen extends StatefulWidget {
   const ExpensesScreen({super.key});
@@ -23,6 +24,8 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
         screenName: 'Expenses',
         showBackButton: true,
       ),
+
+      body: const ExpensesScreenMainBody(),
 
       bottomNavigationBar: BottomNavBar(
         currentScreen: 'Expenses',
