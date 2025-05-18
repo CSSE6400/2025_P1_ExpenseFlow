@@ -1,10 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_frontend/common/color_palette.dart';
+import 'package:google_fonts/google_fonts.dart';
 // Common
 import '../../../common/proportional_sizes.dart';
 
 class SplitWithScreenSegmentControl extends StatefulWidget {
-  const SplitWithScreenSegmentControl({super.key});
+  final String selectedSegment;
+  final void Function(String) onSegmentChanged;
+
+  const SplitWithScreenSegmentControl({
+    super.key,
+    required this.selectedSegment,
+    required this.onSegmentChanged,
+  });
 
   @override
   State<SplitWithScreenSegmentControl> createState() =>
@@ -38,7 +46,7 @@ class _SplitWithScreenSegmentControlState
             ),
           ),
           child: CupertinoSlidingSegmentedControl<String>(
-            groupValue: selectedSegment,
+            groupValue: widget.selectedSegment,
             thumbColor: selectedColor,
             backgroundColor: backgroundColor,
             padding: const EdgeInsets.all(4),
@@ -46,9 +54,9 @@ class _SplitWithScreenSegmentControlState
               'Friend': Center(
                 child: Text(
                   'Friend',
-                  style: TextStyle(
+                  style: GoogleFonts.roboto(
                     fontWeight: FontWeight.w600,
-                    color: selectedSegment == 'Friend'
+                    color: widget.selectedSegment == 'Friend'
                         ? selectedTextColor
                         : unselectedTextColor,
                   ),
@@ -57,9 +65,9 @@ class _SplitWithScreenSegmentControlState
               'Group': Center(
                 child: Text(
                   'Group',
-                  style: TextStyle(
+                  style: GoogleFonts.roboto(
                     fontWeight: FontWeight.w600,
-                    color: selectedSegment == 'Group'
+                    color: widget.selectedSegment == 'Group'
                         ? selectedTextColor
                         : unselectedTextColor,
                   ),
@@ -68,9 +76,7 @@ class _SplitWithScreenSegmentControlState
             },
             onValueChanged: (String? value) {
               if (value != null) {
-                setState(() {
-                  selectedSegment = value;
-                });
+                widget.onSegmentChanged(value);
               }
             },
           ),

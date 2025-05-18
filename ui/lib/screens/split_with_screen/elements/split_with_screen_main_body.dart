@@ -1,9 +1,24 @@
 import 'package:flutter/material.dart';
 import '../../../common/proportional_sizes.dart';
 import 'split_with_screen_segment_control.dart';
+import 'split_with_screen_friend.dart';
+import 'split_with_screen_group.dart';
 
-class SplitWithScreenMainBody extends StatelessWidget {
+class SplitWithScreenMainBody extends StatefulWidget {
   const SplitWithScreenMainBody({super.key});
+
+  @override
+  State<SplitWithScreenMainBody> createState() => _SplitWithScreenMainBodyState();
+}
+
+class _SplitWithScreenMainBodyState extends State<SplitWithScreenMainBody> {
+  String selectedSegment = 'Friend';
+
+  void updateSegment(String newSegment) {
+    setState(() {
+      selectedSegment = newSegment;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +35,16 @@ class SplitWithScreenMainBody extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SplitWithScreenSegmentControl(),
+              // Segment Control with Callback
+              SplitWithScreenSegmentControl(
+                selectedSegment: selectedSegment,
+                onSegmentChanged: updateSegment,
+              ),
+              // Switch based on selected segment
+              if (selectedSegment == 'Friend')
+                const SplitWithScreenFriend()
+              else
+                const SplitWithScreenGroup(),
             ],
           ),
         ),
