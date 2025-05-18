@@ -2,9 +2,9 @@
 import 'package:flutter/material.dart';
 // Third-party imports
 import 'package:google_fonts/google_fonts.dart';
-// Common
-import '../common/proportional_sizes.dart';
-import '../common/color_palette.dart';
+// Common imports
+import 'proportional_sizes.dart';
+import 'color_palette.dart';
 
 /// Enum representing predefined button sizes.
 enum ButtonSizeType {
@@ -22,7 +22,6 @@ enum ButtonState {
 
 /// A highly reusable and responsive button widget
 /// Supports full, half, quarter, and custom sizes
-/// Adapts to dark mode and supports enabled/disabled state
 class CustomButton extends StatelessWidget {
   /// Text shown on the button
   final String label;
@@ -38,9 +37,6 @@ class CustomButton extends StatelessWidget {
 
   /// If true, button will show only border with white background
   final bool boundary;
-
-  /// Whether the app is in dark mode
-  final bool isDarkMode;
 
   /// Current state of the button (enabled or disabled)
   final ButtonState state;
@@ -60,14 +56,13 @@ class CustomButton extends StatelessWidget {
     this.customHeight,
     this.customFontSize,
     this.boundary = false,
-    required this.isDarkMode,
     this.state = ButtonState.enabled,
   });
 
   @override
   Widget build(BuildContext context) {
-    // Initialize proportional scaler to adjust sizes responsively
-    final scaler = ProportionalSizes(context: context);
+    // Initialize proportional proportionalSizes to adjust sizes responsively
+    final proportionalSizes = ProportionalSizes(context: context);
 
     // Set size and font based on button type
     double width;
@@ -75,24 +70,24 @@ class CustomButton extends StatelessWidget {
     double fontSize;
     switch (sizeType) {
       case ButtonSizeType.full:
-        width = scaler.scaleWidth(363);
-        height = scaler.scaleHeight(50);
-        fontSize = scaler.scaleText(18);
+        width = proportionalSizes.scaleWidth(363);
+        height = proportionalSizes.scaleHeight(50);
+        fontSize = proportionalSizes.scaleText(18);
         break;
       case ButtonSizeType.half:
-        width = scaler.scaleWidth(220);
-        height = scaler.scaleHeight(40);
-        fontSize = scaler.scaleText(18);
+        width = proportionalSizes.scaleWidth(220);
+        height = proportionalSizes.scaleHeight(40);
+        fontSize = proportionalSizes.scaleText(18);
         break;
       case ButtonSizeType.quarter:
-        width = scaler.scaleWidth(90);
-        height = scaler.scaleHeight(30);
-        fontSize = scaler.scaleText(12);
+        width = proportionalSizes.scaleWidth(90);
+        height = proportionalSizes.scaleHeight(30);
+        fontSize = proportionalSizes.scaleText(12);
         break;
       case ButtonSizeType.custom:
-        width = scaler.scaleWidth(customWidth ?? 220);
-        height = scaler.scaleHeight(customHeight ?? 40);
-        fontSize = scaler.scaleText(customFontSize ?? 18);
+        width = proportionalSizes.scaleWidth(customWidth ?? 220);
+        height = proportionalSizes.scaleHeight(customHeight ?? 40);
+        fontSize = proportionalSizes.scaleText(customFontSize ?? 18);
         break;
     }
 
@@ -100,21 +95,12 @@ class CustomButton extends StatelessWidget {
     final bool isEnabled = state == ButtonState.enabled;
 
     final Color bgColor = isEnabled
-        ? (backgroundColor ??
-            (isDarkMode
-                ? ColorPalette.primaryActionDark
-                : ColorPalette.primaryAction))
-        : (isDarkMode
-            ? ColorPalette.secondaryActionDark
-            : ColorPalette.secondaryAction);
+        ? (backgroundColor ?? ColorPalette.primaryAction)
+        : ColorPalette.secondaryAction;
 
     final Color textColor = isEnabled
-        ? (isDarkMode
-            ? ColorPalette.buttonTextDark
-            : ColorPalette.buttonText)
-        : (isDarkMode
-            ? ColorPalette.secondaryTextDark
-            : ColorPalette.secondaryText);
+        ? ColorPalette.buttonText
+        : ColorPalette.secondaryText;
 
     return SizedBox(
       width: width,
@@ -125,11 +111,11 @@ class CustomButton extends StatelessWidget {
           side: boundary
               ? BorderSide(
                   color: bgColor,
-                  width: scaler.scaleWidth(2),
+                  width: proportionalSizes.scaleWidth(2),
                 )
               : BorderSide.none,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(scaler.scaleWidth(8)),
+            borderRadius: BorderRadius.circular(proportionalSizes.scaleWidth(8)),
           ),
         ),
         onPressed: isEnabled ? onPressed : null,

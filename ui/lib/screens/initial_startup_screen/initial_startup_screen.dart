@@ -2,19 +2,14 @@
 import 'package:flutter/material.dart';
 // Third-party imports
 import 'package:google_fonts/google_fonts.dart';
-// Common
+// Common imports
 import '../../common/color_palette.dart';
 import '../../common/proportional_sizes.dart';
 import '../../common/custom_button.dart';
-// Screens
-import '../profile_setup_screen/profile_setup_screen.dart';
 
 class InitialStartupScreen extends StatefulWidget {
-  // Flag to determine if dark mode is enabled
-  final bool isDarkMode;
-
   /// Constructor for InitialStartupScreen
-  const InitialStartupScreen({super.key, required this.isDarkMode});
+  const InitialStartupScreen({super.key});
 
   @override
   State<InitialStartupScreen> createState() => InitialStartupScreenState();
@@ -25,9 +20,7 @@ class InitialStartupScreenState extends State<InitialStartupScreen> {
   Widget build(BuildContext context) {
     // Colors and sizes
     final logoColor = ColorPalette.logoColor;
-    final backgroundColor = widget.isDarkMode
-        ? ColorPalette.backgroundDark
-        : ColorPalette.background;
+    final backgroundColor = ColorPalette.background;
     final proportionalSizes = ProportionalSizes(context: context);
 
     return Scaffold(
@@ -74,17 +67,9 @@ class InitialStartupScreenState extends State<InitialStartupScreen> {
                 onPressed: () {
                   // TODO: Navigate to log in functionality
                   // Currently naviagtes to the profile setup screen
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ProfileSetupScreen(
-                        isDarkMode: widget.isDarkMode,
-                      ),
-                    ),
-                  );
+                  Navigator.pushNamed(context, '/profile_setup');
                 },
                 sizeType: ButtonSizeType.full,
-                isDarkMode: widget.isDarkMode,
               ),
             ],
           ),

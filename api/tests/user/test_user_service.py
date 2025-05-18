@@ -1,21 +1,23 @@
 """Test user service."""
 
 import pytest
-from expenseflow.user.schemas import UserCreate
+from expenseflow.user.schemas import UserCreateInternal
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
 @pytest.mark.asyncio()
-async def test_get_user_by_id(session: AsyncSession, user_create: UserCreate):
+async def test_get_user_by_id(
+    session: AsyncSession, user_create_internal: UserCreateInternal
+):
     from expenseflow.user.service import create_user, get_user_by_id
 
-    created = await create_user(session, user_create)
+    created = await create_user(session, user_create_internal)
 
     found = await get_user_by_id(session, created.user_id)
     assert found is not None
-    assert found.email == user_create.email
-    assert found.first_name == user_create.first_name
-    assert found.last_name == user_create.last_name
+    assert found.nickname == user_create_internal.nickname
+    assert found.first_name == user_create_internal.first_name
+    assert found.last_name == user_create_internal.last_name
 
 
 @pytest.mark.asyncio()
@@ -29,49 +31,14 @@ async def test_get_user_by_id_not_found(session: AsyncSession):
 
 
 @pytest.mark.asyncio()
-async def test_get_user_by_email(session: AsyncSession, user_create: UserCreate):
-    from expenseflow.user.service import create_user, get_user_by_email
-
-    created = await create_user(session, user_create)
-
-    found = await get_user_by_email(session, created.email)
-
-    assert found is not None
-    assert found.email == user_create.email
-    assert found.first_name == user_create.first_name
-    assert found.last_name == user_create.last_name
-
-
-@pytest.mark.asyncio()
-async def test_get_user_by_email_not_found(session: AsyncSession):
-
-    from expenseflow.user.service import get_user_by_email
-
-    found = await get_user_by_email(session, "RANDOM_EMAIL")
-    assert found is None
-
-
-@pytest.mark.asyncio()
-async def test_create_user(session: AsyncSession, user_create: UserCreate):
-    from expenseflow.user.service import create_user
-
-    new_user = await create_user(session, user_create)
-
-    assert new_user.email == user_create.email
-    assert new_user.last_name == user_create.last_name
-    assert new_user.first_name == user_create.first_name
-
-
-@pytest.mark.asyncio()
-async def test_create_user_already_exists(
-    session: AsyncSession, user_create: UserCreate
+async def test_create_user(
+    session: AsyncSession, user_create_internal: UserCreateInternal
 ):
-    from expenseflow.errors import ExistsError
     from expenseflow.user.service import create_user
 
-    # Create first user
-    await create_user(session, user_create)
+    new_user = await create_user(session, user_create_internal)
 
-    # Raise error if user created again with same email
-    with pytest.raises(ExistsError):
-        await create_user(session, user_create)
+    assert new_user.token_id == user_create_internal.token_id
+    assert new_user.nickname == user_create_internal.nickname
+    assert new_user.last_name == user_create_internal.last_name
+    assert new_user.first_name == user_create_internal.first_name

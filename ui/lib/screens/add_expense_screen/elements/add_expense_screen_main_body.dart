@@ -1,0 +1,75 @@
+import 'package:flutter/material.dart';
+// Third-party imports
+// Common imports
+import '../../../common/proportional_sizes.dart';
+import '../../../common/custom_button.dart';
+// Elements
+import 'add_expense_screen_scan_receipt.dart';
+import 'add_expense_screen_fields.dart';
+
+class AddExpenseScreenMainBody extends StatefulWidget {
+  const AddExpenseScreenMainBody({super.key});
+
+  @override
+  State<AddExpenseScreenMainBody> createState() => _AddExpenseScreenMainBodyState();
+}
+
+class _AddExpenseScreenMainBodyState extends State<AddExpenseScreenMainBody> {
+  bool isNameValid = false;
+  bool isAmountValid = false;
+
+  bool get isFormValid => isNameValid && isAmountValid;
+
+  void updateNameValidity(bool isValid) {
+    setState(() => isNameValid = isValid);
+  }
+
+  void updateAmountValidity(bool isValid) {
+    setState(() => isAmountValid = isValid);
+  }
+
+  Future<void> onSave() async {
+    // TODO: Handle save logic
+    Navigator.pushNamed(context, '/home');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final proportionalSizes = ProportionalSizes(context: context);
+
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: SafeArea(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.symmetric(
+            horizontal: proportionalSizes.scaleWidth(20),
+            vertical: proportionalSizes.scaleHeight(20),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              AddExpenseScreenScanReceipt(),
+              SizedBox(height: proportionalSizes.scaleHeight(20)),
+
+              // Pass validity up from fields
+              AddExpenseScreenFields(
+                onNameValidityChanged: updateNameValidity,
+                onAmountValidityChanged: updateAmountValidity,
+                isAmountValid: isAmountValid,
+              ),
+              SizedBox(height: proportionalSizes.scaleHeight(24)),
+
+              CustomButton(
+                label: 'Save',
+                onPressed: isFormValid ? onSave : () {},
+                sizeType: ButtonSizeType.full,
+                state: isFormValid ? ButtonState.enabled : ButtonState.disabled,
+              ),
+              SizedBox(height: proportionalSizes.scaleHeight(96)),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

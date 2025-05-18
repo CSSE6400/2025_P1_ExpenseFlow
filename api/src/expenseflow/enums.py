@@ -39,6 +39,7 @@ class ExpenseCategory(ExpenseFlowEnum):
     utilities = "utilities"
     transport = "transport"
     other = "other"
+    auto = "auto"
 
 
 class FriendStatus(ExpenseFlowEnum):
