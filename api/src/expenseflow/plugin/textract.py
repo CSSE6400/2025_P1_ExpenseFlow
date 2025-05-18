@@ -5,7 +5,7 @@ from uuid import UUID
 
 import boto3
 from botocore.exceptions import ClientError
-from fastapi import File, HTTPException, UploadFile, status
+from fastapi import HTTPException, UploadFile, status
 
 from expenseflow.auth.deps import CurrentUser
 from expenseflow.database.deps import DbSession
@@ -30,14 +30,13 @@ class TextractPlugin(Plugin[TextractPluginSettings]):
 
     def _on_init(self) -> None:
         """Do this on init."""
-        self.textract_client = boto3.client("textract")
+        self.textract_client = boto3.client("textract", region_name="us-east-1")
         self._app.add_api_route(
             "/expenses/auto",
             self.handle_receipt,
             methods=["POST"],
             response_model=ExpenseRead,
         )
-        # self.s3_connection = None
 
     def _on_call(self, *args, **kwargs) -> None:  # noqa: ANN002, ANN003
         """Do this method on call."""
