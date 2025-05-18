@@ -107,7 +107,7 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
           // For group, the value should be of the form 'Group - Group Name'
           // For friends, the value should be of the form 'Friend - Friend Name'
           value: '',
-          hintText: 'Select Group',
+          hintText: 'Select Group or Friends',
           trailingIconPath: 'assets/icons/search.png',
           inactive: !widget.isAmountValid,
           onTap: () {

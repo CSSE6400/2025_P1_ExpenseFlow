@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../common/color_palette.dart';
 import '../../../common/proportional_sizes.dart';
 import '../../../common/icon_maker.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class SearchBar extends StatelessWidget {
   final String hintText;
@@ -33,34 +33,42 @@ class SearchBar extends StatelessWidget {
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
+              color: Colors.black.withAlpha(13),
               blurRadius: 4,
               offset: const Offset(0, 2),
             ),
           ],
         ),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Expanded(
-              child: TextField(
-                onChanged: onChanged,
-                style: GoogleFonts.roboto(
-                  fontSize: proportionalSizes.scaleHeight(18),
-                  color: ColorPalette.primaryText, // typed input
-                ),
-                decoration: InputDecoration(
-                  hintText: hintText,
-                  hintStyle: GoogleFonts.roboto(
+              child: Center(
+                child: TextField(
+                  onChanged: onChanged,
+                  style: GoogleFonts.roboto(
                     fontSize: proportionalSizes.scaleHeight(18),
-                    color: ColorPalette.secondaryText, // placeholder text
+                    color: ColorPalette.primaryText,
                   ),
-                  border: InputBorder.none,
+                  textAlignVertical: TextAlignVertical.center,
+                  decoration: InputDecoration(
+                    isCollapsed: true,
+                    contentPadding: EdgeInsets.zero,
+                    hintText: hintText,
+                    hintStyle: GoogleFonts.roboto(
+                      fontSize: proportionalSizes.scaleHeight(18),
+                      color: ColorPalette.secondaryText,
+                    ),
+                    border: InputBorder.none,
+                  ),
                 ),
               ),
             ),
             SizedBox(width: proportionalSizes.scaleWidth(10)),
-            IconMaker(
-              assetPath: 'assets/icons/search.png',
+            Center(
+              child: IconMaker(
+                assetPath: 'assets/icons/search.png',
+              ),
             ),
           ],
         ),

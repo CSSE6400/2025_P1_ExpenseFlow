@@ -86,6 +86,7 @@ flutter:
     - assets/icons/back_button.png
     - assets/icons/camera.png
     - assets/icons/check.png
+    - assets/icons/check_nofilled.png
     - assets/icons/clip.png
     - assets/icons/cross.png
     - assets/icons/dropdown.png
