@@ -67,6 +67,11 @@ _Notes:_
 
 Then you must run `docker compose up -d` to build the containers and run them. To force the images to be built again use the `--build` flag.
 
+Once up and running, the following will be available:
+
+- UI -> `localhost:3000`
+- API -> `localhost:8080` (The base path `/` will redirect you to the docs `/docs`)
+
 #### Removing Containers
 
 Once you are reading, you can stop the containers with `docker compose down`. If would also like to remove the database volume created when running the containers, add the `--volumes` flag.
