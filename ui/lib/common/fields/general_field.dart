@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../common/color_palette.dart';
 import '../../common/proportional_sizes.dart';
 import '../../common/icon_maker.dart';
+import '../../common/snack_bar.dart';
 
 enum InputRuleType {
   noSpaces,
@@ -43,6 +44,12 @@ class GeneralField extends StatefulWidget {
   /// Constructor for the GeneralField widget.
   final ValueChanged<String>? onChanged;
 
+  /// Maximum length of the input
+  final int? maxLength;
+
+  /// Focus instruction for the field
+  final String? focusInstruction;
+
   const GeneralField({
     super.key,
     required this.label,
@@ -53,6 +60,8 @@ class GeneralField extends StatefulWidget {
     this.inputRules,
     this.onValidityChanged,
     this.onChanged,
+    this.maxLength,
+    this.focusInstruction,
   });
 
   @override
@@ -63,6 +72,7 @@ class GeneralFieldState extends State<GeneralField> {
   late TextEditingController _controller;
   bool _isValid = false;
   bool isLabelExpanded = false;
+  late FocusNode _focusNode;
 
   /// Initializes the TextEditingController and sets up a listener to update validation
   /// status based on the input text.
@@ -76,6 +86,15 @@ class GeneralFieldState extends State<GeneralField> {
       _updateValidation(currentText);
       if (widget.onChanged != null) {
         widget.onChanged!(currentText);
+      }
+    });
+    _focusNode = FocusNode();
+    _focusNode.addListener(() {
+      if (_focusNode.hasFocus && widget.focusInstruction != null) {
+        showCustomSnackBar(
+          context,
+          normalText: widget.focusInstruction!,
+        );
       }
     });
   }
@@ -105,10 +124,11 @@ class GeneralFieldState extends State<GeneralField> {
   @override
   void dispose() {
     _controller.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
-  /// Returns input formatter based on the field's label
+  /// Builds a list of input formatters based on the provided input rules.
   List<TextInputFormatter>? _buildInputFormatters() {
     if (widget.inputRules == null) return null;
 
@@ -168,7 +188,7 @@ class GeneralFieldState extends State<GeneralField> {
                 maxLines: isLabelExpanded ? null : 1,
                 overflow: isLabelExpanded ? TextOverflow.visible : TextOverflow.ellipsis,
                 style: GoogleFonts.roboto(
-                  fontSize: proportionalSizes.scaleText(17),
+                  fontSize: proportionalSizes.scaleText(18),
                   fontWeight: FontWeight.w500,
                   color: labelColor,
                 ),
@@ -179,21 +199,24 @@ class GeneralFieldState extends State<GeneralField> {
           // TextField fills remaining horizontal space
           Expanded(
             child: TextField(
+              focusNode: _focusNode,
               controller: _controller,
               readOnly: !widget.isEditable,
               inputFormatters: _buildInputFormatters(),
               style: GoogleFonts.roboto(
-                fontSize: proportionalSizes.scaleText(17),
+                fontSize: proportionalSizes.scaleText(18),
                 color: widget.isEditable ? labelColor : Colors.grey[600],
               ),
+              maxLength: widget.maxLength,
               decoration: InputDecoration(
                 isDense: true,
+                counterText: '',
                 contentPadding: const EdgeInsets.symmetric(vertical: 8),
                 border: InputBorder.none,
                 hintText: widget.initialValue,
                 hintStyle: GoogleFonts.roboto(
                   color: hintColor,
-                  fontSize: proportionalSizes.scaleText(17),
+                  fontSize: proportionalSizes.scaleText(18),
                 ),
               ),
               cursorColor: Colors.blue,
