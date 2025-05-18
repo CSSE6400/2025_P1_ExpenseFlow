@@ -25,12 +25,10 @@ class TextractPluginSettings(PluginSettings):
 
 
 @register_plugin("textract")
-class TextractPlugin(Plugin[PluginSettings]):
+class TextractPlugin(Plugin[TextractPluginSettings]):
     """Textract check plugin."""
 
     _settings_type = TextractPluginSettings
-
-    from expenseflow.schemas import ExpenseFlowBase
 
     def _on_init(self) -> None:
         """Do this on init."""
