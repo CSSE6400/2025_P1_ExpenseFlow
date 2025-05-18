@@ -2,19 +2,15 @@
 import 'package:flutter/material.dart';
 // Third-party imports
 import 'package:google_fonts/google_fonts.dart';
-// Common
+// Common imports
 import '../../../common/color_palette.dart';
 import '../../../common/proportional_sizes.dart';
 import '../../../common/fields/general_field.dart';
 import '../../../common/custom_divider.dart';
 import '../../../common/custom_button.dart';
-// Screens
-import '../../home_screen/home_screen.dart';
 
 class ProfileSetupScreenSubRectangle extends StatefulWidget {
-  final bool isDarkMode;
-
-  const ProfileSetupScreenSubRectangle({super.key, required this.isDarkMode});
+  const ProfileSetupScreenSubRectangle({super.key});
 
   @override
   State<ProfileSetupScreenSubRectangle> createState() =>
@@ -43,22 +39,14 @@ class _ProfileSetupScreenSubRectangleState
   }
 
   Future <void> onSave() async {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => HomeScreen(
-          isDarkMode: widget.isDarkMode,
-          ),
-        ),
-      );
+    // TODO: Handle save functionality
+    Navigator.pushNamed(context, '/home');
   }
 
   @override
   Widget build(BuildContext context) {
     final proportionalSizes = ProportionalSizes(context: context);
-    final backgroundColor = widget.isDarkMode
-        ? ColorPalette.buttonTextDark
-        : ColorPalette.buttonText;
+    final backgroundColor = ColorPalette.buttonText;
 
     return Container(
       width: double.infinity,
@@ -72,17 +60,18 @@ class _ProfileSetupScreenSubRectangleState
       ),
       child: SingleChildScrollView(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // Heading text
-            Text(
-              'Setup Your Account',
-              style: GoogleFonts.roboto(
-                fontSize: proportionalSizes.scaleText(22),
-                fontWeight: FontWeight.bold,
-                color: widget.isDarkMode
-                    ? ColorPalette.primaryTextDark
-                    : ColorPalette.primaryText,
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Setup Your Account',
+                style: GoogleFonts.roboto(
+                  fontSize: proportionalSizes.scaleText(22),
+                  fontWeight: FontWeight.bold,
+                  color: ColorPalette.primaryText,
+                ),
               ),
             ),
             SizedBox(height: proportionalSizes.scaleHeight(12)),
@@ -91,22 +80,24 @@ class _ProfileSetupScreenSubRectangleState
             GeneralField(
               label: 'Name*',
               initialValue: 'ABC',
-              isDarkMode: widget.isDarkMode,
               isEditable: true,
               showStatusIcon: true,
+              inputRules: [InputRuleType.lettersOnly],
               validationRule: (value) {
                 final nameRegex = RegExp(r"^[A-Za-z ]+$");
                 return nameRegex.hasMatch(value.trim());
               },
               onValidityChanged: updateNameValidity,
+              onChanged: (value) {
+                // TODO: Save name field value
+              },
             ),
-            CustomDivider(isDarkMode: widget.isDarkMode),
+            CustomDivider(),
 
             // Email field
             GeneralField(
               label: 'Email ID*',
               initialValue: 'example@email.com',
-              isDarkMode: widget.isDarkMode,
               isEditable: true,
               showStatusIcon: true,
               validationRule: (value) {
@@ -115,21 +106,27 @@ class _ProfileSetupScreenSubRectangleState
                 return RegExp(pattern).hasMatch(value.trim());
               },
               onValidityChanged: updateEmailValidity,
+              onChanged: (value) {
+                // TODO: Save email field value
+              },
             ),
-            CustomDivider(isDarkMode: widget.isDarkMode),
+            CustomDivider(),
 
             // Budget field
             GeneralField(
               label: 'Monthly Budget (\$)*',
               initialValue: '1000',
-              isDarkMode: widget.isDarkMode,
               isEditable: true,
               showStatusIcon: true,
+              inputRules: [InputRuleType.decimalWithTwoPlaces],
               validationRule: (value) {
                 final number = double.tryParse(value.trim());
                 return number != null && number > 0;
               },
               onValidityChanged: updateBudgetValidity,
+              onChanged: (value) {
+                // TODO: Save monthly budget field value
+              },
             ),
             SizedBox(height: proportionalSizes.scaleHeight(24)),
 
@@ -137,7 +134,6 @@ class _ProfileSetupScreenSubRectangleState
             CustomButton(
               label: 'Save',
               onPressed: isFormValid ? onSave : () {},
-              isDarkMode: widget.isDarkMode,
               sizeType: ButtonSizeType.full,
               state:
                   isFormValid ? ButtonState.enabled : ButtonState.disabled,

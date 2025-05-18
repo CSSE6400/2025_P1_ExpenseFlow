@@ -1,27 +1,19 @@
 // Flutter imports
 import 'package:flutter/material.dart';
-// Common
-import '../common/proportional_sizes.dart';
-import '../common/color_palette.dart';
+// Common imports
+import 'proportional_sizes.dart';
+import 'color_palette.dart';
 
 /// A reusable divider widget for separating profile fields.
 /// - Thin grey line
 /// - Proportional thickness and spacing
 class CustomDivider extends StatelessWidget {
-  /// Whether the screen is in dark mode
-  final bool isDarkMode;
-
-  const CustomDivider({
-    super.key,
-    required this.isDarkMode,
-  });
+  const CustomDivider({super.key});
 
   @override
   Widget build(BuildContext context) {
     final proportionalSizes = ProportionalSizes(context: context);
-    final lineColor = isDarkMode
-        ? ColorPalette.secondaryActionDark
-        : ColorPalette.secondaryAction;
+    final lineColor = ColorPalette.secondaryAction;
 
     return Divider(
       color: lineColor,

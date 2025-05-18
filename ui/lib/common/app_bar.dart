@@ -2,9 +2,10 @@
 import 'package:flutter/material.dart';
 // // Third-party imports
 import 'package:google_fonts/google_fonts.dart';
-// Common
-import '../common/proportional_sizes.dart';
-import '../common/color_palette.dart';
+// Common imports
+import 'proportional_sizes.dart';
+import 'color_palette.dart';
+import 'icon_maker.dart';
 
 /// A customizable AppBar used across screens in the app.
 /// Supports optional back navigation and dynamic styling based on screen size.
@@ -18,42 +19,29 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   /// Optional custom back button handler. Defaults to Navigator.pop().
   final VoidCallback? onBackPressed;
 
-  /// Dark mode toggle passed from screen.
-  final bool isDarkMode;
-
   const AppBarWidget({
     super.key,
     required this.screenName,
     this.showBackButton = false,
     this.onBackPressed,
-    required this.isDarkMode,
   });
 
   @override
   Widget build(BuildContext context) {
     final proportionalSizes = ProportionalSizes(context: context);
 
-    // Set colors according to dark mode status
-    final iconColor = isDarkMode
-        ? ColorPalette.primaryActionDark
-        : ColorPalette.primaryAction;
-    final textColor = isDarkMode
-        ? ColorPalette.primaryActionDark
-        : ColorPalette.primaryAction;
+    final textColor = ColorPalette.primaryAction;
 
     return AppBar(
-      backgroundColor: Colors.transparent, // Flat look
-      elevation: 0, // No shadow
-      titleSpacing: 0, // Title aligns closer to the left edge
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      titleSpacing: 0,
 
       // Back button if enabled
       leading: showBackButton
           ? IconButton(
-              icon: Image.asset(
-                'assets/icons/back_button.png',
-                width: proportionalSizes.scaleWidth(24),
-                height: proportionalSizes.scaleHeight(24),
-                color: iconColor, // Icon uses primaryAction or primaryActionDark
+              icon: IconMaker(
+                assetPath: 'assets/icons/back_button.png',
               ),
               onPressed: onBackPressed ?? () {
                 Navigator.pop(context);
@@ -69,7 +57,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
           style: GoogleFonts.roboto(
             fontSize: proportionalSizes.scaleText(24),
             fontWeight: FontWeight.w700,
-            color: textColor, // Text uses primaryAction or primaryActionDark
+            color: textColor,
           ),
         ),
       ),

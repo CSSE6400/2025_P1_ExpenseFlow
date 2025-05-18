@@ -2,9 +2,9 @@
 import 'package:flutter/material.dart';
 // Third-party imports
 import 'package:google_fonts/google_fonts.dart';
-// Common
-import '../common/proportional_sizes.dart';
-import '../common/color_palette.dart';
+// Common imports
+import 'proportional_sizes.dart';
+import 'color_palette.dart';
 
 /// Enum representing predefined button sizes.
 enum ButtonSizeType {
@@ -22,7 +22,6 @@ enum ButtonState {
 
 /// A highly reusable and responsive button widget
 /// Supports full, half, quarter, and custom sizes
-/// Adapts to dark mode and supports enabled/disabled state
 class CustomButton extends StatelessWidget {
   /// Text shown on the button
   final String label;
@@ -38,9 +37,6 @@ class CustomButton extends StatelessWidget {
 
   /// If true, button will show only border with white background
   final bool boundary;
-
-  /// Whether the app is in dark mode
-  final bool isDarkMode;
 
   /// Current state of the button (enabled or disabled)
   final ButtonState state;
@@ -60,7 +56,6 @@ class CustomButton extends StatelessWidget {
     this.customHeight,
     this.customFontSize,
     this.boundary = false,
-    required this.isDarkMode,
     this.state = ButtonState.enabled,
   });
 
@@ -100,21 +95,12 @@ class CustomButton extends StatelessWidget {
     final bool isEnabled = state == ButtonState.enabled;
 
     final Color bgColor = isEnabled
-        ? (backgroundColor ??
-            (isDarkMode
-                ? ColorPalette.primaryActionDark
-                : ColorPalette.primaryAction))
-        : (isDarkMode
-            ? ColorPalette.secondaryActionDark
-            : ColorPalette.secondaryAction);
+        ? (backgroundColor ?? ColorPalette.primaryAction)
+        : ColorPalette.secondaryAction;
 
     final Color textColor = isEnabled
-        ? (isDarkMode
-            ? ColorPalette.buttonTextDark
-            : ColorPalette.buttonText)
-        : (isDarkMode
-            ? ColorPalette.secondaryTextDark
-            : ColorPalette.secondaryText);
+        ? ColorPalette.buttonText
+        : ColorPalette.secondaryText;
 
     return SizedBox(
       width: width,
