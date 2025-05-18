@@ -26,7 +26,8 @@ class UserModel(EntityModel):
         primary_key=True,
         default=uuid4,
     )
-    email: Mapped[str] = mapped_column(unique=True, index=True)
+    token_id: Mapped[str] = mapped_column(unique=True, index=True)
+    nickname: Mapped[str] = mapped_column(unique=True, index=True)
     first_name: Mapped[str]
     last_name: Mapped[str]
 

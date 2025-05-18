@@ -9,7 +9,7 @@ class UserRead(ExpenseFlowBase):
     """User read schema."""
 
     user_id: UUID
-    email: str
+    nickname: str
     first_name: str
     last_name: str
 
@@ -17,6 +17,12 @@ class UserRead(ExpenseFlowBase):
 class UserCreate(ExpenseFlowBase):
     """Create user schema."""
 
-    email: str
+    nickname: str
     first_name: str
     last_name: str
+
+
+class UserCreateInternal(UserCreate):
+    """Create user schema."""
+
+    token_id: str
