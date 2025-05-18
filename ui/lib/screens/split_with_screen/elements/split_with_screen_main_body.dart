@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../common/proportional_sizes.dart';
-import '../../../common/snack_bar.dart'; // for showCustomSnackBar
-import '../../../common/custom_button.dart'; // for CustomButton
+import '../../../common/snack_bar.dart';
+import '../../../common/custom_button.dart';
 import 'split_with_screen_segment_control.dart';
 import 'split_with_screen_friend.dart';
 import 'split_with_screen_group.dart';
@@ -19,8 +19,11 @@ class _SplitWithScreenMainBodyState extends State<SplitWithScreenMainBody> {
 
   final GlobalKey<SplitWithScreenFriendState> friendKey =
       GlobalKey<SplitWithScreenFriendState>();
+  final GlobalKey<SplitWithScreenGroupState> groupKey =
+      GlobalKey<SplitWithScreenGroupState>();
 
   bool isFriendValid = false;
+  bool isGroupValid = false;
 
   void updateSegment(String newSegment) {
     setState(() {
@@ -43,14 +46,28 @@ class _SplitWithScreenMainBodyState extends State<SplitWithScreenMainBody> {
           normalText: 'Percentages must sum to 100.',
         );
       }
-    }
+    } else if (selectedSegment == 'Group') {
+      final groupState = groupKey.currentState;
+      if (groupState == null) return;
 
-    // TODO: Handle 'Group' segment logic here if needed
+      if (groupState.isTotalPercentageValid()) {
+        // TODO: Go to "SplitWithScreenGroup" to save the data
+        groupState.saveAndExit(context);
+      } else {
+        showCustomSnackBar(
+          context,
+          boldText: 'Error:',
+          normalText: 'Percentages must sum to 100.',
+        );
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final proportionalSizes = ProportionalSizes(context: context);
+    final isContinueEnabled =
+        selectedSegment == 'Friend' ? isFriendValid : isGroupValid;
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
@@ -81,19 +98,43 @@ class _SplitWithScreenMainBodyState extends State<SplitWithScreenMainBody> {
                   },
                 )
               else
-                const SplitWithScreenGroup(),
+                SplitWithScreenGroup(
+                  key: groupKey,
+                  onValidityChanged: (valid) {
+                    setState(() {
+                      isGroupValid = valid;
+                    });
+                  },
+                ),
 
               const SizedBox(height: 24),
 
               // Continue Button
-              CustomButton(
-                label: 'Continue',
-                onPressed: () => _handleContinue(context),
-                state: isFriendValid
-                    ? ButtonState.enabled
-                    : ButtonState.disabled,
-                sizeType: ButtonSizeType.full,
+              GestureDetector(
+                onTap: () {
+                  if (isContinueEnabled) {
+                    _handleContinue(context);
+                  } else {
+                    showCustomSnackBar(
+                      context,
+                      boldText: 'Error:',
+                      normalText: 'Percentages must sum to 100.',
+                    );
+                  }
+                },
+                child: AbsorbPointer(
+                  absorbing: !isContinueEnabled,
+                  child: CustomButton(
+                    label: 'Continue',
+                    onPressed: () => _handleContinue(context),
+                    state: isContinueEnabled
+                        ? ButtonState.enabled
+                        : ButtonState.disabled,
+                    sizeType: ButtonSizeType.full,
+                  ),
+                ),
               ),
+
               const SizedBox(height: 20),
             ],
           ),
