@@ -9,7 +9,7 @@ from expenseflow.group.schemas import (
     UserGroupRead,
 )
 from expenseflow.user.models import UserModel
-from expenseflow.user.schemas import UserCreate, UserRead
+from expenseflow.user.schemas import UserCreate, UserCreateInternal, UserRead
 from polyfactory.factories.pydantic_factory import ModelFactory
 from polyfactory.factories.sqlalchemy_factory import SQLAlchemyFactory
 
@@ -22,6 +22,9 @@ class UserReadFactory(ModelFactory[UserRead]): ...
 
 
 class UserCreateFactory(ModelFactory[UserCreate]): ...
+
+
+class UserCreateInternalFactory(ModelFactory[UserCreateInternal]): ...
 
 
 # Groups
