@@ -4,6 +4,7 @@ import '../../../common/proportional_sizes.dart';
 import '../../../common/custom_button.dart';
 // Elements
 import 'see_expense_screen_fields.dart';
+import 'see_expense_screen_active_status.dart';
 
 class SeeExpenseScreenMainBody extends StatefulWidget {
   final String transactionId;
@@ -57,11 +58,15 @@ class _SeeExpenseScreenMainBodyState extends State<SeeExpenseScreenMainBody> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              SeeExpenseScreenActiveStatus(isActive: true), // TODO: Fetch active status from backend
+              SizedBox(height: proportionalSizes.scaleHeight(20)),
+
               SeeExpenseScreenFields(
                 onNameValidityChanged: updateNameValidity,
                 onAmountValidityChanged: updateAmountValidity,
                 isAmountValid: isAmountValid,
                 isReadOnly: !isEditMode,
+                transactionId: widget.transactionId,
               ),
               SizedBox(height: proportionalSizes.scaleHeight(24)),
 

@@ -10,12 +10,14 @@ import '../../../common/snack_bar.dart';
 
 class SeeExpenseScreenFields extends StatefulWidget {
   final bool isReadOnly;
+  final String transactionId;
   final void Function(bool isValid)? onNameValidityChanged;
   final void Function(bool isValid)? onAmountValidityChanged;
   final bool isAmountValid;
 
   const SeeExpenseScreenFields({
     super.key,
+    required this.transactionId,
     this.isReadOnly = true,
     this.onNameValidityChanged,
     this.onAmountValidityChanged,
