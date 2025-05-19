@@ -17,5 +17,6 @@ class ExpenseFlowBase(BaseModel):
     model_config = ConfigDict(
         json_encoders={
             dt.datetime: _serialize_datetime,
-        }
+        },
+        from_attributes=True,
     )

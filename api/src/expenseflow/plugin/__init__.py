@@ -86,6 +86,7 @@ class PluginRegistry:
         except OSError as e:
             msg = f"Failed to retrieve plugin config from '{config_file_path}'"
             raise PluginError(msg) from e
+        logger.debug(f"Plugin config: {config}")
         if config is None:
             return cls({})
         for plugin_name, plugin_config in config.items():
