@@ -10,6 +10,7 @@ import '../../screens/add_expense_screen/add_expense_screen.dart';
 import '../../screens/split_with_screen/split_with_screen.dart';
 import '../../screens/add_items_screen/add_items_screen.dart';
 import 'screens/expenses_screen/expenses_screen.dart';
+import 'screens/see_expense_screen/see_expense_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -54,6 +55,19 @@ class MyApp extends StatelessWidget {
               builder: (_) => AddItemsScreen(
                 amount: args?['amount'],
               ),
+            );
+          case '/see_expenses':
+            final args = settings.arguments as Map<String, dynamic>?;
+            final transactionId = args?['transactionId'] as String?;
+            if (transactionId == null) {
+              return MaterialPageRoute(
+                builder: (_) => const Scaffold(
+                  body: Center(child: Text('Error: Missing transaction ID')),
+                ),
+              );
+            }
+            return MaterialPageRoute(
+              builder: (_) => SeeExpenseScreen(transactionId: transactionId),
             );
           default:
             return MaterialPageRoute(

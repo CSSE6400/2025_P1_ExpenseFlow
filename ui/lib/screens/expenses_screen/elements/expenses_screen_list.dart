@@ -221,7 +221,13 @@ class _ExpensesScreenListState extends State<ExpensesScreenList> {
                       ),
                       TextButton(
                         onPressed: () {
-                          // TODO: Navigate to detailed expense screen
+                          Navigator.pushNamed(
+                            context,
+                            '/see_expenses',
+                            arguments: {
+                              'transactionId': expense.name, // TODO: Update with actual transaction ID
+                            },
+                          );
                         },
                         child: Row(
                           children: [
