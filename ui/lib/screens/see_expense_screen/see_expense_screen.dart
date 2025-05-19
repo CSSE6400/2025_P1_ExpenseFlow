@@ -21,7 +21,7 @@ class SeeExpenseScreen extends StatefulWidget {
 class _SeeExpenseScreenState extends State<SeeExpenseScreen> {
   @override
   Widget build(BuildContext context) {
-    final String transactionId = widget.transactionId;
+    final String transactionId = 'TXN456'; // TODO: Replace with actual transaction ID
     return Scaffold(
       backgroundColor: ColorPalette.background,
 
