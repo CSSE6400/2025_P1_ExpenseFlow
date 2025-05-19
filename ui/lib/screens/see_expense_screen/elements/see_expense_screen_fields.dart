@@ -50,7 +50,7 @@ class _SeeExpenseScreenFieldsState extends State<SeeExpenseScreenFields> {
   // Field values to populate
   late String name;
   late String amount;
-  late DateTime date;
+  DateTime? date;
   late String category;
   late String splitWith;
   late String items;
@@ -71,9 +71,10 @@ class _SeeExpenseScreenFieldsState extends State<SeeExpenseScreenFields> {
     name = data?['name'] ?? '';
     amount = data?['amount'] ?? '';
     final rawDate = data?['date'];
-    date = (rawDate is String && rawDate.isNotEmpty) // Expects an ISO 8601 string and converts it to DateTime
-        ? DateTime.tryParse(rawDate) ?? DateTime.now()
-        : DateTime.now();
+    final parsedDate = (rawDate is String && rawDate.isNotEmpty) // Expects an ISO 8601 string and converts it to DateTime
+        ? DateTime.tryParse(rawDate)
+        : null;
+    date = parsedDate;
     category = data?['category'] ?? '';
     splitWith = data?['splitWith'] ?? '';
     items = data?['items'] ?? '';

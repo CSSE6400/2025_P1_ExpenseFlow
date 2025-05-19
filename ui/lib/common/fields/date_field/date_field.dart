@@ -33,14 +33,14 @@ class DateField extends StatefulWidget {
 }
 
 class _DateFieldState extends State<DateField> {
-  late DateTime _selectedDate;
+  late DateTime? _selectedDate;
   late bool hasValidDate;
 
   @override
   void initState() {
     super.initState();
     hasValidDate = widget.initialDate != null;
-    _selectedDate = widget.initialDate ?? DateTime.now();
+    _selectedDate = widget.initialDate;
   }
 
   String _formatDate(DateTime date) {
@@ -87,7 +87,7 @@ class _DateFieldState extends State<DateField> {
               ? () {
                   openCalendarPopup(
                     context: context,
-                    initialDate: _selectedDate,
+                    initialDate: _selectedDate ?? DateTime.now(),
                     onChanged: (selectedDate) {
                       setState(() {
                         _selectedDate = selectedDate;
@@ -110,10 +110,12 @@ class _DateFieldState extends State<DateField> {
                   proportionalSizes.scaleWidth(10),
                 ),
               ),
-              child: Text(
-                hasValidDate ? _formatDate(_selectedDate) : "Not set",
+              child:Text(
+                hasValidDate ? _formatDate(_selectedDate!) : "Not set",
                 style: GoogleFonts.roboto(
-                  color: labelColor,
+                  color: hasValidDate
+                      ? labelColor
+                      : ColorPalette.secondaryText,
                   fontSize: proportionalSizes.scaleText(16),
                 ),
               ),
