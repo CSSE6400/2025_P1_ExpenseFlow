@@ -102,7 +102,9 @@ class _ExpensesScreenListState extends State<ExpensesScreenList> {
                     vertical: proportionalSizes.scaleHeight(8),
                   ),
                   child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
+                      // Expand/collapse arrow
                       Transform.rotate(
                         angle: isExpanded ? 4.71 : 0,
                         child: IconMaker(
@@ -110,38 +112,76 @@ class _ExpensesScreenListState extends State<ExpensesScreenList> {
                         ),
                       ),
                       SizedBox(width: proportionalSizes.scaleWidth(8)),
+
+                      // Expense name
                       SizedBox(
-                        width: proportionalSizes.scaleWidth(200),
+                        width: proportionalSizes.scaleWidth(180),
                         child: Text(
                           expense.name,
                           overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
+                          maxLines: 2,
                           softWrap: false,
                           style: GoogleFonts.roboto(
                             fontSize: proportionalSizes.scaleText(18),
-                            fontWeight: FontWeight.w500,
                             color: textColor,
                           ),
                         ),
                       ),
-                      const Spacer(),
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                          vertical: proportionalSizes.scaleHeight(4),
-                          horizontal: proportionalSizes.scaleWidth(8),
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.grey.withAlpha(50),
-                          borderRadius: BorderRadius.circular(
-                            proportionalSizes.scaleWidth(8),
-                          ),
-                        ),
-                        child: Text(
-                          expense.price,
-                          style: GoogleFonts.roboto(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.blue,
-                            fontSize: proportionalSizes.scaleText(14),
+
+                      // Right-aligned price + tag
+                      Expanded(
+                        child: Align(
+                          alignment: Alignment.centerRight,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              // "Active" Tag
+                              if (expense.active) ...[
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: proportionalSizes.scaleHeight(2),
+                                    horizontal: proportionalSizes.scaleWidth(6),
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: ColorPalette.accent.withValues(alpha: 0.2),
+                                    borderRadius: BorderRadius.circular(
+                                      proportionalSizes.scaleWidth(6)
+                                    ),
+                                  ),
+                                  child: Text(
+                                    'Active',
+                                    style: GoogleFonts.roboto(
+                                      color: ColorPalette.accent,
+                                      fontSize: proportionalSizes.scaleText(14),
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(width: proportionalSizes.scaleWidth(6)),
+                              ],
+
+                              // Price tag
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                  vertical: proportionalSizes.scaleHeight(4),
+                                  horizontal: proportionalSizes.scaleWidth(8),
+                                ),
+                                decoration: BoxDecoration(
+                                  color: textColor.withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(
+                                    proportionalSizes.scaleWidth(8),
+                                  ),
+                                ),
+                                child: Text(
+                                  expense.price,
+                                  style: GoogleFonts.roboto(
+                                    fontWeight: FontWeight.bold,
+                                    color: textColor,
+                                    fontSize: proportionalSizes.scaleText(14),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -165,7 +205,7 @@ class _ExpensesScreenListState extends State<ExpensesScreenList> {
                           vertical: proportionalSizes.scaleHeight(4),
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.grey.shade300,
+                          color: textColor.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(
                             proportionalSizes.scaleWidth(8),
                           ),
@@ -173,8 +213,9 @@ class _ExpensesScreenListState extends State<ExpensesScreenList> {
                         child: Text(
                           _formatDate(expense.date),
                           style: GoogleFonts.roboto(
-                            color: Colors.blue,
-                            fontWeight: FontWeight.w500,
+                            color: textColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: proportionalSizes.scaleText(14),
                           ),
                         ),
                       ),
@@ -190,6 +231,7 @@ class _ExpensesScreenListState extends State<ExpensesScreenList> {
                                 color: textColor,
                                 decoration: TextDecoration.underline,
                                 fontWeight: FontWeight.bold,
+                                fontSize: proportionalSizes.scaleText(18),
                               ),
                             ),
                             const Icon(Icons.chevron_right,
