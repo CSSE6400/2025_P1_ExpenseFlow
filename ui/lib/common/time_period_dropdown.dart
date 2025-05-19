@@ -126,6 +126,7 @@ class _TimePeriodDropdownState extends State<TimePeriodDropdown> {
       key: _dropdownKey,
       onTap: _showDropdownDialog,
       child: Container(
+        width: proportionalSizes.scaleWidth(180),
         padding: EdgeInsets.symmetric(
           vertical: proportionalSizes.scaleHeight(4),
           horizontal: proportionalSizes.scaleWidth(12),
@@ -136,6 +137,7 @@ class _TimePeriodDropdownState extends State<TimePeriodDropdown> {
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.end,
           children: [
             Text(
               widget.selectedPeriod,
