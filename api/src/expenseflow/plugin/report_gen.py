@@ -8,8 +8,8 @@ from expenseflow.expense.service import get_expenses, get_uploaded_expenses
 from expenseflow.plugin import Plugin, PluginSettings, register_plugin
 
 
-@register_plugin("textract")
-class TextractPlugin(Plugin[PluginSettings]):
+@register_plugin("report_gen")
+class ReportGenPlugin(Plugin[PluginSettings]):
     """Report generation plugin."""
 
     _settings_type = PluginSettings
