@@ -34,10 +34,12 @@ class DateField extends StatefulWidget {
 
 class _DateFieldState extends State<DateField> {
   late DateTime _selectedDate;
+  late bool hasValidDate;
 
   @override
   void initState() {
     super.initState();
+    hasValidDate = widget.initialDate != null;
     _selectedDate = widget.initialDate ?? DateTime.now();
   }
 
@@ -109,7 +111,7 @@ class _DateFieldState extends State<DateField> {
                 ),
               ),
               child: Text(
-                _formatDate(_selectedDate),
+                hasValidDate ? _formatDate(_selectedDate) : "Not set",
                 style: GoogleFonts.roboto(
                   color: labelColor,
                   fontSize: proportionalSizes.scaleText(16),

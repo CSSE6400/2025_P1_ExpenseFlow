@@ -38,7 +38,7 @@ class _SeeExpenseScreenFieldsState extends State<SeeExpenseScreenFields> {
     'TXN456': {
       'name': 'Bus Recharge',
       'amount': '20',
-      'date': DateTime(2024, 10, 1),
+      'date': '2024-06-10T14:20:00Z',
       'category': 'Transport',
       'splitWith': '',
       'items': '',
@@ -70,7 +70,10 @@ class _SeeExpenseScreenFieldsState extends State<SeeExpenseScreenFields> {
 
     name = data?['name'] ?? '';
     amount = data?['amount'] ?? '';
-    date = data?['date'] ?? DateTime.now();
+    final rawDate = data?['date'];
+    date = (rawDate is String && rawDate.isNotEmpty) // Expects an ISO 8601 string and converts it to DateTime
+        ? DateTime.tryParse(rawDate) ?? DateTime.now()
+        : DateTime.now();
     category = data?['category'] ?? '';
     splitWith = data?['splitWith'] ?? '';
     items = data?['items'] ?? '';
