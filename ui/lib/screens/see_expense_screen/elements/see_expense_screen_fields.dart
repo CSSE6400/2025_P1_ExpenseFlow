@@ -138,6 +138,7 @@ class _SeeExpenseScreenFieldsState extends State<SeeExpenseScreenFields> {
         DropdownField(
           label: 'Category',
           options: ['Groceries', 'Transport', 'Bills', 'Entertainment'], // TODO: Load from DB
+          selectedValue: category,
           placeholder: 'Select Category',
           addDialogHeading: 'New Category',
           addDialogHintText: 'Enter category name',

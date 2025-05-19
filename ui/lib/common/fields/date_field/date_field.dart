@@ -91,6 +91,7 @@ class _DateFieldState extends State<DateField> {
                     onChanged: (selectedDate) {
                       setState(() {
                         _selectedDate = selectedDate;
+                        hasValidDate = true;
                       });
                       if (widget.onChanged != null) {
                         widget.onChanged!(selectedDate);

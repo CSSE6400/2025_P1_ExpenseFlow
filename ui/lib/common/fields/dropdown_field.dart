@@ -18,6 +18,7 @@ class DropdownField extends StatefulWidget {
   final String addDialogHintText;
   final int addDialogMaxLength;
   final bool isEditable;
+  final String? selectedValue;
 
   const DropdownField({
     super.key,
@@ -29,6 +30,7 @@ class DropdownField extends StatefulWidget {
     this.onChanged,
     this.placeholder,
     this.isEditable = true,
+    this.selectedValue,
   });
 
   @override
@@ -43,6 +45,7 @@ class _DropdownFieldState extends State<DropdownField> {
   void initState() {
     super.initState();
     options = List<String>.from(widget.options);
+    selectedOption = widget.selectedValue;
   }
 
   void _showDropdownDialog(BuildContext context) {
