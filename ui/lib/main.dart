@@ -4,7 +4,7 @@ import 'package:flutter_frontend/services/api_service.dart' show ApiService;
 import 'package:flutter_frontend/services/auth_service.dart' show AuthService;
 import 'package:flutter_frontend/utils/config.dart' show Config;
 import 'package:provider/provider.dart' show MultiProvider, Provider;
-import 'package:logging/logging.dart' show Logger;
+import 'package:logging/logging.dart' show Level, Logger;
 // Screens
 import '../../screens/initial_startup_screen/initial_startup_screen.dart';
 import '../../screens/profile_setup_screen/profile_setup_screen.dart';
@@ -17,6 +17,14 @@ import 'screens/see_expense_screen/see_expense_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  Logger.root.level = Level.ALL;
+  Logger.root.onRecord.listen((record) {
+    // ignore: avoid_print
+    print(
+      '${record.level.name}: ${record.time}: ${record.loggerName}: ${record.message}',
+    );
+  });
+
   final logger = Logger("main");
 
   final config = await Config.load();
@@ -53,7 +61,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       themeMode: ThemeMode.light,
 
-      initialRoute: auth.isLoggedIn ? '/home' : '/initial_startup',
+      initialRoute: auth.isLoggedIn ? '/' : '/initial_startup',
       onGenerateRoute: (RouteSettings settings) {
         switch (settings.name) {
           case '/initial_startup':
@@ -64,7 +72,7 @@ class MyApp extends StatelessWidget {
             return MaterialPageRoute(
               builder: (_) => const ProfileSetupScreen(),
             );
-          case '/home':
+          case '/':
             return MaterialPageRoute(builder: (_) => const HomeScreen());
           case '/add_expense':
             return MaterialPageRoute(builder: (_) => const AddExpenseScreen());
