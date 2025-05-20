@@ -71,6 +71,10 @@ resource "aws_ecs_task_definition" "expenseflow_api" {
         {
           name  = "AUTH0_DOMAIN",
           value = var.auth0_domain
+        },
+        {
+          name  = "FRONTEND_URL",
+          value = local.ui_url
         }
       ],
       logConfiguration = {

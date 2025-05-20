@@ -4,6 +4,6 @@ resource "local_file" "ui_url" {
 }
 
 resource "local_file" "api_url" {
-  content  = "http://${aws_lb.expenseflow_api.dns_name}"
+  content  = local.api_url
   filename = "./api.txt"
 }
