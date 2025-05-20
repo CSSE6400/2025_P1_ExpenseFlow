@@ -23,14 +23,21 @@ class HomeScreenRecentExpenses extends StatefulWidget {
 }
 
 class _HomeScreenRecentExpensesState extends State<HomeScreenRecentExpenses> {
-  late final List<RecentExpenseItem> recentExpenses;
+  List<RecentExpenseItem> recentExpenses = [];
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    // Sample data for recent expenses
+    _loadRecentExpenses();
+  }
+
+  // Simulated backend call
+  Future<void> _loadRecentExpenses() async {
+    await Future.delayed(const Duration(milliseconds: 800)); // Simulate network latency
+
     // TODO: Replace with actual data from your database. Fetch 6 most recent expenses.
-    recentExpenses = [
+    final mockExpenses = [
       RecentExpenseItem(name: 'Shopping at Coles', price: '78.9'),
       RecentExpenseItem(name: 'Uber Ride', price: '25.5'),
       RecentExpenseItem(name: 'Dinner at Sushi Train', price: '60.2'),
@@ -38,12 +45,18 @@ class _HomeScreenRecentExpensesState extends State<HomeScreenRecentExpenses> {
       RecentExpenseItem(name: 'Fuel BP Station', price: '89.9'),
       RecentExpenseItem(name: 'Haircut', price: '45'),
     ];
+
+    if (mounted) {
+      setState(() {
+        recentExpenses = mockExpenses;
+        isLoading = false;
+      });
+    }
   }
 
-  formatPrice(String price) {
+  String formatPrice(String price) {
     return '\$${double.parse(price).toStringAsFixed(2)}';
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -65,6 +78,7 @@ class _HomeScreenRecentExpensesState extends State<HomeScreenRecentExpenses> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Heading
             Padding(
               padding: EdgeInsets.all(proportionalSizes.scaleWidth(16)),
               child: Text(
@@ -77,34 +91,47 @@ class _HomeScreenRecentExpensesState extends State<HomeScreenRecentExpenses> {
               ),
             ),
 
-            ...recentExpenses.map(
-              (expense) => Padding(
+            // Loading state
+            if (isLoading)
+              Padding(
                 padding: EdgeInsets.symmetric(
-                  horizontal: proportionalSizes.scaleWidth(16),
-                  vertical: proportionalSizes.scaleHeight(8),
+                  vertical: proportionalSizes.scaleHeight(20),
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      expense.name,
-                      style: TextStyle(
-                        fontSize: proportionalSizes.scaleText(18),
-                        color: ColorPalette.primaryText,
+                child: Center(
+                  child: CircularProgressIndicator(
+                    color: ColorPalette.primaryAction,
+                  ),
+                ),
+              )
+            else
+              ...recentExpenses.map(
+                (expense) => Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: proportionalSizes.scaleWidth(16),
+                    vertical: proportionalSizes.scaleHeight(8),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        expense.name,
+                        style: TextStyle(
+                          fontSize: proportionalSizes.scaleText(18),
+                          color: ColorPalette.primaryText,
+                        ),
                       ),
-                    ),
-                    Text(
-                      formatPrice(expense.price),
-                      style: TextStyle(
-                        fontSize: proportionalSizes.scaleText(18),
-                        color: ColorPalette.primaryText,
+                      Text(
+                        formatPrice(expense.price),
+                        style: TextStyle(
+                          fontSize: proportionalSizes.scaleText(18),
+                          color: ColorPalette.primaryText,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ]
+          ],
         ),
       ),
     );
