@@ -7,11 +7,13 @@ class Config {
   final String backendBaseUrl;
   final String auth0Domain;
   final String auth0ClientId;
+  final String jwtAudience;
 
   Config({
     required this.backendBaseUrl,
     required this.auth0Domain,
     required this.auth0ClientId,
+    required this.jwtAudience,
   });
 
   static Future<Config> load() async {
@@ -27,6 +29,7 @@ class Config {
         backendBaseUrl: json['BACKEND_BASE_URL'] as String,
         auth0Domain: json['AUTH0_DOMAIN'] as String,
         auth0ClientId: json['AUTH0_CLIENT_ID'] as String,
+        jwtAudience: json['JWT_AUDIENCE'] as String,
       );
     } else {
       throw Exception(
