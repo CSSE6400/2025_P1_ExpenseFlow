@@ -61,7 +61,7 @@ class BottomNavBar extends StatelessWidget {
         'icon': 'assets/icons/expenses.png',
         'onTap': () {
           if (!inactive && currentScreen != 'Expenses') {
-            // TODO: Navigate to Expenses Screen
+            Navigator.pushNamed(context, '/expenses');
           }
         },
       },
