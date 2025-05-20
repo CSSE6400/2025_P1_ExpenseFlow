@@ -65,11 +65,11 @@ resource "aws_ecs_task_definition" "expenseflow_ui" {
         },
         {
           name  = "AUTH0_DOMAIN",
-          value = "ABC",
+          value = var.auth0_domain
         },
         {
           name  = "AUTH0_CLIENT_ID",
-          value = "ABC",
+          value = data.auth0_client.expenseflow_ui_client.client_id
         },
       ],
       logConfiguration = {
