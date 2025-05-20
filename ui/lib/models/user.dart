@@ -2,7 +2,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'user.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(fieldRename: FieldRename.snake)
 class UserRead {
   final String userId;
   final String nickname;
@@ -21,7 +21,7 @@ class UserRead {
   Map<String, dynamic> toJson() => _$UserReadToJson(this);
 }
 
-@JsonSerializable()
+@JsonSerializable(fieldRename: FieldRename.snake)
 class UserCreate {
   final String nickname;
   final String firstName;

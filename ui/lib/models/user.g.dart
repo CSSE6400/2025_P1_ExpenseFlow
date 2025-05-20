@@ -7,28 +7,28 @@ part of 'user.dart';
 // **************************************************************************
 
 UserRead _$UserReadFromJson(Map<String, dynamic> json) => UserRead(
-  userId: json['userId'] as String,
+  userId: json['user_id'] as String,
   nickname: json['nickname'] as String,
-  firstName: json['firstName'] as String,
-  lastName: json['lastName'] as String,
+  firstName: json['first_name'] as String,
+  lastName: json['last_name'] as String,
 );
 
 Map<String, dynamic> _$UserReadToJson(UserRead instance) => <String, dynamic>{
-  'userId': instance.userId,
+  'user_id': instance.userId,
   'nickname': instance.nickname,
-  'firstName': instance.firstName,
-  'lastName': instance.lastName,
+  'first_name': instance.firstName,
+  'last_name': instance.lastName,
 };
 
 UserCreate _$UserCreateFromJson(Map<String, dynamic> json) => UserCreate(
   nickname: json['nickname'] as String,
-  firstName: json['firstName'] as String,
-  lastName: json['lastName'] as String,
+  firstName: json['first_name'] as String,
+  lastName: json['last_name'] as String,
 );
 
 Map<String, dynamic> _$UserCreateToJson(UserCreate instance) =>
     <String, dynamic>{
       'nickname': instance.nickname,
-      'firstName': instance.firstName,
-      'lastName': instance.lastName,
+      'first_name': instance.firstName,
+      'last_name': instance.lastName,
     };
