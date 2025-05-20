@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_frontend/utils/string_utils.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../common/color_palette.dart';
 import '../../../common/custom_divider.dart';
@@ -7,30 +8,45 @@ import '../../../common/proportional_sizes.dart';
 import '../../../common/search_bar.dart' as search;
 import '../../../common/icon_maker.dart';
 
-// Item class
-// TODO: Consider adding userId, transactionId or unique identifier for backend syncing
-class Item {
-  String amount;
-  final String defaultName;
+class ExpenseItem {
   final TextEditingController nameController;
-  final TextEditingController amountController;
+  final TextEditingController priceController;
+  final TextEditingController quantityController;
+  bool isModified;
 
-  Item({
+  ExpenseItem({
     required String name,
-    required this.amount,
-  })  : defaultName = name,
-        nameController = TextEditingController(text: ''),
-        amountController = TextEditingController(text: amount);
+    required double price,
+    required int quantity,
+    this.isModified = false,
+  }) : nameController = TextEditingController(text: name),
+       priceController = TextEditingController(text: price.toString()),
+       quantityController = TextEditingController(text: quantity.toString());
+
+  String get name => nameController.text;
+
+  double get price => double.tryParse(priceController.text) ?? 0.0;
+
+  int get quantity => int.tryParse(quantityController.text) ?? 1;
+
+  double get totalCost => price * quantity;
+
+  void dispose() {
+    nameController.dispose();
+    priceController.dispose();
+    quantityController.dispose();
+  }
 }
 
 class AddItemsScreenItems extends StatefulWidget {
-  final double totalAmount;
-  final void Function(bool isValid)? onValidityChanged;
+  final List<ExpenseItem> items;
+
+  final Function(List<ExpenseItem> items, bool hasChanges) onItemsChanged;
 
   const AddItemsScreenItems({
     super.key,
-    required this.totalAmount,
-    this.onValidityChanged,
+    required this.items,
+    required this.onItemsChanged,
   });
 
   @override
@@ -38,77 +54,104 @@ class AddItemsScreenItems extends StatefulWidget {
 }
 
 class AddItemsScreenItemsState extends State<AddItemsScreenItems> {
-  List<Item> allItems = [];
-  List<Item> filteredItems = [];
+  List<ExpenseItem> _items = [];
+  List<ExpenseItem> filteredItems = [];
+  bool hasChanges = false;
 
-  // Initialize items
   @override
   void initState() {
     super.initState();
 
-    // Dummy starting items.
-    // TODO: Replace with actual data from the backend and add lazy loading if items are numerous.
-    allItems = List.generate(
-      1,
-      (index) => Item(name: 'Item Name #${index + 1}', amount: '10'),
-    );
-    filteredItems = List.from(allItems);
+    // clone the items
+    _items = widget.items;
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      widget.onValidityChanged?.call(isFormValid());
-    });
+    filteredItems = List.from(_items);
+
+    // set up listeners
+    _setupItemListeners();
   }
 
-  // Filter items based on search query
+  // parent updates items
+  @override
+  void didUpdateWidget(AddItemsScreenItems oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.items != widget.items) {
+      // Update items if the parent passes new ones
+      setState(() {
+        _items = widget.items;
+        filteredItems = List.from(_items);
+        hasChanges = false;
+      });
+      _setupItemListeners();
+    }
+  }
+
+  void _setupItemListeners() {
+    for (final item in _items) {
+      item.nameController.addListener(() => _onItemChanged(item));
+      item.priceController.addListener(() => _onItemChanged(item));
+      item.quantityController.addListener(() => _onItemChanged(item));
+    }
+  }
+
+  // callback when any item prop changes
+  void _onItemChanged(ExpenseItem item) {
+    item.isModified = true;
+    setState(() {
+      hasChanges = true;
+    });
+    _notifyParent();
+  }
+
+  void _notifyParent() {
+    widget.onItemsChanged(_items, hasChanges);
+  }
+
+  // filter items
   void _filterItems(String query) {
     setState(() {
-      filteredItems = allItems.where((item) {
-        return item.nameController.text.toLowerCase().contains(query.toLowerCase());
-      }).toList();
+      filteredItems =
+          _items.where((item) {
+            final nameText =
+                item.nameController.text.isEmpty
+                    ? ""
+                    : item.nameController.text;
+            return nameText.toLowerCase().contains(query.toLowerCase());
+          }).toList();
     });
   }
 
-  bool isFormValid() {
-    final isAmountValid = allItems.fold<double>(
-          0,
-          (sum, item) => sum + (double.tryParse(item.amount) ?? 0),
-        ) ==
-        widget.totalAmount;
-
-    final areNamesValid = allItems.every(
-      (item) =>
-          item.nameController.text.trim().isNotEmpty &&
-          item.nameController.text.trim() != item.defaultName,
+  // add new item
+  void _addNewItem() {
+    final newItem = ExpenseItem(
+      name: 'Item Name #${_items.length + 1}',
+      price: 0.0,
+      quantity: 1,
+      isModified: true,
     );
 
-    return isAmountValid && areNamesValid;
-  }
-
-  void saveAndExit(BuildContext context) {
-    // TODO: Persist item list if needed
-    Navigator.pop(context);
-  }
-
-  // Add a new item
-  void _addNewItem() {
     setState(() {
-      final newItem = Item(
-        name: 'Item Name #${allItems.length + 1}',
-        amount: '0',
-      );
-      allItems.add(newItem);
-      filteredItems = List.from(allItems);
-      widget.onValidityChanged?.call(isFormValid());
+      _items.add(newItem);
+      filteredItems = List.from(_items);
+      hasChanges = true;
     });
+
+    // set up listeners
+    newItem.nameController.addListener(() => _onItemChanged(newItem));
+    newItem.priceController.addListener(() => _onItemChanged(newItem));
+    newItem.quantityController.addListener(() => _onItemChanged(newItem));
+
+    _notifyParent();
   }
 
-  // Remove an item
-  void _removeItem(Item item) {
+  // remove item
+  void _removeItem(ExpenseItem item) {
     setState(() {
-      allItems.remove(item);
-      filteredItems = List.from(allItems);
-      widget.onValidityChanged?.call(isFormValid());
+      _items.remove(item);
+      filteredItems = List.from(_items);
+      hasChanges = true;
     });
+    _notifyParent();
   }
 
   @override
@@ -119,10 +162,7 @@ class AddItemsScreenItemsState extends State<AddItemsScreenItems> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        search.SearchBar(
-          hintText: 'Search items',
-          onChanged: _filterItems,
-        ),
+        search.SearchBar(hintText: 'Search items', onChanged: _filterItems),
         const SizedBox(height: 20),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -135,13 +175,26 @@ class AddItemsScreenItemsState extends State<AddItemsScreenItems> {
                 color: textColor,
               ),
             ),
-            Text(
-              'Price',
-              style: GoogleFonts.roboto(
-                fontWeight: FontWeight.bold,
-                fontSize: proportionalSizes.scaleHeight(18),
-                color: textColor,
-              ),
+            Row(
+              children: [
+                Text(
+                  'Qty',
+                  style: GoogleFonts.roboto(
+                    fontWeight: FontWeight.bold,
+                    fontSize: proportionalSizes.scaleHeight(18),
+                    color: textColor,
+                  ),
+                ),
+                SizedBox(width: proportionalSizes.scaleWidth(20)),
+                Text(
+                  'Price',
+                  style: GoogleFonts.roboto(
+                    fontWeight: FontWeight.bold,
+                    fontSize: proportionalSizes.scaleHeight(18),
+                    color: textColor,
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -149,14 +202,20 @@ class AddItemsScreenItemsState extends State<AddItemsScreenItems> {
 
         ...filteredItems.map((item) => _buildItemRow(item, proportionalSizes)),
 
+        if (filteredItems.isEmpty)
+          Center(
+            child: Padding(
+              padding: EdgeInsets.all(proportionalSizes.scaleHeight(20)),
+              child: Text('No items found'),
+            ),
+          ),
+
         const SizedBox(height: 16),
         GestureDetector(
           onTap: _addNewItem,
           child: Row(
             children: [
-              IconMaker(
-                assetPath: 'assets/icons/add.png',
-              ),
+              IconMaker(assetPath: 'assets/icons/add.png'),
               const SizedBox(width: 6),
               Text(
                 'Add Item',
@@ -173,7 +232,7 @@ class AddItemsScreenItemsState extends State<AddItemsScreenItems> {
   }
 
   // Build each item row
-  Widget _buildItemRow(Item item, ProportionalSizes proportionalSizes) {
+  Widget _buildItemRow(ExpenseItem item, ProportionalSizes proportionalSizes) {
     final textColor = ColorPalette.primaryText;
     final hintColor = ColorPalette.secondaryText;
 
@@ -189,10 +248,10 @@ class AddItemsScreenItemsState extends State<AddItemsScreenItems> {
                 GestureDetector(
                   onTap: () => _removeItem(item),
                   child: Padding(
-                    padding: EdgeInsets.only(right: proportionalSizes.scaleWidth(8)),
-                    child: IconMaker(
-                      assetPath: 'assets/icons/minus.png',
+                    padding: EdgeInsets.only(
+                      right: proportionalSizes.scaleWidth(8),
                     ),
+                    child: IconMaker(assetPath: 'assets/icons/minus.png'),
                   ),
                 ),
                 Expanded(
@@ -200,13 +259,7 @@ class AddItemsScreenItemsState extends State<AddItemsScreenItems> {
                     controller: item.nameController,
                     maxLength: 30,
                     onChanged: (value) {
-                      // Format input to Title Case
-                      String formatted = value
-                          .toLowerCase()
-                          .split(' ')
-                          .where((w) => w.isNotEmpty)
-                          .map((word) => word[0].toUpperCase() + word.substring(1))
-                          .join(' ');
+                      String formatted = titleCaseString(value);
 
                       // Update only if formatting changes it
                       if (formatted != value) {
@@ -219,20 +272,17 @@ class AddItemsScreenItemsState extends State<AddItemsScreenItems> {
                           ),
                         );
                       }
-
-                      setState(() {
-                        widget.onValidityChanged?.call(isFormValid());
-                      });
                     },
                     style: GoogleFonts.roboto(
                       fontSize: proportionalSizes.scaleHeight(18),
-                      color: item.nameController.text.isEmpty
-                          ? hintColor
-                          : textColor,
+                      color:
+                          item.nameController.text.isEmpty
+                              ? hintColor
+                              : textColor,
                     ),
                     decoration: InputDecoration(
                       border: InputBorder.none,
-                      hintText: item.defaultName,
+                      hintText: "",
                       counterText: '', // Hides counter below
                       hintStyle: GoogleFonts.roboto(
                         fontSize: proportionalSizes.scaleHeight(18),
@@ -245,6 +295,38 @@ class AddItemsScreenItemsState extends State<AddItemsScreenItems> {
               ],
             ),
           ),
+
+          // Quantity Input Box
+          Container(
+            width: proportionalSizes.scaleWidth(40),
+            padding: EdgeInsets.symmetric(
+              horizontal: proportionalSizes.scaleWidth(8),
+              vertical: proportionalSizes.scaleHeight(4),
+            ),
+            decoration: BoxDecoration(
+              color: textColor.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(
+                proportionalSizes.scaleWidth(6),
+              ),
+            ),
+            child: TextField(
+              controller: item.quantityController,
+              keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              textAlign: TextAlign.center,
+              style: GoogleFonts.roboto(
+                fontWeight: FontWeight.bold,
+                color: textColor,
+                fontSize: proportionalSizes.scaleHeight(14),
+              ),
+              decoration: const InputDecoration(
+                isCollapsed: true,
+                border: InputBorder.none,
+              ),
+            ),
+          ),
+
+          SizedBox(width: proportionalSizes.scaleWidth(10)),
 
           // Price Input Box
           Container(
@@ -260,20 +342,14 @@ class AddItemsScreenItemsState extends State<AddItemsScreenItems> {
               ),
             ),
             child: TextField(
-              controller: item.amountController,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              controller: item.priceController,
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               inputFormatters: [
-                FilteringTextInputFormatter.allow(
-                  RegExp(r'^\d*\.?\d{0,2}$'),
-                ),
+                FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}$')),
               ],
               textAlign: TextAlign.center,
-              onChanged: (value) {
-                setState(() {
-                  item.amount = value;
-                  widget.onValidityChanged?.call(isFormValid());
-                });
-              },
               style: GoogleFonts.roboto(
                 fontWeight: FontWeight.bold,
                 color: textColor,
@@ -290,5 +366,14 @@ class AddItemsScreenItemsState extends State<AddItemsScreenItems> {
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    // Supposedly this is a good idea?
+    for (final item in _items) {
+      item.dispose();
+    }
+    super.dispose();
   }
 }

@@ -84,12 +84,6 @@ class MyApp extends StatelessWidget {
             return MaterialPageRoute(builder: (_) => const SplitWithScreen());
           case '/expenses':
             return MaterialPageRoute(builder: (_) => const ExpensesScreen());
-          case '/add_items':
-            final args = settings.arguments as Map<String, dynamic>?;
-
-            return MaterialPageRoute(
-              builder: (_) => AddItemsScreen(amount: args?['amount']),
-            );
           case '/see_expenses':
             final args = settings.arguments as Map<String, dynamic>?;
             final transactionId = args?['transactionId'] as String?;

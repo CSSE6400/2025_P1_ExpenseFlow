@@ -21,17 +21,11 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
 
     return Scaffold(
       backgroundColor: backgroundColor,
-      appBar: AppBarWidget(
-        screenName: 'Add Expense',
-        showBackButton: true,
-      ),
+      appBar: AppBarWidget(screenName: 'Add Expense', showBackButton: true),
 
       body: AddExpenseScreenMainBody(),
 
-      bottomNavigationBar: BottomNavBar(
-        currentScreen: 'Add',
-        inactive: false,
-      ),
+      bottomNavigationBar: BottomNavBar(currentScreen: 'Add', inactive: false),
     );
   }
 }

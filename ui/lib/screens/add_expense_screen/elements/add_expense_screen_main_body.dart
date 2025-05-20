@@ -25,11 +25,7 @@ class _AddExpenseScreenMainBodyState extends State<AddExpenseScreenMainBody> {
     setState(() => isNameValid = isValid);
   }
 
-  void updateAmountValidity(bool isValid) {
-    setState(() => isAmountValid = isValid);
-  }
-
-  Future<void> onSave() async {
+  Future<void> onAdd() async {
     // TODO: Handle save logic
     Navigator.pushNamed(context, '/');
   }
@@ -55,14 +51,13 @@ class _AddExpenseScreenMainBodyState extends State<AddExpenseScreenMainBody> {
               // Pass validity up from fields
               AddExpenseScreenFields(
                 onNameValidityChanged: updateNameValidity,
-                onAmountValidityChanged: updateAmountValidity,
                 isAmountValid: isAmountValid,
               ),
               SizedBox(height: proportionalSizes.scaleHeight(24)),
 
               CustomButton(
-                label: 'Save',
-                onPressed: isFormValid ? onSave : () {},
+                label: 'Add Expense',
+                onPressed: isFormValid ? onAdd : () {},
                 sizeType: ButtonSizeType.full,
                 state: isFormValid ? ButtonState.enabled : ButtonState.disabled,
               ),
