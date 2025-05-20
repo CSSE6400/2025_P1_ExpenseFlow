@@ -13,9 +13,14 @@ import '../../../common/snack_bar.dart';
 import '../../add_items_screen/add_items_screen.dart';
 
 class AddExpenseScreenFields extends StatefulWidget {
-  final void Function(bool isValid)? onValidityChanged;
+  final void Function(bool isValid) onValidityChanged;
+  final void Function(ExpenseCreate expense)? onExpenseChanged;
 
-  const AddExpenseScreenFields({super.key, this.onValidityChanged});
+  const AddExpenseScreenFields({
+    super.key,
+    required this.onValidityChanged,
+    required this.onExpenseChanged,
+  });
 
   @override
   State<AddExpenseScreenFields> createState() => _AddExpenseScreenFieldsState();
@@ -25,10 +30,20 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
   bool isNameValid = false;
   bool isDescriptionValid = false;
 
+  void _updateField<T>(void Function() updateState) {
+    setState(updateState);
+    _notifyExpenseChanged();
+  }
+
   void _updateFormValidity() {
     final isFormValid =
         isNameValid && isDescriptionValid && _expenseItems.isNotEmpty;
-    widget.onValidityChanged?.call(isFormValid);
+    widget.onValidityChanged.call(isFormValid);
+  }
+
+  void _notifyExpenseChanged() {
+    final expense = getExpenseData();
+    widget.onExpenseChanged?.call(expense);
   }
 
   String _name = "";
@@ -80,6 +95,7 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
         _expenseItems = updatedItems;
         _updateCalculatedAmount();
       });
+      _notifyExpenseChanged();
       _updateFormValidity(); // check whether items is empty
     }
   }
@@ -103,9 +119,7 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
             _updateFormValidity();
           },
           maxLength: 50,
-          onChanged: (value) {
-            _name = value;
-          },
+          onChanged: (value) => _updateField(() => _name = value),
         ),
         CustomDivider(),
 
@@ -122,20 +136,14 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
             _updateFormValidity();
           },
           maxLength: 50,
-          onChanged: (value) {
-            _description = value;
-          },
+          onChanged: (value) => _updateField(() => _description = value),
         ),
         CustomDivider(),
 
         DateField(
           label: 'Date',
           initialDate: _selectedDate,
-          onChanged: (selectedDate) {
-            setState(() {
-              _selectedDate = selectedDate;
-            });
-          },
+          onChanged: (value) => _updateField(() => _selectedDate = value),
         ),
         CustomDivider(),
 
@@ -168,15 +176,14 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
           addDialogHeading: 'New Category',
           addDialogHintText: 'Enter category name',
           addDialogMaxLength: 20,
-          onChanged: (value) {
-            final selectedCategory = ExpenseCategory.values.firstWhere(
-              (e) => capitalizeString(e.label) == value,
-              orElse: () => ExpenseCategory.other,
-            );
-            setState(() {
-              _selectedCategory = selectedCategory;
-            });
-          },
+          onChanged:
+              (value) => _updateField(() {
+                final selectedCategory = ExpenseCategory.values.firstWhere(
+                  (e) => capitalizeString(e.label) == value,
+                  orElse: () => ExpenseCategory.other,
+                );
+                _selectedCategory = selectedCategory;
+              }),
         ),
 
         CustomDivider(),

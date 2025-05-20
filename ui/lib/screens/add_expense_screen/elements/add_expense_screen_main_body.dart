@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/common/snack_bar.dart';
+import 'package:flutter_frontend/models/expense.dart' show ExpenseCreate;
+import 'package:flutter_frontend/services/api_service.dart' show ApiService;
+import 'package:logging/logging.dart' show Logger;
+import 'package:provider/provider.dart' show Provider;
 // Third-party imports
 // Common imports
 import '../../../common/proportional_sizes.dart';
@@ -17,14 +22,39 @@ class AddExpenseScreenMainBody extends StatefulWidget {
 
 class _AddExpenseScreenMainBodyState extends State<AddExpenseScreenMainBody> {
   bool isFormValid = false;
+  ExpenseCreate? _currentExpense;
+  final Logger _logger = Logger("AddExpenseScreenMainBody");
 
   void updateFormValid(bool isValid) {
     setState(() => isFormValid = isValid);
   }
 
+  void updateExpense(ExpenseCreate expense) {
+    _currentExpense = expense;
+  }
+
   Future<void> onAdd() async {
-    // TODO: Handle save logic
-    Navigator.pushNamed(context, '/');
+    final apiService = Provider.of<ApiService>(context, listen: false);
+
+    if (_currentExpense == null) {
+      showCustomSnackBar(context, normalText: "Please fill in all fields");
+      return;
+    }
+
+    try {
+      await apiService.createExpense(_currentExpense!);
+      if (!mounted) return;
+      showCustomSnackBar(
+        context,
+        normalText: "Successfully added expense",
+        backgroundColor: Colors.green,
+      );
+      Navigator.pushNamed(context, '/');
+    } catch (e) {
+      _logger.severe("Failed to add expense", e);
+      if (!mounted) return;
+      showCustomSnackBar(context, normalText: "Failed to add expense");
+    }
   }
 
   @override
@@ -46,7 +76,10 @@ class _AddExpenseScreenMainBodyState extends State<AddExpenseScreenMainBody> {
               SizedBox(height: proportionalSizes.scaleHeight(20)),
 
               // Pass validity up from fields
-              AddExpenseScreenFields(onValidityChanged: updateFormValid),
+              AddExpenseScreenFields(
+                onValidityChanged: updateFormValid,
+                onExpenseChanged: updateExpense, // <-- pass callback here
+              ),
               SizedBox(height: proportionalSizes.scaleHeight(24)),
 
               CustomButton(

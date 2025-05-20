@@ -4,6 +4,7 @@ import 'package:flutter_frontend/models/expense.dart';
 import 'package:flutter_frontend/models/user.dart' show UserCreate, UserRead;
 import 'package:flutter_frontend/services/auth_service.dart'
     show AuthenticatedClient;
+import 'package:logging/logging.dart' show Logger;
 
 class ApiException implements Exception {
   final int statusCode;
@@ -22,6 +23,7 @@ class ApiException implements Exception {
 class ApiService {
   final AuthenticatedClient client;
   final String baseUrl;
+  final Logger _logger = Logger("ApiService");
 
   ApiService(this.client, this.baseUrl);
 
@@ -44,6 +46,9 @@ class ApiService {
       case 401:
         return null;
       default:
+        _logger.info(
+          "Failed to fetch current user: ${response.statusCode} ${response.body}",
+        );
         throw ApiException(
           response.statusCode,
           "Failed to fetch current user",
@@ -62,6 +67,9 @@ class ApiService {
       // parse response body to UserRead
       return UserRead.fromJson(_safeJsonDecode((response.body)));
     } else {
+      _logger.info(
+        "Failed to create user: ${response.statusCode} ${response.body}",
+      );
       throw ApiException(
         response.statusCode,
         'Failed to create user',
@@ -80,6 +88,9 @@ class ApiService {
       // parse response body to ExpenseRead
       return ExpenseRead.fromJson(_safeJsonDecode((response.body)));
     } else {
+      _logger.info(
+        "Failed to create expense: ${response.statusCode} ${response.body}",
+      );
       throw ApiException(
         response.statusCode,
         'Failed to create expense',
@@ -97,6 +108,9 @@ class ApiService {
           .map((e) => ExpenseRead.fromJson(e))
           .toList();
     } else {
+      _logger.info(
+        "Failed to fetch expenses: ${response.statusCode} ${response.body}",
+      );
       throw ApiException(
         response.statusCode,
         'Failed to fetch expenses',
