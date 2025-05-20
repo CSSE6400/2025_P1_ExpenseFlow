@@ -16,7 +16,10 @@ r = router = APIRouter()
 
 @r.post("", response_model=ExpenseRead)
 async def create(
-    db: DbSession, user: CurrentUser, expense_in: ExpenseCreate, parent_id: UUID | None
+    db: DbSession,
+    user: CurrentUser,
+    expense_in: ExpenseCreate,
+    parent_id: UUID | None = None,
 ) -> ExpenseModel:
     """Create expense."""
     parent = user if parent_id is None else await get_entity(db, parent_id)

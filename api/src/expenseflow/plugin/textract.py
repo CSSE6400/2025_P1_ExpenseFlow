@@ -51,7 +51,11 @@ class TextractPlugin(Plugin[TextractPluginSettings]):
         # Close boto3 client
 
     async def handle_receipt(
-        self, db: DbSession, user: CurrentUser, file: UploadFile, parent_id: UUID | None
+        self,
+        db: DbSession,
+        user: CurrentUser,
+        file: UploadFile,
+        parent_id: UUID | None = None,
     ) -> ExpenseModel:
         """Route to extract receipt info."""
         contents = await file.read()
