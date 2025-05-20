@@ -85,7 +85,7 @@ class TextractPlugin(Plugin[TextractPluginSettings]):
                 detail=f"Textract error: {error_message}",
             ) from e
         summary_fields = response["ExpenseDocuments"][0].get("SummaryFields", [])
-        item_groups = response["ExpenseDocument"][0].get("LineItemGroups", [])
+        item_groups = response["ExpenseDocuments"][0].get("LineItemGroups", [])
         vendor_name = ""
         items: list[ExpenseItemCreate] = []
         for field in summary_fields:
