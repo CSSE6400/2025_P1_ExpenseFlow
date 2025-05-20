@@ -1,7 +1,8 @@
 // Flutter imports
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/services/auth_service.dart' show AuthService;
 import 'package:flutter_frontend/utils/config.dart' show Config;
-import 'package:provider/provider.dart' show Provider;
+import 'package:provider/provider.dart' show MultiProvider, Provider;
 // Screens
 import '../../screens/initial_startup_screen/initial_startup_screen.dart';
 import '../../screens/profile_setup_screen/profile_setup_screen.dart';
@@ -11,9 +12,20 @@ import '../../screens/split_with_screen/split_with_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final config = await Config.load();
 
-  runApp(Provider<Config>.value(value: config, child: const MyApp()));
+  final config = await Config.load();
+  final authService = AuthService(config.auth0Domain, config.auth0ClientId);
+  await authService.init();
+
+  runApp(
+    MultiProvider(
+      providers: [
+        Provider<Config>.value(value: config),
+        Provider<AuthService>.value(value: authService),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -21,16 +33,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final config = Provider.of<Config>(context, listen: false);
+    final auth = Provider.of<AuthService>(context, listen: false);
 
     return MaterialApp(
-      // title: 'Expense Flow - ${config.backendBaseUrl}',
-      title: 'Expense Flow}',
+      title: 'Expense Flow',
       debugShowCheckedModeBanner: false,
-      themeMode: ThemeMode.light, // Force light mode
-
-      initialRoute: '/initial_startup',
-
+      themeMode: ThemeMode.light,
+      initialRoute: auth.isLoggedIn ? '/home' : '/initial_startup',
       routes: {
         '/initial_startup': (context) => const InitialStartupScreen(),
         '/profile_setup': (context) => const ProfileSetupScreen(),
@@ -38,13 +47,6 @@ class MyApp extends StatelessWidget {
         '/add_expense': (context) => const AddExpenseScreen(),
         '/split_with': (context) => const SplitWithScreen(),
       },
-
-      // TODO: Add login check and show appropriate screen. Use "isLoggedIn" method to determine if the user is logged in or not.
-      // if (isLoggedIn) {
-      //   return const HomeScreen();
-      // } else {
-      //   return const InitialStartupScreen();
-      // }
     );
   }
 }

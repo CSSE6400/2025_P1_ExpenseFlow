@@ -1,7 +1,9 @@
 // Flutter imports
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/services/auth_service.dart' show AuthService;
 // Third-party imports
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart' show Provider;
 // Common imports
 import '../../common/color_palette.dart';
 import '../../common/proportional_sizes.dart';
@@ -64,10 +66,16 @@ class InitialStartupScreenState extends State<InitialStartupScreen> {
               // Log In Button at bottom
               CustomButton(
                 label: 'Log In',
-                onPressed: () {
+                onPressed: () async {
+                  final authService = Provider.of<AuthService>(
+                    context,
+                    listen: false,
+                  );
+                  print("LOGGING IN");
+                  await authService.login();
                   // TODO: Navigate to log in functionality
                   // Currently naviagtes to the profile setup screen
-                  Navigator.pushNamed(context, '/profile_setup');
+                  // Navigator.pushNamed(context, '/profile_setup');
                 },
                 sizeType: ButtonSizeType.full,
               ),
