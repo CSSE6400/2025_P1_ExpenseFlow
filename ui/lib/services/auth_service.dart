@@ -30,6 +30,7 @@ class AuthenticatedClient extends http.BaseClient {
 }
 
 class AuthService {
+  final String audience;
   final Auth0Web _auth0Web;
   UserProfile? user;
 
@@ -38,14 +39,14 @@ class AuthService {
 
   final _logger = Logger("Auth Service");
 
-  AuthService(String domain, String clientId)
+  AuthService(String domain, String clientId, this.audience)
     : _auth0Web = Auth0Web(domain, clientId) {
     _authenticatedClient = AuthenticatedClient(this);
   }
 
   Future<String?> getAccessToken() async {
     try {
-      final credentials = await _auth0Web.credentials();
+      final credentials = await _auth0Web.credentials(audience: audience);
       user = credentials.user;
       return credentials.accessToken;
     } catch (e) {

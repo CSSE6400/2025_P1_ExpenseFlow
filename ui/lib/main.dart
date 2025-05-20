@@ -28,7 +28,11 @@ void main() async {
   final logger = Logger("main");
 
   final config = await Config.load();
-  final authService = AuthService(config.auth0Domain, config.auth0ClientId);
+  final authService = AuthService(
+    config.auth0Domain,
+    config.auth0ClientId,
+    config.jwtAudience,
+  );
   await authService.init();
 
   final apiService = ApiService(
