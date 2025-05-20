@@ -16,13 +16,10 @@ class AddExpenseScreenMainBody extends StatefulWidget {
 }
 
 class _AddExpenseScreenMainBodyState extends State<AddExpenseScreenMainBody> {
-  bool isNameValid = false;
-  bool isAmountValid = false;
+  bool isFormValid = false;
 
-  bool get isFormValid => isNameValid && isAmountValid;
-
-  void updateNameValidity(bool isValid) {
-    setState(() => isNameValid = isValid);
+  void updateFormValid(bool isValid) {
+    setState(() => isFormValid = isValid);
   }
 
   Future<void> onAdd() async {
@@ -49,10 +46,7 @@ class _AddExpenseScreenMainBodyState extends State<AddExpenseScreenMainBody> {
               SizedBox(height: proportionalSizes.scaleHeight(20)),
 
               // Pass validity up from fields
-              AddExpenseScreenFields(
-                onNameValidityChanged: updateNameValidity,
-                isAmountValid: isAmountValid,
-              ),
+              AddExpenseScreenFields(onValidityChanged: updateFormValid),
               SizedBox(height: proportionalSizes.scaleHeight(24)),
 
               CustomButton(

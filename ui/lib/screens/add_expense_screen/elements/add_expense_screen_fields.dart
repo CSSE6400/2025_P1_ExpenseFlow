@@ -13,14 +13,9 @@ import '../../../common/snack_bar.dart';
 import '../../add_items_screen/add_items_screen.dart';
 
 class AddExpenseScreenFields extends StatefulWidget {
-  final void Function(bool isValid)? onNameValidityChanged;
-  final bool isAmountValid;
+  final void Function(bool isValid)? onValidityChanged;
 
-  const AddExpenseScreenFields({
-    super.key,
-    this.onNameValidityChanged,
-    this.isAmountValid = false,
-  });
+  const AddExpenseScreenFields({super.key, this.onValidityChanged});
 
   @override
   State<AddExpenseScreenFields> createState() => _AddExpenseScreenFieldsState();
@@ -28,6 +23,13 @@ class AddExpenseScreenFields extends StatefulWidget {
 
 class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
   bool isNameValid = false;
+  bool isDescriptionValid = false;
+
+  void _updateFormValidity() {
+    final isFormValid =
+        isNameValid && isDescriptionValid && _expenseItems.isNotEmpty;
+    widget.onValidityChanged?.call(isFormValid);
+  }
 
   String _name = "";
   String _description = "";
@@ -78,6 +80,7 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
         _expenseItems = updatedItems;
         _updateCalculatedAmount();
       });
+      _updateFormValidity(); // check whether items is empty
     }
   }
 
@@ -89,11 +92,16 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
       children: [
         GeneralField(
           label: 'Name*',
-          initialValue: 'Coles Trip',
+          initialValue: '',
           isEditable: true,
           showStatusIcon: true,
           validationRule: (value) => value.trim().isNotEmpty,
-          onValidityChanged: widget.onNameValidityChanged,
+          onValidityChanged: (isValid) {
+            setState(() {
+              isNameValid = isValid;
+            });
+            _updateFormValidity();
+          },
           maxLength: 50,
           onChanged: (value) {
             _name = value;
@@ -103,11 +111,16 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
 
         GeneralField(
           label: 'Description*',
-          initialValue: 'Weekly grocery shopping',
+          initialValue: '',
           isEditable: true,
           showStatusIcon: true,
           validationRule: (value) => value.trim().isNotEmpty,
-          onValidityChanged: widget.onNameValidityChanged,
+          onValidityChanged: (isValid) {
+            setState(() {
+              isDescriptionValid = isValid;
+            });
+            _updateFormValidity();
+          },
           maxLength: 50,
           onChanged: (value) {
             _description = value;
