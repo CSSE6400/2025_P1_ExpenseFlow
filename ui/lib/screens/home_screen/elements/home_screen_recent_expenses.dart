@@ -1,5 +1,6 @@
 // Flutter imports
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 // Common imports
 import '../../../common/color_palette.dart';
 import '../../../common/proportional_sizes.dart';
@@ -68,7 +69,7 @@ class _HomeScreenRecentExpensesState extends State<HomeScreenRecentExpenses> {
               padding: EdgeInsets.all(proportionalSizes.scaleWidth(16)),
               child: Text(
                 'Recent Expenses',
-                style: TextStyle(
+                style: GoogleFonts.roboto(
                   fontSize: proportionalSizes.scaleText(24),
                   fontWeight: FontWeight.bold,
                   color: ColorPalette.primaryText,

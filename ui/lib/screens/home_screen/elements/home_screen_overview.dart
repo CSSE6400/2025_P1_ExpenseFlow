@@ -1,5 +1,6 @@
 // Flutter imports
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 // Common imports
 import '../../../common/color_palette.dart';
 import '../../../common/proportional_sizes.dart';
@@ -14,14 +15,26 @@ class HomeScreenOverview extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      height: proportionalSizes.scaleHeight(240),
+      padding: EdgeInsets.all(proportionalSizes.scaleWidth(16)),
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(
-          proportionalSizes.scaleWidth(10),
+          proportionalSizes.scaleWidth(16),
         ),
       ),
-
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Overview',
+            style: GoogleFonts.roboto(
+              fontSize: proportionalSizes.scaleText(24),
+              fontWeight: FontWeight.bold,
+              color: ColorPalette.primaryText,
+            ),
+          ),
+        ],
+      ),
       // TODO: Add functionality to Overview Expenses here
     );
   }
