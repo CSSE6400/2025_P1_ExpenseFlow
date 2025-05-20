@@ -4,6 +4,7 @@ from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 
 from expenseflow.database.core import db_engine
@@ -18,6 +19,14 @@ from expenseflow.user.routes import router as user_router
 async def lifespan(app: FastAPI) -> AsyncGenerator:
     """App lifespan."""
     from expenseflow.config import CONFIG
+
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=[CONFIG.frontend_url],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
     await initialise_database(db_engine)  # Creates tables in db if not already there
     plugins_reg = PluginRegistry.create_from_config_file(CONFIG.plugin_config_path)
