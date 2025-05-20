@@ -1,7 +1,11 @@
 // Flutter imports
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/models/user.dart';
+import 'package:flutter_frontend/services/api_service.dart' show ApiService;
 // Third-party imports
 import 'package:google_fonts/google_fonts.dart';
+import 'package:logging/logging.dart' show Logger;
+import 'package:provider/provider.dart' show Provider;
 // Common imports
 import '../../../common/color_palette.dart';
 import '../../../common/proportional_sizes.dart';
@@ -19,28 +23,44 @@ class ProfileSetupScreenSubRectangle extends StatefulWidget {
 
 class _ProfileSetupScreenSubRectangleState
     extends State<ProfileSetupScreenSubRectangle> {
-  bool isNameValid = false;
-  bool isEmailValid = false;
-  bool isBudgetValid = false;
+  Logger _logger = Logger("ProfileSetupScreenSubRectangle");
+  bool isFirstNameValid = false;
+  bool isLastNameValid = false;
+  bool isNicknameValid = false;
+
+  String _firstName = "";
+  String _lastName = "";
+  String _nickname = "";
 
   bool get isFormValid =>
-      isNameValid && isEmailValid && isBudgetValid;
+      isFirstNameValid && isLastNameValid && isNicknameValid;
 
-  void updateNameValidity(bool isValid) {
-    setState(() => isNameValid = isValid);
+  void updateFirstNameValidity(bool isValid) {
+    setState(() => isFirstNameValid = isValid);
   }
 
-  void updateUsernameValidity(bool isValid) {
-    setState(() => isEmailValid = isValid);
+  void updateLastNameValidity(bool isValid) {
+    setState(() => isLastNameValid = isValid);
   }
 
-  void updateBudgetValidity(bool isValid) {
-    setState(() => isBudgetValid = isValid);
+  void updateNicknameValidty(bool isValid) {
+    setState(() => isNicknameValid = isValid);
   }
 
-  Future <void> onSave() async {
-    // TODO: Handle save functionality
-    Navigator.pushNamed(context, '/home');
+  Future<void> onSetup() async {
+    final apiService = Provider.of<ApiService>(context, listen: false);
+    try {
+      await apiService.createUser(
+        UserCreate(
+          nickname: _nickname,
+          firstName: _firstName,
+          lastName: _lastName,
+        ),
+      );
+      Navigator.pushReplacementNamed(context, '/');
+    } catch (e) {
+      _logger.severe('Error creating user: $e');
+    }
   }
 
   bool isUsernameUnique(String username) {
@@ -81,10 +101,10 @@ class _ProfileSetupScreenSubRectangleState
             ),
             SizedBox(height: proportionalSizes.scaleHeight(12)),
 
-            // Name field
+            // First Name field
             GeneralField(
-              label: 'Name*',
-              initialValue: 'ABC',
+              label: 'First Name',
+              initialValue: 'John',
               isEditable: true,
               showStatusIcon: true,
               inputRules: [InputRuleType.lettersOnly],
@@ -92,18 +112,37 @@ class _ProfileSetupScreenSubRectangleState
                 final nameRegex = RegExp(r"^[A-Za-z ]+$");
                 return nameRegex.hasMatch(value.trim());
               },
-              onValidityChanged: updateNameValidity,
+              onValidityChanged: updateFirstNameValidity,
               maxLength: 50,
               onChanged: (value) {
-                // TODO: Save name field value
+                _firstName = value.trim();
               },
             ),
             CustomDivider(),
 
-            // Username field
+            // Last Name field
             GeneralField(
-              label: 'Username*',
-              initialValue: 'user_name',
+              label: 'Last Name',
+              initialValue: 'Doe',
+              isEditable: true,
+              showStatusIcon: true,
+              inputRules: [InputRuleType.lettersOnly],
+              validationRule: (value) {
+                final nameRegex = RegExp(r"^[A-Za-z ]+$");
+                return nameRegex.hasMatch(value.trim());
+              },
+              onValidityChanged: updateLastNameValidity,
+              maxLength: 50,
+              onChanged: (value) {
+                _lastName = value.trim();
+              },
+            ),
+            CustomDivider(),
+
+            // Nickname field
+            GeneralField(
+              label: 'Nickname',
+              initialValue: 'Johnny',
               isEditable: true,
               showStatusIcon: true,
               inputRules: [
@@ -119,41 +158,24 @@ class _ProfileSetupScreenSubRectangleState
                 // Rule 3: Unique username check (mock logic now)
                 return isUsernameUnique(username);
               },
-              onValidityChanged: updateUsernameValidity,
+              onValidityChanged: updateNicknameValidty,
               maxLength: 20,
-              focusInstruction: 'Username must be 5–20 characters and may contain letters, numbers, - or _',
+              focusInstruction:
+                  'Username must be 5–20 characters and may contain letters, numbers, - or _',
               onChanged: (value) {
-                // TODO: Save username field value
+                _nickname = value.trim();
               },
             ),
             CustomDivider(),
 
-            // Budget field
-            GeneralField(
-              label: 'Monthly Budget (\$)*',
-              initialValue: '1000',
-              isEditable: true,
-              showStatusIcon: true,
-              inputRules: [InputRuleType.decimalWithTwoPlaces],
-              validationRule: (value) {
-                final number = double.tryParse(value.trim());
-                return number != null && number > 0;
-              },
-              onValidityChanged: updateBudgetValidity,
-              maxLength: 10,
-              onChanged: (value) {
-                // TODO: Save monthly budget field value
-              },
-            ),
             SizedBox(height: proportionalSizes.scaleHeight(24)),
 
             // Save button
             CustomButton(
-              label: 'Save',
-              onPressed: isFormValid ? onSave : () {},
+              label: 'Setup Profile',
+              onPressed: isFormValid ? onSetup : () {},
               sizeType: ButtonSizeType.full,
-              state:
-                  isFormValid ? ButtonState.enabled : ButtonState.disabled,
+              state: isFormValid ? ButtonState.enabled : ButtonState.disabled,
             ),
 
             SizedBox(height: proportionalSizes.scaleHeight(96)),
