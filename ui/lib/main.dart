@@ -1,8 +1,10 @@
 // Flutter imports
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/services/api_service.dart' show ApiService;
 import 'package:flutter_frontend/services/auth_service.dart' show AuthService;
 import 'package:flutter_frontend/utils/config.dart' show Config;
 import 'package:provider/provider.dart' show MultiProvider, Provider;
+import 'package:logging/logging.dart' show Logger;
 // Screens
 import '../../screens/initial_startup_screen/initial_startup_screen.dart';
 import '../../screens/profile_setup_screen/profile_setup_screen.dart';
@@ -15,16 +17,24 @@ import 'screens/see_expense_screen/see_expense_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  final logger = Logger("main");
 
   final config = await Config.load();
   final authService = AuthService(config.auth0Domain, config.auth0ClientId);
   await authService.init();
 
+  final apiService = ApiService(
+    authService.authenticatedClient,
+    config.backendBaseUrl,
+  );
+
+  logger.info("Starting App");
   runApp(
     MultiProvider(
       providers: [
         Provider<Config>.value(value: config),
         Provider<AuthService>.value(value: authService),
+        Provider<ApiService>.value(value: apiService),
       ],
       child: const MyApp(),
     ),
@@ -42,6 +52,7 @@ class MyApp extends StatelessWidget {
       title: 'Expense Flow',
       debugShowCheckedModeBanner: false,
       themeMode: ThemeMode.light,
+
       initialRoute: auth.isLoggedIn ? '/home' : '/initial_startup',
       onGenerateRoute: (RouteSettings settings) {
         switch (settings.name) {
@@ -84,6 +95,8 @@ class MyApp extends StatelessWidget {
               builder: (_) => SeeExpenseScreen(transactionId: transactionId),
             );
           default:
+            final logger = Logger("MyApp");
+            logger.warning("Unknown route: ${settings.name}");
             return MaterialPageRoute(
               builder:
                   (_) => const Scaffold(
