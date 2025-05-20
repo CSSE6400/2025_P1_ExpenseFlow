@@ -1,0 +1,44 @@
+name: Feature
+description: New Feature/Enhancement
+title: "[Feature] "
+labels: ["enhancement"]
+body:
+  - type: input
+    id: problem_statement
+    attributes:
+      label: Problem / Use Case
+      description: What problem does this feature solve? Why is it important?
+      placeholder: Describe the motivation behind this feature.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: components_affected
+    attributes:
+      label: Components Affected
+      description: Select all components related to this issue
+      options:
+        - label: Frontend
+          value: frontend
+        - label: Backend
+          value: backend
+        - label: Infrastructure
+          value: infra
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed_solution
+    attributes:
+      label: Proposed Solution
+      description: How would this feature work? Include examples.
+      placeholder: Describe the idea in detail.
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: Additional Context
+      description: Any other context, screenshots, or references that might help.
+      placeholder: Add anything else here.
