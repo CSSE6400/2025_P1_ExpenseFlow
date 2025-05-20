@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter_frontend/models/expense.dart';
 import 'package:flutter_frontend/models/user.dart' show UserCreate, UserRead;
 import 'package:flutter_frontend/services/auth_service.dart'
     show AuthenticatedClient;
@@ -64,6 +65,41 @@ class ApiService {
       throw ApiException(
         response.statusCode,
         'Failed to create user',
+        response.body,
+      );
+    }
+  }
+
+  Future<ExpenseRead> createExpense(ExpenseCreate body) async {
+    final response = await client.post(
+      backendUri("/expenses"),
+      body: jsonEncode(body),
+    );
+
+    if (response.statusCode == 200) {
+      // parse response body to ExpenseRead
+      return ExpenseRead.fromJson(_safeJsonDecode((response.body)));
+    } else {
+      throw ApiException(
+        response.statusCode,
+        'Failed to create expense',
+        response.body,
+      );
+    }
+  }
+
+  Future<List<ExpenseRead>> getExpensesUploadedByMe() async {
+    final response = await client.get(backendUri("/expenses"));
+
+    if (response.statusCode == 200) {
+      // parse response body to List<ExpenseRead>
+      return (jsonDecode(response.body) as List)
+          .map((e) => ExpenseRead.fromJson(e))
+          .toList();
+    } else {
+      throw ApiException(
+        response.statusCode,
+        'Failed to fetch expenses',
         response.body,
       );
     }
