@@ -7,6 +7,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 
+from expenseflow.config import CONFIG
 from expenseflow.database.core import db_engine
 from expenseflow.database.service import initialise_database
 from expenseflow.expense.routes import router as expense_router
@@ -20,14 +21,6 @@ async def lifespan(app: FastAPI) -> AsyncGenerator:
     """App lifespan."""
     from expenseflow.config import CONFIG
 
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=[CONFIG.frontend_url],
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
-
     await initialise_database(db_engine)  # Creates tables in db if not already there
     plugins_reg = PluginRegistry.create_from_config_file(CONFIG.plugin_config_path)
     plugins_reg.start_plugins(app)
@@ -39,6 +32,15 @@ app = FastAPI(lifespan=lifespan)
 app.include_router(expense_router, prefix="/expenses")
 app.include_router(user_router, prefix="/users")
 app.include_router(group_router, prefix="/groups")
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[CONFIG.frontend_url],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/health")
