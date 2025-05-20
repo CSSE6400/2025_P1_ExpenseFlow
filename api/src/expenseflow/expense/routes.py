@@ -16,10 +16,10 @@ r = router = APIRouter()
 
 @r.post("", response_model=ExpenseRead)
 async def create(
-    db: DbSession, user: CurrentUser, expense_in: ExpenseCreate, parent_id: UUID
+    db: DbSession, user: CurrentUser, expense_in: ExpenseCreate, parent_id: UUID | None
 ) -> ExpenseModel:
     """Create expense."""
-    parent = await get_entity(db, parent_id)
+    parent = user if parent_id is None else await get_entity(db, parent_id)
     if parent is None:
         raise HTTPException(
             status.HTTP_404_NOT_FOUND,
