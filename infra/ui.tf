@@ -71,6 +71,10 @@ resource "aws_ecs_task_definition" "expenseflow_ui" {
           name  = "AUTH0_CLIENT_ID",
           value = data.auth0_client.expenseflow_ui_client.client_id
         },
+        {
+          name  = "JWT_AUDIENCE",
+          value = data.auth0_resource_server.expenseflow_api.identifier
+        },
       ],
       logConfiguration = {
         logDriver = "awslogs",

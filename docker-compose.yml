@@ -4,7 +4,7 @@ services:
     container_name: database
     restart: always
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U admin -d expense_db"]
+      test: [ "CMD-SHELL", "pg_isready -U admin -d expense_db" ]
       interval: 5s
       retries: 5
       start_period: 20s
@@ -53,6 +53,7 @@ services:
       - BACKEND_BASE_URL=backend:8080
       - AUTH0_DOMAIN=${AUTH0_DOMAIN}
       - AUTH0_CLIENT_ID=${AUTH0_CLIENT_ID}
+      - JWT_AUDIENCE=${JWT_AUDIENCE}
     healthcheck:
       test: curl --fail http://localhost:3000/health || exit 1
       interval: 5s
