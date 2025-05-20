@@ -56,7 +56,7 @@ class AuthService {
   }
 
   Future<void> init() async {
-    _logger.info("Getting credentials  auth service");
+    _logger.info("Getting credentials auth service");
     try {
       final credentials = await _auth0Web.onLoad();
       user = credentials?.user;
@@ -69,7 +69,10 @@ class AuthService {
 
   Future<void> login() async {
     try {
-      await _auth0Web.loginWithRedirect(redirectUrl: 'http://localhost:3000');
+      await _auth0Web.loginWithRedirect(
+        redirectUrl: Uri.base.resolve("/").toString(),
+        audience: audience,
+      );
     } catch (e) {
       _logger.severe(e);
     }
@@ -77,7 +80,7 @@ class AuthService {
 
   Future<void> logout() async {
     try {
-      await _auth0Web.logout(returnToUrl: 'http://localhost:3000');
+      await _auth0Web.logout(returnToUrl: Uri.base.resolve("/").toString());
     } catch (e) {
       _logger.severe(e);
     }
