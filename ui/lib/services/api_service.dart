@@ -26,12 +26,20 @@ class ApiService {
 
   Uri backendUri(String path) => Uri.parse("$baseUrl$path");
 
+  dynamic _safeJsonDecode(String source) {
+    try {
+      return jsonDecode(source);
+    } catch (e) {
+      throw FormatException('Failed to decode JSON: $e\nRaw: $source');
+    }
+  }
+
   Future<UserRead?> getCurrentUser() async {
     final response = await client.get(backendUri("/users"));
 
     switch (response.statusCode) {
       case 200:
-        return UserRead.fromJson(jsonDecode(response.body));
+        return UserRead.fromJson(_safeJsonDecode(response.body));
       case 401:
         return null;
       default:
@@ -51,7 +59,7 @@ class ApiService {
 
     if (response.statusCode == 200) {
       // parse response body to UserRead
-      return UserRead.fromJson(jsonDecode((response.body)));
+      return UserRead.fromJson(_safeJsonDecode((response.body)));
     } else {
       throw ApiException(
         response.statusCode,
