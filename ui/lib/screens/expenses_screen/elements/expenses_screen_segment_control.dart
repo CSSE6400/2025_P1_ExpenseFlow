@@ -4,25 +4,23 @@ import 'package:google_fonts/google_fonts.dart';
 // Common
 import '../../../common/proportional_sizes.dart';
 
-class SplitWithScreenSegmentControl extends StatefulWidget {
+class ExpensesScreenSegmentControl extends StatefulWidget {
   final String selectedSegment;
   final void Function(String) onSegmentChanged;
 
-  const SplitWithScreenSegmentControl({
+  const ExpensesScreenSegmentControl({
     super.key,
     required this.selectedSegment,
     required this.onSegmentChanged,
   });
 
   @override
-  State<SplitWithScreenSegmentControl> createState() =>
-      _SplitWithScreenSegmentControlState();
+  State<ExpensesScreenSegmentControl> createState() =>
+      _ExpensesScreenSegmentControlState();
 }
 
-class _SplitWithScreenSegmentControlState
-    extends State<SplitWithScreenSegmentControl> {
-  String selectedSegment = 'Friend';
-
+class _ExpensesScreenSegmentControlState
+    extends State<ExpensesScreenSegmentControl> {
   @override
   Widget build(BuildContext context) {
     final proportionalSizes = ProportionalSizes(context: context);
@@ -51,23 +49,23 @@ class _SplitWithScreenSegmentControlState
             backgroundColor: backgroundColor,
             padding: const EdgeInsets.all(4),
             children: {
-              'Friend': Center(
+              'Active': Center(
                 child: Text(
-                  'Friend',
+                  'Active',
                   style: GoogleFonts.roboto(
                     fontWeight: FontWeight.w600,
-                    color: widget.selectedSegment == 'Friend'
+                    color: widget.selectedSegment == 'Active'
                         ? selectedTextColor
                         : unselectedTextColor,
                   ),
                 ),
               ),
-              'Group': Center(
+              'All': Center(
                 child: Text(
-                  'Group',
+                  'All',
                   style: GoogleFonts.roboto(
                     fontWeight: FontWeight.w600,
-                    color: widget.selectedSegment == 'Group'
+                    color: widget.selectedSegment == 'All'
                         ? selectedTextColor
                         : unselectedTextColor,
                   ),

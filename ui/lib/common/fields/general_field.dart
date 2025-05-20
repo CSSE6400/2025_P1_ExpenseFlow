@@ -26,6 +26,9 @@ class GeneralField extends StatefulWidget {
   /// Initial value for the input field
   final String initialValue;
 
+  /// Whether the field is filled with a value
+  final String? filledValue;
+
   /// Whether to show a check/cross icon
   final bool showStatusIcon;
 
@@ -62,6 +65,7 @@ class GeneralField extends StatefulWidget {
     this.onChanged,
     this.maxLength,
     this.focusInstruction,
+    this.filledValue,
   });
 
   @override
@@ -79,8 +83,16 @@ class GeneralFieldState extends State<GeneralField> {
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController(); // Leave empty, use hintText only
-    _updateValidation('');
+
+    // Use filledValue if present, fallback to empty for hint-based input
+    _controller = TextEditingController(
+      text: widget.filledValue?.isNotEmpty == true ? widget.filledValue : '',
+    );
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _updateValidation(_controller.text);
+    });
+
     _controller.addListener(() {
       final currentText = _controller.text;
       _updateValidation(currentText);
@@ -88,6 +100,7 @@ class GeneralFieldState extends State<GeneralField> {
         widget.onChanged!(currentText);
       }
     });
+
     _focusNode = FocusNode();
     _focusNode.addListener(() {
       if (_focusNode.hasFocus && widget.focusInstruction != null) {
@@ -205,7 +218,11 @@ class GeneralFieldState extends State<GeneralField> {
               inputFormatters: _buildInputFormatters(),
               style: GoogleFonts.roboto(
                 fontSize: proportionalSizes.scaleText(18),
-                color: widget.isEditable ? labelColor : Colors.grey[600],
+                color: !widget.isEditable
+                    ? (widget.filledValue?.isNotEmpty == true
+                        ? labelColor
+                        : Colors.grey[600])
+                    : labelColor,
               ),
               maxLength: widget.maxLength,
               decoration: InputDecoration(

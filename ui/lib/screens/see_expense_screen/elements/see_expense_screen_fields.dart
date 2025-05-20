@@ -6,40 +6,80 @@ import '../../../common/fields/date_field/date_field.dart';
 import '../../../common/fields/dropdown_field.dart';
 import '../../../common/fields/custom_icon_field.dart';
 import '../../../common/proportional_sizes.dart';
-// import '../../../common/show_image.dart';
 import '../../../common/snack_bar.dart';
 
-class AddExpenseScreenFields extends StatefulWidget {
+class SeeExpenseScreenFields extends StatefulWidget {
+  final bool isReadOnly;
+  final String transactionId;
   final void Function(bool isValid)? onNameValidityChanged;
   final void Function(bool isValid)? onAmountValidityChanged;
   final bool isAmountValid;
 
-  const AddExpenseScreenFields({
+  const SeeExpenseScreenFields({
     super.key,
+    required this.transactionId,
+    this.isReadOnly = true,
     this.onNameValidityChanged,
     this.onAmountValidityChanged,
     this.isAmountValid = false,
   });
 
   @override
-  State<AddExpenseScreenFields> createState() => _AddExpenseScreenFieldsState();
+  State<SeeExpenseScreenFields> createState() => _SeeExpenseScreenFieldsState();
 }
 
-class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
-  bool isNameValid = false;
-  bool isAmountValid = false;
+class _SeeExpenseScreenFieldsState extends State<SeeExpenseScreenFields> {
+  bool isNameValid = true;
+  bool isAmountValid = true;
   double? enteredAmount;
 
-  void updateNameValidity(bool isValid) {
-    setState(() {
-      isNameValid = isValid;
-    });
+  // Dummy data store
+  final Map<String, Map<String, dynamic>> dummyData = {
+    'TXN456': {
+      'name': 'Bus Recharge',
+      'amount': '20',
+      'date': '2024-06-10T14:20:00Z',
+      'category': 'Transport',
+      'splitWith': '',
+      'items': '',
+      'receipt': '',
+      'notes': 'Go-Card recharge',
+    },
+  };
+
+  // Field values to populate
+  late String name;
+  late String amount;
+  DateTime? date;
+  late String category;
+  late String splitWith;
+  late String items;
+  late String receipt;
+  late String notes;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadDummyData();
   }
-  
-  void updateAmountValidity(bool isValid) {
-    setState(() {
-      isAmountValid = isValid;
-    });
+
+  void _loadDummyData() {
+    // TODO: Replace this with backend API/database fetch using transactionId
+
+    final data = dummyData[widget.transactionId];
+
+    name = data?['name'] ?? '';
+    amount = data?['amount'] ?? '';
+    final rawDate = data?['date'];
+    final parsedDate = (rawDate is String && rawDate.isNotEmpty) // Expects an ISO 8601 string and converts it to DateTime
+        ? DateTime.tryParse(rawDate)
+        : null;
+    date = parsedDate;
+    category = data?['category'] ?? '';
+    splitWith = data?['splitWith'] ?? '';
+    items = data?['items'] ?? '';
+    receipt = data?['receipt'] ?? '';
+    notes = data?['notes'] ?? '';
   }
 
   @override
@@ -51,7 +91,8 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
         GeneralField(
           label: 'Name*',
           initialValue: 'Shopping at Coles',
-          isEditable: true,
+          filledValue: name.isNotEmpty ? name : null,
+          isEditable: !widget.isReadOnly,
           showStatusIcon: true,
           validationRule: (value) => value.trim().isNotEmpty,
           onValidityChanged: widget.onNameValidityChanged,
@@ -64,9 +105,10 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
 
         DateField(
           label: 'Date',
-          initialDate: DateTime.now(),
+          initialDate: date,
+          isEditable: !widget.isReadOnly,
           onChanged: (selectedDate) {
-            // TODO: Save selected date (e.g., save it to a controller or variable)
+            // TODO: Save selected date
           },
         ),
         CustomDivider(),
@@ -74,7 +116,8 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
         GeneralField(
           label: 'Amount (\$)*',
           initialValue: '1000',
-          isEditable: true,
+          filledValue: amount.isNotEmpty ? amount : null,
+          isEditable: !widget.isReadOnly,
           showStatusIcon: true,
           inputRules: [InputRuleType.decimalWithTwoPlaces],
           validationRule: (value) {
@@ -84,24 +127,18 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
           onValidityChanged: widget.onAmountValidityChanged,
           maxLength: 10,
           onChanged: (value) {
-            // TODO: Save amount field value for navigation to Add Items screen
             final number = double.tryParse(value.trim());
-            if (number != null && number > 0) {
-              setState(() {
-                enteredAmount = number;
-              });
-            } else {
-              setState(() {
-                enteredAmount = null;
-              });
-            }
+            setState(() {
+              enteredAmount = (number != null && number > 0) ? number : null;
+            });
           },
         ),
         CustomDivider(),
 
         DropdownField(
           label: 'Category',
-          options: ['Groceries', 'Transport', 'Bills', 'Entertainment'], // TODO: Fetch categories from the database
+          options: ['Groceries', 'Transport', 'Bills', 'Entertainment'], // TODO: Load from DB
+          selectedValue: category,
           placeholder: 'Select Category',
           addDialogHeading: 'New Category',
           addDialogHintText: 'Enter category name',
@@ -109,19 +146,20 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
           onChanged: (value) {
             // TODO: Save selected category
           },
+          isEditable: !widget.isReadOnly,
         ),
         CustomDivider(),
 
         CustomIconField(
           label: 'Split With',
-          // TODO: Fetch the group or friends names from the database & set the value.
-          // For group, the value should be of the form 'Group - Group Name'
-          // For friends, the value should be of the form 'Friend - Friend Name'
-          value: '',
+          // TODO: Fetch actual group/friend names
+          value: splitWith,
           hintText: 'Select Group or Friends',
           trailingIconPath: 'assets/icons/search.png',
-          inactive: !widget.isAmountValid,
+          inactive: widget.isReadOnly || !widget.isAmountValid,
           onTap: () {
+            if (widget.isReadOnly) return;
+
             if (!widget.isAmountValid) {
               showCustomSnackBar(
                 context,
@@ -136,14 +174,14 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
 
         CustomIconField(
           label: 'Items',
-          // TODO: Fetch the enetered items from the database & set the value.
-          // Items should be of the form 'Item 1, Item 2, Item 3'
-          // like 'Milk, Eggs, Bread'
-          value: '',
+          // TODO: Show added items from DB
+          value: items,
           hintText: 'Specify Items',
           trailingIconPath: 'assets/icons/add.png',
-          inactive: !widget.isAmountValid,
+          inactive: widget.isReadOnly || !widget.isAmountValid,
           onTap: () {
+            if (widget.isReadOnly) return;
+
             if (!widget.isAmountValid || enteredAmount == null) {
               showCustomSnackBar(
                 context,
@@ -164,13 +202,15 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
 
         CustomIconField(
           label: 'Receipt',
-          // TODO: Fetch the name of saved receipt from the database.
-          value: '',
+          // TODO: Show saved receipt name
+          value: receipt,
           hintText: 'Save your Receipt here',
           trailingIconPath: 'assets/icons/clip.png',
+          inactive: widget.isReadOnly,
           onTap: () {
-            // TODO: Expand to show the receipt
-            // For example, like "showFullScreenImage(context, imageUrl: 'https://example.com/image.png');"
+            if (widget.isReadOnly) return;
+
+            // TODO: View receipt full screen
           },
         ),
         CustomDivider(),
@@ -178,7 +218,8 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
         GeneralField(
           label: 'Notes',
           initialValue: 'Enter any notes here',
-          isEditable: true,
+          filledValue: notes.isNotEmpty ? notes : null,
+          isEditable: !widget.isReadOnly,
           showStatusIcon: false,
           maxLength: 200,
           onChanged: (value) {
