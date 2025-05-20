@@ -1,5 +1,5 @@
 resource "local_file" "ui_url" {
-  content  = "http://${aws_lb.expenseflow_ui.dns_name}"
+  content  = local.ui_url
   filename = "./ui.txt"
 }
 
