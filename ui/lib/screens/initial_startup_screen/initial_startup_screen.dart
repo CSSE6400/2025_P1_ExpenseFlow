@@ -71,11 +71,7 @@ class InitialStartupScreenState extends State<InitialStartupScreen> {
                     context,
                     listen: false,
                   );
-                  print("LOGGING IN");
                   await authService.login();
-                  // TODO: Navigate to log in functionality
-                  // Currently naviagtes to the profile setup screen
-                  // Navigator.pushNamed(context, '/profile_setup');
                 },
                 sizeType: ButtonSizeType.full,
               ),

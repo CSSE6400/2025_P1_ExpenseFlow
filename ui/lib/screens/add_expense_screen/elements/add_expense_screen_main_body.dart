@@ -11,7 +11,8 @@ class AddExpenseScreenMainBody extends StatefulWidget {
   const AddExpenseScreenMainBody({super.key});
 
   @override
-  State<AddExpenseScreenMainBody> createState() => _AddExpenseScreenMainBodyState();
+  State<AddExpenseScreenMainBody> createState() =>
+      _AddExpenseScreenMainBodyState();
 }
 
 class _AddExpenseScreenMainBodyState extends State<AddExpenseScreenMainBody> {
@@ -30,7 +31,7 @@ class _AddExpenseScreenMainBodyState extends State<AddExpenseScreenMainBody> {
 
   Future<void> onSave() async {
     // TODO: Handle save logic
-    Navigator.pushNamed(context, '/home');
+    Navigator.pushNamed(context, '/');
   }
 
   @override
