@@ -11,6 +11,21 @@ body:
     validations:
       required: true
 
+  - type: checkboxes
+    id: components_affected
+    attributes:
+      label: Components Affected
+      description: Select all components related to this issue
+      options:
+        - label: Frontend
+          value: frontend
+        - label: Backend
+          value: backend
+        - label: Infrastructure
+          value: infra
+    validations:
+      required: true
+
   - type: textarea
     id: steps
     attributes:
@@ -22,7 +37,6 @@ body:
         3. See error
     validations:
       required: true
-  
 
   - type: textarea
     id: screenshots_logs
