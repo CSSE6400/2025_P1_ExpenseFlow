@@ -1,43 +1,100 @@
-// Flutter imports
 import 'package:flutter/material.dart';
-// Common imports
 import '../../common/color_palette.dart';
-import '../../common/bottom_nav_bar.dart';
 import '../../common/app_bar.dart';
-import '../add_items_screen/elements/add_items_screen_main_body.dart';
+import '../../common/bottom_nav_bar.dart';
+import '../../common/custom_button.dart';
+import '../../models/expense.dart';
+import 'elements/add_items_screen_items.dart';
 
 class AddItemsScreen extends StatefulWidget {
-  final double? amount;
+  final List<ExpenseItemCreate> existingItems;
 
-  const AddItemsScreen({
-    super.key,
-    this.amount,
-  });
+  const AddItemsScreen({super.key, this.existingItems = const []});
 
   @override
   State<AddItemsScreen> createState() => _AddItemsScreenState();
 }
 
 class _AddItemsScreenState extends State<AddItemsScreen> {
+  List<ExpenseItem> items = [];
+
+  @override
+  void initState() {
+    super.initState();
+    // convert expense item creates to expense items
+    items =
+        widget.existingItems.map((expenseItem) {
+          return ExpenseItem(
+            name: expenseItem.name,
+            price: expenseItem.price,
+            quantity: expenseItem.quantity,
+          );
+        }).toList();
+  }
+
+  // callback on items change
+  void _onItemsChanged(List<ExpenseItem> updatedItems, bool hasChanges) {
+    setState(() {
+      items = updatedItems;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    final backgroundColor = ColorPalette.background;
-
     return Scaffold(
-      backgroundColor: backgroundColor,
-      appBar: AppBarWidget(
-        screenName: 'Add Items',
-        showBackButton: true,
+      backgroundColor: ColorPalette.background,
+      appBar: AppBarWidget(screenName: 'Add Items', showBackButton: true),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          child: Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  child: AddItemsScreenItems(
+                    items: items,
+                    onItemsChanged: _onItemsChanged,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                child: CustomButton(
+                  label: 'Confirm Items',
+                  onPressed: _saveAndReturn,
+                  state: ButtonState.enabled,
+                  sizeType: ButtonSizeType.full,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
-
-      body: AddItemsScreenMainBody(
-        amount: widget.amount,
-      ),
-
-      bottomNavigationBar: BottomNavBar(
+      bottomNavigationBar: const BottomNavBar(
         currentScreen: 'Add',
         inactive: true,
       ),
     );
+  }
+
+  // return items to calling screen
+  void _saveAndReturn() {
+    // Convert Item objects to ExpenseItemCreate objects
+    final expenseItems =
+        items
+            .map(
+              (item) => ExpenseItemCreate(
+                name:
+                    item.nameController.text.isNotEmpty
+                        ? item.nameController.text
+                        : "",
+                quantity: item.quantity,
+                price: item.price,
+              ),
+            )
+            .toList();
+
+    // Return the items list to the previous screen
+    Navigator.pop(context, expenseItems);
   }
 }

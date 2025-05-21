@@ -1,24 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/utils/string_utils.dart';
 // Common imports
 import '../../../common/fields/general_field.dart';
 import '../../../common/custom_divider.dart';
 import '../../../common/fields/date_field/date_field.dart';
 import '../../../common/fields/dropdown_field.dart';
+import '../../../models/expense.dart';
 import '../../../common/fields/custom_icon_field.dart';
 import '../../../common/proportional_sizes.dart';
 // import '../../../common/show_image.dart';
 import '../../../common/snack_bar.dart';
+import '../../add_items_screen/add_items_screen.dart';
 
 class AddExpenseScreenFields extends StatefulWidget {
-  final void Function(bool isValid)? onNameValidityChanged;
-  final void Function(bool isValid)? onAmountValidityChanged;
-  final bool isAmountValid;
+  final void Function(bool isValid) onValidityChanged;
+  final void Function(ExpenseCreate expense)? onExpenseChanged;
 
   const AddExpenseScreenFields({
     super.key,
-    this.onNameValidityChanged,
-    this.onAmountValidityChanged,
-    this.isAmountValid = false,
+    required this.onValidityChanged,
+    required this.onExpenseChanged,
   });
 
   @override
@@ -27,19 +28,76 @@ class AddExpenseScreenFields extends StatefulWidget {
 
 class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
   bool isNameValid = false;
-  bool isAmountValid = false;
-  double? enteredAmount;
+  bool isDescriptionValid = false;
+
+  void _updateField<T>(void Function() updateState) {
+    setState(updateState);
+    _notifyExpenseChanged();
+  }
+
+  void _updateFormValidity() {
+    final isFormValid =
+        isNameValid && isDescriptionValid && _expenseItems.isNotEmpty;
+    widget.onValidityChanged.call(isFormValid);
+  }
+
+  void _notifyExpenseChanged() {
+    final expense = getExpenseData();
+    widget.onExpenseChanged?.call(expense);
+  }
+
+  String _name = "";
+  String _description = "";
+  DateTime _selectedDate = DateTime.now();
+  ExpenseCategory _selectedCategory = ExpenseCategory.other;
+  List<ExpenseItemCreate> _expenseItems = [];
+  final TextEditingController _amountController = TextEditingController(
+    text: '0.00',
+  );
 
   void updateNameValidity(bool isValid) {
     setState(() {
       isNameValid = isValid;
     });
   }
-  
-  void updateAmountValidity(bool isValid) {
+
+  // Calculate amount based on expense items
+  void _updateCalculatedAmount() {
+    double total = 0;
+    for (var item in _expenseItems) {
+      total += item.price * item.quantity;
+    }
     setState(() {
-      isAmountValid = isValid;
+      _amountController.text = total.toStringAsFixed(2);
     });
+  }
+
+  // get overview of items for display
+  String get formattedItemsString {
+    final count = _expenseItems.length;
+    if (count == 0) return '';
+    return '$count ${count == 1 ? 'Item' : 'Items'}';
+  }
+
+  // go to items screen
+  void _navigateToItemsScreen(BuildContext context) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddItemsScreen(existingItems: _expenseItems),
+      ),
+    );
+
+    // check for non-null result - I spent so long figuring out this, rip
+    if (result != null) {
+      final List<ExpenseItemCreate> updatedItems = result;
+      setState(() {
+        _expenseItems = updatedItems;
+        _updateCalculatedAmount();
+      });
+      _notifyExpenseChanged();
+      _updateFormValidity(); // check whether items is empty
+    }
   }
 
   @override
@@ -50,66 +108,84 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
       children: [
         GeneralField(
           label: 'Name*',
-          initialValue: 'Shopping at Coles',
+          initialValue: '',
           isEditable: true,
           showStatusIcon: true,
           validationRule: (value) => value.trim().isNotEmpty,
-          onValidityChanged: widget.onNameValidityChanged,
-          maxLength: 50,
-          onChanged: (value) {
-            // TODO: Save name field value
+          onValidityChanged: (isValid) {
+            setState(() {
+              isNameValid = isValid;
+            });
+            _updateFormValidity();
           },
+          maxLength: 50,
+          onChanged: (value) => _updateField(() => _name = value),
+        ),
+        CustomDivider(),
+
+        GeneralField(
+          label: 'Description*',
+          initialValue: '',
+          isEditable: true,
+          showStatusIcon: true,
+          validationRule: (value) => value.trim().isNotEmpty,
+          onValidityChanged: (isValid) {
+            setState(() {
+              isDescriptionValid = isValid;
+            });
+            _updateFormValidity();
+          },
+          maxLength: 50,
+          onChanged: (value) => _updateField(() => _description = value),
         ),
         CustomDivider(),
 
         DateField(
           label: 'Date',
-          initialDate: DateTime.now(),
-          onChanged: (selectedDate) {
-            // TODO: Save selected date (e.g., save it to a controller or variable)
-          },
+          initialDate: _selectedDate,
+          onChanged: (value) => _updateField(() => _selectedDate = value),
         ),
         CustomDivider(),
 
         GeneralField(
-          label: 'Amount (\$)*',
-          initialValue: '1000',
-          isEditable: true,
-          showStatusIcon: true,
-          inputRules: [InputRuleType.decimalWithTwoPlaces],
-          validationRule: (value) {
-            final number = double.tryParse(value.trim());
-            return number != null && number > 0;
-          },
-          onValidityChanged: widget.onAmountValidityChanged,
+          label: 'Amount (\$)',
+          controller: _amountController,
+          isEditable: false,
+          showStatusIcon: false,
+          validationRule: (value) => true,
           maxLength: 10,
-          onChanged: (value) {
-            // TODO: Save amount field value for navigation to Add Items screen
-            final number = double.tryParse(value.trim());
-            if (number != null && number > 0) {
-              setState(() {
-                enteredAmount = number;
-              });
-            } else {
-              setState(() {
-                enteredAmount = null;
-              });
-            }
-          },
+        ),
+        CustomDivider(),
+
+        CustomIconField(
+          label: 'Items',
+          value: formattedItemsString,
+          hintText: 'No items',
+          trailingIconPath: 'assets/icons/add.png',
+          onTap: () => _navigateToItemsScreen(context),
         ),
         CustomDivider(),
 
         DropdownField(
           label: 'Category',
-          options: ['Groceries', 'Transport', 'Bills', 'Entertainment'], // TODO: Fetch categories from the database
+          options:
+              ExpenseCategory.values
+                  .map((e) => capitalizeString(e.label))
+                  .toList(),
           placeholder: 'Select Category',
           addDialogHeading: 'New Category',
           addDialogHintText: 'Enter category name',
           addDialogMaxLength: 20,
-          onChanged: (value) {
-            // TODO: Save selected category
-          },
+          onChanged:
+              (value) => _updateField(() {
+                final selectedCategory = ExpenseCategory.values.firstWhere(
+                  (e) => capitalizeString(e.label) == value,
+                  orElse: () => ExpenseCategory.other,
+                );
+                _selectedCategory = selectedCategory;
+              }),
         ),
+
         CustomDivider(),
 
         CustomIconField(
@@ -120,12 +196,12 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
           value: '',
           hintText: 'Select Group or Friends',
           trailingIconPath: 'assets/icons/search.png',
-          inactive: !widget.isAmountValid,
+          inactive: _expenseItems.isEmpty,
           onTap: () {
-            if (!widget.isAmountValid) {
+            if (_expenseItems.isEmpty) {
               showCustomSnackBar(
                 context,
-                normalText: 'Please enter a valid amount.',
+                normalText: 'Please add at least one item before splitting.',
               );
             } else {
               Navigator.pushNamed(context, '/split_with');
@@ -135,36 +211,8 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
         CustomDivider(),
 
         CustomIconField(
-          label: 'Items',
-          // TODO: Fetch the enetered items from the database & set the value.
-          // Items should be of the form 'Item 1, Item 2, Item 3'
-          // like 'Milk, Eggs, Bread'
-          value: '',
-          hintText: 'Specify Items',
-          trailingIconPath: 'assets/icons/add.png',
-          inactive: !widget.isAmountValid,
-          onTap: () {
-            if (!widget.isAmountValid || enteredAmount == null) {
-              showCustomSnackBar(
-                context,
-                normalText: 'Please enter a valid amount.',
-              );
-            } else {
-              Navigator.pushNamed(
-                context,
-                '/add_items',
-                arguments: {
-                  'amount': enteredAmount,
-                },
-              );
-            }
-          },
-        ),
-        CustomDivider(),
-
-        CustomIconField(
           label: 'Receipt',
-          // TODO: Fetch the name of saved receipt from the database.
+          // TODO: Fetch the attachments with the image
           value: '',
           hintText: 'Save your Receipt here',
           trailingIconPath: 'assets/icons/clip.png',
@@ -175,18 +223,25 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
         ),
         CustomDivider(),
 
-        GeneralField(
-          label: 'Notes',
-          initialValue: 'Enter any notes here',
-          isEditable: true,
-          showStatusIcon: false,
-          maxLength: 200,
-          onChanged: (value) {
-            // TODO: Save notes field value
-          },
-        ),
         SizedBox(height: proportionalSizes.scaleHeight(24)),
       ],
+    );
+  }
+
+  @override
+  void dispose() {
+    _amountController.dispose(); // Prevents memory leaks
+    super.dispose();
+  }
+
+  // Method to get the current expense data
+  ExpenseCreate getExpenseData() {
+    return ExpenseCreate(
+      name: _name,
+      description: _description,
+      category: _selectedCategory,
+      items: _expenseItems,
+      // date: _selectedDate,
     );
   }
 }
