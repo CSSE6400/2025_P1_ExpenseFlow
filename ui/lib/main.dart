@@ -12,8 +12,8 @@ import '../../screens/split_with_screen/split_with_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // final config = await Config.load();
-  final config = Config(auth0ClientId: "abc", auth0Domain: "abc", backendBaseUrl: "abc");
+  final config = await Config.load();
+  //final config = Config(auth0ClientId: "abc", auth0Domain: "abc", backendBaseUrl: "abc");
 
   runApp(Provider<Config>.value(value: config, child: const MyApp()));
 }
