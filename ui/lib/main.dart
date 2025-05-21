@@ -5,13 +5,15 @@ import 'package:provider/provider.dart' show Provider;
 // Screens
 import '../../screens/initial_startup_screen/initial_startup_screen.dart';
 import '../../screens/profile_setup_screen/profile_setup_screen.dart';
+import '../../screens/profile_screen/profile_screen.dart';
 import '../../screens/home_screen/home_screen.dart';
 import '../../screens/add_expense_screen/add_expense_screen.dart';
 import '../../screens/split_with_screen/split_with_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final config = await Config.load();
+  // final config = await Config.load();
+  final config = Config(auth0ClientId: "abc", auth0Domain: "abc", backendBaseUrl: "abc");
 
   runApp(Provider<Config>.value(value: config, child: const MyApp()));
 }
@@ -23,7 +25,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final config = Provider.of<Config>(context, listen: false);
 
-    return MaterialApp(
+    return MaterialApp (
       // title: 'Expense Flow - ${config.backendBaseUrl}',
       title: 'Expense Flow}',
       debugShowCheckedModeBanner: false,
@@ -34,6 +36,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/initial_startup': (context) => const InitialStartupScreen(),
         '/profile_setup': (context) => const ProfileSetupScreen(),
+        '/profile': (context) => const ProfileScreen(),
         '/home': (context) => const HomeScreen(),
         '/add_expense': (context) => const AddExpenseScreen(),
         '/split_with': (context) => const SplitWithScreen(),

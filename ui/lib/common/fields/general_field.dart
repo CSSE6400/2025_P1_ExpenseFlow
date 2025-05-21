@@ -71,7 +71,7 @@ class GeneralField extends StatefulWidget {
 class GeneralFieldState extends State<GeneralField> {
   late TextEditingController _controller;
   bool _isValid = false;
-  bool isLabelExpanded = false;
+  bool isLabelExpanded = true;
   late FocusNode _focusNode;
 
   /// Initializes the TextEditingController and sets up a listener to update validation
