@@ -4,8 +4,10 @@ from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 
+from expenseflow.config import CONFIG
 from expenseflow.database.core import db_engine
 from expenseflow.database.service import initialise_database
 from expenseflow.expense.routes import router as expense_router
@@ -30,6 +32,15 @@ app = FastAPI(lifespan=lifespan)
 app.include_router(expense_router, prefix="/expenses")
 app.include_router(user_router, prefix="/users")
 app.include_router(group_router, prefix="/groups")
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[CONFIG.frontend_url, "http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/health")

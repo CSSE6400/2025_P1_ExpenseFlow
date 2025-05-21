@@ -4,7 +4,7 @@ services:
     container_name: database
     restart: always
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U admin -d expense_db"]
+      test: [ "CMD-SHELL", "pg_isready -U admin -d expense_db" ]
       interval: 5s
       retries: 5
       start_period: 20s
@@ -37,6 +37,7 @@ services:
       - DB_URL=postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database:5432/${POSTGRES_DB}
       - AUTH0_DOMAIN=${AUTH0_DOMAIN}
       - JWT_AUDIENCE=${JWT_AUDIENCE}
+      - FRONTEND_URL=frontend:3000
     depends_on:
       database:
         condition: service_healthy
@@ -52,6 +53,7 @@ services:
       - BACKEND_BASE_URL=backend:8080
       - AUTH0_DOMAIN=${AUTH0_DOMAIN}
       - AUTH0_CLIENT_ID=${AUTH0_CLIENT_ID}
+      - JWT_AUDIENCE=${JWT_AUDIENCE}
     healthcheck:
       test: curl --fail http://localhost:3000/health || exit 1
       interval: 5s

@@ -1,7 +1,10 @@
 // Flutter imports
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/services/api_service.dart' show ApiService;
+import 'package:flutter_frontend/services/auth_service.dart' show AuthService;
 import 'package:flutter_frontend/utils/config.dart' show Config;
-import 'package:provider/provider.dart' show Provider;
+import 'package:provider/provider.dart' show MultiProvider, Provider;
+import 'package:logging/logging.dart' show Level, Logger;
 // Screens
 import '../../screens/initial_startup_screen/initial_startup_screen.dart';
 import '../../screens/profile_setup_screen/profile_setup_screen.dart';
@@ -9,13 +12,46 @@ import '../../screens/profile_screen/profile_screen.dart';
 import '../../screens/home_screen/home_screen.dart';
 import '../../screens/add_expense_screen/add_expense_screen.dart';
 import '../../screens/split_with_screen/split_with_screen.dart';
+import '../../screens/add_items_screen/add_items_screen.dart';
+import 'screens/expenses_screen/expenses_screen.dart';
+import 'screens/see_expense_screen/see_expense_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final config = await Config.load();
-  //final config = Config(auth0ClientId: "abc", auth0Domain: "abc", backendBaseUrl: "abc");
+  Logger.root.level = Level.ALL;
+  Logger.root.onRecord.listen((record) {
+    // ignore: avoid_print
+    print(
+      '${record.level.name}: ${record.time}: ${record.loggerName}: ${record.message}',
+    );
+  });
 
-  runApp(Provider<Config>.value(value: config, child: const MyApp()));
+  final logger = Logger("main");
+
+  final config = await Config.load();
+  final authService = AuthService(
+    config.auth0Domain,
+    config.auth0ClientId,
+    config.jwtAudience,
+  );
+  await authService.init();
+
+  final apiService = ApiService(
+    authService.authenticatedClient,
+    config.backendBaseUrl,
+  );
+
+  logger.info("Starting App");
+  runApp(
+    MultiProvider(
+      providers: [
+        Provider<Config>.value(value: config),
+        Provider<AuthService>.value(value: authService),
+        Provider<ApiService>.value(value: apiService),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -23,31 +59,57 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final config = Provider.of<Config>(context, listen: false);
+    final auth = Provider.of<AuthService>(context, listen: false);
 
-    return MaterialApp (
-      // title: 'Expense Flow - ${config.backendBaseUrl}',
-      title: 'Expense Flow}',
+    return MaterialApp(
+      title: 'Expense Flow',
       debugShowCheckedModeBanner: false,
-      themeMode: ThemeMode.light, // Force light mode
+      themeMode: ThemeMode.light,
 
-      initialRoute: '/initial_startup',
-
-      routes: {
-        '/initial_startup': (context) => const InitialStartupScreen(),
-        '/profile_setup': (context) => const ProfileSetupScreen(),
-        '/profile': (context) => const ProfileScreen(),
-        '/home': (context) => const HomeScreen(),
-        '/add_expense': (context) => const AddExpenseScreen(),
-        '/split_with': (context) => const SplitWithScreen(),
+      initialRoute: auth.isLoggedIn ? '/' : '/initial_startup',
+      onGenerateRoute: (RouteSettings settings) {
+        switch (settings.name) {
+          case '/initial_startup':
+            return MaterialPageRoute(builder: (_) => const InitialStartupScreen());
+          case '/profile_setup':
+            return MaterialPageRoute(builder: (_) => const ProfileSetupScreen());
+          case '/profile':
+            return MaterialPageRoute(builder: (_) => const ProfileScreen());
+          case '/':
+            return MaterialPageRoute(builder: (_) => const HomeScreen());
+          case '/add_expense':
+            return MaterialPageRoute(builder: (_) => const AddExpenseScreen());
+          case '/split_with':
+            return MaterialPageRoute(builder: (_) => const SplitWithScreen());
+          case '/expenses':
+            return MaterialPageRoute(builder: (_) => const ExpensesScreen());
+          case '/see_expenses':
+            final args = settings.arguments as Map<String, dynamic>?;
+            final transactionId = args?['transactionId'] as String?;
+            if (transactionId == null) {
+              return MaterialPageRoute(
+                builder:
+                    (_) => const Scaffold(
+                      body: Center(
+                        child: Text('Error: Missing transaction ID'),
+                      ),
+                    ),
+              );
+            }
+            return MaterialPageRoute(
+              builder: (_) => SeeExpenseScreen(transactionId: transactionId),
+            );
+          default:
+            final logger = Logger("MyApp");
+            logger.warning("Unknown route: ${settings.name}");
+            return MaterialPageRoute(
+              builder:
+                  (_) => const Scaffold(
+                    body: Center(child: Text('404: Page not found')),
+                  ),
+            );
+        }
       },
-
-      // TODO: Add login check and show appropriate screen. Use "isLoggedIn" method to determine if the user is logged in or not.
-      // if (isLoggedIn) {
-      //   return const HomeScreen();
-      // } else {
-      //   return const InitialStartupScreen();
-      // }
     );
   }
 }
