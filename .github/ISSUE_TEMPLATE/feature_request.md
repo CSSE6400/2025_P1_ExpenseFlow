@@ -1,16 +1,26 @@
 ---
-name: Feature request
-about: Suggest an idea for this project
-title: ""
-labels: ""
-assignees: ""
+name: Feature
+about: New Feature/Enhancement
+title: "[Feature] "
+labels: enhancement
 ---
 
-**Please describe what problem your feature relates to.**
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+### Problem / Use Case
 
-**Describe solution.**
-A clear and concise description of what you want to happen.
+<!-- What problem does this feature solve? Why is it important? -->
 
-**Additional context**
-Add any other context or screenshots about the feature request here.
+### Components Affected
+
+<!-- Select all components related to this issue -->
+
+- [ ] Frontend
+- [ ] Backend
+- [ ] Infrastructure
+
+### Proposed Solution
+
+<!-- How would this feature work? Include examples. -->
+
+### Additional Context
+
+<!-- Any other context, screenshots, or references that might help. -->

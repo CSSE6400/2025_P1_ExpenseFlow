@@ -24,7 +24,7 @@ class GroupRole(ExpenseFlowEnum):
 class ExpenseCategory(ExpenseFlowEnum):
     """Enum for expense category."""
 
-    takeaway = "food"
+    takeaway = "takeaway"
     education = "education"
     entertainment = "entertainment"
     donations = "donations"

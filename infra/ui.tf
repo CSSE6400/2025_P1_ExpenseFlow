@@ -61,15 +61,19 @@ resource "aws_ecs_task_definition" "expenseflow_ui" {
       environment = [
         {
           name  = "BACKEND_BASE_URL",
-          value = "http://${aws_lb.expenseflow_api.dns_name}",
+          value = local.api_url
         },
         {
           name  = "AUTH0_DOMAIN",
-          value = "ABC",
+          value = var.auth0_domain
         },
         {
           name  = "AUTH0_CLIENT_ID",
-          value = "ABC",
+          value = data.auth0_client.expenseflow_ui_client.client_id
+        },
+        {
+          name  = "JWT_AUDIENCE",
+          value = data.auth0_resource_server.expenseflow_api.identifier
         },
       ],
       logConfiguration = {

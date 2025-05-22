@@ -9,12 +9,7 @@ import '../../common/proportional_sizes.dart';
 import '../../common/icon_maker.dart';
 import '../../common/snack_bar.dart';
 
-enum InputRuleType {
-  noSpaces,
-  numericOnly,
-  decimalWithTwoPlaces,
-  lettersOnly,
-}
+enum InputRuleType { noSpaces, numericOnly, decimalWithTwoPlaces, lettersOnly }
 
 /// Custom field for user input.
 /// This widget is used to create a general input field with validation
@@ -53,10 +48,13 @@ class GeneralField extends StatefulWidget {
   /// Focus instruction for the field
   final String? focusInstruction;
 
+  /// Optional external controller to manage the text field
+  final TextEditingController? controller;
+
   const GeneralField({
     super.key,
     required this.label,
-    required this.initialValue,
+    this.initialValue = '',
     this.showStatusIcon = false,
     this.validationRule,
     this.isEditable = true,
@@ -66,6 +64,7 @@ class GeneralField extends StatefulWidget {
     this.maxLength,
     this.focusInstruction,
     this.filledValue,
+    this.controller,
   });
 
   @override
@@ -75,7 +74,7 @@ class GeneralField extends StatefulWidget {
 class GeneralFieldState extends State<GeneralField> {
   late TextEditingController _controller;
   bool _isValid = false;
-  bool isLabelExpanded = false;
+  bool isLabelExpanded = true;
   late FocusNode _focusNode;
 
   /// Initializes the TextEditingController and sets up a listener to update validation
@@ -84,10 +83,15 @@ class GeneralFieldState extends State<GeneralField> {
   void initState() {
     super.initState();
 
-    // Use filledValue if present, fallback to empty for hint-based input
-    _controller = TextEditingController(
-      text: widget.filledValue?.isNotEmpty == true ? widget.filledValue : '',
-    );
+    // Use provided controller or create a new one
+    _controller =
+        widget.controller ??
+        TextEditingController(
+          text:
+              widget.filledValue?.isNotEmpty == true
+                  ? widget.filledValue
+                  : widget.initialValue,
+        );
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _updateValidation(_controller.text);
@@ -104,10 +108,7 @@ class GeneralFieldState extends State<GeneralField> {
     _focusNode = FocusNode();
     _focusNode.addListener(() {
       if (_focusNode.hasFocus && widget.focusInstruction != null) {
-        showCustomSnackBar(
-          context,
-          normalText: widget.focusInstruction!,
-        );
+        showCustomSnackBar(context, normalText: widget.focusInstruction!);
       }
     });
   }
@@ -136,7 +137,10 @@ class GeneralFieldState extends State<GeneralField> {
   /// This is important to free up resources and avoid memory leaks.
   @override
   void dispose() {
-    _controller.dispose();
+    // Only dispose the controller if we created it internally
+    if (widget.controller == null) {
+      _controller.dispose();
+    }
     _focusNode.dispose();
     super.dispose();
   }
@@ -176,9 +180,8 @@ class GeneralFieldState extends State<GeneralField> {
     final proportionalSizes = ProportionalSizes(context: context);
     final labelColor = ColorPalette.primaryText;
     final hintColor = ColorPalette.secondaryText;
-    final iconColor = _isValid
-        ? ColorPalette.primaryAction
-        : ColorPalette.error;
+    final iconColor =
+        _isValid ? ColorPalette.primaryAction : ColorPalette.error;
 
     return Padding(
       padding: EdgeInsets.symmetric(
@@ -199,7 +202,10 @@ class GeneralFieldState extends State<GeneralField> {
               child: Text(
                 widget.label,
                 maxLines: isLabelExpanded ? null : 1,
-                overflow: isLabelExpanded ? TextOverflow.visible : TextOverflow.ellipsis,
+                overflow:
+                    isLabelExpanded
+                        ? TextOverflow.visible
+                        : TextOverflow.ellipsis,
                 style: GoogleFonts.roboto(
                   fontSize: proportionalSizes.scaleText(18),
                   fontWeight: FontWeight.w500,
@@ -218,11 +224,12 @@ class GeneralFieldState extends State<GeneralField> {
               inputFormatters: _buildInputFormatters(),
               style: GoogleFonts.roboto(
                 fontSize: proportionalSizes.scaleText(18),
-                color: !widget.isEditable
-                    ? (widget.filledValue?.isNotEmpty == true
-                        ? labelColor
-                        : Colors.grey[600])
-                    : labelColor,
+                color:
+                    !widget.isEditable
+                        ? (widget.filledValue?.isNotEmpty == true
+                            ? labelColor
+                            : Colors.grey[600])
+                        : labelColor,
               ),
               maxLength: widget.maxLength,
               decoration: InputDecoration(
@@ -243,11 +250,12 @@ class GeneralFieldState extends State<GeneralField> {
           // Status Icon (check or cross)
           if (widget.showStatusIcon && widget.validationRule != null)
             Padding(
-              padding: EdgeInsets.only(
-                left: proportionalSizes.scaleWidth(8),
-              ),
+              padding: EdgeInsets.only(left: proportionalSizes.scaleWidth(8)),
               child: IconMaker(
-                assetPath: _isValid ? 'assets/icons/check.png' : 'assets/icons/cross.png',
+                assetPath:
+                    _isValid
+                        ? 'assets/icons/check.png'
+                        : 'assets/icons/cross.png',
                 color: iconColor,
               ),
             ),

@@ -37,6 +37,7 @@ func main() {
 		"BACKEND_BASE_URL": mustEnv("BACKEND_BASE_URL"),
 		"AUTH0_DOMAIN":     mustEnv("AUTH0_DOMAIN"),
 		"AUTH0_CLIENT_ID":  mustEnv("AUTH0_CLIENT_ID"),
+		"JWT_AUDIENCE":     mustEnv("JWT_AUDIENCE"),
 	}
 
 	fs := http.FileServer(http.Dir("./static"))

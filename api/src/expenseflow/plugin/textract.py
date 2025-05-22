@@ -51,7 +51,11 @@ class TextractPlugin(Plugin[TextractPluginSettings]):
         # Close boto3 client
 
     async def handle_receipt(
-        self, db: DbSession, user: CurrentUser, parent_id: UUID, file: UploadFile
+        self,
+        db: DbSession,
+        user: CurrentUser,
+        file: UploadFile,
+        parent_id: UUID | None = None,
     ) -> ExpenseModel:
         """Route to extract receipt info."""
         contents = await file.read()
@@ -61,7 +65,7 @@ class TextractPlugin(Plugin[TextractPluginSettings]):
                 status.HTTP_400_BAD_REQUEST, detail="File greater than 5MB"
             )
 
-        parent = await get_entity(db, parent_id)
+        parent = user if parent_id is None else await get_entity(db, parent_id)
         if parent is None:
             raise HTTPException(
                 status.HTTP_404_NOT_FOUND,
@@ -85,7 +89,7 @@ class TextractPlugin(Plugin[TextractPluginSettings]):
                 detail=f"Textract error: {error_message}",
             ) from e
         summary_fields = response["ExpenseDocuments"][0].get("SummaryFields", [])
-        item_groups = response["ExpenseDocument"][0].get("LineItemGroups", [])
+        item_groups = response["ExpenseDocuments"][0].get("LineItemGroups", [])
         vendor_name = ""
         items: list[ExpenseItemCreate] = []
         for field in summary_fields:
