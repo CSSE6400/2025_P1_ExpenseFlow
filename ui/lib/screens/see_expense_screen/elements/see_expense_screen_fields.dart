@@ -184,6 +184,8 @@ class _SeeExpenseScreenFieldsState extends State<SeeExpenseScreenFields> {
                 '/add_items',
                 arguments: {
                   'amount': enteredAmount ?? 0,
+                  'transactionId': widget.transactionId,
+                  if (widget.isReadOnly) 'isReadOnly': true,
                 },
               );
             }

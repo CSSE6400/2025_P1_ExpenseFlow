@@ -61,9 +61,14 @@ class MyApp extends StatelessWidget {
           case '/add_items':
             final args = settings.arguments as Map<String, dynamic>?;
 
+            final transactionId = args?['transactionId'] as String?;
+            final isReadOnly = args?['isReadOnly'] as bool? ?? false;
+
             return MaterialPageRoute(
               builder: (_) => AddItemsScreen(
                 amount: args?['amount'],
+                transactionId: transactionId,
+                isReadOnly: isReadOnly,
               ),
             );
           case '/see_expenses':

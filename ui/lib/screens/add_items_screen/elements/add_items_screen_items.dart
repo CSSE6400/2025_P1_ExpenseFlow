@@ -26,11 +26,15 @@ class Item {
 class AddItemsScreenItems extends StatefulWidget {
   final double totalAmount;
   final void Function(bool isValid)? onValidityChanged;
+  final String? transactionId;
+  final bool isReadOnly;
 
   const AddItemsScreenItems({
     super.key,
     required this.totalAmount,
     this.onValidityChanged,
+    this.transactionId,
+    this.isReadOnly = false,
   });
 
   @override
@@ -48,6 +52,8 @@ class AddItemsScreenItemsState extends State<AddItemsScreenItems> {
 
     // Dummy starting items.
     // TODO: Replace with actual data from the backend and add lazy loading if items are numerous.
+    // TODO: If transactionId is provided, fetch split-with data from backend.
+    // Pre-fill the screen for editing or read-only display.
     allItems = List.generate(
       1,
       (index) => Item(name: 'Item Name #${index + 1}', amount: '10'),
@@ -150,24 +156,25 @@ class AddItemsScreenItemsState extends State<AddItemsScreenItems> {
         ...filteredItems.map((item) => _buildItemRow(item, proportionalSizes)),
 
         const SizedBox(height: 16),
-        GestureDetector(
-          onTap: _addNewItem,
-          child: Row(
-            children: [
-              IconMaker(
-                assetPath: 'assets/icons/add.png',
-              ),
-              const SizedBox(width: 6),
-              Text(
-                'Add Item',
-                style: GoogleFonts.roboto(
-                  color: ColorPalette.primaryText,
-                  fontSize: proportionalSizes.scaleHeight(16),
+        if (!widget.isReadOnly)
+          GestureDetector(
+            onTap: _addNewItem,
+            child: Row(
+              children: [
+                IconMaker(
+                  assetPath: 'assets/icons/add.png',
                 ),
-              ),
-            ],
+                const SizedBox(width: 6),
+                Text(
+                  'Add Item',
+                  style: GoogleFonts.roboto(
+                    color: ColorPalette.primaryText,
+                    fontSize: proportionalSizes.scaleHeight(16),
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
       ],
     );
   }
@@ -186,18 +193,20 @@ class AddItemsScreenItemsState extends State<AddItemsScreenItems> {
           Expanded(
             child: Row(
               children: [
-                GestureDetector(
-                  onTap: () => _removeItem(item),
-                  child: Padding(
-                    padding: EdgeInsets.only(right: proportionalSizes.scaleWidth(8)),
-                    child: IconMaker(
-                      assetPath: 'assets/icons/minus.png',
+                if (!widget.isReadOnly)
+                  GestureDetector(
+                    onTap: () => _removeItem(item),
+                    child: Padding(
+                      padding: EdgeInsets.only(right: proportionalSizes.scaleWidth(8)),
+                      child: IconMaker(
+                        assetPath: 'assets/icons/minus.png',
+                      ),
                     ),
                   ),
-                ),
                 Expanded(
                   child: TextField(
                     controller: item.nameController,
+                    enabled: !widget.isReadOnly,
                     maxLength: 30,
                     onChanged: (value) {
                       // Format input to Title Case
@@ -261,6 +270,7 @@ class AddItemsScreenItemsState extends State<AddItemsScreenItems> {
             ),
             child: TextField(
               controller: item.amountController,
+              enabled: !widget.isReadOnly,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
               inputFormatters: [
                 FilteringTextInputFormatter.allow(
@@ -268,12 +278,14 @@ class AddItemsScreenItemsState extends State<AddItemsScreenItems> {
                 ),
               ],
               textAlign: TextAlign.center,
-              onChanged: (value) {
-                setState(() {
-                  item.amount = value;
-                  widget.onValidityChanged?.call(isFormValid());
-                });
-              },
+              onChanged: widget.isReadOnly
+                ? null
+                : (value) {
+                    setState(() {
+                      item.amount = value;
+                      widget.onValidityChanged?.call(isFormValid());
+                    });
+                  },
               style: GoogleFonts.roboto(
                 fontWeight: FontWeight.bold,
                 color: textColor,

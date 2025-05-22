@@ -6,8 +6,15 @@ import 'add_items_screen_items.dart';
 
 class AddItemsScreenMainBody extends StatefulWidget {
   final double? amount;
+  final String? transactionId;
+  final bool isReadOnly;
 
-  const AddItemsScreenMainBody({super.key, this.amount});
+  const AddItemsScreenMainBody({
+    super.key,
+    this.amount,
+    this.transactionId,
+    this.isReadOnly = false,
+  });
 
   @override
   State<AddItemsScreenMainBody> createState() => _AddItemsScreenMainBodyState();
@@ -61,35 +68,38 @@ class _AddItemsScreenMainBodyState extends State<AddItemsScreenMainBody> {
                 key: itemsKey,
                 totalAmount: widget.amount ?? 0,
                 onValidityChanged: updateItemTotalValidity,
+                isReadOnly: widget.isReadOnly,
+                transactionId: widget.transactionId,
               ),
 
               const SizedBox(height: 24),
 
-              // Continue Button
-              GestureDetector(
-                onTap: () {
-                  if (isItemTotalValid) {
-                    _handleContinue(context);
-                  } else {
-                    showCustomSnackBar(
-                      context,
-                      boldText: 'Error:',
-                      normalText: 'Item totals must total ${widget.amount}.',
-                    );
-                  }
-                },
-                child: AbsorbPointer(
-                  absorbing: !isItemTotalValid,
-                  child: CustomButton(
-                    label: 'Continue',
-                    onPressed: () => _handleContinue(context),
-                    state: isItemTotalValid
-                        ? ButtonState.enabled
-                        : ButtonState.disabled,
-                    sizeType: ButtonSizeType.full,
+              // Continue Button (only in edit mode)
+              if (!widget.isReadOnly)
+                GestureDetector(
+                  onTap: () {
+                    if (isItemTotalValid) {
+                      _handleContinue(context);
+                    } else {
+                      showCustomSnackBar(
+                        context,
+                        boldText: 'Error:',
+                        normalText: 'Item totals must total ${widget.amount}.',
+                      );
+                    }
+                  },
+                  child: AbsorbPointer(
+                    absorbing: !isItemTotalValid,
+                    child: CustomButton(
+                      label: 'Continue',
+                      onPressed: () => _handleContinue(context),
+                      state: isItemTotalValid
+                          ? ButtonState.enabled
+                          : ButtonState.disabled,
+                      sizeType: ButtonSizeType.full,
+                    ),
                   ),
                 ),
-              ),
 
               const SizedBox(height: 20),
             ],

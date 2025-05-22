@@ -8,10 +8,14 @@ import '../add_items_screen/elements/add_items_screen_main_body.dart';
 
 class AddItemsScreen extends StatefulWidget {
   final double? amount;
+  final String? transactionId;
+  final bool isReadOnly;
 
   const AddItemsScreen({
     super.key,
     this.amount,
+    this.transactionId,
+    this.isReadOnly = false,
   });
 
   @override
@@ -32,6 +36,8 @@ class _AddItemsScreenState extends State<AddItemsScreen> {
 
       body: AddItemsScreenMainBody(
         amount: widget.amount,
+        transactionId: widget.transactionId,
+        isReadOnly: widget.isReadOnly,
       ),
 
       bottomNavigationBar: BottomNavBar(
