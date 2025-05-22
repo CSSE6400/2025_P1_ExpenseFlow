@@ -38,7 +38,6 @@ class ProfileScreenMainBody extends StatelessWidget {
 
               // Sub Rectangle
               ProfileScreenSubRectangle(),
-              // ProfileScreenSubRectangleLower(),
             ],
           ),
         ),
