@@ -5,9 +5,10 @@ resource "auth0_client" "expenseflow_ui_client" {
   description         = "ExpenseFlow UI Client"
   app_type            = "spa" // Flutter is spa, something server-side would be 'spa'
   oidc_conformant     = true
-  allowed_logout_urls = [local.ui_url, "http://localhost:3000"]
-  allowed_origins     = [local.ui_url, "http://localhost:3000"]
-  callbacks           = [local.ui_url, "http://localhost:3000"]
+  is_first_party      = true
+  allowed_logout_urls = [local.ui_url, "http://localhost:3000", "http://127.0.0.1:3000"]
+  allowed_origins     = [local.ui_url, "http://localhost:3000", "http://127.0.0.1:3000"]
+  callbacks           = [local.ui_url, "http://localhost:3000", "http://127.0.0.1:3000"]
   grant_types         = ["authorization_code", "refresh_token"]
   #   logo_uri            = ""
 
