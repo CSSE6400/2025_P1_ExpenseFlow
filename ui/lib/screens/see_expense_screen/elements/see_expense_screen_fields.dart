@@ -40,9 +40,9 @@ class _SeeExpenseScreenFieldsState extends State<SeeExpenseScreenFields> {
       'amount': '20',
       'date': '2024-06-10T14:20:00Z',
       'category': 'Transport',
-      'splitWith': '',
-      'items': '',
-      'receipt': '',
+      'splitWith': 'Group - Family',
+      'items': 'Item 1, Item 2',
+      'receipt': 'coles_receipt.png',
       'notes': 'Go-Card recharge',
     },
   };
@@ -152,20 +152,14 @@ class _SeeExpenseScreenFieldsState extends State<SeeExpenseScreenFields> {
 
         CustomIconField(
           label: 'Split With',
-          // TODO: Fetch actual group/friend names
           value: splitWith,
           hintText: 'Select Group or Friends',
           trailingIconPath: 'assets/icons/search.png',
-          inactive: widget.isReadOnly || !widget.isAmountValid,
+          inactive: widget.isReadOnly && splitWith.isEmpty,
           onTap: () {
-            if (widget.isReadOnly) return;
+            if (widget.isReadOnly && splitWith.isEmpty) return;
 
-            if (!widget.isAmountValid) {
-              showCustomSnackBar(
-                context,
-                normalText: 'Please enter a valid amount.',
-              );
-            } else {
+            if (!widget.isReadOnly || splitWith.isNotEmpty) {
               Navigator.pushNamed(context, '/split_with');
             }
           },
@@ -174,25 +168,19 @@ class _SeeExpenseScreenFieldsState extends State<SeeExpenseScreenFields> {
 
         CustomIconField(
           label: 'Items',
-          // TODO: Show added items from DB
           value: items,
           hintText: 'Specify Items',
           trailingIconPath: 'assets/icons/add.png',
-          inactive: widget.isReadOnly || !widget.isAmountValid,
+          inactive: widget.isReadOnly && items.isEmpty,
           onTap: () {
-            if (widget.isReadOnly) return;
+            if (widget.isReadOnly && items.isEmpty) return;
 
-            if (!widget.isAmountValid || enteredAmount == null) {
-              showCustomSnackBar(
-                context,
-                normalText: 'Please enter a valid amount.',
-              );
-            } else {
+            if (!widget.isReadOnly || items.isNotEmpty) {
               Navigator.pushNamed(
                 context,
                 '/add_items',
                 arguments: {
-                  'amount': enteredAmount,
+                  'amount': enteredAmount ?? 0,
                 },
               );
             }
