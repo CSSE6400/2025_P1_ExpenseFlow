@@ -58,8 +58,9 @@ class AuthService {
   Future<void> init() async {
     _logger.info("Getting credentials auth service");
     try {
-      final credentials = await _auth0Web.onLoad();
+      final credentials = await _auth0Web.onLoad(audience: audience);
       user = credentials?.user;
+      _logger.info("User restored silently: ${user?.name}");
     } catch (e) {
       _logger.warning("Failed to initialise AuthService: $e");
     }

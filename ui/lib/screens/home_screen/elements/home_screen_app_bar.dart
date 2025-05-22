@@ -52,7 +52,7 @@ class HomeScreenAppBarWidget extends StatelessWidget implements PreferredSizeWid
               assetPath: 'assets/icons/user.png',
             ),
             onPressed: () {
-              // TODO: Navigate to General Screen
+              Navigator.pushNamed(context, '/profile');
             },
           ),
         ],

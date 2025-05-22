@@ -8,6 +8,7 @@ import 'package:logging/logging.dart' show Level, Logger;
 // Screens
 import '../../screens/initial_startup_screen/initial_startup_screen.dart';
 import '../../screens/profile_setup_screen/profile_setup_screen.dart';
+import '../../screens/profile_screen/profile_screen.dart';
 import '../../screens/home_screen/home_screen.dart';
 import '../../screens/add_expense_screen/add_expense_screen.dart';
 import '../../screens/split_with_screen/split_with_screen.dart';
@@ -69,13 +70,11 @@ class MyApp extends StatelessWidget {
       onGenerateRoute: (RouteSettings settings) {
         switch (settings.name) {
           case '/initial_startup':
-            return MaterialPageRoute(
-              builder: (_) => const InitialStartupScreen(),
-            );
+            return MaterialPageRoute(builder: (_) => const InitialStartupScreen());
           case '/profile_setup':
-            return MaterialPageRoute(
-              builder: (_) => const ProfileSetupScreen(),
-            );
+            return MaterialPageRoute(builder: (_) => const ProfileSetupScreen());
+          case '/profile':
+            return MaterialPageRoute(builder: (_) => const ProfileScreen());
           case '/':
             return MaterialPageRoute(builder: (_) => const HomeScreen());
           case '/add_expense':
