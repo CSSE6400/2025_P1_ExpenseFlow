@@ -44,10 +44,20 @@ class MyApp extends StatelessWidget {
             return MaterialPageRoute(builder: (_) => const HomeScreen());
           case '/add_expense':
             return MaterialPageRoute(builder: (_) => const AddExpenseScreen());
-          case '/split_with':
-            return MaterialPageRoute(builder: (_) => const SplitWithScreen());
           case '/expenses':
             return MaterialPageRoute(builder: (_) => const ExpensesScreen());
+          case '/split_with':
+            final args = settings.arguments as Map<String, dynamic>?;
+
+            final transactionId = args?['transactionId'] as String?;
+            final isReadOnly = args?['isReadOnly'] as bool? ?? false;
+
+            return MaterialPageRoute(
+              builder: (_) => SplitWithScreen(
+                transactionId: transactionId,
+                isReadOnly: isReadOnly,
+              ),
+            );
           case '/add_items':
             final args = settings.arguments as Map<String, dynamic>?;
 

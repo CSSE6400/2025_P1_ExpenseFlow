@@ -6,7 +6,6 @@ import '../../../common/fields/date_field/date_field.dart';
 import '../../../common/fields/dropdown_field.dart';
 import '../../../common/fields/custom_icon_field.dart';
 import '../../../common/proportional_sizes.dart';
-import '../../../common/snack_bar.dart';
 
 class SeeExpenseScreenFields extends StatefulWidget {
   final bool isReadOnly;
@@ -158,10 +157,14 @@ class _SeeExpenseScreenFieldsState extends State<SeeExpenseScreenFields> {
           inactive: widget.isReadOnly && splitWith.isEmpty,
           onTap: () {
             if (widget.isReadOnly && splitWith.isEmpty) return;
-
-            if (!widget.isReadOnly || splitWith.isNotEmpty) {
-              Navigator.pushNamed(context, '/split_with');
-            }
+            Navigator.pushNamed(
+              context,
+              '/split_with',
+              arguments: {
+                'transactionId': widget.transactionId,
+                if (widget.isReadOnly) 'isReadOnly': true,
+              },
+            );
           },
         ),
         CustomDivider(),
