@@ -4,7 +4,14 @@ import '../../../common/proportional_sizes.dart';
 import 'groups_and_friends_segment_control.dart';
 
 class GroupsAndFriendsMainBody extends StatefulWidget {
-  const GroupsAndFriendsMainBody({super.key});
+  final String selectedSegment;
+  final void Function(String) onSegmentChanged;
+
+  const GroupsAndFriendsMainBody({
+    super.key,
+    required this.selectedSegment,
+    required this.onSegmentChanged,
+  });
 
   @override
   State<GroupsAndFriendsMainBody> createState() =>
@@ -12,14 +19,6 @@ class GroupsAndFriendsMainBody extends StatefulWidget {
 }
 
 class _GroupsAndFriendsMainBodyState extends State<GroupsAndFriendsMainBody> {
-  String selectedSegment = 'Friends';
-
-  void updateSegment(String newSegment) {
-    setState(() {
-      selectedSegment = newSegment;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final proportionalSizes = ProportionalSizes(context: context);
@@ -37,16 +36,14 @@ class _GroupsAndFriendsMainBodyState extends State<GroupsAndFriendsMainBody> {
             children: [
               // Segment Control
               GroupsAndFriendsSegmentControl(
-                selectedSegment: selectedSegment,
-                onSegmentChanged: updateSegment,
+                selectedSegment: widget.selectedSegment,
+                onSegmentChanged: widget.onSegmentChanged,
               ),
               const SizedBox(height: 12),
 
-              if (selectedSegment == 'Friends') ...[
+              if (widget.selectedSegment == 'Friends') ...[
                 // TODO: Insert Friends View here
-              ]
-
-              else ...[
+              ] else ...[
                 // TODO: Insert Groups View here
               ],
             ],

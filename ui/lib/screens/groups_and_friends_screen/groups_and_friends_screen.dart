@@ -1,4 +1,3 @@
-// Flutter imports
 import 'package:flutter/material.dart';
 // Common imports
 import '../../common/color_palette.dart';
@@ -11,10 +10,19 @@ class GroupsAndFriendsScreen extends StatefulWidget {
   const GroupsAndFriendsScreen({super.key});
 
   @override
-  State<GroupsAndFriendsScreen> createState() => _GroupsAndFriendsScreenState();
+  State<GroupsAndFriendsScreen> createState() =>
+      _GroupsAndFriendsScreenState();
 }
 
 class _GroupsAndFriendsScreenState extends State<GroupsAndFriendsScreen> {
+  String selectedSegment = 'Friends';
+
+  void _onSegmentChanged(String newSegment) {
+    setState(() {
+      selectedSegment = newSegment;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final backgroundColor = ColorPalette.background;
@@ -22,14 +30,15 @@ class _GroupsAndFriendsScreenState extends State<GroupsAndFriendsScreen> {
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBarWidget(
-        screenName: 'Groups & Friends',
+        screenName: selectedSegment, // Dynamic title
         showBackButton: true,
       ),
-
-      body: const GroupsAndFriendsMainBody(),
-
+      body: GroupsAndFriendsMainBody(
+        selectedSegment: selectedSegment,
+        onSegmentChanged: _onSegmentChanged,
+      ),
       bottomNavigationBar: BottomNavBar(
-        currentScreen: 'GroupsAndFriends',
+        currentScreen: 'Groups',
         inactive: false,
       ),
     );
