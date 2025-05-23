@@ -42,6 +42,7 @@ class _IndFriendExpenseScreenMainBodyState
     super.initState();
     // Sample data for expenses
     // TODO: Replace with actual data from your database
+    // Shouldn't "paid" as active status turn "active" to false?
     allExpenses = [
       ExpenseItem(name: 'Uber Ride', price: '\$427.28', date: '2025-05-09T00:00:00', active: true, activeStatus: 'paid'),
       ExpenseItem(name: 'Dinner at Sushi Train', price: '\$78.38', date: '2024-12-26T00:00:00', active: true, activeStatus: 'approved'),

@@ -73,6 +73,14 @@ class _IndFriendExpenseScreenListState extends State<IndFriendExpenseScreenList>
     expansionStates = List<bool>.filled(widget.expenses.length, false);
   }
 
+  // Method to convert a string to title case
+  String _titleCase(String input) {
+    return input
+        .split(' ')
+        .map((word) => word.isEmpty ? '' : '${word[0].toUpperCase()}${word.substring(1).toLowerCase()}')
+        .join(' ');
+  }
+
   @override
   Widget build(BuildContext context) {
     final proportionalSizes = ProportionalSizes(context: context);
@@ -142,7 +150,7 @@ class _IndFriendExpenseScreenListState extends State<IndFriendExpenseScreenList>
                             ),
                           ),
                           child: Text(
-                            expense.activeStatus!,
+                            _titleCase(expense.activeStatus!),
                             style: GoogleFonts.roboto(
                               color: ColorPalette.accent,
                               fontSize: proportionalSizes.scaleText(14),
