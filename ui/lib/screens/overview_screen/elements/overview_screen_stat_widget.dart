@@ -15,6 +15,7 @@ class OverviewScreenStatWidget extends StatefulWidget {
 
 class _OverviewScreenStatWidgetState extends State<OverviewScreenStatWidget> {
   late final List<_CategoryData> categories;
+  int? hoveredSectionIndex;
 
   final List<Color> availableColors = [
     Color(0xFF75E3EA), Color(0xFF4DC4D3), Color(0xFF3C74A6), Color(0xFF6C539F),
@@ -79,7 +80,8 @@ class _OverviewScreenStatWidgetState extends State<OverviewScreenStatWidget> {
     );
   }
 
-  Widget _buildDonutChart(double chartSize) {return SizedBox(
+  Widget _buildDonutChart(double chartSize) {
+    return SizedBox(
       width: chartSize,
       height: chartSize,
       child: PieChart(
@@ -87,16 +89,85 @@ class _OverviewScreenStatWidgetState extends State<OverviewScreenStatWidget> {
           sectionsSpace: 2,
           centerSpaceRadius: chartSize * 0.35,
           startDegreeOffset: -90,
-          sections: categories.map((category) {
+          // Enable touch interactions for hover
+          pieTouchData: PieTouchData(
+            enabled: true,
+            touchCallback: (FlTouchEvent event, pieTouchResponse) {
+              setState(() {
+                if (event is FlPointerHoverEvent) {
+                  // On hover
+                  hoveredSectionIndex = pieTouchResponse?.touchedSection?.touchedSectionIndex;
+                } else if (event is FlPointerExitEvent) {
+                  // On hover exit
+                  hoveredSectionIndex = null;
+                }
+              });
+            },
+          ),
+          sections: categories.asMap().entries.map((entry) {
+            final index = entry.key;
+            final category = entry.value;
+            final isHovered = hoveredSectionIndex == index;
+            
             return PieChartSectionData(
               color: category.color!,
               value: category.amount,
-              title: '',
-              radius: chartSize * 0.2,
+              title: '', 
+              // Slightly increase radius on hover for visual feedback
+              radius: isHovered ? chartSize * 0.22 : chartSize * 0.2,
               titleStyle: const TextStyle(fontSize: 0),
+              // Show tooltip only when hovered
+              badgeWidget: isHovered ? _buildTooltip(category, chartSize) : null,
+              badgePositionPercentageOffset: 1.3,
             );
           }).toList(),
         ),
+      ),
+    );
+  }
+
+  // Helper method to build tooltip
+  Widget _buildTooltip(_CategoryData category, double chartSize) {
+    final proportionalSizes = ProportionalSizes(context: context);
+    
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: proportionalSizes.scaleWidth(12),
+        vertical: proportionalSizes.scaleHeight(8),
+      ),
+      decoration: BoxDecoration(
+        color: Colors.black87,
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black26,
+            blurRadius: 4,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            category.name,
+            style: GoogleFonts.roboto(
+              color: Colors.white,
+              fontSize: proportionalSizes.scaleText(14),
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          SizedBox(height: 2),
+          Text(
+            '\$${category.amount.toStringAsFixed(2)}',
+            style: GoogleFonts.roboto(
+              color: Colors.white70,
+              fontSize: proportionalSizes.scaleText(12),
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ],
       ),
     );
   }
