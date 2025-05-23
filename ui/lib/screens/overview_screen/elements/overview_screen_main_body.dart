@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/common/time_period_dropdown.dart';
+import 'package:flutter_frontend/screens/overview_screen/elements/overview_screen_stat_widget.dart';
 // Common imports
 import '../../../common/proportional_sizes.dart';
 
@@ -34,15 +35,24 @@ class _OverviewScreenMainBodyState extends State<OverviewScreenMainBody> {
             vertical: proportionalSizes.scaleHeight(0),
           ),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Align(
                 alignment: Alignment.centerRight,
-                child: TimePeriodDropdown(
-                  selectedPeriod: selectedPeriod,
-                  onChanged: handleTimePeriodChange,
+                // TODO: Made the dropdown non-interactive, as I think it would complicate the calculation of the overview.
+                // For MVP, we may not need to change the time period.
+                child: IgnorePointer(
+                  child: TimePeriodDropdown(
+                    selectedPeriod: selectedPeriod,
+                    onChanged: handleTimePeriodChange, // will never be called
+                  ),
                 ),
               ),
+              SizedBox(
+                height: proportionalSizes.scaleHeight(20),
+              ),
+
+              const OverviewScreenStatWidget(),
             ],
           ),
         ),
