@@ -13,7 +13,7 @@ from typing import Any, ClassVar, Generic, Self, TypeVar
 import yaml
 from fastapi import FastAPI
 from loguru import logger
-from pydantic import BaseModel, model_validator
+from pydantic import BaseModel
 
 
 class DynamicValue(ABC):
@@ -71,10 +71,6 @@ class PluginProperty:
             if start > last_end_idx:
                 self._values.append(property_value[last_end_idx:start])
 
-            logger.info(
-                "Value given to dynamic value is: "
-                + property_value[start + 2 : end - 2]
-            )
             self._values.append(
                 DynamicValue.create(property_value[start + 2 : end - 2])
             )
@@ -216,8 +212,6 @@ class PluginRegistry:
             )
 
             settings = await settings.resolve()
-
-            logger.debug(f"Config is: {settings.model_dump_json()}")
 
             plugin = plugin_cls(app, settings)
 
