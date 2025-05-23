@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 // Common imports
 import '../../../common/proportional_sizes.dart';
 import 'groups_and_friends_segment_control.dart';
+import 'groups_and_friends_friend_list.dart';
 
 class GroupsAndFriendsMainBody extends StatefulWidget {
   final String selectedSegment;
@@ -42,7 +43,7 @@ class _GroupsAndFriendsMainBodyState extends State<GroupsAndFriendsMainBody> {
               const SizedBox(height: 12),
 
               if (widget.selectedSegment == 'Friends') ...[
-                // TODO: Insert Friends View here
+                const GroupsAndFriendsFriendList(),
               ] else ...[
                 // TODO: Insert Groups View here
               ],
