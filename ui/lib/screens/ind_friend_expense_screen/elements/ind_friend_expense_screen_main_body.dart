@@ -3,7 +3,7 @@ import 'package:flutter_frontend/common/time_period_dropdown.dart';
 // Common imports
 import '../../../common/proportional_sizes.dart';
 import '../../expenses_screen/elements/expenses_screen_segment_control.dart';
-import '../../expenses_screen/elements/expenses_screen_list.dart';
+import '../elements/ind_friend_expense_screen_list.dart';
 
 class ExpenseItem {
   final String name;
@@ -122,7 +122,7 @@ class _IndFriendExpenseScreenMainBodyState
               SizedBox(height: proportionalSizes.scaleHeight(20)),
 
               // Expense List
-              ExpensesScreenList(expenses: getFilteredExpenses()),
+              IndFriendExpenseScreenList(expenses: getFilteredExpenses()),
             ],
           ),
         ),
