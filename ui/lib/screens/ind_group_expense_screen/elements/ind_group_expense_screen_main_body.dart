@@ -5,19 +5,27 @@ import '../../../common/proportional_sizes.dart';
 import '../../expenses_screen/elements/expenses_screen_segment_control.dart';
 import '../elements/ind_group_expense_screen_list.dart';
 
+class GroupMember {
+  final String name;
+  final String? status; // null for 'You', else: 'Needs Approval', 'Approved', 'Needs Payment', 'Paid'
+  final String amount;
+
+  GroupMember({required this.name, this.status, required this.amount});
+}
+
 class ExpenseItem {
   final String name;
   final String price;
   final String date; // ISO 8601 format
   final bool active;
-  final String? activeStatus;
+  final List<GroupMember> members;
 
   ExpenseItem({
     required this.name,
     required this.price,
     required this.date,
     required this.active,
-    this.activeStatus,
+    required this.members,
   });
 }
 
@@ -36,33 +44,104 @@ class _IndGroupExpenseScreenMainBodyState
   String selectedSegment = 'Active';
   String selectedPeriod = 'Last 30 Days';
   late final List<ExpenseItem> allExpenses;
+  late final List<String> groupMembers;
 
   @override
   void initState() {
     super.initState();
-    // Sample data for expenses
+
+    // TODO: Fetch group members from backend using widget.groupName
+    groupMembers = ['@abc123', '@xyz987', '@pqr456', '@mno789', 'You'];
+
     // TODO: Replace with actual data from your database
     // Shouldn't "paid" as active status turn "active" to false?
     allExpenses = [
-      ExpenseItem(name: 'Uber Ride', price: '\$427.28', date: '2025-05-09T00:00:00', active: true, activeStatus: 'paid'),
-      ExpenseItem(name: 'Dinner at Sushi Train', price: '\$78.38', date: '2024-12-26T00:00:00', active: true, activeStatus: 'approved'),
-      ExpenseItem(name: 'Movie Tickets', price: '\$373.11', date: '2025-01-04T00:00:00', active: true, activeStatus: 'paid'),
-      ExpenseItem(name: 'Amazon Order', price: '\$69.37', date: '2025-01-07T00:00:00', active: false),
-      ExpenseItem(name: 'New Shoes', price: '\$204.72', date: '2024-12-09T00:00:00', active: true, activeStatus: 'needs payment'),
-      ExpenseItem(name: 'Flight Booking', price: '\$393.95', date: '2024-11-30T00:00:00', active: true, activeStatus: 'needs payment'),
-      ExpenseItem(name: 'Spotify Subscription', price: '\$28.34', date: '2025-02-07T00:00:00', active: false),
-      ExpenseItem(name: 'Netflix', price: '\$406.20', date: '2025-03-27T00:00:00', active: false),
-      ExpenseItem(name: 'Phone Bill', price: '\$374.85', date: '2025-03-24T00:00:00', active: true, activeStatus: 'needs approval'),
-      ExpenseItem(name: 'Laptop Charger', price: '\$56.64', date: '2025-01-28T00:00:00', active: true, activeStatus: 'needs payment'),
-      ExpenseItem(name: 'Haircut', price: '\$146.23', date: '2025-04-26T00:00:00', active: true, activeStatus: 'needs approval'),
-      ExpenseItem(name: 'Fuel BP Station', price: '\$301.01', date: '2024-12-21T00:00:00', active: true, activeStatus: 'approved'),
-      ExpenseItem(name: 'Gym Anytime Fitness', price: '\$139.55', date: '2025-04-05T00:00:00', active: true, activeStatus: 'needs approval'),
-      ExpenseItem(name: 'Grocery at Aldi', price: '\$243.17', date: '2025-04-12T00:00:00', active: true, activeStatus: 'needs approval'),
-      ExpenseItem(name: 'Streaming Bundle', price: '\$478.10', date: '2025-02-16T00:00:00', active: true, activeStatus: 'needs payment'),
-      ExpenseItem(name: 'Taxi to Airport', price: '\$202.50', date: '2025-02-12T00:00:00', active: false),
-      ExpenseItem(name: 'Team Lunch', price: '\$280.35', date: '2025-04-19T00:00:00', active: false),
-      ExpenseItem(name: 'Coffee Machine', price: '\$64.57', date: '2025-03-25T00:00:00', active: false),
-      ExpenseItem(name: 'Earpods Purchase', price: '\$340.95', date: '2024-11-24T00:00:00', active: false),
+      ExpenseItem(
+        name: 'Uber Ride',
+        price: '\$427.28',
+        date: '2025-05-09T00:00:00',
+        active: true,
+        members: [
+          GroupMember(name: 'You', amount: '\$150.00'),
+          GroupMember(name: '@abc123', status: 'Needs Approval', amount: '\$100.00'),
+          GroupMember(name: '@xyz987', status: 'Approved', amount: '\$90.00'),
+          GroupMember(name: '@pqr456', status: 'Needs Payment', amount: '\$87.28'),
+        ],
+      ),
+      ExpenseItem(
+        name: 'Dinner at Sushi Train',
+        price: '\$78.38',
+        date: '2024-12-26T00:00:00',
+        active: true,
+        members: [
+          GroupMember(name: 'You', amount: '\$28.38'),
+          GroupMember(name: '@mno789', status: 'Needs Payment', amount: '\$50.00'),
+        ],
+      ),
+      ExpenseItem(
+        name: 'Movie Tickets',
+        price: '\$373.11',
+        date: '2025-01-04T00:00:00',
+        active: true,
+        members: [
+          GroupMember(name: 'You', amount: '\$123.11'),
+          GroupMember(name: '@xyz987', status: 'Needs Payment', amount: '\$100.00'),
+          GroupMember(name: '@abc123', status: 'Approved', amount: '\$100.00'),
+          GroupMember(name: '@pqr456', status: 'Needs Approval', amount: '\$50.00'),
+        ],
+      ),
+      ExpenseItem(
+        name: 'Taxi Split',
+        price: '\$210.00',
+        date: '2025-04-01T00:00:00',
+        active: false,
+        members: [
+          GroupMember(name: 'You', amount: '\$70.00'),
+          GroupMember(name: '@abc123', status: 'Paid', amount: '\$70.00'),
+          GroupMember(name: '@xyz987', status: 'Paid', amount: '\$70.00'),
+        ],
+      ),
+      ExpenseItem(
+        name: 'Team Coffee',
+        price: '\$95.00',
+        date: '2025-02-12T00:00:00',
+        active: false,
+        members: [
+          GroupMember(name: '@mno789', status: 'Paid', amount: '\$65.00'),
+          GroupMember(name: '@pqr456', status: 'Paid', amount: '\$30.00'),
+        ],
+      ),
+      ExpenseItem(
+        name: 'Board Game Night',
+        price: '\$120.00',
+        date: '2025-03-15T00:00:00',
+        active: false,
+        members: [
+          GroupMember(name: '@abc123', status: 'Paid', amount: '\$60.00'),
+          GroupMember(name: 'You', amount: '\$60.00'),
+        ],
+      ),
+      ExpenseItem(
+        name: 'Flight Booking',
+        price: '\$393.95',
+        date: '2024-11-30T00:00:00',
+        active: true,
+        members: [
+          GroupMember(name: '@xyz987', status: 'Needs Payment', amount: '\$100.00'),
+          GroupMember(name: 'You', amount: '\$143.95'),
+          GroupMember(name: '@mno789', status: 'Needs Approval', amount: '\$150.00'),
+        ],
+      ),
+      ExpenseItem(
+        name: 'Haircut Subscription',
+        price: '\$100.00',
+        date: '2025-04-26T00:00:00',
+        active: true,
+        members: [
+          GroupMember(name: 'You', amount: '\$50.00'),
+          GroupMember(name: '@xyz987', status: 'Needs Payment', amount: '\$50.00'),
+        ],
+      ),
     ];
   }
 

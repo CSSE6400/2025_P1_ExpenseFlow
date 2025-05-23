@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/common/custom_divider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_frontend/common/color_palette.dart';
 import 'package:flutter_frontend/common/icon_maker.dart';
@@ -31,7 +32,15 @@ class _IndGroupExpenseScreenListState extends State<IndGroupExpenseScreenList> {
     expansionStates = List<bool>.filled(widget.expenses.length, false);
   }
 
-  // Toggle the expansion state of an item
+  @override
+  void didUpdateWidget(covariant IndGroupExpenseScreenList oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.expenses != oldWidget.expenses) {
+      filteredExpenses = widget.expenses;
+      expansionStates = List<bool>.filled(widget.expenses.length, false);
+    }
+  }
+
   void _toggleExpansion(int index) {
     setState(() {
       expansionStates[index] = !expansionStates[index];
@@ -65,15 +74,6 @@ class _IndGroupExpenseScreenListState extends State<IndGroupExpenseScreenList> {
     }
   }
 
-  // Update the filtered expenses and expansion states when the widget updates
-  @override
-  void didUpdateWidget(covariant IndGroupExpenseScreenList oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    filteredExpenses = widget.expenses;
-    expansionStates = List<bool>.filled(widget.expenses.length, false);
-  }
-
-  // Method to convert a string to title case
   String _titleCase(String input) {
     return input
         .split(' ')
@@ -134,9 +134,7 @@ class _IndGroupExpenseScreenListState extends State<IndGroupExpenseScreenList> {
                           ),
                         ),
                       ),
-
-                      // Active status (if present)
-                      if (expense.activeStatus != null) ...[
+                      if (expense.active) ...[
                         SizedBox(width: proportionalSizes.scaleWidth(6)),
                         Container(
                           padding: EdgeInsets.symmetric(
@@ -150,7 +148,7 @@ class _IndGroupExpenseScreenListState extends State<IndGroupExpenseScreenList> {
                             ),
                           ),
                           child: Text(
-                            _titleCase(expense.activeStatus!),
+                            'Active',
                             style: GoogleFonts.roboto(
                               color: ColorPalette.accent,
                               fontSize: proportionalSizes.scaleText(14),
@@ -188,11 +186,11 @@ class _IndGroupExpenseScreenListState extends State<IndGroupExpenseScreenList> {
                 ),
               ),
 
-              if (isExpanded)
+              if (isExpanded) ...[
                 Padding(
                   padding: EdgeInsets.only(
                     left: proportionalSizes.scaleWidth(32),
-                    bottom: proportionalSizes.scaleHeight(12),
+                    bottom: proportionalSizes.scaleHeight(8),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -223,7 +221,7 @@ class _IndGroupExpenseScreenListState extends State<IndGroupExpenseScreenList> {
                             context,
                             '/see_expenses',
                             arguments: {
-                              'transactionId': expense.name, // TODO: Update with actual transaction ID
+                              'transactionId': expense.name,
                             },
                           );
                         },
@@ -246,6 +244,98 @@ class _IndGroupExpenseScreenListState extends State<IndGroupExpenseScreenList> {
                     ],
                   ),
                 ),
+                CustomDivider(),
+                ...(() {
+                  final members = [...expense.members];
+                  members.sort((a, b) => a.name == 'You' ? -1 : b.name == 'You' ? 1 : 0);
+                  return members.map((member) => Padding(
+                    padding: EdgeInsets.only(
+                      left: proportionalSizes.scaleWidth(32),
+                      top: proportionalSizes.scaleHeight(6),
+                      right: proportionalSizes.scaleWidth(12),
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: member.name == 'You'
+                                ? null
+                                : () {
+                                    Navigator.pushNamed(
+                                      context,
+                                      '/friend_expense',
+                                      arguments: {'username': member.name},
+                                    );
+                                  },
+                            child: Row(
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    member.name,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: GoogleFonts.roboto(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: proportionalSizes.scaleText(16),
+                                      color: textColor,
+                                      decoration: member.name == 'You'
+                                          ? TextDecoration.none
+                                          : TextDecoration.underline,
+                                    ),
+                                  ),
+                                ),
+                                if (member.name != 'You') ...[
+                                  IconMaker(
+                                    assetPath: 'assets/icons/angle_small_right.png',
+                                    width: proportionalSizes.scaleWidth(16),
+                                    height: proportionalSizes.scaleHeight(16),
+                                  ),
+                                  SizedBox(width: proportionalSizes.scaleWidth(6)),
+                                ],
+                              ],
+                            ),
+                          ),
+                        ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (member.status != null) ...[
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                  vertical: proportionalSizes.scaleHeight(2),
+                                  horizontal: proportionalSizes.scaleWidth(6),
+                                ),
+                                decoration: BoxDecoration(
+                                  color: ColorPalette.accent.withValues(alpha: 0.2),
+                                  borderRadius: BorderRadius.circular(
+                                    proportionalSizes.scaleWidth(6),
+                                  ),
+                                ),
+                                child: Text(
+                                  _titleCase(member.status!),
+                                  style: GoogleFonts.roboto(
+                                    color: ColorPalette.accent,
+                                    fontSize: proportionalSizes.scaleText(12),
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: proportionalSizes.scaleWidth(8)),
+                            ],
+                            Text(
+                              member.amount,
+                              style: GoogleFonts.roboto(
+                                fontWeight: FontWeight.bold,
+                                fontSize: proportionalSizes.scaleText(14),
+                                color: textColor,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ));
+                })(),
+              ]
             ],
           );
         }),
