@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../common/color_palette.dart';
 import '../../common/app_bar.dart';
 import '../../common/bottom_nav_bar.dart';
+import '../ind_friend_expense_screen/elements/ind_friend_expense_screen_main_body.dart';
 
 class IndFriendExpenseScreen extends StatefulWidget {
   final String username;
@@ -28,14 +29,8 @@ class _IndFriendExpenseScreenState extends State<IndFriendExpenseScreen> {
         showBackButton: true,
       ),
 
-      body: Center(
-        child: Text(
-          'Expenses with ${widget.username}',
-          style: TextStyle(
-            fontSize: 18,
-            color: ColorPalette.primaryText,
-          ),
-        ),
+      body: IndFriendExpenseScreenMainBody(
+        username: widget.username,
       ),
 
       bottomNavigationBar: BottomNavBar(
