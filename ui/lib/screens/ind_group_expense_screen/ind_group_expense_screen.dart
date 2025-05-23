@@ -40,7 +40,7 @@ class _IndGroupExpenseScreenState extends State<IndGroupExpenseScreen> {
 
       bottomNavigationBar: BottomNavBar(
         currentScreen: 'Individual Group',
-        inactive: true,
+        inactive: false,
       ),
     );
   }

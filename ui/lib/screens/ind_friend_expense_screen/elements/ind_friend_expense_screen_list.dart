@@ -113,9 +113,8 @@ class _IndFriendExpenseScreenListState extends State<IndFriendExpenseScreenList>
                       ),
                       SizedBox(width: proportionalSizes.scaleWidth(8)),
 
-                      // Expense name
-                      SizedBox(
-                        width: proportionalSizes.scaleWidth(180),
+                      // Expense name (left, ellipsis if needed)
+                      Expanded(
                         child: Text(
                           expense.name,
                           overflow: TextOverflow.ellipsis,
@@ -128,60 +127,51 @@ class _IndFriendExpenseScreenListState extends State<IndFriendExpenseScreenList>
                         ),
                       ),
 
-                      // Right-aligned price + tag
-                      Expanded(
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              // "Active" Tag
-                              if (expense.active) ...[
-                                Container(
-                                  padding: EdgeInsets.symmetric(
-                                    vertical: proportionalSizes.scaleHeight(2),
-                                    horizontal: proportionalSizes.scaleWidth(6),
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: ColorPalette.accent.withValues(alpha: 0.2),
-                                    borderRadius: BorderRadius.circular(
-                                      proportionalSizes.scaleWidth(6)
-                                    ),
-                                  ),
-                                  child: Text(
-                                    'Active',
-                                    style: GoogleFonts.roboto(
-                                      color: ColorPalette.accent,
-                                      fontSize: proportionalSizes.scaleText(14),
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(width: proportionalSizes.scaleWidth(6)),
-                              ],
+                      // Active status (if present)
+                      if (expense.activeStatus != null) ...[
+                        SizedBox(width: proportionalSizes.scaleWidth(6)),
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            vertical: proportionalSizes.scaleHeight(2),
+                            horizontal: proportionalSizes.scaleWidth(6),
+                          ),
+                          decoration: BoxDecoration(
+                            color: ColorPalette.accent.withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(
+                              proportionalSizes.scaleWidth(6),
+                            ),
+                          ),
+                          child: Text(
+                            expense.activeStatus!,
+                            style: GoogleFonts.roboto(
+                              color: ColorPalette.accent,
+                              fontSize: proportionalSizes.scaleText(14),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
 
-                              // Price tag
-                              Container(
-                                padding: EdgeInsets.symmetric(
-                                  vertical: proportionalSizes.scaleHeight(4),
-                                  horizontal: proportionalSizes.scaleWidth(8),
-                                ),
-                                decoration: BoxDecoration(
-                                  color: textColor.withValues(alpha: 0.1),
-                                  borderRadius: BorderRadius.circular(
-                                    proportionalSizes.scaleWidth(8),
-                                  ),
-                                ),
-                                child: Text(
-                                  expense.price,
-                                  style: GoogleFonts.roboto(
-                                    fontWeight: FontWeight.bold,
-                                    color: textColor,
-                                    fontSize: proportionalSizes.scaleText(14),
-                                  ),
-                                ),
-                              ),
-                            ],
+                      SizedBox(width: proportionalSizes.scaleWidth(6)),
+
+                      // Price tag
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          vertical: proportionalSizes.scaleHeight(4),
+                          horizontal: proportionalSizes.scaleWidth(8),
+                        ),
+                        decoration: BoxDecoration(
+                          color: textColor.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(
+                            proportionalSizes.scaleWidth(8),
+                          ),
+                        ),
+                        child: Text(
+                          expense.price,
+                          style: GoogleFonts.roboto(
+                            fontWeight: FontWeight.bold,
+                            color: textColor,
+                            fontSize: proportionalSizes.scaleText(14),
                           ),
                         ),
                       ),

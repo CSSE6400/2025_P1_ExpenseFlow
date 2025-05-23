@@ -35,7 +35,7 @@ class _IndFriendExpenseScreenState extends State<IndFriendExpenseScreen> {
 
       bottomNavigationBar: BottomNavBar(
         currentScreen: 'Individual Friend',
-        inactive: true,
+        inactive: false,
       ),
     );
   }

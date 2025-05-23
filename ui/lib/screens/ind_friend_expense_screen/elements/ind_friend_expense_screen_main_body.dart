@@ -10,12 +10,14 @@ class ExpenseItem {
   final String price;
   final String date; // ISO 8601 format
   final bool active;
+  final String? activeStatus;
 
   ExpenseItem({
     required this.name,
     required this.price,
     required this.date,
     required this.active,
+    this.activeStatus,
   });
 }
 
@@ -41,11 +43,25 @@ class _IndFriendExpenseScreenMainBodyState
     // Sample data for expenses
     // TODO: Replace with actual data from your database
     allExpenses = [
-      ExpenseItem(name: 'Uber Ride', price: '\$25.5', date: '2024-05-30T09:30:00Z', active: true),
-      ExpenseItem(name: 'Dinner at Sushi Train', price: '\$60.2', date: '2024-04-22T19:45:00Z', active: false),
-      ExpenseItem(name: 'Movie Tickets', price: '\$34.0', date: '2023-12-12T20:00:00Z', active: true),
-      ExpenseItem(name: 'Amazon Order', price: '\$140.75', date: '2024-05-15T13:10:00Z', active: true),
-      ExpenseItem(name: 'New Shoes', price: '\$130.0', date: '2024-03-20T16:30:00Z', active: true),
+      ExpenseItem(name: 'Uber Ride', price: '\$427.28', date: '2025-05-09T00:00:00', active: true, activeStatus: 'paid'),
+      ExpenseItem(name: 'Dinner at Sushi Train', price: '\$78.38', date: '2024-12-26T00:00:00', active: true, activeStatus: 'approved'),
+      ExpenseItem(name: 'Movie Tickets', price: '\$373.11', date: '2025-01-04T00:00:00', active: true, activeStatus: 'paid'),
+      ExpenseItem(name: 'Amazon Order', price: '\$69.37', date: '2025-01-07T00:00:00', active: false),
+      ExpenseItem(name: 'New Shoes', price: '\$204.72', date: '2024-12-09T00:00:00', active: true, activeStatus: 'needs payment'),
+      ExpenseItem(name: 'Flight Booking', price: '\$393.95', date: '2024-11-30T00:00:00', active: true, activeStatus: 'needs payment'),
+      ExpenseItem(name: 'Spotify Subscription', price: '\$28.34', date: '2025-02-07T00:00:00', active: false),
+      ExpenseItem(name: 'Netflix', price: '\$406.20', date: '2025-03-27T00:00:00', active: false),
+      ExpenseItem(name: 'Phone Bill', price: '\$374.85', date: '2025-03-24T00:00:00', active: true, activeStatus: 'needs approval'),
+      ExpenseItem(name: 'Laptop Charger', price: '\$56.64', date: '2025-01-28T00:00:00', active: true, activeStatus: 'needs payment'),
+      ExpenseItem(name: 'Haircut', price: '\$146.23', date: '2025-04-26T00:00:00', active: true, activeStatus: 'needs approval'),
+      ExpenseItem(name: 'Fuel BP Station', price: '\$301.01', date: '2024-12-21T00:00:00', active: true, activeStatus: 'approved'),
+      ExpenseItem(name: 'Gym Anytime Fitness', price: '\$139.55', date: '2025-04-05T00:00:00', active: true, activeStatus: 'needs approval'),
+      ExpenseItem(name: 'Grocery at Aldi', price: '\$243.17', date: '2025-04-12T00:00:00', active: true, activeStatus: 'needs approval'),
+      ExpenseItem(name: 'Streaming Bundle', price: '\$478.10', date: '2025-02-16T00:00:00', active: true, activeStatus: 'needs payment'),
+      ExpenseItem(name: 'Taxi to Airport', price: '\$202.50', date: '2025-02-12T00:00:00', active: false),
+      ExpenseItem(name: 'Team Lunch', price: '\$280.35', date: '2025-04-19T00:00:00', active: false),
+      ExpenseItem(name: 'Coffee Machine', price: '\$64.57', date: '2025-03-25T00:00:00', active: false),
+      ExpenseItem(name: 'Earpods Purchase', price: '\$340.95', date: '2024-11-24T00:00:00', active: false),
     ];
   }
 
