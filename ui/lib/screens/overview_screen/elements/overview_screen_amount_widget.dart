@@ -99,14 +99,14 @@ class _OverviewScreenAmountWidgetState extends State<OverviewScreenAmountWidget>
         Text(
           label,
           style: GoogleFonts.roboto(
-            fontSize: proportionalSizes.scaleText(18),
+            fontSize: proportionalSizes.scaleText(16),
             color: ColorPalette.primaryText,
           ),
         ),
         Text(
           formatAmount(amount),
           style: GoogleFonts.roboto(
-            fontSize: proportionalSizes.scaleText(18),
+            fontSize: proportionalSizes.scaleText(16),
             color: ColorPalette.primaryText,
             fontWeight: FontWeight.w500,
           ),
