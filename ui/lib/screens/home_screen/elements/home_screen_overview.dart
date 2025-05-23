@@ -16,6 +16,7 @@ class HomeScreenOverview extends StatefulWidget {
 
 class _HomeScreenOverviewState extends State<HomeScreenOverview> {
   late final List<_CategoryData> categories;
+  late List<_CategoryData> visibleCategories;
   final List<Color> availableColors = [
     Color(0xFF75E3EA), Color(0xFF4DC4D3), Color(0xFF3C74A6), Color(0xFF6C539F),
     Color(0xFF7B438D), Color(0xFFFD9BBA), Color(0xFFFFC785), Color(0xFF9FE6A0),
@@ -39,24 +40,36 @@ class _HomeScreenOverviewState extends State<HomeScreenOverview> {
 
   Future<void> _loadData() async {
     // TODO: Replace with actual backend call
-    categories = [
+    monthlyBudget = 5000.0;
+    final rawCategories = [
       _CategoryData(name: 'Rent', amount: 1200),
       _CategoryData(name: 'Bills', amount: 300),
       _CategoryData(name: 'Groceries', amount: 450),
       _CategoryData(name: 'Subscriptions', amount: 80),
       _CategoryData(name: 'Dining Out', amount: 200),
-      _CategoryData(name: 'Remaining', amount: 1770),
     ];
 
-    for (var category in categories) {
+    for (var category in rawCategories) {
       category.color = availableColors[_random.nextInt(availableColors.length)];
     }
 
-    monthlyBudget = 5000.0;
-    spent = categories
-        .where((cat) => cat.name != 'Remaining')
-        .fold(0, (sum, cat) => sum + cat.amount);
+    spent = rawCategories.fold(0, (sum, cat) => sum + cat.amount);
     remaining = monthlyBudget - spent;
+
+    final top3 = rawCategories.toList()
+      ..sort((a, b) => b.amount.compareTo(a.amount));
+
+    final displayed = top3.take(3).toList();
+    final otherAmount = top3.skip(3).fold(0.0, (sum, c) => sum + c.amount);
+
+    visibleCategories = [...displayed];
+    if (otherAmount > 0) {
+      final otherColor = availableColors[_random.nextInt(availableColors.length)];
+      visibleCategories.add(_CategoryData(name: 'Others', amount: otherAmount)..color = otherColor);
+    }
+
+    final remainingColor = availableColors[_random.nextInt(availableColors.length)];
+    visibleCategories.add(_CategoryData(name: 'Remaining', amount: remaining)..color = remainingColor);
 
     setState(() {
       isLoading = false;
@@ -127,7 +140,7 @@ class _HomeScreenOverviewState extends State<HomeScreenOverview> {
   }
 
   List<PieChartSectionData> _buildPieSections(double chartSize) {
-    return categories.map((category) {
+    return visibleCategories.map((category) {
       return PieChartSectionData(
         color: category.color!,
         value: category.amount,
@@ -138,19 +151,7 @@ class _HomeScreenOverviewState extends State<HomeScreenOverview> {
   }
 
   List<Widget> _buildTopCategories(ProportionalSizes proportionalSizes) {
-    final top3 = categories.where((c) => c.name != 'Remaining').toList()
-      ..sort((a, b) => b.amount.compareTo(a.amount));
-
-    final displayed = top3.take(3).toList();
-    final otherAmount = top3.skip(3).fold(0.0, (sum, c) => sum + c.amount);
-
-    List<_CategoryData> visible = [...displayed];
-    if (otherAmount > 0) {
-      visible.add(_CategoryData(name: 'Others', amount: otherAmount));
-    }
-    visible.add(categories.firstWhere((c) => c.name == 'Remaining'));
-
-    return visible.map((category) {
+    return visibleCategories.map((category) {
       return Padding(
         padding: EdgeInsets.symmetric(
           vertical: proportionalSizes.scaleHeight(4),
@@ -162,7 +163,7 @@ class _HomeScreenOverviewState extends State<HomeScreenOverview> {
               height: proportionalSizes.scaleHeight(12),
               margin: EdgeInsets.only(right: proportionalSizes.scaleWidth(8)),
               decoration: BoxDecoration(
-                color: category.color,
+                color: category.color!,
                 borderRadius: BorderRadius.circular(4),
               ),
             ),
