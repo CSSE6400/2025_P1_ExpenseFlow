@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/common/time_period_dropdown.dart';
 import 'package:flutter_frontend/screens/overview_screen/elements/overview_screen_stat_widget.dart';
+import 'package:flutter_frontend/screens/overview_screen/elements/overview_screen_amount_widget.dart';
 // Common imports
 import '../../../common/proportional_sizes.dart';
 
@@ -53,6 +54,14 @@ class _OverviewScreenMainBodyState extends State<OverviewScreenMainBody> {
               ),
 
               const OverviewScreenStatWidget(),
+              SizedBox(
+                height: proportionalSizes.scaleHeight(20),
+              ),
+
+              const OverviewScreenAmountWidget(),
+              SizedBox(
+                height: proportionalSizes.scaleHeight(20),
+              ),
             ],
           ),
         ),
