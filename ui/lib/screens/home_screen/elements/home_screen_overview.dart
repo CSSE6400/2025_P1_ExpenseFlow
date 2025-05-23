@@ -13,29 +13,33 @@ class HomeScreenOverview extends StatelessWidget {
     final proportionalSizes = ProportionalSizes(context: context);
     final backgroundColor = ColorPalette.buttonText;
 
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(proportionalSizes.scaleWidth(16)),
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(
-          proportionalSizes.scaleWidth(16),
+    return GestureDetector(
+      onTap: () {
+        Navigator.pushNamed(context, '/overview');
+      },
+      child: Container(
+        width: double.infinity,
+        padding: EdgeInsets.all(proportionalSizes.scaleWidth(16)),
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          borderRadius: BorderRadius.circular(
+            proportionalSizes.scaleWidth(16),
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Overview',
+              style: GoogleFonts.roboto(
+                fontSize: proportionalSizes.scaleText(24),
+                fontWeight: FontWeight.bold,
+                color: ColorPalette.primaryText,
+              ),
+            ),
+          ],
         ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Overview',
-            style: GoogleFonts.roboto(
-              fontSize: proportionalSizes.scaleText(24),
-              fontWeight: FontWeight.bold,
-              color: ColorPalette.primaryText,
-            ),
-          ),
-        ],
-      ),
-      // TODO: Add functionality to Overview Expenses here
     );
   }
 }

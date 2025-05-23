@@ -1,5 +1,6 @@
 // Flutter imports
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/screens/overview_screen/overview_screen.dart';
 import 'package:flutter_frontend/utils/config.dart' show Config;
 import 'package:provider/provider.dart' show Provider;
 // Screens
@@ -51,6 +52,8 @@ class MyApp extends StatelessWidget {
             return MaterialPageRoute(builder: (_) => const ExpensesScreen());
           case '/groups_and_friends':
             return MaterialPageRoute(builder: (_) => const GroupsAndFriendsScreen());
+          case '/overview':
+            return MaterialPageRoute(builder: (_) => const OverviewScreen());
           case '/split_with':
             final args = settings.arguments as Map<String, dynamic>?;
 
