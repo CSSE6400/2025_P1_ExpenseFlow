@@ -23,9 +23,9 @@ async def lifespan(app: FastAPI) -> AsyncGenerator:
 
     await initialise_database(db_engine)  # Creates tables in db if not already there
     plugins_reg = PluginRegistry.create_from_config_file(CONFIG.plugin_config_path)
-    plugins_reg.start_plugins(app)
+    await plugins_reg.start_plugins(app)
     yield
-    plugins_reg.stop_plugins()
+    await plugins_reg.stop_plugins()
 
 
 app = FastAPI(lifespan=lifespan)
