@@ -72,7 +72,11 @@ class _GroupsAndFriendsFriendListState
               ),
               child: GestureDetector(
                 onTap: () {
-                  // TODO: Implement navigation or click logic
+                  Navigator.pushNamed(
+                    context,
+                    '/friend_expense',
+                    arguments: {'username': friend.name},
+                  );
                 },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,

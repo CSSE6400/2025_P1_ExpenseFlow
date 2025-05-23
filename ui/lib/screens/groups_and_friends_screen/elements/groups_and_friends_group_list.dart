@@ -71,7 +71,11 @@ class _GroupsAndFriendsGroupListState
               ),
               child: GestureDetector(
                 onTap: () {
-                  // TODO: Implement navigation or click logic
+                  Navigator.pushNamed(
+                    context,
+                    '/group_expense',
+                    arguments: {'groupName': group.name},
+                  );
                 },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,

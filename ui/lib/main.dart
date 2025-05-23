@@ -12,6 +12,8 @@ import '../../screens/add_items_screen/add_items_screen.dart';
 import 'screens/expenses_screen/expenses_screen.dart';
 import 'screens/see_expense_screen/see_expense_screen.dart';
 import '../../screens/groups_and_friends_screen/groups_and_friends_screen.dart';
+import '../../screens/ind_friend_expense_screen/ind_friend_expense_screen.dart';
+import '../../screens/ind_group_expense_screen/ind_group_expense_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -86,6 +88,36 @@ class MyApp extends StatelessWidget {
             }
             return MaterialPageRoute(
               builder: (_) => SeeExpenseScreen(transactionId: transactionId),
+            );
+          case '/friend_expense':
+            final args = settings.arguments as Map<String, dynamic>?;
+            final username = args?['username'] as String?;
+
+            if (username == null) {
+              return MaterialPageRoute(
+                builder: (_) => const Scaffold(
+                  body: Center(child: Text('Error: Missing username')),
+                ),
+              );
+            }
+
+            return MaterialPageRoute(
+              builder: (_) => IndFriendExpenseScreen(username: username),
+            );
+          case '/group_expense':
+            final args = settings.arguments as Map<String, dynamic>?;
+            final groupName = args?['groupName'] as String?;
+
+            if (groupName == null) {
+              return MaterialPageRoute(
+                builder: (_) => const Scaffold(
+                  body: Center(child: Text('Error: Missing group name')),
+                ),
+              );
+            }
+
+            return MaterialPageRoute(
+              builder: (_) => IndGroupExpenseScreen(groupName: groupName),
             );
           default:
             return MaterialPageRoute(
