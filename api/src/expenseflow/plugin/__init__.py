@@ -1,9 +1,12 @@
 """Plugins core module. This contains all core classes used by other plugins."""
 
+import asyncio
 import importlib
+import os
 import pkgutil
+import re
 from abc import ABC, abstractmethod
-from collections.abc import Callable
+from collections.abc import Callable, Coroutine
 from pathlib import Path
 from typing import Any, ClassVar, Generic, Self, TypeVar
 
@@ -13,15 +16,104 @@ from loguru import logger
 from pydantic import BaseModel
 
 
-class PluginError(Exception):
-    """Base plugin error."""
+class DynamicValue(ABC):
+    """Dynamic value abc."""
+
+    @abstractmethod
+    async def get_value(self) -> str:
+        """Get dynamic value."""
+
+    @staticmethod
+    def create(value: str) -> "DynamicValue":
+        """Create dynamic value."""
+        value = value.lower()
+        if value.startswith("env_"):
+            return EnvironmentDynamicValue(value[4:])
+
+        return EnvironmentDynamicValue(value)
+
+
+class EnvironmentDynamicValue(DynamicValue):
+    """Dynamic value from environment variable."""
+
+    _env_variable_name: str
+
+    def __init__(self, value: str) -> None:
+        """Create environment value."""
+        self._env_variable_name = value
+
+    async def get_value(self) -> str:
+        """Get value."""
+        value = os.environ.get(self._env_variable_name, None)
+        if value is not None:
+            return value
+        logger.warning(
+            f"The environment variable under name '{self._env_variable_name}' could not be found..."
+        )
+        return ""
+
+
+class PluginProperty:
+    """Plugin property for settings."""
+
+    _pattern = re.compile(r"\{\{[^{}]*\}\}")
+
+    _values: list[DynamicValue | str]
+
+    def __init__(self, property_value: str) -> None:
+        """Create plugin property."""
+        self._values = []
+        last_end_idx = 0
+
+        for match in self._pattern.finditer(property_value):
+            start, end = match.span()
+
+            if start > last_end_idx:
+                self._values.append(property_value[last_end_idx:start])
+
+            self._values.append(
+                DynamicValue.create(property_value[start + 2 : end - 2])
+            )
+            last_end_idx = end
+        if last_end_idx != len(property_value) - 1:
+            self._values.append(property_value[last_end_idx:])
+
+    async def to_value(self) -> str:
+        """Convert plugin property to value."""
+        coros: list[Coroutine] = []
+
+        for value in self._values:
+            if isinstance(value, str):
+                coros.append(PluginProperty.wrap_in_coro(value))
+            else:
+                coros.append(value.get_value())
+
+        results = await asyncio.gather(*coros)
+        return "".join(results)
+
+    @staticmethod
+    async def wrap_in_coro(value: Any) -> Any:  # noqa: ANN401
+        """Helper to wrap anything in a coroutine."""
+        return value
 
 
 class PluginSettings(BaseModel):
     """Settings for each plugin."""
 
+    async def resolve(self) -> Self:
+        """Resolve all plugin properties to final string values."""
+        for field_name, value in self.__dict__.items():
+            if isinstance(value, str) and "{{" in value and "}}" in value:
+                resolved = await PluginProperty(value).to_value()
+                setattr(self, field_name, resolved)
+        return self
+
 
 SettingsType = TypeVar("SettingsType", bound=PluginSettings)
+
+
+class PluginError(Exception):
+    """Base plugin error."""
 
 
 class Plugin(ABC, Generic[SettingsType]):
@@ -95,7 +187,7 @@ class PluginRegistry:
                 raise PluginError(msg)
         return cls(config)
 
-    def start_plugins(
+    async def start_plugins(
         self,
         app: FastAPI,
         strict: bool = True,  # noqa: FBT001, FBT002
@@ -115,16 +207,17 @@ class PluginRegistry:
 
             plugin_settings_cls = plugin_cls.get_settings_type()
 
-            plugin = plugin_cls(
-                app,
-                plugin_settings_cls.model_validate(
-                    config_data if config_data is not None else {},
-                ),
+            settings: PluginSettings = plugin_settings_cls.model_validate(
+                config_data if config_data is not None else {}
             )
+
+            settings = await settings.resolve()
+
+            plugin = plugin_cls(app, settings)
 
             self._plugins.append(plugin)
 
-    def stop_plugins(self) -> None:
+    async def stop_plugins(self) -> None:
         """Stop active plugins."""
         for plugin in self._plugins:
             plugin.shutdown()
