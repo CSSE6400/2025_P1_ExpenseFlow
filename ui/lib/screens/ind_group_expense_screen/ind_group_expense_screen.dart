@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/screens/ind_group_expense_screen/elements/ind_group_expense_screen_main_body.dart';
 // Common imports
 import '../../common/color_palette.dart';
 import '../../common/app_bar.dart';
@@ -28,14 +29,8 @@ class _IndGroupExpenseScreenState extends State<IndGroupExpenseScreen> {
         showBackButton: true,
       ),
 
-      body: Center(
-        child: Text(
-          'Expenses for group "${widget.groupName}"',
-          style: TextStyle(
-            fontSize: 18,
-            color: ColorPalette.primaryText,
-          ),
-        ),
+      body: IndGroupExpenseScreenMainBody(
+        groupName: widget.groupName,
       ),
 
       bottomNavigationBar: BottomNavBar(
