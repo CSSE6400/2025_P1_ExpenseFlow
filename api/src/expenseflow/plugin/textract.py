@@ -15,14 +15,14 @@ from expenseflow.expense.models import ExpenseModel
 from expenseflow.expense.schemas import ExpenseCreate, ExpenseRead
 from expenseflow.expense.service import create_expense
 from expenseflow.expense_item.schemas import ExpenseItemCreate
-from expenseflow.plugin import Plugin, PluginSettings, register_plugin
+from expenseflow.plugin import Plugin, PluginSettings, plugin_registry
 
 
 class TextractPluginSettings(PluginSettings):
     """Settings required for the textract plugin."""
 
 
-@register_plugin("textract")
+@plugin_registry.register("textract")
 class TextractPlugin(Plugin[TextractPluginSettings]):
     """Textract check plugin."""
 

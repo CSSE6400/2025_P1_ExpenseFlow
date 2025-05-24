@@ -5,7 +5,7 @@ from typing import Literal
 import sentry_sdk
 from sentry_sdk.integrations.fastapi import FastApiIntegration
 
-from expenseflow.plugin import Plugin, PluginSettings, register_plugin
+from expenseflow.plugin import Plugin, PluginSettings, plugin_registry
 
 
 class SentryPluginSettings(PluginSettings):
@@ -20,7 +20,7 @@ class SentryPluginSettings(PluginSettings):
     sentry_profile_lifecycle: Literal["manual", "trace"] = "trace"
 
 
-@register_plugin("sentry")
+@plugin_registry.register("sentry")
 class SentryPlugin(Plugin[SentryPluginSettings]):
     """Sentry plugin."""
 
