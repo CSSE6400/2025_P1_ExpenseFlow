@@ -40,7 +40,7 @@ class EnvironmentDynamicValue(DynamicValue):
 
     def __init__(self, value: str) -> None:
         """Create environment value."""
-        self._env_variable_name = value
+        self._env_variable_name = value.upper()
 
     async def get_value(self) -> str:
         """Get value."""
