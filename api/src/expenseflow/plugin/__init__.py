@@ -177,7 +177,7 @@ class PluginRegistry(metaclass=SingletonMeta):
         if (result := self._registry.get(name, None)) is not None:
             msg = (
                 f"Plugin class '{plugin_cls.__name__}' is registered under name '{name}' "
-                f"but thats already used by plugin '{result.__name__}'"
+                f"but that's already used by plugin '{result.__name__}'"
             )
             raise AttributeError(msg)
 
@@ -268,7 +268,7 @@ class PluginManager:
             plugin.shutdown()
 
     async def call_plugins(self, predicate: Callable[[Plugin], bool] | None) -> None:
-        """Calls plugins."""
+        """Invokes the on_call method on plugins."""
         if predicate is None:  # If nothing specified, check all plugins
             predicate = lambda _: True  # noqa: E731
 
