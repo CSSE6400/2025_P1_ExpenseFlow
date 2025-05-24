@@ -223,8 +223,11 @@ class PluginRegistry:
         for plugin in self._plugins:
             plugin.shutdown()
 
-    async def call_plugins(self, predicate: Callable[[Plugin], bool]) -> None:
+    async def call_plugins(self, predicate: Callable[[Plugin], bool] | None) -> None:
         """Calls plugins."""
+        if predicate is None:  # If nothing specified, check all plugins
+            predicate = lambda _: True  # noqa: E731
+
         for plugin in self._plugins:
             if predicate(plugin):
                 plugin()
