@@ -119,6 +119,7 @@ class PluginError(Exception):
 class Plugin(ABC, Generic[SettingsType]):
     """Base plugin class."""
 
+    _identifier: ClassVar[str]
     _app: FastAPI
     _settings: SettingsType
     _settings_type: type[SettingsType]
@@ -222,9 +223,29 @@ class PluginRegistry:
         for plugin in self._plugins:
             plugin.shutdown()
 
+    async def call_plugins(self, predicate: Callable[[Plugin], bool]) -> None:
+        """Calls plugins."""
+        for plugin in self._plugins:
+            if predicate(plugin):
+                plugin()
+
+    async def check_plugins(self, predicate: Callable[[Plugin], bool] | None) -> bool:
+        """Health check for plugins."""
+        if predicate is None:  # If nothing specified, check all plugins
+            predicate = lambda _: True  # noqa: E731
+
+        return all(plugin.is_healthy() for plugin in self._plugins if predicate(plugin))
+
     @classmethod
     def register(cls, name: str, plugin_cls: type[Plugin[PluginSettings]]) -> None:
         """Register plugin."""
+        if (result := cls._registry.get(name, None)) is not None:
+            msg = (
+                f"Plugin class '{plugin_cls.__name__}' is registered under name '{name}' "
+                f"but thats already used by plugin '{result.__name__}'"
+            )
+            raise AttributeError(msg)
+
         cls._registry[name] = plugin_cls
 
     @classmethod
@@ -243,6 +264,7 @@ def register_plugin(name: str) -> Callable:
             raise AttributeError(msg)
 
         PluginRegistry.register(name, cls)
+        cls._identifier = name
         return cls
 
     return wrapper
