@@ -1,4 +1,4 @@
-"""Plugin to automatically turn a receipt into an expense."""
+"""Sentry plugin to enable performance monitoring and error tracing."""
 
 from typing import Literal
 
