@@ -15,6 +15,8 @@ from fastapi import FastAPI
 from loguru import logger
 from pydantic import BaseModel
 
+from expenseflow.utils import SingletonMeta
+
 
 class DynamicValue(ABC):
     """Dynamic value abc."""
@@ -119,6 +121,7 @@ class PluginError(Exception):
 class Plugin(ABC, Generic[SettingsType]):
     """Base plugin class."""
 
+    _identifier: ClassVar[str]
     _app: FastAPI
     _settings: SettingsType
     _settings_type: type[SettingsType]
@@ -156,10 +159,52 @@ class Plugin(ABC, Generic[SettingsType]):
         """Shutdown the plugin."""
 
 
-class PluginRegistry:
+class PluginRegistry(metaclass=SingletonMeta):
     """Plugin registry."""
 
-    _registry: ClassVar[dict[str, type[Plugin[PluginSettings]]]] = {}
+    _registry: dict[str, type[Plugin[PluginSettings]]]
+
+    def __init__(self) -> None:
+        """Create registry."""
+        self._registry = {}
+
+    def get_plugin(self, plugin_name: str) -> type[Plugin[PluginSettings]] | None:
+        """Get plugin from registry."""
+        return self._registry.get(plugin_name)
+
+    def _add_plugin(self, name: str, plugin_cls: type[Plugin[PluginSettings]]) -> None:
+        """Register plugin."""
+        if (result := self._registry.get(name, None)) is not None:
+            msg = (
+                f"Plugin class '{plugin_cls.__name__}' is registered under name '{name}' "
+                f"but that's already used by plugin '{result.__name__}'"
+            )
+            raise AttributeError(msg)
+
+        self._registry[name] = plugin_cls
+
+    def register(self, name: str) -> Callable:
+        """Register plugin decorator."""
+        logger.debug(f"Registering plugin under name '{name}'")
+
+        def wrapper(cls: type[Plugin[PluginSettings]]) -> type[Plugin[PluginSettings]]:
+            if not hasattr(cls, "_settings_type"):
+                msg = f"Plugin class {cls.__name__} must define '_settings_type'"
+                raise AttributeError(msg)
+
+            self._add_plugin(name, cls)
+            cls._identifier = name
+            return cls
+
+        return wrapper
+
+
+plugin_registry = PluginRegistry()
+
+
+class PluginManager:
+    """Plugin manager."""
+
     _config: dict[str, Any]
     _plugins: list[Plugin]
 
@@ -194,7 +239,7 @@ class PluginRegistry:
     ) -> None:
         """Start plugins in config."""
         for plugin_name, config_data in self._config.items():
-            plugin_cls = self._registry.get(plugin_name, None)
+            plugin_cls = plugin_registry.get_plugin(plugin_name)
             if plugin_cls is None:
                 msg = (
                     f"Config file references plugin under name '{plugin_name}'",
@@ -222,30 +267,21 @@ class PluginRegistry:
         for plugin in self._plugins:
             plugin.shutdown()
 
-    @classmethod
-    def register(cls, name: str, plugin_cls: type[Plugin[PluginSettings]]) -> None:
-        """Register plugin."""
-        cls._registry[name] = plugin_cls
+    async def call_plugins(self, predicate: Callable[[Plugin], bool] | None) -> None:
+        """Invokes the on_call method on plugins."""
+        if predicate is None:  # If nothing specified, check all plugins
+            predicate = lambda _: True  # noqa: E731
 
-    @classmethod
-    def get(cls, name: str) -> type[Plugin[PluginSettings]]:
-        """Get plugin."""
-        return cls._registry[name]
+        for plugin in self._plugins:
+            if predicate(plugin):
+                plugin()
 
+    async def check_plugins(self, predicate: Callable[[Plugin], bool] | None) -> bool:
+        """Health check for plugins."""
+        if predicate is None:  # If nothing specified, check all plugins
+            predicate = lambda _: True  # noqa: E731
 
-def register_plugin(name: str) -> Callable:
-    """Register plugin decorator."""
-    logger.debug(f"Registering plugin under name '{name}'")
-
-    def wrapper(cls: type[Plugin[PluginSettings]]) -> type[Plugin[PluginSettings]]:
-        if not hasattr(cls, "_settings_type"):
-            msg = f"Plugin class {cls.__name__} must define '_settings_type'"
-            raise AttributeError(msg)
-
-        PluginRegistry.register(name, cls)
-        return cls
-
-    return wrapper
+        return all(plugin.is_healthy() for plugin in self._plugins if predicate(plugin))
 
 
 # Auto-import all plugin modules to ensure they get registered
