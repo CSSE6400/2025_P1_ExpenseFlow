@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/services/api_service.dart' show ApiService;
 import 'package:flutter_frontend/services/auth_service.dart' show AuthService;
+import 'package:flutter_frontend/screens/overview_screen/overview_screen.dart';
 import 'package:flutter_frontend/utils/config.dart' show Config;
 import 'package:provider/provider.dart' show MultiProvider, Provider;
 import 'package:logging/logging.dart' show Level, Logger;
@@ -15,6 +16,9 @@ import '../../screens/split_with_screen/split_with_screen.dart';
 import '../../screens/add_items_screen/add_items_screen.dart';
 import 'screens/expenses_screen/expenses_screen.dart';
 import 'screens/see_expense_screen/see_expense_screen.dart';
+import '../../screens/groups_and_friends_screen/groups_and_friends_screen.dart';
+import '../../screens/ind_friend_expense_screen/ind_friend_expense_screen.dart';
+import '../../screens/ind_group_expense_screen/ind_group_expense_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -79,10 +83,37 @@ class MyApp extends StatelessWidget {
             return MaterialPageRoute(builder: (_) => const HomeScreen());
           case '/add_expense':
             return MaterialPageRoute(builder: (_) => const AddExpenseScreen());
-          case '/split_with':
-            return MaterialPageRoute(builder: (_) => const SplitWithScreen());
           case '/expenses':
             return MaterialPageRoute(builder: (_) => const ExpensesScreen());
+          case '/groups_and_friends':
+            return MaterialPageRoute(builder: (_) => const GroupsAndFriendsScreen());
+          case '/overview':
+            return MaterialPageRoute(builder: (_) => const OverviewScreen());
+          case '/split_with':
+            final args = settings.arguments as Map<String, dynamic>?;
+
+            final transactionId = args?['transactionId'] as String?;
+            final isReadOnly = args?['isReadOnly'] as bool? ?? false;
+
+            return MaterialPageRoute(
+              builder: (_) => SplitWithScreen(
+                transactionId: transactionId,
+                isReadOnly: isReadOnly,
+              ),
+            );
+          case '/add_items':
+            final args = settings.arguments as Map<String, dynamic>?;
+
+            final transactionId = args?['transactionId'] as String?;
+            final isReadOnly = args?['isReadOnly'] as bool? ?? false;
+
+            return MaterialPageRoute(
+              builder: (_) => AddItemsScreen(
+                amount: args?['amount'],
+                transactionId: transactionId,
+                isReadOnly: isReadOnly,
+              ),
+            );
           case '/see_expenses':
             final args = settings.arguments as Map<String, dynamic>?;
             final transactionId = args?['transactionId'] as String?;
@@ -98,6 +129,36 @@ class MyApp extends StatelessWidget {
             }
             return MaterialPageRoute(
               builder: (_) => SeeExpenseScreen(transactionId: transactionId),
+            );
+          case '/friend_expense':
+            final args = settings.arguments as Map<String, dynamic>?;
+            final username = args?['username'] as String?;
+
+            if (username == null) {
+              return MaterialPageRoute(
+                builder: (_) => const Scaffold(
+                  body: Center(child: Text('Error: Missing username')),
+                ),
+              );
+            }
+
+            return MaterialPageRoute(
+              builder: (_) => IndFriendExpenseScreen(username: username),
+            );
+          case '/group_expense':
+            final args = settings.arguments as Map<String, dynamic>?;
+            final groupName = args?['groupName'] as String?;
+
+            if (groupName == null) {
+              return MaterialPageRoute(
+                builder: (_) => const Scaffold(
+                  body: Center(child: Text('Error: Missing group name')),
+                ),
+              );
+            }
+
+            return MaterialPageRoute(
+              builder: (_) => IndGroupExpenseScreen(groupName: groupName),
             );
           default:
             final logger = Logger("MyApp");

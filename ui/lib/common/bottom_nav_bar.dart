@@ -44,7 +44,7 @@ class BottomNavBar extends StatelessWidget {
         'icon': 'assets/icons/group.png',
         'onTap': () {
           if (!inactive && currentScreen != 'Groups') {
-            // TODO: Navigate to Groups Screen
+            Navigator.pushNamed(context, '/groups_and_friends');
           }
         },
       },

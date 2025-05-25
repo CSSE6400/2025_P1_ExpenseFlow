@@ -8,7 +8,14 @@ import '../../common/app_bar.dart';
 import '../split_with_screen/elements/split_with_screen_main_body.dart';
 
 class SplitWithScreen extends StatefulWidget {
-  const SplitWithScreen({super.key});
+  final String? transactionId;
+  final bool isReadOnly;
+
+  const SplitWithScreen({
+    super.key,
+    this.transactionId,
+    this.isReadOnly = false,
+  });
 
   @override
   State<SplitWithScreen> createState() => _SplitWithScreenState();
@@ -26,7 +33,10 @@ class _SplitWithScreenState extends State<SplitWithScreen> {
         showBackButton: true,
       ),
 
-      body: SplitWithScreenMainBody(),
+      body: SplitWithScreenMainBody(
+        transactionId: widget.transactionId,
+        isReadOnly: widget.isReadOnly,
+      ),
 
       bottomNavigationBar: BottomNavBar(
         currentScreen: 'Add',

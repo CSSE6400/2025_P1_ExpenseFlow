@@ -40,6 +40,8 @@ class ExpenseItem {
 
 class AddItemsScreenItems extends StatefulWidget {
   final List<ExpenseItem> items;
+  final bool isReadOnly;
+  final String? transactionId;
 
   final Function(List<ExpenseItem> items, bool hasChanges) onItemsChanged;
 
@@ -47,6 +49,8 @@ class AddItemsScreenItems extends StatefulWidget {
     super.key,
     required this.items,
     required this.onItemsChanged,
+    this.isReadOnly = false,
+    this.transactionId,
   });
 
   @override
@@ -215,15 +219,17 @@ class AddItemsScreenItemsState extends State<AddItemsScreenItems> {
           onTap: _addNewItem,
           child: Row(
             children: [
-              IconMaker(assetPath: 'assets/icons/add.png'),
-              const SizedBox(width: 6),
-              Text(
-                'Add Item',
-                style: GoogleFonts.roboto(
-                  color: ColorPalette.primaryText,
-                  fontSize: proportionalSizes.scaleHeight(16),
+              if (!widget.isReadOnly) ...[
+                IconMaker(assetPath: 'assets/icons/add.png'),
+                const SizedBox(width: 6),
+                Text(
+                  'Add Item',
+                  style: GoogleFonts.roboto(
+                    color: ColorPalette.primaryText,
+                    fontSize: proportionalSizes.scaleHeight(16),
+                  ),
                 ),
-              ),
+              ]
             ],
           ),
         ),
@@ -257,6 +263,7 @@ class AddItemsScreenItemsState extends State<AddItemsScreenItems> {
                 Expanded(
                   child: TextField(
                     controller: item.nameController,
+                    enabled: !widget.isReadOnly,
                     maxLength: 30,
                     onChanged: (value) {
                       String formatted = titleCaseString(value);

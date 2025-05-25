@@ -1,28 +1,139 @@
 // Flutter imports
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 // Common imports
 import '../../../common/color_palette.dart';
 import '../../../common/proportional_sizes.dart';
 
-class HomeScreenRecentExpenses extends StatelessWidget {
+class RecentExpenseItem {
+  final String name;
+  final String price;
+
+  RecentExpenseItem({
+    required this.name,
+    required this.price,
+  });
+}
+
+class HomeScreenRecentExpenses extends StatefulWidget {
   const HomeScreenRecentExpenses({super.key});
+
+  @override
+  State<HomeScreenRecentExpenses> createState() => _HomeScreenRecentExpensesState();
+}
+
+class _HomeScreenRecentExpensesState extends State<HomeScreenRecentExpenses> {
+  List<RecentExpenseItem> recentExpenses = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRecentExpenses();
+  }
+
+  // Simulated backend call
+  Future<void> _loadRecentExpenses() async {
+    await Future.delayed(const Duration(milliseconds: 800)); // Simulate network latency
+
+    // TODO: Replace with actual data from your database. Fetch 6 most recent expenses.
+    final mockExpenses = [
+      RecentExpenseItem(name: 'Shopping at Coles', price: '78.9'),
+      RecentExpenseItem(name: 'Uber Ride', price: '25.5'),
+      RecentExpenseItem(name: 'Dinner at Sushi Train', price: '60.2'),
+      RecentExpenseItem(name: 'Movie Tickets', price: '34'),
+      RecentExpenseItem(name: 'Fuel BP Station', price: '89.9'),
+      RecentExpenseItem(name: 'Haircut', price: '45'),
+    ];
+
+    if (mounted) {
+      setState(() {
+        recentExpenses = mockExpenses;
+        isLoading = false;
+      });
+    }
+  }
+
+  String formatPrice(String price) {
+    return '\$${double.parse(price).toStringAsFixed(2)}';
+  }
 
   @override
   Widget build(BuildContext context) {
     final proportionalSizes = ProportionalSizes(context: context);
     final backgroundColor = ColorPalette.buttonText;
 
-    return Container(
-      width: double.infinity,
-      height: proportionalSizes.scaleHeight(240),
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(
-          proportionalSizes.scaleWidth(10),
+    return GestureDetector(
+      onTap: () {
+        Navigator.pushNamed(context, '/expenses');
+      },
+      child: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          borderRadius: BorderRadius.circular(
+            proportionalSizes.scaleWidth(10),
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Heading
+            Padding(
+              padding: EdgeInsets.all(proportionalSizes.scaleWidth(16)),
+              child: Text(
+                'Recent Expenses',
+                style: GoogleFonts.roboto(
+                  fontSize: proportionalSizes.scaleText(24),
+                  fontWeight: FontWeight.bold,
+                  color: ColorPalette.primaryText,
+                ),
+              ),
+            ),
+
+            // Loading state
+            if (isLoading)
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  vertical: proportionalSizes.scaleHeight(20),
+                ),
+                child: Center(
+                  child: CircularProgressIndicator(
+                    color: ColorPalette.primaryAction,
+                  ),
+                ),
+              )
+            else
+              ...recentExpenses.map(
+                (expense) => Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: proportionalSizes.scaleWidth(16),
+                    vertical: proportionalSizes.scaleHeight(8),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        expense.name,
+                        style: TextStyle(
+                          fontSize: proportionalSizes.scaleText(18),
+                          color: ColorPalette.primaryText,
+                        ),
+                      ),
+                      Text(
+                        formatPrice(expense.price),
+                        style: TextStyle(
+                          fontSize: proportionalSizes.scaleText(18),
+                          color: ColorPalette.primaryText,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+          ],
         ),
       ),
-
-      // TODO: Add functionality to Show Recent Expenses here
     );
   }
 }
