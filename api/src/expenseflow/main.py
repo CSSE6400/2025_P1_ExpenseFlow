@@ -12,7 +12,7 @@ from expenseflow.database.core import db_engine
 from expenseflow.database.service import initialise_database
 from expenseflow.expense.routes import router as expense_router
 from expenseflow.group.routes import router as group_router
-from expenseflow.plugin import PluginRegistry
+from expenseflow.plugin import PluginManager, plugin_registry
 from expenseflow.user.routes import router as user_router
 
 
@@ -22,10 +22,12 @@ async def lifespan(app: FastAPI) -> AsyncGenerator:
     from expenseflow.config import CONFIG
 
     await initialise_database(db_engine)  # Creates tables in db if not already there
-    plugins_reg = PluginRegistry.create_from_config_file(CONFIG.plugin_config_path)
-    plugins_reg.start_plugins(app)
+    plugin_manager = PluginManager.create_from_config_file(
+        CONFIG.plugin_config_path, plugin_registry
+    )
+    await plugin_manager.start_plugins(app)
     yield
-    plugins_reg.stop_plugins()
+    await plugin_manager.stop_plugins()
 
 
 app = FastAPI(lifespan=lifespan)

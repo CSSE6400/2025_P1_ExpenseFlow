@@ -1,9 +1,12 @@
 """Plugins core module. This contains all core classes used by other plugins."""
 
+import asyncio
 import importlib
+import os
 import pkgutil
+import re
 from abc import ABC, abstractmethod
-from collections.abc import Callable
+from collections.abc import Callable, Coroutine
 from pathlib import Path
 from typing import Any, ClassVar, Generic, Self, TypeVar
 
@@ -12,21 +15,113 @@ from fastapi import FastAPI
 from loguru import logger
 from pydantic import BaseModel
 
+from expenseflow.utils import SingletonMeta
 
-class PluginError(Exception):
-    """Base plugin error."""
+
+class DynamicValue(ABC):
+    """Dynamic value abc."""
+
+    @abstractmethod
+    async def get_value(self) -> str:
+        """Get dynamic value."""
+
+    @staticmethod
+    def create(value: str) -> "DynamicValue":
+        """Create dynamic value."""
+        value = value.lower()
+        if value.startswith("env_"):
+            return EnvironmentDynamicValue(value[4:])
+
+        return EnvironmentDynamicValue(value)
+
+
+class EnvironmentDynamicValue(DynamicValue):
+    """Dynamic value from environment variable."""
+
+    _env_variable_name: str
+
+    def __init__(self, value: str) -> None:
+        """Create environment value."""
+        self._env_variable_name = value.upper()
+
+    async def get_value(self) -> str:
+        """Get value."""
+        value = os.environ.get(self._env_variable_name, None)
+        if value is not None:
+            return value
+        logger.warning(
+            f"The environment variable under name '{self._env_variable_name}' could not be found..."
+        )
+        return ""
+
+
+class PluginProperty:
+    """Plugin property for settings."""
+
+    _pattern = re.compile(r"\{\{[^{}]*\}\}")
+
+    _values: list[DynamicValue | str]
+
+    def __init__(self, property_value: str) -> None:
+        """Create plugin property."""
+        self._values = []
+        last_end_idx = 0
+
+        for match in self._pattern.finditer(property_value):
+            start, end = match.span()
+
+            if start > last_end_idx:
+                self._values.append(property_value[last_end_idx:start])
+
+            self._values.append(
+                DynamicValue.create(property_value[start + 2 : end - 2])
+            )
+            last_end_idx = end
+        if last_end_idx != len(property_value) - 1:
+            self._values.append(property_value[last_end_idx:])
+
+    async def to_value(self) -> str:
+        """Convert plugin property to value."""
+        coros: list[Coroutine] = []
+
+        for value in self._values:
+            if isinstance(value, str):
+                coros.append(PluginProperty.wrap_in_coro(value))
+            else:
+                coros.append(value.get_value())
+
+        results = await asyncio.gather(*coros)
+        return "".join(results)
+
+    @staticmethod
+    async def wrap_in_coro(value: Any) -> Any:  # noqa: ANN401
+        """Helper to wrap anything in a coroutine."""
+        return value
 
 
 class PluginSettings(BaseModel):
     """Settings for each plugin."""
 
+    async def resolve(self) -> Self:
+        """Resolve all plugin properties to final string values."""
+        for field_name, value in self.__dict__.items():
+            if isinstance(value, str) and "{{" in value and "}}" in value:
+                resolved = await PluginProperty(value).to_value()
+                setattr(self, field_name, resolved)
+        return self
+
 
 SettingsType = TypeVar("SettingsType", bound=PluginSettings)
+
+
+class PluginError(Exception):
+    """Base plugin error."""
 
 
 class Plugin(ABC, Generic[SettingsType]):
     """Base plugin class."""
 
+    _identifier: ClassVar[str]
     _app: FastAPI
     _settings: SettingsType
     _settings_type: type[SettingsType]
@@ -67,18 +162,64 @@ class Plugin(ABC, Generic[SettingsType]):
 class PluginRegistry:
     """Plugin registry."""
 
-    _registry: ClassVar[dict[str, type[Plugin[PluginSettings]]]] = {}
+    _registry: dict[str, type[Plugin[PluginSettings]]]
+
+    def __init__(self) -> None:
+        """Create registry."""
+        self._registry = {}
+
+    def get_plugin(self, plugin_name: str) -> type[Plugin[PluginSettings]] | None:
+        """Get plugin from registry."""
+        return self._registry.get(plugin_name)
+
+    def _add_plugin(self, name: str, plugin_cls: type[Plugin[PluginSettings]]) -> None:
+        """Register plugin."""
+        if (result := self._registry.get(name, None)) is not None:
+            msg = (
+                f"Plugin class '{plugin_cls.__name__}' is registered under name '{name}' "
+                f"but that's already used by plugin '{result.__name__}'"
+            )
+            raise AttributeError(msg)
+
+        self._registry[name] = plugin_cls
+
+    def register(self, name: str) -> Callable:
+        """Register plugin decorator."""
+        logger.debug(f"Registering plugin under name '{name}'")
+
+        def wrapper(cls: type[Plugin[PluginSettings]]) -> type[Plugin[PluginSettings]]:
+            if not hasattr(cls, "_settings_type"):
+                msg = f"Plugin class {cls.__name__} must define '_settings_type'"
+                raise AttributeError(msg)
+
+            self._add_plugin(name, cls)
+            cls._identifier = name
+            return cls
+
+        return wrapper
+
+
+plugin_registry = PluginRegistry()
+
+
+class PluginManager:
+    """Plugin manager."""
+
     _config: dict[str, Any]
+    _registry: PluginRegistry
     _plugins: list[Plugin]
 
-    def __init__(self, config: dict[str, Any]) -> None:
+    def __init__(self, config: dict[str, Any], plugin_registry: PluginRegistry) -> None:
         """Construct plugin registry."""
         self._config = config
         self._plugins = []
+        self._registry = plugin_registry
 
     @classmethod
-    def create_from_config_file(cls, config_file_path: str) -> Self:
-        """Create a plugin registry from a config file path."""
+    def create_from_config_file(
+        cls, config_file_path: str, plugin_registry: PluginRegistry
+    ) -> Self:
+        """Create a plugin manager from a config file path."""
         file_path = Path(config_file_path)
         try:
             with file_path.open("r") as f:
@@ -88,21 +229,21 @@ class PluginRegistry:
             raise PluginError(msg) from e
         logger.debug(f"Plugin config: {config}")
         if config is None:
-            return cls({})
+            return cls({}, plugin_registry)
         for plugin_name, plugin_config in config.items():
             if type(plugin_config) is not dict and plugin_config is not None:
                 msg = f"Config for plugin '{plugin_name}' is invalid: {plugin_config}"
                 raise PluginError(msg)
-        return cls(config)
+        return cls(config, plugin_registry)
 
-    def start_plugins(
+    async def start_plugins(
         self,
         app: FastAPI,
         strict: bool = True,  # noqa: FBT001, FBT002
     ) -> None:
         """Start plugins in config."""
         for plugin_name, config_data in self._config.items():
-            plugin_cls = self._registry.get(plugin_name, None)
+            plugin_cls = self._registry.get_plugin(plugin_name)
             if plugin_cls is None:
                 msg = (
                     f"Config file references plugin under name '{plugin_name}'",
@@ -115,44 +256,36 @@ class PluginRegistry:
 
             plugin_settings_cls = plugin_cls.get_settings_type()
 
-            plugin = plugin_cls(
-                app,
-                plugin_settings_cls.model_validate(
-                    config_data if config_data is not None else {},
-                ),
+            settings: PluginSettings = plugin_settings_cls.model_validate(
+                config_data if config_data is not None else {}
             )
+
+            settings = await settings.resolve()
+
+            plugin = plugin_cls(app, settings)
 
             self._plugins.append(plugin)
 
-    def stop_plugins(self) -> None:
+    async def stop_plugins(self) -> None:
         """Stop active plugins."""
         for plugin in self._plugins:
             plugin.shutdown()
 
-    @classmethod
-    def register(cls, name: str, plugin_cls: type[Plugin[PluginSettings]]) -> None:
-        """Register plugin."""
-        cls._registry[name] = plugin_cls
+    async def call_plugins(self, predicate: Callable[[Plugin], bool] | None) -> None:
+        """Invokes the on_call method on plugins."""
+        if predicate is None:  # If nothing specified, check all plugins
+            predicate = lambda _: True  # noqa: E731
 
-    @classmethod
-    def get(cls, name: str) -> type[Plugin[PluginSettings]]:
-        """Get plugin."""
-        return cls._registry[name]
+        for plugin in self._plugins:
+            if predicate(plugin):
+                plugin()
 
+    async def check_plugins(self, predicate: Callable[[Plugin], bool] | None) -> bool:
+        """Health check for plugins."""
+        if predicate is None:  # If nothing specified, check all plugins
+            predicate = lambda _: True  # noqa: E731
 
-def register_plugin(name: str) -> Callable:
-    """Register plugin decorator."""
-    logger.debug(f"Registering plugin under name '{name}'")
-
-    def wrapper(cls: type[Plugin[PluginSettings]]) -> type[Plugin[PluginSettings]]:
-        if not hasattr(cls, "_settings_type"):
-            msg = f"Plugin class {cls.__name__} must define '_settings_type'"
-            raise AttributeError(msg)
-
-        PluginRegistry.register(name, cls)
-        return cls
-
-    return wrapper
+        return all(plugin.is_healthy() for plugin in self._plugins if predicate(plugin))
 
 
 # Auto-import all plugin modules to ensure they get registered

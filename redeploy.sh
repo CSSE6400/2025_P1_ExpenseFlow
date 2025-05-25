@@ -14,7 +14,7 @@ fi
 
 # region and account id
 AWS_REGION="us-east-1"
-AWS_ACCOUNT_ID="038833782413"
+AWS_ACCOUNT_ID="654654409426"
 
 # ecr stuff
 API_NAME="expenseflow-api"
