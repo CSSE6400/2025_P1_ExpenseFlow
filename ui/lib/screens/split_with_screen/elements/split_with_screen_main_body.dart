@@ -7,7 +7,14 @@ import 'split_with_screen_friend.dart';
 import 'split_with_screen_group.dart';
 
 class SplitWithScreenMainBody extends StatefulWidget {
-  const SplitWithScreenMainBody({super.key});
+  final String? transactionId;
+  final bool isReadOnly;
+
+  const SplitWithScreenMainBody({
+    super.key,
+    this.transactionId,
+    this.isReadOnly = false,
+  });
 
   @override
   State<SplitWithScreenMainBody> createState() =>
@@ -25,12 +32,25 @@ class _SplitWithScreenMainBodyState extends State<SplitWithScreenMainBody> {
   bool isFriendValid = false;
   bool isGroupValid = false;
 
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.transactionId != null) {
+      // TODO: If transactionId is provided, fetch split-with data from backend.
+      // 1. Set `selectedSegment` to either 'Friend' or 'Group'.
+      // 2. Populate the corresponding widget (friendKey/groupKey) with the data.
+      // Helps pre-fill the screen for editing or read-only display.
+    }
+  }
+
   void updateSegment(String newSegment) {
     setState(() {
       selectedSegment = newSegment;
     });
   }
 
+  // TODO: Handle the continue button action for updates through see expense screen too
   void _handleContinue(BuildContext context) {
     if (selectedSegment == 'Friend') {
       final friendState = friendKey.currentState;
@@ -91,6 +111,8 @@ class _SplitWithScreenMainBodyState extends State<SplitWithScreenMainBody> {
               if (selectedSegment == 'Friend')
                 SplitWithScreenFriend(
                   key: friendKey,
+                  transactionId: widget.transactionId,
+                  isReadOnly: widget.isReadOnly,
                   onValidityChanged: (valid) {
                     setState(() {
                       isFriendValid = valid;
@@ -100,6 +122,8 @@ class _SplitWithScreenMainBodyState extends State<SplitWithScreenMainBody> {
               else
                 SplitWithScreenGroup(
                   key: groupKey,
+                  transactionId: widget.transactionId,
+                  isReadOnly: widget.isReadOnly,
                   onValidityChanged: (valid) {
                     setState(() {
                       isGroupValid = valid;
@@ -109,31 +133,32 @@ class _SplitWithScreenMainBodyState extends State<SplitWithScreenMainBody> {
 
               const SizedBox(height: 24),
 
-              // Continue Button
-              GestureDetector(
-                onTap: () {
-                  if (isContinueEnabled) {
-                    _handleContinue(context);
-                  } else {
-                    showCustomSnackBar(
-                      context,
-                      boldText: 'Error:',
-                      normalText: 'Percentages must sum to 100.',
-                    );
-                  }
-                },
-                child: AbsorbPointer(
-                  absorbing: !isContinueEnabled,
-                  child: CustomButton(
-                    label: 'Continue',
-                    onPressed: () => _handleContinue(context),
-                    state: isContinueEnabled
-                        ? ButtonState.enabled
-                        : ButtonState.disabled,
-                    sizeType: ButtonSizeType.full,
+              // Continue Button (only in edit mode)
+              if (!widget.isReadOnly)
+                GestureDetector(
+                  onTap: () {
+                    if (isContinueEnabled) {
+                      _handleContinue(context);
+                    } else {
+                      showCustomSnackBar(
+                        context,
+                        boldText: 'Error:',
+                        normalText: 'Percentages must sum to 100.',
+                      );
+                    }
+                  },
+                  child: AbsorbPointer(
+                    absorbing: !isContinueEnabled,
+                    child: CustomButton(
+                      label: 'Continue',
+                      onPressed: () => _handleContinue(context),
+                      state: isContinueEnabled
+                          ? ButtonState.enabled
+                          : ButtonState.disabled,
+                      sizeType: ButtonSizeType.full,
+                    ),
                   ),
                 ),
-              ),
 
               const SizedBox(height: 20),
             ],

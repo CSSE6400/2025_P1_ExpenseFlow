@@ -41,9 +41,13 @@ class Group {
 
 class SplitWithScreenGroup extends StatefulWidget {
   final void Function(bool isValid)? onValidityChanged;
+  final String? transactionId;
+  final bool isReadOnly;
 
   const SplitWithScreenGroup({
     super.key,
+    this.transactionId,
+    this.isReadOnly = false,
     this.onValidityChanged,
   });
 
@@ -92,6 +96,8 @@ class SplitWithScreenGroupState extends State<SplitWithScreenGroup> {
 
   // Select a group and update its state
   void _selectGroup(int index) {
+    if (widget.isReadOnly) return;
+
     setState(() {
       for (int i = 0; i < allGroups.length; i++) {
         final isCurrent = i == index;
@@ -137,7 +143,7 @@ class SplitWithScreenGroupState extends State<SplitWithScreenGroup> {
 
   // Toggle member selection and update percentage
   void _toggleMemberSelection(Group group, GroupMember member) {
-    if (member.disabled || member.name == 'You') return;
+    if (widget.isReadOnly || member.disabled || member.name == 'You') return;
 
     setState(() {
       member.checked = !member.checked;
@@ -279,15 +285,16 @@ class SplitWithScreenGroupState extends State<SplitWithScreenGroup> {
                                     ),
                                     child: TextField(
                                       controller: member.controller,
-                                      enabled: member.checked || member.name == 'You',
+                                      enabled: !widget.isReadOnly && (member.checked || member.name == 'You'),
                                       keyboardType: TextInputType.number,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          member.percentage = value;
-                                          widget.onValidityChanged
-                                              ?.call(isTotalPercentageValid());
-                                        });
-                                      },
+                                      onChanged: widget.isReadOnly
+                                        ? null
+                                        : (value) {
+                                            setState(() {
+                                              member.percentage = value;
+                                              widget.onValidityChanged?.call(isTotalPercentageValid());
+                                            });
+                                          },
                                       textAlign: TextAlign.center,
                                       style: GoogleFonts.roboto(
                                         fontWeight: FontWeight.bold,

@@ -45,9 +45,10 @@ class CustomIconField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final proportionalSizes = ProportionalSizes(context: context);
-    final hintColor = ColorPalette.secondaryText;
-    final labelColor = inactive ? hintColor : ColorPalette.primaryText;
     final showHint = value.trim().isEmpty;
+    final valueColor = showHint ? ColorPalette.secondaryText : ColorPalette.primaryText;
+    final labelColor = (inactive && showHint) ? ColorPalette.secondaryText : ColorPalette.primaryText;
+    final iconColor = showHint ? ColorPalette.secondaryText : ColorPalette.primaryText;
 
     return GestureDetector(
       onTap: isEnabled ? onTap : null,
@@ -78,7 +79,7 @@ class CustomIconField extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: GoogleFonts.roboto(
                   fontSize: proportionalSizes.scaleText(18),
-                  color: showHint ? hintColor : labelColor,
+                  color: valueColor,
                 ),
               ),
             ),
@@ -90,7 +91,7 @@ class CustomIconField extends StatelessWidget {
                 ),
                 child: IconMaker(
                   assetPath: trailingIconPath!,
-                  color: inactive ? hintColor : null,
+                  color: iconColor,
                 ),
               ),
           ],

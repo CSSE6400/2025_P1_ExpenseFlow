@@ -25,9 +25,13 @@ class Friend {
 
 class SplitWithScreenFriend extends StatefulWidget {
   final void Function(bool isValid)? onValidityChanged;
+  final String? transactionId;
+  final bool isReadOnly;
 
   const SplitWithScreenFriend({
     super.key,
+    this.transactionId,
+    this.isReadOnly = false,
     this.onValidityChanged,
   });
 
@@ -83,7 +87,7 @@ class SplitWithScreenFriendState extends State<SplitWithScreenFriend> {
 
   // Toggle friend selection
   void _toggleFriendSelection(Friend friend) {
-    if (friend.disabled || friend.name == 'You') return;
+    if (widget.isReadOnly || friend.disabled || friend.name == 'You') return;
 
     setState(() {
       friend.checked = !friend.checked;
@@ -227,14 +231,16 @@ class SplitWithScreenFriendState extends State<SplitWithScreenFriend> {
                   ),
                   child: TextField(
                     controller: friend.controller,
-                    enabled: friend.checked && !friend.disabled,
+                    enabled: !widget.isReadOnly && friend.checked && !friend.disabled,
                     keyboardType: TextInputType.number,
-                    onChanged: (value) {
-                      setState(() {
-                        friend.percentage = value;
-                        widget.onValidityChanged?.call(isTotalPercentageValid());
-                      });
-                    },
+                    onChanged: widget.isReadOnly
+                      ? null
+                      : (value) {
+                          setState(() {
+                            friend.percentage = value;
+                            widget.onValidityChanged?.call(isTotalPercentageValid());
+                          });
+                        },
                     textAlign: TextAlign.center,
                     style: GoogleFonts.roboto(
                       fontWeight: FontWeight.bold,

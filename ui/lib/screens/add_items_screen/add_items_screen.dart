@@ -7,9 +7,18 @@ import '../../models/expense.dart';
 import 'elements/add_items_screen_items.dart';
 
 class AddItemsScreen extends StatefulWidget {
+  final double? amount;
+  final String? transactionId;
+  final bool isReadOnly;
   final List<ExpenseItemCreate> existingItems;
 
-  const AddItemsScreen({super.key, this.existingItems = const []});
+  const AddItemsScreen({
+    super.key, 
+    this.existingItems = const [],
+    this.transactionId,
+    this.isReadOnly = false,
+    this.amount,
+  });
 
   @override
   State<AddItemsScreen> createState() => _AddItemsScreenState();
@@ -54,18 +63,21 @@ class _AddItemsScreenState extends State<AddItemsScreen> {
                   child: AddItemsScreenItems(
                     items: items,
                     onItemsChanged: _onItemsChanged,
+                    isReadOnly: widget.isReadOnly,
+                    transactionId: widget.transactionId,
                   ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
-                child: CustomButton(
-                  label: 'Confirm Items',
-                  onPressed: _saveAndReturn,
-                  state: ButtonState.enabled,
-                  sizeType: ButtonSizeType.full,
+              if (!widget.isReadOnly)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: CustomButton(
+                    label: 'Confirm Items',
+                    onPressed: _saveAndReturn,
+                    state: ButtonState.enabled,
+                    sizeType: ButtonSizeType.full,
+                  ),
                 ),
-              ),
             ],
           ),
         ),
