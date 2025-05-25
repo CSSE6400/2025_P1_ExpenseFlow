@@ -159,7 +159,7 @@ class Plugin(ABC, Generic[SettingsType]):
         """Shutdown the plugin."""
 
 
-class PluginRegistry(metaclass=SingletonMeta):
+class PluginRegistry:
     """Plugin registry."""
 
     _registry: dict[str, type[Plugin[PluginSettings]]]
@@ -206,16 +206,20 @@ class PluginManager:
     """Plugin manager."""
 
     _config: dict[str, Any]
+    _registry: PluginRegistry
     _plugins: list[Plugin]
 
-    def __init__(self, config: dict[str, Any]) -> None:
+    def __init__(self, config: dict[str, Any], plugin_registry: PluginRegistry) -> None:
         """Construct plugin registry."""
         self._config = config
         self._plugins = []
+        self._registry = plugin_registry
 
     @classmethod
-    def create_from_config_file(cls, config_file_path: str) -> Self:
-        """Create a plugin registry from a config file path."""
+    def create_from_config_file(
+        cls, config_file_path: str, plugin_registry: PluginRegistry
+    ) -> Self:
+        """Create a plugin manager from a config file path."""
         file_path = Path(config_file_path)
         try:
             with file_path.open("r") as f:
@@ -225,12 +229,12 @@ class PluginManager:
             raise PluginError(msg) from e
         logger.debug(f"Plugin config: {config}")
         if config is None:
-            return cls({})
+            return cls({}, plugin_registry)
         for plugin_name, plugin_config in config.items():
             if type(plugin_config) is not dict and plugin_config is not None:
                 msg = f"Config for plugin '{plugin_name}' is invalid: {plugin_config}"
                 raise PluginError(msg)
-        return cls(config)
+        return cls(config, plugin_registry)
 
     async def start_plugins(
         self,
@@ -239,7 +243,7 @@ class PluginManager:
     ) -> None:
         """Start plugins in config."""
         for plugin_name, config_data in self._config.items():
-            plugin_cls = plugin_registry.get_plugin(plugin_name)
+            plugin_cls = self._registry.get_plugin(plugin_name)
             if plugin_cls is None:
                 msg = (
                     f"Config file references plugin under name '{plugin_name}'",
