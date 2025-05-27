@@ -12,6 +12,7 @@ from expenseflow.database.core import db_engine
 from expenseflow.database.service import initialise_database
 from expenseflow.expense.routes import router as expense_router
 from expenseflow.group.routes import router as group_router
+from expenseflow.middleware import ExceptionMiddleware
 from expenseflow.plugin import PluginManager, plugin_registry
 from expenseflow.user.routes import router as user_router
 
@@ -43,6 +44,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.add_middleware(ExceptionMiddleware)
 
 
 @app.get("/health")
