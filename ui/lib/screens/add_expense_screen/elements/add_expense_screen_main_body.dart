@@ -42,7 +42,7 @@ class _AddExpenseScreenMainBodyState extends State<AddExpenseScreenMainBody> {
     }
 
     try {
-      await apiService.createExpense(_currentExpense!);
+      await apiService.expenseApi.createExpense(_currentExpense!);
       if (!mounted) return;
       showCustomSnackBar(
         context,

@@ -37,7 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
     final apiService = Provider.of<ApiService>(context, listen: false);
     try {
-      final user = await apiService.getCurrentUser();
+      final user = await apiService.userApi.getCurrentUser();
       if (user == null) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           Navigator.pushReplacementNamed(context, '/profile_setup');

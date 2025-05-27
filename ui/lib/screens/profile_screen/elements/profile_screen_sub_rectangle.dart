@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_frontend/common/snack_bar.dart';
 import 'package:flutter_frontend/models/user.dart';
 import 'package:flutter_frontend/services/api_service.dart';
-import 'package:flutter_frontend/services/auth_service.dart' show AuthService;
 // Third-party imports
 import 'package:google_fonts/google_fonts.dart';
 import 'package:logging/logging.dart';
@@ -26,18 +25,18 @@ class ProfileScreenSubRectangle extends StatefulWidget {
 
 class _ProfileScreenSubRectangleState extends State<ProfileScreenSubRectangle> {
   UserRead? user;
-  Logger _logger = Logger("ProfileScreenLogger");
+  final Logger _logger = Logger("ProfileScreenLogger");
 
   @override
-  void initState()  {
-        _fetchUser();
+  void initState() {
+    _fetchUser();
     super.initState();
   }
 
   Future<void> _fetchUser() async {
     _logger.info("Calling the API");
     final apiService = Provider.of<ApiService>(context, listen: false);
-    final fetchedUser = await apiService.getCurrentUser();
+    final fetchedUser = await apiService.userApi.getCurrentUser();
     _logger.info("GOT BACK - ${fetchedUser?.firstName}");
     if (!mounted) return;
     if (fetchedUser == null) {
@@ -60,9 +59,9 @@ class _ProfileScreenSubRectangleState extends State<ProfileScreenSubRectangle> {
     final textColor = ColorPalette.primaryText;
     final buttonBackgroundColor = ColorPalette.background;
 
-      if (user == null) {
-    return const Center(child: CircularProgressIndicator());
-  }
+    if (user == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
 
     // Look at TODO
     // final apiService = Provider.of<ApiService>(context, listen: false);
@@ -115,7 +114,7 @@ class _ProfileScreenSubRectangleState extends State<ProfileScreenSubRectangle> {
             // Budget field
             GeneralField(
               label: 'Monthly Budget (\$):',
-              initialValue: '1000',  //TODO: Add actual budget
+              initialValue: '1000', //TODO: Add actual budget
               isEditable: false,
               showStatusIcon: false,
             ),

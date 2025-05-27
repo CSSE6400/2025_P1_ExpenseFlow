@@ -50,7 +50,7 @@ class _ProfileSetupScreenSubRectangleState
   Future<void> onSetup() async {
     final apiService = Provider.of<ApiService>(context, listen: false);
     try {
-      await apiService.createUser(
+      await apiService.userApi.createUser(
         UserCreate(
           nickname: _nickname,
           firstName: _firstName,

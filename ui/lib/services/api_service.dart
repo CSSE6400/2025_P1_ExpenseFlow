@@ -1,7 +1,5 @@
-import 'dart:convert';
-
-import 'package:flutter_frontend/models/expense.dart';
-import 'package:flutter_frontend/models/user.dart' show UserCreate, UserRead;
+import 'package:flutter_frontend/services/api/expense_api.dart';
+import 'package:flutter_frontend/services/api/user_api.dart';
 import 'package:flutter_frontend/services/auth_service.dart'
     show AuthenticatedClient;
 import 'package:logging/logging.dart' show Logger;
@@ -23,99 +21,17 @@ class ApiException implements Exception {
 class ApiService {
   final AuthenticatedClient client;
   final String baseUrl;
-  final Logger _logger = Logger("ApiService");
+  final Logger logger = Logger("ApiService");
 
-  ApiService(this.client, this.baseUrl);
+  // Api Clients
+  late final UserApiClient _userApi;
+  late final ExpenseApiClient _expenseApi;
 
-  Uri backendUri(String path) => Uri.parse("$baseUrl$path");
-
-  dynamic _safeJsonDecode(String source) {
-    try {
-      return jsonDecode(source);
-    } catch (e) {
-      throw FormatException('Failed to decode JSON: $e\nRaw: $source');
-    }
+  ApiService(this.client, this.baseUrl) {
+    _userApi = UserApiClient(client, baseUrl, logger);
+    _expenseApi = ExpenseApiClient(client, baseUrl, logger);
   }
 
-  Future<UserRead?> getCurrentUser() async {
-    final response = await client.get(backendUri("/users"));
-
-    switch (response.statusCode) {
-      case 200:
-        return UserRead.fromJson(_safeJsonDecode(response.body));
-      case 401:
-        return null;
-      default:
-        _logger.info(
-          "Failed to fetch current user: ${response.statusCode} ${response.body}",
-        );
-        throw ApiException(
-          response.statusCode,
-          "Failed to fetch current user",
-          response.body,
-        );
-    }
-  }
-
-  Future<UserRead> createUser(UserCreate body) async {
-    final response = await client.post(
-      backendUri("/users"),
-      body: jsonEncode(body),
-    );
-
-    if (response.statusCode == 200) {
-      // parse response body to UserRead
-      return UserRead.fromJson(_safeJsonDecode((response.body)));
-    } else {
-      _logger.info(
-        "Failed to create user: ${response.statusCode} ${response.body}",
-      );
-      throw ApiException(
-        response.statusCode,
-        'Failed to create user',
-        response.body,
-      );
-    }
-  }
-
-  Future<ExpenseRead> createExpense(ExpenseCreate body) async {
-    final response = await client.post(
-      backendUri("/expenses"),
-      body: jsonEncode(body),
-    );
-
-    if (response.statusCode == 200) {
-      // parse response body to ExpenseRead
-      return ExpenseRead.fromJson(_safeJsonDecode((response.body)));
-    } else {
-      _logger.info(
-        "Failed to create expense: ${response.statusCode} ${response.body}",
-      );
-      throw ApiException(
-        response.statusCode,
-        'Failed to create expense',
-        response.body,
-      );
-    }
-  }
-
-  Future<List<ExpenseRead>> getExpensesUploadedByMe() async {
-    final response = await client.get(backendUri("/expenses"));
-
-    if (response.statusCode == 200) {
-      // parse response body to List<ExpenseRead>
-      return (jsonDecode(response.body) as List)
-          .map((e) => ExpenseRead.fromJson(e))
-          .toList();
-    } else {
-      _logger.info(
-        "Failed to fetch expenses: ${response.statusCode} ${response.body}",
-      );
-      throw ApiException(
-        response.statusCode,
-        'Failed to fetch expenses',
-        response.body,
-      );
-    }
-  }
+  UserApiClient get userApi => _userApi;
+  ExpenseApiClient get expenseApi => _expenseApi;
 }
