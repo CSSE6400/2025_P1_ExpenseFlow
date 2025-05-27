@@ -113,12 +113,12 @@ async def create_expense_items(
                     raise NotFoundError(split_create.user_id, "user")
                 splits.append(
                     ExpenseItemSplitModel(
-                        user_id=split_user.user_id, proportion=split_create.proportion
+                        user=split_user, proportion=split_create.proportion
                     )
                 )
 
         else:  # If no split specified, assume creator owns entire expense
-            splits = [ExpenseItemSplitModel(user_id=creator.user_id, proportion=1)]
+            splits = [ExpenseItemSplitModel(user=creator, proportion=1)]
 
         result.append(
             ExpenseItemModel(
