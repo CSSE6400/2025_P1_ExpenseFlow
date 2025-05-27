@@ -1,44 +1,8 @@
+import 'package:flutter_frontend/models/enums.dart'
+    show ExpenseCategory, ExpenseCategoryConverter;
 import 'package:json_annotation/json_annotation.dart';
 
 part 'expense.g.dart';
-
-class ExpenseCategoryConverter
-    implements JsonConverter<ExpenseCategory, String> {
-  const ExpenseCategoryConverter();
-
-  @override
-  ExpenseCategory fromJson(String json) {
-    return ExpenseCategory.values.firstWhere(
-      (e) => e.label == json,
-      orElse: () => ExpenseCategory.other,
-    );
-  }
-
-  @override
-  String toJson(ExpenseCategory category) => category.label;
-}
-
-enum ExpenseCategory {
-  takeaway('takeaway'),
-  education('education'),
-  entertainment('entertainment'),
-  donations('donations'),
-  groceries('groceries'),
-  health('health'),
-  home('home'),
-  bills('bills'),
-  insurance('insurance'),
-  subscriptions('subscriptions'),
-  transfers('transfers'),
-  travel('travel'),
-  utilities('utilities'),
-  transport('transport'),
-  other('other'),
-  auto('auto');
-
-  final String label;
-  const ExpenseCategory(this.label);
-}
 
 @JsonSerializable(fieldRename: FieldRename.snake)
 class ExpenseRead {
@@ -92,11 +56,13 @@ class ExpenseItemCreate {
   final String name;
   final int quantity;
   final double price;
+  final List<ExpenseItemCreate>? items;
 
   ExpenseItemCreate({
     required this.name,
     required this.quantity,
     required this.price,
+    this.items,
   });
 
   factory ExpenseItemCreate.fromJson(Map<String, dynamic> json) =>
@@ -110,15 +76,46 @@ class ExpenseItemRead {
   final String name;
   final int quantity;
   final double price;
+  final List<ExpenseItemCreate> items;
 
   ExpenseItemRead({
     required this.expenseItemId,
     required this.name,
     required this.quantity,
     required this.price,
+    required this.items,
   });
 
   factory ExpenseItemRead.fromJson(Map<String, dynamic> json) =>
       _$ExpenseItemReadFromJson(json);
   Map<String, dynamic> toJson() => _$ExpenseItemReadToJson(this);
+}
+
+@JsonSerializable(fieldRename: FieldRename.snake)
+class ExpenseItemSplitCreate {
+  final String userId;
+  final double proportion;
+
+  ExpenseItemSplitCreate({required this.userId, required this.proportion});
+
+  factory ExpenseItemSplitCreate.fromJson(Map<String, dynamic> json) =>
+      _$ExpenseItemSplitCreateFromJson(json);
+  Map<String, dynamic> toJson() => _$ExpenseItemSplitCreateToJson(this);
+}
+
+@JsonSerializable(fieldRename: FieldRename.snake)
+class ExpenseItemSplitRead {
+  final String userId;
+  final double proportion;
+  final String userFullname;
+
+  ExpenseItemSplitRead({
+    required this.userId,
+    required this.proportion,
+    required this.userFullname,
+  });
+
+  factory ExpenseItemSplitRead.fromJson(Map<String, dynamic> json) =>
+      _$ExpenseItemSplitReadFromJson(json);
+  Map<String, dynamic> toJson() => _$ExpenseItemSplitReadToJson(this);
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/models/enums.dart' show ExpenseCategory;
 import 'package:flutter_frontend/utils/string_utils.dart';
 // Common imports
 import '../../../common/fields/general_field.dart';
