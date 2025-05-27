@@ -29,6 +29,48 @@ class ExpenseApiClient extends BaseApiClient {
     }
   }
 
+  Future<ExpenseRead> updateExpense(
+    String expenseId,
+    ExpenseCreate body,
+  ) async {
+    final response = await client.put(
+      backendUri("/expenses/$expenseId"),
+      body: jsonEncode(body),
+    );
+
+    if (response.statusCode == 200) {
+      return ExpenseRead.fromJson(safeJsonDecode((response.body)));
+    } else {
+      logger.info(
+        "Failed to create expense: ${response.statusCode} ${response.body}",
+      );
+      throw ApiException(
+        response.statusCode,
+        'Failed to create expense',
+        response.body,
+      );
+    }
+  }
+
+  Future<ExpenseRead?> getExpense(String expenseId) async {
+    final response = await client.get(backendUri("/expenses/$expenseId"));
+
+    if (response.statusCode == 200) {
+      return ExpenseRead.fromJson(safeJsonDecode((response.body)));
+    } else if (response.statusCode == 404) {
+      return null;
+    } else {
+      logger.info(
+        "Failed to get expense: ${response.statusCode} ${response.body}",
+      );
+      throw ApiException(
+        response.statusCode,
+        'Failed to get expense',
+        response.body,
+      );
+    }
+  }
+
   Future<List<ExpenseRead>> getExpensesUploadedByMe() async {
     final response = await client.get(backendUri("/expenses"));
 

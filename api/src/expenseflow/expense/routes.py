@@ -73,6 +73,18 @@ async def update(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e)) from e
 
 
+@r.get("/{expense_id}", response_model=ExpenseRead)
+async def get(db: DbSession, user: CurrentUser, expense_id: UUID) -> ExpenseModel:
+    """Get expense."""
+    expense = await get_expense(db, user, expense_id)
+    if expense is None:
+        raise HTTPException(
+            status.HTTP_404_NOT_FOUND,
+            detail=f"Expense under the id '{expense_id}' could not be found",
+        )
+    return expense
+
+
 @r.get("", response_model=list[ExpenseRead])
 async def get_uploaded_by_me(db: DbSession, user: CurrentUser) -> list[ExpenseModel]:
     """Get expenses uploaded by me."""
