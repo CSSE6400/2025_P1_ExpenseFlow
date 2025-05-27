@@ -131,7 +131,7 @@ async def create_update_group_user(
     except RoleError as e:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail=f"You do not have permissions to add user '{group_id}' to the group.",
+            detail=str(e),
         ) from e
     except ExistsError:
         raise
@@ -163,12 +163,12 @@ async def delete_group_user(
     except RoleError as e:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail=f"You do not have permissions to delete user '{group_id}' from the group.",
+            detail=str(e),
         ) from e
     except ExistsError as e:
         raise HTTPException(
             status.HTTP_404_NOT_FOUND,
-            detail=f"User under the id '{user_id}' could not be found",
+            detail=str(e),
         ) from e
 
     return to_user_group(result)

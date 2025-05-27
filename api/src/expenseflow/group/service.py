@@ -108,10 +108,12 @@ async def create_update_group_user_role(
     # Get adding user's role
     creator_membership = await get_group_user(session, creator, group)
     if creator_membership is None:
-        raise ExistsError  # This should not occur
+        msg = "SHOULD NOT OCCUR"
+        raise ExistsError(msg)  # This should not occur
 
     if creator_membership.role != GroupRole.admin:
-        raise RoleError
+        msg = f"You do not have permissions to add user '{new_user.user_id}' to the group."
+        raise RoleError(msg)
 
     # See if user already exists in the group
     new_user_membership = await get_group_user(session, new_user, group)
@@ -158,11 +160,13 @@ async def delete_user_from_group(
         raise ValueError
 
     if actor_membership.role != GroupRole.admin:
-        raise RoleError
+        msg = f"You do not have permissions to delete user '{group.group_id}' from the group."
+        raise RoleError(msg)
 
     deleted_user_membership = await get_group_user(session, user_to_delete, group)
     if deleted_user_membership is None:
-        raise ExistsError
+        msg = f"User under the id '{user_to_delete.user_id}' could not be found"
+        raise ExistsError(msg)
 
     await session.delete(deleted_user_membership)
     await session.commit()
