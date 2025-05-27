@@ -70,4 +70,9 @@ class ExpenseItemSplitModel(BaseDBModel, TimestampMixin):
 
     # Relationships
     item: Mapped[ExpenseItemModel] = relationship()
-    user: Mapped[UserModel] = relationship()
+    user: Mapped[UserModel] = relationship(lazy="joined")
+
+    @property
+    def user_fullname(self) -> str:
+        """Name of person splitting."""
+        return self.user.first_name + self.user.last_name

@@ -62,3 +62,4 @@ class ExpenseItemSplitRead(ExpenseFlowBase):
 
     user_id: UUID
     proportion: float
+    user_fullname: str
