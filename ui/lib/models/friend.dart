@@ -8,11 +8,16 @@ part 'friend.g.dart';
 @JsonSerializable(fieldRename: FieldRename.snake)
 class FriendRead {
   final UserRead receiver;
+  final UserRead sender;
 
   @FriendStatusConverter()
   final FriendStatus status;
 
-  FriendRead({required this.receiver, required this.status});
+  FriendRead({
+    required this.receiver,
+    required this.sender,
+    required this.status,
+  });
 
   factory FriendRead.fromJson(Map<String, dynamic> json) =>
       _$FriendReadFromJson(json);

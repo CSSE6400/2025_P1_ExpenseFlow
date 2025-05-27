@@ -1,4 +1,5 @@
 import 'package:flutter_frontend/services/api/expense_api.dart';
+import 'package:flutter_frontend/services/api/friend_api.dart';
 import 'package:flutter_frontend/services/api/user_api.dart';
 import 'package:flutter_frontend/services/auth_service.dart'
     show AuthenticatedClient;
@@ -26,12 +27,15 @@ class ApiService {
   // Api Clients
   late final UserApiClient _userApi;
   late final ExpenseApiClient _expenseApi;
+  late final FriendApiClient _friendApi;
 
   ApiService(this.client, this.baseUrl) {
     _userApi = UserApiClient(client, baseUrl, logger);
     _expenseApi = ExpenseApiClient(client, baseUrl, logger);
+    _friendApi = FriendApiClient(client, baseUrl, logger);
   }
 
   UserApiClient get userApi => _userApi;
   ExpenseApiClient get expenseApi => _expenseApi;
+  FriendApiClient get friendApi => _friendApi;
 }

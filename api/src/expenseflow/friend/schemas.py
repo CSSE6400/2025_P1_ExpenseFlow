@@ -8,5 +8,6 @@ from expenseflow.user.schemas import UserRead
 class FriendRead(ExpenseFlowBase):
     """Friend read schema."""
 
+    sender: UserRead
     receiver: UserRead
     status: FriendStatus
