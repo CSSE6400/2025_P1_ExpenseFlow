@@ -27,7 +27,7 @@ class FriendApiClient extends BaseApiClient {
     }
   }
 
-  Future<List<UserRead>> getRequests(bool sent) async {
+  Future<List<UserRead>> _getFriendRequests(bool sent) async {
     // 'sent' is to toggle between getting 'sent' friend requests and 'received' friend requests
     final response = await client.get(
       backendUri("/friends/requests?sent=$sent"),
@@ -48,6 +48,10 @@ class FriendApiClient extends BaseApiClient {
       );
     }
   }
+
+  Future<List<UserRead>> getSentFriendRequests() => _getFriendRequests(true);
+  Future<List<UserRead>> getReceivedFriendRequests() =>
+      _getFriendRequests(false);
 
   Future<FriendRead?> sendAcceptFriendRequest(String userId) async {
     final response = await client.get(backendUri("/friends/$userId"));
