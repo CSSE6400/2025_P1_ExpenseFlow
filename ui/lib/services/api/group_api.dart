@@ -14,9 +14,7 @@ class GroupApiClient extends BaseApiClient {
     final response = await client.get(backendUri("/groups"));
 
     if (response.statusCode == 200) {
-      return (jsonDecode(response.body) as List)
-          .map((e) => GroupUserRead.fromJson(e))
-          .toList();
+      return safeJsonDecodeList(response.body, GroupUserRead.fromJson);
     } else {
       logger.info(
         "Failed to get user's groups: ${response.statusCode} ${response.body}",
@@ -92,9 +90,7 @@ class GroupApiClient extends BaseApiClient {
     final response = await client.get(backendUri("/groups/$groupId/users"));
 
     if (response.statusCode == 200) {
-      return (jsonDecode(response.body) as List)
-          .map((e) => UserGroupRead.fromJson(e))
-          .toList();
+      return safeJsonDecodeList(response.body, UserGroupRead.fromJson);
     } else {
       logger.info(
         "Failed to get a groups users: ${response.statusCode} ${response.body}",
@@ -153,9 +149,7 @@ class GroupApiClient extends BaseApiClient {
     final response = await client.get(backendUri("/groups/$groupId/expenses"));
 
     if (response.statusCode == 200) {
-      return (jsonDecode(response.body) as List)
-          .map((e) => ExpenseRead.fromJson(e))
-          .toList();
+      return safeJsonDecodeList(response.body, ExpenseRead.fromJson);
     } else {
       logger.info(
         "Failed to get a groups expenses: ${response.statusCode} ${response.body}",

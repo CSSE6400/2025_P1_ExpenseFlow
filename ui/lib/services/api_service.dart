@@ -1,4 +1,3 @@
-import 'package:flutter_frontend/screens/split_with_screen/elements/split_with_screen_group.dart';
 import 'package:flutter_frontend/services/api/expense_api.dart';
 import 'package:flutter_frontend/services/api/friend_api.dart';
 import 'package:flutter_frontend/services/api/group_api.dart';

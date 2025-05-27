@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter_frontend/models/friend.dart' show FriendRead;
 import 'package:flutter_frontend/models/user.dart' show UserRead;
 import 'package:flutter_frontend/services/api/common.dart';
@@ -12,9 +10,7 @@ class FriendApiClient extends BaseApiClient {
     final response = await client.get(backendUri("/friends"));
 
     if (response.statusCode == 200) {
-      return (jsonDecode(response.body) as List)
-          .map((e) => UserRead.fromJson(e))
-          .toList();
+      return safeJsonDecodeList(response.body, UserRead.fromJson);
     } else {
       logger.info(
         "Failed to fetch friends: ${response.statusCode} ${response.body}",
@@ -34,9 +30,7 @@ class FriendApiClient extends BaseApiClient {
     );
 
     if (response.statusCode == 200) {
-      return (jsonDecode(response.body) as List)
-          .map((e) => UserRead.fromJson(e))
-          .toList();
+      return safeJsonDecodeList(response.body, UserRead.fromJson);
     } else {
       logger.info(
         "Failed to fetch friends: ${response.statusCode} ${response.body}",

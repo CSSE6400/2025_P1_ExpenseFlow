@@ -75,10 +75,7 @@ class ExpenseApiClient extends BaseApiClient {
     final response = await client.get(backendUri("/expenses"));
 
     if (response.statusCode == 200) {
-      // parse response body to List<ExpenseRead>
-      return (jsonDecode(response.body) as List)
-          .map((e) => ExpenseRead.fromJson(e))
-          .toList();
+      return safeJsonDecodeList(response.body, ExpenseRead.fromJson);
     } else {
       logger.info(
         "Failed to fetch expenses: ${response.statusCode} ${response.body}",
