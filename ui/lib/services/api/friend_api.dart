@@ -67,4 +67,21 @@ class FriendApiClient extends BaseApiClient {
       );
     }
   }
+
+  Future<void> removeCancelFriend(String userId) async {
+    final response = await client.delete(backendUri("/friends/$userId"));
+
+    if (response.statusCode == 200) {
+      return;
+    } else {
+      logger.info(
+        "Failed to delete/cancel friend request: ${response.statusCode} ${response.body}",
+      );
+      throw ApiException(
+        response.statusCode,
+        'Failed to delete/cancel friend request',
+        response.body,
+      );
+    }
+  }
 }
