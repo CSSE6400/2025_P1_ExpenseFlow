@@ -8,7 +8,7 @@ from expenseflow.auth.deps import CurrentUser
 from expenseflow.database.deps import DbSession
 from expenseflow.expense.models import ExpenseModel
 from expenseflow.expense.schemas import ExpenseRead
-from expenseflow.expense.service import get_expenses
+from expenseflow.expense.service import get_owned_expenses
 from expenseflow.group.service import get_group
 
 r = router = APIRouter()
@@ -26,4 +26,4 @@ async def get_group_expenses(
             detail=f"Group under the id '{group_id}' could not be found",
         )
 
-    return await get_expenses(db, group)
+    return await get_owned_expenses(db, group)

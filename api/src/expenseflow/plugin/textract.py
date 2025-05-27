@@ -1,6 +1,7 @@
 """Plugin to automatically turn a receipt into an expense."""
 
 import base64
+import datetime as dt
 from uuid import UUID
 
 import boto3
@@ -121,5 +122,6 @@ class TextractPlugin(Plugin[TextractPluginSettings]):
             description=description,
             category=ExpenseCategory.auto,
             items=items,
+            expense_date=dt.datetime.now(tz=dt.UTC),
         )
         return await create_expense(db, user, expense_in, parent)
