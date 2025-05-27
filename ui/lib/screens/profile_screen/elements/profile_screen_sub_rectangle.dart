@@ -37,7 +37,6 @@ class _ProfileScreenSubRectangleState extends State<ProfileScreenSubRectangle> {
     _logger.info("Calling the API");
     final apiService = Provider.of<ApiService>(context, listen: false);
     final fetchedUser = await apiService.userApi.getCurrentUser();
-    _logger.info("GOT BACK - ${fetchedUser?.firstName}");
     if (!mounted) return;
     if (fetchedUser == null) {
       showCustomSnackBar(
