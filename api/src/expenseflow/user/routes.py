@@ -9,7 +9,7 @@ from expenseflow.database.deps import DbSession
 from expenseflow.errors import ExistsError
 from expenseflow.user.models import UserModel
 from expenseflow.user.schemas import UserCreate, UserCreateInternal, UserRead
-from expenseflow.user.service import create_user, get_user_by_id
+from expenseflow.user.service import create_user, get_user_by_id, get_user_by_nickname
 
 r = router = APIRouter()
 
@@ -18,6 +18,15 @@ r = router = APIRouter()
 async def get_me(user: CurrentUser) -> UserModel:
     """Get current user."""
     return user
+
+
+@r.get("/nickname-taken", response_model=bool)
+async def check_nickname_taken(
+    db: DbSession, _: CurrentUserTokenID, nickname: str
+) -> bool:
+    """Check if nickname is taken."""
+    user = await get_user_by_nickname(db, nickname)
+    return user is not None
 
 
 @r.get("/{user_id}", response_model=UserRead)

@@ -1,5 +1,6 @@
 // Flutter imports
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/common/snack_bar.dart';
 import 'package:flutter_frontend/models/user.dart';
 import 'package:flutter_frontend/services/api_service.dart' show ApiService;
 // Third-party imports
@@ -23,17 +24,15 @@ class ProfileSetupScreenSubRectangle extends StatefulWidget {
 
 class _ProfileSetupScreenSubRectangleState
     extends State<ProfileSetupScreenSubRectangle> {
-  Logger _logger = Logger("ProfileSetupScreenSubRectangle");
+  final Logger _logger = Logger("ProfileSetupScreenSubRectangle");
   bool isFirstNameValid = false;
   bool isLastNameValid = false;
-  bool isNicknameValid = false;
 
   String _firstName = "";
   String _lastName = "";
   String _nickname = "";
 
-  bool get isFormValid =>
-      isFirstNameValid && isLastNameValid && isNicknameValid;
+  bool get isFormValid => isFirstNameValid && isLastNameValid;
 
   void updateFirstNameValidity(bool isValid) {
     setState(() => isFirstNameValid = isValid);
@@ -43,12 +42,29 @@ class _ProfileSetupScreenSubRectangleState
     setState(() => isLastNameValid = isValid);
   }
 
-  void updateNicknameValidty(bool isValid) {
-    setState(() => isNicknameValid = isValid);
-  }
-
   Future<void> onSetup() async {
     final apiService = Provider.of<ApiService>(context, listen: false);
+
+    try {
+      bool nicknameExists = await apiService.checkNicknameExists(_nickname);
+
+      if (nicknameExists) {
+        if (!mounted) return;
+        showCustomSnackBar(
+          context,
+          normalText: "Nickname '$_nickname' is already being used.",
+        );
+        return;
+      }
+    } catch (e) {
+      if (!mounted) return;
+      showCustomSnackBar(
+        context,
+        normalText: "Unable to check nickname uniqueness.",
+      );
+      _logger.severe("Unable to check nickname uniqueness $e");
+    }
+
     try {
       await apiService.userApi.createUser(
         UserCreate(
@@ -57,15 +73,13 @@ class _ProfileSetupScreenSubRectangleState
           lastName: _lastName,
         ),
       );
+      if (!mounted) return;
       Navigator.pushReplacementNamed(context, '/');
     } catch (e) {
+      if (!mounted) return;
+      showCustomSnackBar(context, normalText: "Unable to create user.");
       _logger.severe('Error creating user: $e');
     }
-  }
-
-  bool isUsernameUnique(String username) {
-    // TODO: Replace with actual backend API call to check uniqueness
-    return true; // temporary mock return
   }
 
   @override
@@ -148,20 +162,7 @@ class _ProfileSetupScreenSubRectangleState
               inputRules: [
                 InputRuleType.noSpaces, // prevent accidental space
               ],
-              validationRule: (value) {
-                final username = value.trim();
-                // Rule 1: Length
-                if (username.length < 5 || username.length > 20) return false;
-                // Rule 2: Alphanumeric + - and _
-                final regex = RegExp(r'^[a-zA-Z0-9_-]+$');
-                if (!regex.hasMatch(username)) return false;
-                // Rule 3: Unique username check (mock logic now)
-                return isUsernameUnique(username);
-              },
-              onValidityChanged: updateNicknameValidty,
               maxLength: 20,
-              focusInstruction:
-                  'Username must be 5–20 characters and may contain letters, numbers, - or _',
               onChanged: (value) {
                 _nickname = value.trim();
               },
