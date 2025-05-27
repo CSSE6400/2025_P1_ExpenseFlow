@@ -62,7 +62,7 @@ class ApiService {
       backendUri("/users/nickname-taken?nickname=$nickname"),
     );
     if (response.statusCode == 200) {
-      return response.body == "true";
+      return _safeJsonDecode(response.body) as bool;
     } else {
       _logger.info(
         "Failed to check if nickname exists: ${response.statusCode} ${response.body}",
