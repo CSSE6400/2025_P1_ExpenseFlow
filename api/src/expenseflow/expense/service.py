@@ -26,6 +26,7 @@ async def create_expense(
         description=expense_in.description,
         category=expense_in.category,
         uploader=creator,
+        expense_date=expense_in.expense_date,
         parent=parent,
         items=items,
     )

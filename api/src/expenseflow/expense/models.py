@@ -1,7 +1,9 @@
 """Expense db module."""
 
+import datetime as dt
 from uuid import UUID, uuid4
 
+from sqlalchemy import DateTime as SQLDatetime
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -24,6 +26,7 @@ class ExpenseModel(BaseDBModel, TimestampMixin):
     name: Mapped[str]
     description: Mapped[str]
     category: Mapped[ExpenseCategory]
+    expense_date: Mapped[dt.datetime] = mapped_column(SQLDatetime(timezone=True))
 
     # Relationships
     uploader: Mapped[UserModel] = relationship(

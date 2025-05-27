@@ -45,6 +45,7 @@ class ExpenseRead {
   final String expenseId;
   final String name;
   final String description;
+  final DateTime expenseDate;
 
   @ExpenseCategoryConverter()
   final ExpenseCategory category;
@@ -52,6 +53,7 @@ class ExpenseRead {
   ExpenseRead({
     required this.expenseId,
     required this.name,
+    required this.expenseDate,
     required this.description,
     required this.category,
   });
@@ -65,15 +67,17 @@ class ExpenseRead {
 class ExpenseCreate {
   final String name;
   final String description;
+  final DateTime expenseDate;
+
+  final List<ExpenseItemCreate> items;
 
   @ExpenseCategoryConverter()
   final ExpenseCategory category;
 
-  final List<ExpenseItemCreate> items;
-
   ExpenseCreate({
     required this.name,
     required this.description,
+    required this.expenseDate,
     required this.category,
     required this.items,
   });

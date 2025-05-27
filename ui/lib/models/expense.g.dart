@@ -9,6 +9,7 @@ part of 'expense.dart';
 ExpenseRead _$ExpenseReadFromJson(Map<String, dynamic> json) => ExpenseRead(
   expenseId: json['expense_id'] as String,
   name: json['name'] as String,
+  expenseDate: DateTime.parse(json['expense_date'] as String),
   description: json['description'] as String,
   category: const ExpenseCategoryConverter().fromJson(
     json['category'] as String,
@@ -20,6 +21,7 @@ Map<String, dynamic> _$ExpenseReadToJson(ExpenseRead instance) =>
       'expense_id': instance.expenseId,
       'name': instance.name,
       'description': instance.description,
+      'expense_date': instance.expenseDate.toIso8601String(),
       'category': const ExpenseCategoryConverter().toJson(instance.category),
     };
 
@@ -27,6 +29,7 @@ ExpenseCreate _$ExpenseCreateFromJson(Map<String, dynamic> json) =>
     ExpenseCreate(
       name: json['name'] as String,
       description: json['description'] as String,
+      expenseDate: DateTime.parse(json['expense_date'] as String),
       category: const ExpenseCategoryConverter().fromJson(
         json['category'] as String,
       ),
@@ -40,8 +43,9 @@ Map<String, dynamic> _$ExpenseCreateToJson(ExpenseCreate instance) =>
     <String, dynamic>{
       'name': instance.name,
       'description': instance.description,
-      'category': const ExpenseCategoryConverter().toJson(instance.category),
+      'expense_date': instance.expenseDate.toIso8601String(),
       'items': instance.items,
+      'category': const ExpenseCategoryConverter().toJson(instance.category),
     };
 
 ExpenseItemCreate _$ExpenseItemCreateFromJson(Map<String, dynamic> json) =>

@@ -241,7 +241,7 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
       description: _description,
       category: _selectedCategory,
       items: _expenseItems,
-      // date: _selectedDate,
+      expenseDate: _selectedDate,
     );
   }
 }

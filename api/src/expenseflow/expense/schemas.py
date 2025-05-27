@@ -1,5 +1,6 @@
 """Expense Schemas."""
 
+import datetime as dt
 from uuid import UUID
 
 from expenseflow.enums import ExpenseCategory
@@ -14,6 +15,7 @@ class ExpenseRead(ExpenseFlowBase):
     name: str
     description: str
     category: ExpenseCategory
+    expense_date: dt.datetime
 
     uploader: UserRead
     items: list["ExpenseItemRead"]
@@ -24,6 +26,7 @@ class ExpenseCreate(ExpenseFlowBase):
 
     name: str
     description: str
+    expense_date: dt.datetime
     category: ExpenseCategory
     items: list["ExpenseItemCreate"]
 
