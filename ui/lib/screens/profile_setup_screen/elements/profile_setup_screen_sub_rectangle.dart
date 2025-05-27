@@ -46,7 +46,9 @@ class _ProfileSetupScreenSubRectangleState
     final apiService = Provider.of<ApiService>(context, listen: false);
 
     try {
-      bool nicknameExists = await apiService.checkNicknameExists(_nickname);
+      bool nicknameExists = await apiService.userApi.checkNicknameExists(
+        _nickname,
+      );
 
       if (nicknameExists) {
         if (!mounted) return;

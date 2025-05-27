@@ -47,4 +47,22 @@ class UserApiClient extends BaseApiClient {
       );
     }
   }
+
+  Future<bool> checkNicknameExists(String nickname) async {
+    final response = await client.get(
+      backendUri("/users/nickname-taken?nickname=$nickname"),
+    );
+    if (response.statusCode == 200) {
+      return safeJsonDecode(response.body) as bool;
+    } else {
+      logger.info(
+        "Failed to check if nickname exists: ${response.statusCode} ${response.body}",
+      );
+      throw ApiException(
+        response.statusCode,
+        'Failed to check nickname existence',
+        response.body,
+      );
+    }
+  }
 }
