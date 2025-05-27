@@ -38,6 +38,7 @@ class ExpenseItemRead(ExpenseFlowBase):
     name: str
     quantity: int
     price: float
+    splits: list["ExpenseItemSplitRead"]
 
 
 class ExpenseItemCreate(ExpenseFlowBase):
@@ -46,3 +47,18 @@ class ExpenseItemCreate(ExpenseFlowBase):
     name: str
     quantity: int
     price: float
+    splits: list["ExpenseItemSplitCreate"] | None = None
+
+
+class ExpenseItemSplitCreate(ExpenseFlowBase):
+    """Create schema for expense splitting."""
+
+    user_id: UUID
+    proportion: float
+
+
+class ExpenseItemSplitRead(ExpenseFlowBase):
+    """Read schema for expense splitting."""
+
+    user_id: UUID
+    proportion: float
