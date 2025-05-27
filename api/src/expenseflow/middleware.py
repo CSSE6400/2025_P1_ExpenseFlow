@@ -30,6 +30,9 @@ class ExceptionMiddleware(BaseHTTPMiddleware):
         try:
             response = await call_next(request)
         except ValidationError as e:
+            logger.warning(
+                f"Had to auto catch {type(e).__qualname__}. This should have been caught manually."
+            )
             logger.error(e)
             response = JSONResponse(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -37,6 +40,9 @@ class ExceptionMiddleware(BaseHTTPMiddleware):
             )
         except ValueError as e:
             logger.error(e)
+            logger.warning(
+                f"Had to auto catch {type(e).__qualname__}. This should have been caught manually."
+            )
             response = JSONResponse(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 content={
@@ -46,6 +52,10 @@ class ExceptionMiddleware(BaseHTTPMiddleware):
                 },
             )
         except ExpenseFlowError as e:
+            logger.error(e)
+            logger.warning(
+                f"Had to auto catch {type(e).__qualname__}. This should have been caught manually."
+            )
             response = JSONResponse(
                 status_code=status.HTTP_400_BAD_REQUEST, content={"detail": str(e)}
             )
