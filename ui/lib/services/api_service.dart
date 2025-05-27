@@ -1,5 +1,7 @@
+import 'package:flutter_frontend/screens/split_with_screen/elements/split_with_screen_group.dart';
 import 'package:flutter_frontend/services/api/expense_api.dart';
 import 'package:flutter_frontend/services/api/friend_api.dart';
+import 'package:flutter_frontend/services/api/group_api.dart';
 import 'package:flutter_frontend/services/api/user_api.dart';
 import 'package:flutter_frontend/services/auth_service.dart'
     show AuthenticatedClient;
@@ -28,14 +30,17 @@ class ApiService {
   late final UserApiClient _userApi;
   late final ExpenseApiClient _expenseApi;
   late final FriendApiClient _friendApi;
+  late final GroupApiClient _groupApi;
 
   ApiService(this.client, this.baseUrl) {
     _userApi = UserApiClient(client, baseUrl, logger);
     _expenseApi = ExpenseApiClient(client, baseUrl, logger);
     _friendApi = FriendApiClient(client, baseUrl, logger);
+    _groupApi = GroupApiClient(client, baseUrl, logger);
   }
 
   UserApiClient get userApi => _userApi;
   ExpenseApiClient get expenseApi => _expenseApi;
   FriendApiClient get friendApi => _friendApi;
+  GroupApiClient get groupApi => _groupApi;
 }
