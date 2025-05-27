@@ -57,6 +57,24 @@ class ApiService {
     }
   }
 
+  Future<bool> checkNicknameExists(String nickname) async {
+    final response = await client.get(
+      backendUri("/users/nickname-taken?nickname=$nickname"),
+    );
+    if (response.statusCode == 200) {
+      return response.body == "true";
+    } else {
+      _logger.info(
+        "Failed to check if nickname exists: ${response.statusCode} ${response.body}",
+      );
+      throw ApiException(
+        response.statusCode,
+        'Failed to create user',
+        response.body,
+      );
+    }
+  }
+
   Future<UserRead> createUser(UserCreate body) async {
     final response = await client.post(
       backendUri("/users"),
