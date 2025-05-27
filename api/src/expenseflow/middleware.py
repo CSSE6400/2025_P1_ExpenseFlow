@@ -1,0 +1,53 @@
+"""Middleware module."""
+
+from fastapi import status
+from fastapi.responses import JSONResponse, Response
+from loguru import logger
+from pydantic import ValidationError
+from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
+from starlette.requests import Request
+
+from expenseflow.errors import ExpenseFlowError
+
+
+class ExceptionMiddleware(BaseHTTPMiddleware):
+    """Middleware to catch any uncaught exceptions that should be caught."""
+
+    async def dispatch(
+        self,
+        request: Request,
+        call_next: RequestResponseEndpoint,
+    ) -> Response | JSONResponse:
+        """Exception middleware handler.
+
+        :param request: intercepted request
+        :type request: Request
+        :param call_next: what to call next
+        :type call_next: RequestResponseEndpoint
+        :return: API response
+        :rtype: Response | JSONResponse
+        """
+        try:
+            response = await call_next(request)
+        except ValidationError as e:
+            logger.error(e)
+            response = JSONResponse(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                content={"detail": e.errors()},
+            )
+        except ValueError as e:
+            logger.error(e)
+            response = JSONResponse(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                content={
+                    "detail": [
+                        {"msg": "Unknown", "loc": ["Unknown"], "type": "Unknown"}
+                    ]
+                },
+            )
+        except ExpenseFlowError as e:
+            response = JSONResponse(
+                status_code=status.HTTP_400_BAD_REQUEST, content={"detail": str(e)}
+            )
+
+        return response
