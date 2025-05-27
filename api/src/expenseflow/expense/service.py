@@ -4,9 +4,8 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from expenseflow.entity.models import EntityModel
-from expenseflow.expense.models import ExpenseModel
+from expenseflow.expense.models import ExpenseItemModel, ExpenseModel
 from expenseflow.expense.schemas import ExpenseCreate
-from expenseflow.expense_item.models import ExpenseItemModel
 from expenseflow.user.models import UserModel
 
 

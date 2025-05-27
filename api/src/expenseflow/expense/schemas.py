@@ -3,7 +3,6 @@
 from uuid import UUID
 
 from expenseflow.enums import ExpenseCategory
-from expenseflow.expense_item.schemas import ExpenseItemCreate, ExpenseItemRead
 from expenseflow.schemas import ExpenseFlowBase
 from expenseflow.user.schemas import UserRead
 
@@ -17,7 +16,7 @@ class ExpenseRead(ExpenseFlowBase):
     category: ExpenseCategory
 
     uploader: UserRead
-    items: list[ExpenseItemRead]
+    items: list["ExpenseItemRead"]
 
 
 class ExpenseCreate(ExpenseFlowBase):
@@ -26,4 +25,21 @@ class ExpenseCreate(ExpenseFlowBase):
     name: str
     description: str
     category: ExpenseCategory
-    items: list[ExpenseItemCreate]
+    items: list["ExpenseItemCreate"]
+
+
+class ExpenseItemRead(ExpenseFlowBase):
+    """Base read schema for expense items."""
+
+    expense_item_id: UUID
+    name: str
+    quantity: int
+    price: float
+
+
+class ExpenseItemCreate(ExpenseFlowBase):
+    """Create schema for expense items."""
+
+    name: str
+    quantity: int
+    price: float

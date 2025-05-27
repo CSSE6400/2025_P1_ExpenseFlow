@@ -12,9 +12,8 @@ from expenseflow.database.deps import DbSession
 from expenseflow.entity.service import get_entity
 from expenseflow.enums import ExpenseCategory
 from expenseflow.expense.models import ExpenseModel
-from expenseflow.expense.schemas import ExpenseCreate, ExpenseRead
+from expenseflow.expense.schemas import ExpenseCreate, ExpenseItemCreate, ExpenseRead
 from expenseflow.expense.service import create_expense
-from expenseflow.expense_item.schemas import ExpenseItemCreate
 from expenseflow.plugin import Plugin, PluginSettings, plugin_registry
 
 

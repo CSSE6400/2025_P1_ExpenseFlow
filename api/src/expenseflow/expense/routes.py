@@ -8,7 +8,7 @@ from expenseflow.auth.deps import CurrentUser
 from expenseflow.database.deps import DbSession
 from expenseflow.entity.service import get_entity
 from expenseflow.expense.models import ExpenseModel
-from expenseflow.expense.schemas import ExpenseCreate, ExpenseRead
+from expenseflow.expense.schemas import ExpenseCreate, ExpenseItemRead, ExpenseRead
 from expenseflow.expense.service import create_expense, get_uploaded_expenses
 
 r = router = APIRouter()
@@ -35,3 +35,11 @@ async def create(
 async def get_uploaded_by_me(db: DbSession, user: CurrentUser) -> list[ExpenseModel]:
     """Get expenses uploaded by me."""
     return await get_uploaded_expenses(db, user)
+
+
+@r.get("/{expense_id}/items")
+async def get_items(
+    db: DbSession, user: CurrentUser, expense_id: UUID
+) -> list[ExpenseItemRead]:
+    """Get all items in an expense."""
+    return []
