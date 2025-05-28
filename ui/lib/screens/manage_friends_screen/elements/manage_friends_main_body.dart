@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../common/proportional_sizes.dart';
 // Elements
 import 'manage_friends_segment_control.dart';
+import 'manage_friends_list.dart';
 
 class ManageFriendsMainBody extends StatefulWidget {
   const ManageFriendsMainBody({super.key});
@@ -43,6 +44,7 @@ class _ManageFriendsMainBodyState extends State<ManageFriendsMainBody> {
               const SizedBox(height: 12),
 
               if (selectedSegment == 'Friends') ...[
+                const ManageFriendsList(),
               ] else if (selectedSegment == 'Find') ...[
               ] else if (selectedSegment == 'Requests') ...[
               ],
