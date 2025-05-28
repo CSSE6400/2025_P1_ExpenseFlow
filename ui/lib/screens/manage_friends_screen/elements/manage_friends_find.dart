@@ -127,7 +127,7 @@ class _ManageFriendsFindState extends State<ManageFriendsFind> {
 
                     // Add button
                     CustomButton(
-                      label: sentRequests.contains(user.name) ? 'Req. Sent' : 'Add',
+                      label: sentRequests.contains(user.name) ? 'Sent' : 'Add',
                       onPressed: sentRequests.contains(user.name)
                           ? () {}
                           : () => _onAddFriendPressed(context, user.name),
