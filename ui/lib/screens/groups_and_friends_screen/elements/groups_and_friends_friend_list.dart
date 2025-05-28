@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_frontend/services/api_service.dart';
+import 'package:provider/provider.dart' show Provider;
+import 'package:flutter_frontend/common/snack_bar.dart';
+import 'package:logging/logging.dart';
 import '../../../common/color_palette.dart';
 import '../../../common/proportional_sizes.dart';
 import '../../../common/search_bar.dart' as search;
@@ -23,24 +27,70 @@ class _GroupsAndFriendsFriendListState
     extends State<GroupsAndFriendsFriendList> {
   late List<Friend> allFriends;
   late List<Friend> filteredFriends;
+  final Logger _logger = Logger("FriendListLogger");
+
 
   @override
   void initState() {
+    _fetchFriends();
     super.initState();
 
-    // TODO: Load friends and their payment status from backend
-    allFriends = [
-      Friend(name: '@abc123', isActive: true),
-      Friend(name: '@xyz987', isActive: false),
-      Friend(name: '@pqr456', isActive: true),
-      Friend(name: '@mno789', isActive: false),
-      Friend(name: '@def321', isActive: false),
-      Friend(name: '@uvw654', isActive: true),
-    ];
+    // // TODO: Load friends and their payment status from backend
+    // allFriends = [
+    //   Friend(name: '@abc123', isActive: true),
+    //   Friend(name: '@xyz987', isActive: false),
+    //   Friend(name: '@pqr456', isActive: true),
+    //   Friend(name: '@mno789', isActive: false),
+    //   Friend(name: '@def321', isActive: false),
+    //   Friend(name: '@uvw654', isActive: true),
+    // ];
 
-    filteredFriends = List.from(allFriends)
-      ..sort((a, b) => b.isActive ? 1 : -1); // Active friends first
+    // filteredFriends = List.from(allFriends)
+    //   ..sort((a, b) => b.isActive ? 1 : -1); // Active friends first
 
+  }
+
+  Future<void> _fetchFriends() async {
+    final apiService = Provider.of<ApiService>(context, listen: false);
+    try {
+      final userReads = await apiService.friendApi.getFriends();
+
+      // Convert UserRead to Friend
+      allFriends = userReads
+          .map((user) => Friend(
+                name: '@${user.firstName}',
+                isActive: true, // fallback if null
+              ))
+          .toList();
+
+      if (allFriends.isEmpty) { //TODO: Remove this and replace with message saying they have no friends
+        allFriends = [
+          Friend(name: '@abc123', isActive: true),
+          Friend(name: '@xyz987', isActive: false),
+          Friend(name: '@pqr456', isActive: true),
+          Friend(name: '@mno789', isActive: false),
+          Friend(name: '@def321', isActive: false),
+          Friend(name: '@uvw654', isActive: true),
+        ];
+      }
+
+      setState(() {
+        filteredFriends = List.from(allFriends)
+          ..sort((a, b) => b.isActive ? 1 : -1); // Active friends first
+      });
+    } on ApiException catch (e) {
+      _logger.warning("API exception while fetching friends: ${e.message}");
+      showCustomSnackBar(
+        context,
+        normalText: "Failed to load friends",
+      );
+    } catch (e) {
+      _logger.severe("Unexpected error: $e");
+      showCustomSnackBar(
+        context,
+        normalText: "Something went wrong",
+      );
+    }
   }
 
   void _filterFriends(String query) {
