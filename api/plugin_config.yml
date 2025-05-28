@@ -1,1 +1,3 @@
 textract:
+sentry:
+  sentry_dsn: "{{env_SENTRY_DSN}}"

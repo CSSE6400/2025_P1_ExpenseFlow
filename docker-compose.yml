@@ -37,6 +37,8 @@ services:
       - DB_URL=postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database:5432/${POSTGRES_DB}
       - AUTH0_DOMAIN=${AUTH0_DOMAIN}
       - JWT_AUDIENCE=${JWT_AUDIENCE}
+      - FRONTEND_URL=frontend:3000
+      - SENTRY_DSN=https://f0e2babc247dfbc9bef0b233664acab0@o4509370795032576.ingest.us.sentry.io/4509370811219968
     depends_on:
       database:
         condition: service_healthy
@@ -52,6 +54,7 @@ services:
       - BACKEND_BASE_URL=backend:8080
       - AUTH0_DOMAIN=${AUTH0_DOMAIN}
       - AUTH0_CLIENT_ID=${AUTH0_CLIENT_ID}
+      - JWT_AUDIENCE=${JWT_AUDIENCE}
     healthcheck:
       test: curl --fail http://localhost:3000/health || exit 1
       interval: 5s

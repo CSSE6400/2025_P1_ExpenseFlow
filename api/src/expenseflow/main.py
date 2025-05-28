@@ -4,13 +4,17 @@ from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 
+from expenseflow.config import CONFIG
 from expenseflow.database.core import db_engine
 from expenseflow.database.service import initialise_database
 from expenseflow.expense.routes import router as expense_router
+from expenseflow.friend.routes import router as friend_router
 from expenseflow.group.routes import router as group_router
-from expenseflow.plugin import PluginRegistry
+from expenseflow.middleware import ExceptionMiddleware
+from expenseflow.plugin import PluginManager, plugin_registry
 from expenseflow.user.routes import router as user_router
 
 
@@ -20,16 +24,29 @@ async def lifespan(app: FastAPI) -> AsyncGenerator:
     from expenseflow.config import CONFIG
 
     await initialise_database(db_engine)  # Creates tables in db if not already there
-    plugins_reg = PluginRegistry.create_from_config_file(CONFIG.plugin_config_path)
-    plugins_reg.start_plugins(app)
+    plugin_manager = PluginManager.create_from_config_file(
+        CONFIG.plugin_config_path, plugin_registry
+    )
+    await plugin_manager.start_plugins(app)
     yield
-    plugins_reg.stop_plugins()
+    await plugin_manager.stop_plugins()
 
 
 app = FastAPI(lifespan=lifespan)
 app.include_router(expense_router, prefix="/expenses")
 app.include_router(user_router, prefix="/users")
 app.include_router(group_router, prefix="/groups")
+app.include_router(friend_router, prefix="/friends")
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[CONFIG.frontend_url, "http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+app.add_middleware(ExceptionMiddleware)
 
 
 @app.get("/health")

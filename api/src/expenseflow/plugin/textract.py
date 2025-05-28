@@ -1,6 +1,7 @@
 """Plugin to automatically turn a receipt into an expense."""
 
 import base64
+import datetime as dt
 from uuid import UUID
 
 import boto3
@@ -12,17 +13,16 @@ from expenseflow.database.deps import DbSession
 from expenseflow.entity.service import get_entity
 from expenseflow.enums import ExpenseCategory
 from expenseflow.expense.models import ExpenseModel
-from expenseflow.expense.schemas import ExpenseCreate, ExpenseRead
+from expenseflow.expense.schemas import ExpenseCreate, ExpenseItemCreate, ExpenseRead
 from expenseflow.expense.service import create_expense
-from expenseflow.expense_item.schemas import ExpenseItemCreate
-from expenseflow.plugin import Plugin, PluginSettings, register_plugin
+from expenseflow.plugin import Plugin, PluginSettings, plugin_registry
 
 
 class TextractPluginSettings(PluginSettings):
     """Settings required for the textract plugin."""
 
 
-@register_plugin("textract")
+@plugin_registry.register("textract")
 class TextractPlugin(Plugin[TextractPluginSettings]):
     """Textract check plugin."""
 
@@ -51,7 +51,11 @@ class TextractPlugin(Plugin[TextractPluginSettings]):
         # Close boto3 client
 
     async def handle_receipt(
-        self, db: DbSession, user: CurrentUser, parent_id: UUID, file: UploadFile
+        self,
+        db: DbSession,
+        user: CurrentUser,
+        file: UploadFile,
+        parent_id: UUID | None = None,
     ) -> ExpenseModel:
         """Route to extract receipt info."""
         contents = await file.read()
@@ -61,7 +65,7 @@ class TextractPlugin(Plugin[TextractPluginSettings]):
                 status.HTTP_400_BAD_REQUEST, detail="File greater than 5MB"
             )
 
-        parent = await get_entity(db, parent_id)
+        parent = user if parent_id is None else await get_entity(db, parent_id)
         if parent is None:
             raise HTTPException(
                 status.HTTP_404_NOT_FOUND,
@@ -85,7 +89,7 @@ class TextractPlugin(Plugin[TextractPluginSettings]):
                 detail=f"Textract error: {error_message}",
             ) from e
         summary_fields = response["ExpenseDocuments"][0].get("SummaryFields", [])
-        item_groups = response["ExpenseDocument"][0].get("LineItemGroups", [])
+        item_groups = response["ExpenseDocuments"][0].get("LineItemGroups", [])
         vendor_name = ""
         items: list[ExpenseItemCreate] = []
         for field in summary_fields:
@@ -118,5 +122,6 @@ class TextractPlugin(Plugin[TextractPluginSettings]):
             description=description,
             category=ExpenseCategory.auto,
             items=items,
+            expense_date=dt.datetime.now(tz=dt.UTC),
         )
         return await create_expense(db, user, expense_in, parent)

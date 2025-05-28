@@ -18,7 +18,7 @@ async def get_user_by_id(session: AsyncSession, user_id: UUID) -> UserModel | No
 async def get_user_by_token_id(
     session: AsyncSession, token_id: str
 ) -> UserModel | None:
-    """Get user by their email."""
+    """Get user by their token id."""
     return (
         await session.execute(select(UserModel).where(UserModel.token_id == token_id))
     ).scalar_one_or_none()
@@ -27,7 +27,7 @@ async def get_user_by_token_id(
 async def get_user_by_nickname(
     session: AsyncSession, nickname: str
 ) -> UserModel | None:
-    """Get user by their email."""
+    """Get user by their nickname."""
     return (
         await session.execute(select(UserModel).where(UserModel.nickname == nickname))
     ).scalar_one_or_none()

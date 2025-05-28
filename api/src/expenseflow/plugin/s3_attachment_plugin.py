@@ -1,13 +1,13 @@
 """S3 Attachment Plugin Module."""
 
-from expenseflow.plugin import Plugin, PluginSettings, register_plugin
+from expenseflow.plugin import Plugin, PluginSettings, plugin_registry
 
 
 class S3AttachmentPluginSettings(PluginSettings):
     """Settings required for the s3 attachment plugin."""
 
 
-@register_plugin("s3_attachment")
+@plugin_registry.register("s3_attachment")
 class S3AttachmentPlugin(Plugin[S3AttachmentPluginSettings]):
     """S3 Attachment check plugin."""
 
