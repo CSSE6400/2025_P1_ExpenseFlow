@@ -4,6 +4,7 @@ import '../../../common/proportional_sizes.dart';
 // Elements
 import 'manage_friends_segment_control.dart';
 import 'manage_friends_list.dart';
+import 'manage_friends_find.dart';
 
 class ManageFriendsMainBody extends StatefulWidget {
   const ManageFriendsMainBody({super.key});
@@ -46,6 +47,7 @@ class _ManageFriendsMainBodyState extends State<ManageFriendsMainBody> {
               if (selectedSegment == 'Friends') ...[
                 const ManageFriendsList(),
               ] else if (selectedSegment == 'Find') ...[
+                const ManageFriendsFind(),
               ] else if (selectedSegment == 'Requests') ...[
               ],
             ],
