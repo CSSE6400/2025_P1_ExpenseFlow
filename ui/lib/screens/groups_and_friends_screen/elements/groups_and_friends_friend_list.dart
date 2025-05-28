@@ -26,7 +26,7 @@ class GroupsAndFriendsFriendList extends StatefulWidget {
 class _GroupsAndFriendsFriendListState
     extends State<GroupsAndFriendsFriendList> {
   late List<Friend> allFriends;
-  late List<Friend> filteredFriends;
+  List<Friend>? filteredFriends;
   final Logger _logger = Logger("FriendListLogger");
 
 
@@ -34,20 +34,6 @@ class _GroupsAndFriendsFriendListState
   void initState() {
     _fetchFriends();
     super.initState();
-
-    // // TODO: Load friends and their payment status from backend
-    // allFriends = [
-    //   Friend(name: '@abc123', isActive: true),
-    //   Friend(name: '@xyz987', isActive: false),
-    //   Friend(name: '@pqr456', isActive: true),
-    //   Friend(name: '@mno789', isActive: false),
-    //   Friend(name: '@def321', isActive: false),
-    //   Friend(name: '@uvw654', isActive: true),
-    // ];
-
-    // filteredFriends = List.from(allFriends)
-    //   ..sort((a, b) => b.isActive ? 1 : -1); // Active friends first
-
   }
 
   Future<void> _fetchFriends() async {
@@ -64,6 +50,7 @@ class _GroupsAndFriendsFriendListState
           .toList();
 
       if (allFriends.isEmpty) { //TODO: Remove this and replace with message saying they have no friends
+      _logger.info("User has no friends"); //TODO idk where this goes...
         allFriends = [
           Friend(name: '@abc123', isActive: true),
           Friend(name: '@xyz987', isActive: false),
@@ -108,6 +95,10 @@ class _GroupsAndFriendsFriendListState
     final proportionalSizes = ProportionalSizes(context: context);
     final textColor = ColorPalette.primaryText;
 
+    if (filteredFriends == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -116,7 +107,7 @@ class _GroupsAndFriendsFriendListState
           onChanged: _filterFriends,
         ),
         const SizedBox(height: 16),
-        ...filteredFriends.map((friend) => Padding(
+        ...filteredFriends!.map((friend) => Padding(
               padding: EdgeInsets.symmetric(
                 vertical: proportionalSizes.scaleHeight(8),
               ),
