@@ -48,7 +48,28 @@ class FriendApiClient extends BaseApiClient {
       _getFriendRequests(false);
 
   Future<FriendRead?> sendAcceptFriendRequest(String userId) async {
-    final response = await client.get(backendUri("/friends/$userId"));
+    final response = await client.put(backendUri("/friends/$userId"));
+
+    if (response.statusCode == 200) {
+      return FriendRead.fromJson(safeJsonDecode((response.body)));
+    } else if (response.statusCode == 404) {
+      return null;
+    } else {
+      logger.info(
+        "Failed to send/accept friend request: ${response.statusCode} ${response.body}",
+      );
+      throw ApiException(
+        response.statusCode,
+        'Failed to send/accept friend request',
+        response.body,
+      );
+    }
+  }
+
+  Future<FriendRead?> sendAcceptFriendRequestNickname(String nickname) async {
+    final response = await client.put(
+      backendUri("/friends?nickname=$nickname"),
+    );
 
     if (response.statusCode == 200) {
       return FriendRead.fromJson(safeJsonDecode((response.body)));
