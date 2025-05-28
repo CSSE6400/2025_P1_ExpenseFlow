@@ -32,3 +32,23 @@ Map<String, dynamic> _$UserCreateToJson(UserCreate instance) =>
       'first_name': instance.firstName,
       'last_name': instance.lastName,
     };
+
+UserGroupRead _$UserGroupReadFromJson(Map<String, dynamic> json) =>
+    UserGroupRead(
+      userId: json['user_id'] as String,
+      nickname: json['nickname'] as String,
+      firstName: json['first_name'] as String,
+      lastName: json['last_name'] as String,
+      role: const GroupRoleConverter().fromJson(json['role'] as String),
+      joinedAt: DateTime.parse(json['joined_at'] as String),
+    );
+
+Map<String, dynamic> _$UserGroupReadToJson(UserGroupRead instance) =>
+    <String, dynamic>{
+      'user_id': instance.userId,
+      'nickname': instance.nickname,
+      'first_name': instance.firstName,
+      'last_name': instance.lastName,
+      'joined_at': instance.joinedAt.toIso8601String(),
+      'role': const GroupRoleConverter().toJson(instance.role),
+    };

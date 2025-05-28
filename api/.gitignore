@@ -1,5 +1,6 @@
 # Other bits
 .mypy
+.mypy_cache
 .ruff_cache
 .venv
 

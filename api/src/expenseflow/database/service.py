@@ -16,11 +16,12 @@ async def initialise_database(engine: AsyncEngine) -> None:
     )
     from expenseflow.expense.models import (  # noqa: F401
         ExpenseModel,
+        ExpenseItemModel,
+        ExpenseItemSplitModel,
     )
     from expenseflow.expense_attachment.models import (
         ExpenseAttachmentModel,  # noqa: F401
     )
-    from expenseflow.expense_item.models import ExpenseItemModel  # noqa: F401
 
     async with engine.begin() as conn:
         await conn.run_sync(BaseDBModel.metadata.create_all)

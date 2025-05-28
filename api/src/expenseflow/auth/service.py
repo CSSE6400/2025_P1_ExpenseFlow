@@ -59,8 +59,3 @@ class JWTManager(metaclass=SingletonMeta):
             logger.error(f"SUB is none - payload is: {payload}")
             raise JWTError
         return sub
-
-
-def get_email_from_token(_: str) -> str:
-    """Extract email from JWT token."""
-    return "test@gmail.com"

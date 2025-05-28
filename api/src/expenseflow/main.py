@@ -11,7 +11,9 @@ from expenseflow.config import CONFIG
 from expenseflow.database.core import db_engine
 from expenseflow.database.service import initialise_database
 from expenseflow.expense.routes import router as expense_router
+from expenseflow.friend.routes import router as friend_router
 from expenseflow.group.routes import router as group_router
+from expenseflow.middleware import ExceptionMiddleware
 from expenseflow.plugin import PluginManager, plugin_registry
 from expenseflow.user.routes import router as user_router
 
@@ -34,6 +36,7 @@ app = FastAPI(lifespan=lifespan)
 app.include_router(expense_router, prefix="/expenses")
 app.include_router(user_router, prefix="/users")
 app.include_router(group_router, prefix="/groups")
+app.include_router(friend_router, prefix="/friends")
 
 
 app.add_middleware(
@@ -43,6 +46,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.add_middleware(ExceptionMiddleware)
 
 
 @app.get("/health")
