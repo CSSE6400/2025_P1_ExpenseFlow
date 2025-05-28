@@ -204,6 +204,31 @@ class _ProfileScreenSubRectangleState extends State<ProfileScreenSubRectangle> {
                 },
               ),
             ),
+            SizedBox(height: proportionalSizes.scaleHeight(8)),
+            Container(
+              decoration: BoxDecoration(
+                color: buttonBackgroundColor,
+                borderRadius: BorderRadius.circular(
+                  proportionalSizes.scaleWidth(12),
+                ),
+              ),
+              child: ListTile(
+                leading: IconMaker(
+                  assetPath: 'assets/icons/exit.png',
+                  color: ColorPalette.error,
+                ),
+                title: Text(
+                  'Log Out',
+                  style: GoogleFonts.roboto(
+                    fontSize: proportionalSizes.scaleText(18),
+                    color: ColorPalette.error,
+                  ),
+                ),
+                onTap: () {
+                  // TODO: Implement Auth0's logout functionality
+                },
+              ),
+            ),
           ],
         ),
       ),
