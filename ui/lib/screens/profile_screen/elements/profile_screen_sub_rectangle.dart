@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_frontend/common/snack_bar.dart';
 import 'package:flutter_frontend/models/user.dart';
 import 'package:flutter_frontend/services/api_service.dart';
+import 'package:flutter_frontend/services/auth_service.dart' show AuthService;
 // Third-party imports
 import 'package:google_fonts/google_fonts.dart';
 import 'package:logging/logging.dart';
@@ -147,10 +148,7 @@ class _ProfileScreenSubRectangleState extends State<ProfileScreenSubRectangle> {
                   ),
                 ),
                 onTap: () {
-                  Navigator.pushNamed(
-                    context,
-                    '/home',
-                  ); // TODO Change to friends page
+                  Navigator.pushNamed(context, '/manage_friends');
                 },
               ),
             ),
@@ -201,6 +199,35 @@ class _ProfileScreenSubRectangleState extends State<ProfileScreenSubRectangle> {
                     context,
                     '/home',
                   ); // TODO Change to budget page
+                },
+              ),
+            ),
+            SizedBox(height: proportionalSizes.scaleHeight(8)),
+            Container(
+              decoration: BoxDecoration(
+                color: buttonBackgroundColor,
+                borderRadius: BorderRadius.circular(
+                  proportionalSizes.scaleWidth(12),
+                ),
+              ),
+              child: ListTile(
+                leading: IconMaker(
+                  assetPath: 'assets/icons/exit.png',
+                  color: ColorPalette.error,
+                ),
+                title: Text(
+                  'Log Out',
+                  style: GoogleFonts.roboto(
+                    fontSize: proportionalSizes.scaleText(18),
+                    color: ColorPalette.error,
+                  ),
+                ),
+                onTap: () async {
+                  final authService = Provider.of<AuthService>(
+                    context,
+                    listen: false,
+                  );
+                  await authService.logout();
                 },
               ),
             ),

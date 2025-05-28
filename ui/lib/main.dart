@@ -19,6 +19,7 @@ import 'screens/see_expense_screen/see_expense_screen.dart';
 import '../../screens/groups_and_friends_screen/groups_and_friends_screen.dart';
 import '../../screens/ind_friend_expense_screen/ind_friend_expense_screen.dart';
 import '../../screens/ind_group_expense_screen/ind_group_expense_screen.dart';
+import '../../screens/manage_friends_screen/manage_friends_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -89,6 +90,8 @@ class MyApp extends StatelessWidget {
             return MaterialPageRoute(builder: (_) => const GroupsAndFriendsScreen());
           case '/overview':
             return MaterialPageRoute(builder: (_) => const OverviewScreen());
+          case '/manage_friends':
+            return MaterialPageRoute(builder: (_) => const ManageFriendsScreen());
           case '/split_with':
             final args = settings.arguments as Map<String, dynamic>?;
 
