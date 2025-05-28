@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_frontend/common/snack_bar.dart';
 import 'package:flutter_frontend/models/user.dart';
 import 'package:flutter_frontend/services/api_service.dart';
+import 'package:flutter_frontend/services/auth_service.dart' show AuthService;
 // Third-party imports
 import 'package:google_fonts/google_fonts.dart';
 import 'package:logging/logging.dart';
@@ -147,10 +148,7 @@ class _ProfileScreenSubRectangleState extends State<ProfileScreenSubRectangle> {
                   ),
                 ),
                 onTap: () {
-                  Navigator.pushNamed(
-                    context,
-                    '/manage_friends',
-                  );
+                  Navigator.pushNamed(context, '/manage_friends');
                 },
               ),
             ),
@@ -224,8 +222,12 @@ class _ProfileScreenSubRectangleState extends State<ProfileScreenSubRectangle> {
                     color: ColorPalette.error,
                   ),
                 ),
-                onTap: () {
-                  // TODO: Implement Auth0's logout functionality
+                onTap: () async {
+                  final authService = Provider.of<AuthService>(
+                    context,
+                    listen: false,
+                  );
+                  await authService.logout();
                 },
               ),
             ),
