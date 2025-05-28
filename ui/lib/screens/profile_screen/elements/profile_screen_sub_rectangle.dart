@@ -149,8 +149,8 @@ class _ProfileScreenSubRectangleState extends State<ProfileScreenSubRectangle> {
                 onTap: () {
                   Navigator.pushNamed(
                     context,
-                    '/home',
-                  ); // TODO Change to friends page
+                    '/manage_friends',
+                  );
                 },
               ),
             ),
