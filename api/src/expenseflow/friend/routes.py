@@ -17,7 +17,7 @@ from expenseflow.friend.service import (
 )
 from expenseflow.user.models import UserModel
 from expenseflow.user.schemas import UserRead
-from expenseflow.user.service import get_user_by_id
+from expenseflow.user.service import get_user_by_id, get_user_by_nickname
 
 r = router = APIRouter()
 
@@ -37,6 +37,20 @@ async def get_requests(
         return await get_sent_friend_requests(db, user)
 
     return await get_received_friend_requests(db, user)
+
+
+@r.put("", response_model=FriendRead)
+async def create_w_nickname(
+    db: DbSession, user: CurrentUser, nickname: str
+) -> FriendModel:
+    """Add friend by nickname."""
+    other_user = await get_user_by_nickname(db, nickname)
+    if other_user is None:
+        raise HTTPException(
+            status.HTTP_404_NOT_FOUND,
+            detail=f"User under the nickname '{nickname}' could not be found",
+        )
+    return await create_accept_friend_request(db, user, other_user)
 
 
 @r.put("/{user_id}", response_model=FriendRead)
