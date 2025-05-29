@@ -22,7 +22,7 @@ from reportlab.lib import colors
 from pydantic import BaseModel
 
 class ReportGenSettings(PluginSettings):
-    """ReportGen 插件的配置类，匹配 plugin_config.yml 中的字段"""
+    """ReportGen config."""
     budget: int
 
 @plugin_registry.register("report_gen")
@@ -53,7 +53,11 @@ class ReportGenPlugin(Plugin[PluginSettings]):
 
 
     async def generate_report(self, db: DbSession, user: CurrentUser) -> FileResponse:
-        """Route to generate reports for the user."""
+        """
+        Route to generate reports for the user.
+        CHART_PATH and PDF_PATH are file paths for the generated chart and PDF report.
+        """
+
         import uuid
         self.CHART_PATH = f"chart_{uuid.uuid4()}.png"
         self.PDF_PATH = f"report_{uuid.uuid4()}.pdf"
@@ -118,6 +122,7 @@ class ReportGenPlugin(Plugin[PluginSettings]):
         await loop.run_in_executor(ThreadPoolExecutor(max_workers=2), _generate)
 
     def generate_pdf_report(self, budget_data: Dict[str, Any], recent_transactions: List[ExpenseModel]) -> None:
+        """Generate PDF report with budget data and recent transactions."""
         buffer = BytesIO()
         c = canvas.Canvas(buffer, pagesize=letter)
         width, height = letter
@@ -163,7 +168,7 @@ class ReportGenPlugin(Plugin[PluginSettings]):
         c.drawString(left_margin, top_margin, "Recent Transactions")
         top_margin -= line_height + 15
 
-        headers = ['Date', 'ExpenseID', 'Price']
+        headers = ['Date', 'ExpenseName', 'Price']
         col_widths = [80, 250, 80]
         row_height = 20
 
@@ -178,6 +183,7 @@ class ReportGenPlugin(Plugin[PluginSettings]):
             x += col_widths[i]
         y -= row_height + 5
 
+        # Draw recent transactions
         for t in recent_transactions:
             x = left_margin
             name = getattr(t, 'name', '')[:30] + "..." if len(getattr(t, 'name', '')) > 30 else getattr(t, 'name', '')
@@ -207,6 +213,8 @@ class ReportGenPlugin(Plugin[PluginSettings]):
                     c.showPage()
                     y = height - 50
             y -= 5
+
+            # Check if we need to create a new page
             if y < 50:
                 c.showPage()
                 y = height - 50
