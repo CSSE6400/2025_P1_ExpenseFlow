@@ -3,6 +3,10 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../common/color_palette.dart';
 import '../../../common/proportional_sizes.dart';
 import '../../../common/search_bar.dart' as search;
+import 'package:flutter_frontend/services/api_service.dart';
+import 'package:provider/provider.dart' show Provider;
+import 'package:flutter_frontend/common/snack_bar.dart';
+import 'package:logging/logging.dart';
 
 class Group {
   final String name;
@@ -22,24 +26,71 @@ class GroupsAndFriendsGroupList extends StatefulWidget {
 class _GroupsAndFriendsGroupListState
     extends State<GroupsAndFriendsGroupList> {
   late List<Group> allGroups;
-  late List<Group> filteredGroups;
+  List<Group>? filteredGroups;
+  final Logger _logger = Logger("GroupsAndFriendsGroupsListLogger");
 
   @override
   void initState() {
     super.initState();
+    _fetchGroups();
 
     // TODO: Load groups and their payment status from backend
-    allGroups = [
-      Group(name: 'Trip', isActive: true),
-      Group(name: 'Flatmates', isActive: false),
-      Group(name: 'Cricket Club', isActive: true),
-      Group(name: 'Project Team X', isActive: false),
-      Group(name: 'Birthday', isActive: true),
-      Group(name: 'Group ABC', isActive: false),
-    ];
+    // getUserGroups()
+    // allGroups = [
+    //   Group(name: 'Trip', isActive: true),
+    //   Group(name: 'Flatmates', isActive: false),
+    //   Group(name: 'Cricket Club', isActive: true),
+    //   Group(name: 'Project Team X', isActive: false),
+    //   Group(name: 'Birthday', isActive: true),
+    //   Group(name: 'Group ABC', isActive: false),
+    // ];
 
-    filteredGroups = List.from(allGroups)
-      ..sort((a, b) => b.isActive ? 1 : -1); // Active groups first
+    // filteredGroups = List.from(allGroups)
+    //   ..sort((a, b) => b.isActive ? 1 : -1); // Active groups first
+  }
+
+  Future<void> _fetchGroups() async {
+    final apiService = Provider.of<ApiService>(context, listen: false);
+    try {
+      final userReads = await apiService.groupApi.getUserGroups();
+
+      // Convert UserRead to Friend
+      allGroups = userReads
+          .map((group) => Group(
+                name: '@${group.name}',
+                isActive: true, 
+              ))
+          .toList();
+
+      if (allGroups.isEmpty) { 
+      _logger.info("User has no groups"); //TODO: handle when they are in no groups
+      // allGroups = [
+      //   Group(name: 'Trip', isActive: true),
+        // Group(name: 'Flatmates', isActive: false),
+        // Group(name: 'Cricket Club', isActive: true),
+        // Group(name: 'Project Team X', isActive: false),
+        // Group(name: 'Birthday', isActive: true),
+        // Group(name: 'Group ABC', isActive: false),
+      // ];
+      }
+
+      setState(() {
+        filteredGroups = List.from(allGroups)
+          ..sort((a, b) => b.isActive ? 1 : -1); // Active groups first
+      });
+    } on ApiException catch (e) {
+      _logger.warning("API exception while fetching friends: ${e.message}");
+      showCustomSnackBar(
+        context,
+        normalText: "Failed to load friends",
+      );
+    } catch (e) {
+      _logger.severe("Unexpected error: $e");
+      showCustomSnackBar(
+        context,
+        normalText: "Something went wrong",
+      );
+    }
   }
 
   void _filterGroups(String query) {
@@ -56,6 +107,9 @@ class _GroupsAndFriendsGroupListState
   Widget build(BuildContext context) {
     final proportionalSizes = ProportionalSizes(context: context);
     final textColor = ColorPalette.primaryText;
+    if (filteredGroups == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -65,7 +119,22 @@ class _GroupsAndFriendsGroupListState
           onChanged: _filterGroups,
         ),
         const SizedBox(height: 16),
-        ...filteredGroups.map((group) => Padding(
+        if (allGroups.isEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: 32.0),
+            child: Center(
+              child: Text(
+                "You have no friends :(",
+                style: GoogleFonts.roboto(
+                  fontSize: proportionalSizes.scaleText(16),
+                  fontWeight: FontWeight.w500,
+                  color: textColor,
+                ),
+              ),
+            ),
+          )
+        else
+        ...filteredGroups!.map((group) => Padding(
               padding: EdgeInsets.symmetric(
                 vertical: proportionalSizes.scaleHeight(8),
               ),

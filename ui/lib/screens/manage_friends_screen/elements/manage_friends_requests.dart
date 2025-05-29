@@ -5,6 +5,10 @@ import '../../../common/proportional_sizes.dart';
 import '../../../common/search_bar.dart' as search;
 import '../../../common/custom_button.dart';
 import '../../../common/dialogs/app_dialog_box.dart';
+import 'package:flutter_frontend/services/api_service.dart';
+import 'package:provider/provider.dart' show Provider;
+import 'package:flutter_frontend/common/snack_bar.dart';
+import 'package:logging/logging.dart';
 
 class FriendRequest {
   final String name;
@@ -21,28 +25,70 @@ class ManageFriendsRequests extends StatefulWidget {
 }
 
 class _ManageFriendsRequestsState extends State<ManageFriendsRequests> {
-  late List<FriendRequest> allRequests;
-  late List<FriendRequest> filteredRequests;
+  List<FriendRequest> allRequests = [];
+  List<FriendRequest> filteredRequests = [];
+  final Logger _logger = Logger("ManageFriendsREquestsLogger");
 
   @override
   void initState() {
     super.initState();
+    _fetchRequests();
 
     // TODO: Load friend requests from backend
     // Incoming means the user has received a request,
     // Outgoing means the user has sent a request
-    allRequests = [
-      FriendRequest(name: '@abc123', isIncoming: true),
-      FriendRequest(name: '@xyz987', isIncoming: false),
-      FriendRequest(name: '@pqr456', isIncoming: true),
-      FriendRequest(name: '@def321', isIncoming: false),
-      FriendRequest(name: '@mno789', isIncoming: true),
-      FriendRequest(name: '@uvw654', isIncoming: false),
-      FriendRequest(name: '@lmn123', isIncoming: true),
-      FriendRequest(name: '@opq456', isIncoming: false),
-    ];
+    // allRequests = [
+    //   FriendRequest(name: '@abc123', isIncoming: true),
+    //   FriendRequest(name: '@xyz987', isIncoming: false),
+    //   FriendRequest(name: '@pqr456', isIncoming: true),
+    //   FriendRequest(name: '@def321', isIncoming: false),
+    //   FriendRequest(name: '@mno789', isIncoming: true),
+    //   FriendRequest(name: '@uvw654', isIncoming: false),
+    //   FriendRequest(name: '@lmn123', isIncoming: true),
+    //   FriendRequest(name: '@opq456', isIncoming: false),
+    // ];
 
-    filteredRequests = _sorted(List.from(allRequests));
+    // filteredRequests = _sorted(List.from(allRequests));
+  }
+
+  Future<void> _fetchRequests() async {
+    final apiService = Provider.of<ApiService>(context, listen: false);
+    try {
+            final userReadsSent = await apiService.friendApi.getSentFriendRequests();
+      final userReadsIncoming =
+          await apiService.friendApi.getReceivedFriendRequests();
+
+      final sentRequests = userReadsSent
+          .map((user) => FriendRequest(
+                name: '@${user.firstName}',
+                isIncoming: false,
+              ))
+          .toList();
+
+      final incomingRequests = userReadsIncoming
+          .map((user) => FriendRequest(
+                name: '@${user.firstName}',
+                isIncoming: true,
+              ))
+          .toList();
+
+      setState(() {
+        allRequests = [...incomingRequests, ...sentRequests];
+        filteredRequests = _sorted(List.from(allRequests));
+      });
+    } on ApiException catch (e) {
+      _logger.warning("API exception while fetching friends: ${e.message}");
+      showCustomSnackBar(
+        context,
+        normalText: "Failed to load friends",
+      );
+    } catch (e) {
+      _logger.severe("Unexpected error: $e");
+      showCustomSnackBar(
+        context,
+        normalText: "Something went wrong",
+      );
+    }
   }
 
   List<FriendRequest> _sorted(List<FriendRequest> list) {

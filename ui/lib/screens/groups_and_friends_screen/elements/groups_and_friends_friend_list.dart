@@ -27,7 +27,7 @@ class _GroupsAndFriendsFriendListState
     extends State<GroupsAndFriendsFriendList> {
   late List<Friend> allFriends;
   List<Friend>? filteredFriends;
-  final Logger _logger = Logger("FriendListLogger");
+  final Logger _logger = Logger("GroupandFriendsFriendListLogger");
 
 
   @override
@@ -45,21 +45,9 @@ class _GroupsAndFriendsFriendListState
       allFriends = userReads
           .map((user) => Friend(
                 name: '@${user.firstName}',
-                isActive: true, // fallback if null
+                isActive: true,
               ))
           .toList();
-
-      if (allFriends.isEmpty) { //TODO: Remove this and replace with message saying they have no friends
-      _logger.info("User has no friends"); //TODO idk where this goes...
-        allFriends = [
-          Friend(name: '@abc123', isActive: true),
-          Friend(name: '@xyz987', isActive: false),
-          Friend(name: '@pqr456', isActive: true),
-          Friend(name: '@mno789', isActive: false),
-          Friend(name: '@def321', isActive: false),
-          Friend(name: '@uvw654', isActive: true),
-        ];
-      }
 
       setState(() {
         filteredFriends = List.from(allFriends)
@@ -107,6 +95,21 @@ class _GroupsAndFriendsFriendListState
           onChanged: _filterFriends,
         ),
         const SizedBox(height: 16),
+        if (allFriends.isEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: 32.0),
+            child: Center(
+              child: Text(
+                "You have no friends :(",
+                style: GoogleFonts.roboto(
+                  fontSize: proportionalSizes.scaleText(16),
+                  fontWeight: FontWeight.w500,
+                  color: textColor,
+                ),
+              ),
+            ),
+          )
+        else
         ...filteredFriends!.map((friend) => Padding(
               padding: EdgeInsets.symmetric(
                 vertical: proportionalSizes.scaleHeight(8),
@@ -152,7 +155,7 @@ class _GroupsAndFriendsFriendListState
                           ),
                         ),
                         child: Text(
-                          'Active',
+                          'Friend',
                           style: GoogleFonts.roboto(
                             color: ColorPalette.accent,
                             fontWeight: FontWeight.bold,
