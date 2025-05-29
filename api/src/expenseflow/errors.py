@@ -24,3 +24,7 @@ class NotFoundError(ExpenseFlowError):
 
 class RoleError(ExpenseFlowError):
     """Error raised when a user doesn't have the required roles for something."""
+
+
+class InvalidStateError(Exception):
+    """Error when the system gets into an invalid state."""

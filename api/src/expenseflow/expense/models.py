@@ -10,7 +10,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from expenseflow.database.base import BaseDBModel
 from expenseflow.database.mixins import TimestampMixin
 from expenseflow.entity.models import EntityModel
-from expenseflow.enums import ExpenseCategory
+from expenseflow.enums import ExpenseCategory, ExpenseStatus
 from expenseflow.user.models import UserModel
 
 
@@ -71,6 +71,7 @@ class ExpenseItemSplitModel(BaseDBModel, TimestampMixin):
     # Relationships
     item: Mapped[ExpenseItemModel] = relationship()
     user: Mapped[UserModel] = relationship(lazy="joined")
+    status: Mapped[ExpenseStatus]
 
     @property
     def user_fullname(self) -> str:

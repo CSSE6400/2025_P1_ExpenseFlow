@@ -3,11 +3,17 @@
 from uuid import UUID
 
 from loguru import logger
-from sqlalchemy import or_, select
+from sqlalchemy import or_, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from expenseflow.entity.models import EntityModel
-from expenseflow.errors import ExpenseFlowError, NotFoundError, RoleError
+from expenseflow.enums import ExpenseStatus
+from expenseflow.errors import (
+    ExpenseFlowError,
+    InvalidStateError,
+    NotFoundError,
+    RoleError,
+)
 from expenseflow.expense.models import (
     ExpenseItemModel,
     ExpenseItemSplitModel,
@@ -56,6 +62,11 @@ async def update_expense(
     ):
         msg = f"User does not have permission to modify the expense '{expense.expense_id}'"
         raise RoleError(msg)
+
+    # TODO: Also check if the creator is only person on splits, if so they can change it
+
+    # TODO: Check status of expense
+    # If already accepted, can no longer update
 
     items: list[ExpenseItemModel] = await create_expense_items(
         session, modifier, expense_in.items
@@ -113,12 +124,25 @@ async def create_expense_items(
                     raise NotFoundError(split_create.user_id, "user")
                 splits.append(
                     ExpenseItemSplitModel(
-                        user=split_user, proportion=split_create.proportion
+                        user=split_user,
+                        proportion=split_create.proportion,
+                        # If the creator is splitting, they've already paid for it
+                        status=(
+                            ExpenseStatus.paid
+                            if split_user.user_id == creator.user_id
+                            else ExpenseStatus.requested
+                        ),
                     )
                 )
 
         else:  # If no split specified, assume creator owns entire expense
-            splits = [ExpenseItemSplitModel(user=creator, proportion=1)]
+            splits = [
+                ExpenseItemSplitModel(
+                    user=creator,
+                    proportion=1,
+                    status=ExpenseStatus.paid,
+                )
+            ]
 
         result.append(
             ExpenseItemModel(
@@ -130,6 +154,155 @@ async def create_expense_items(
         )
 
     return result
+
+
+async def update_split_status(
+    session: AsyncSession, user: UserModel, expense: ExpenseModel, status: ExpenseStatus
+) -> None:
+    """Update a user's split status of an expense."""
+    usr_split_status = await get_user_split_status(session, expense, user)
+
+    cur_expense_status = await get_expense_status(session, expense)
+
+    # Check whether usr has had the expense split with them
+    usr_splits = await get_split_users(session, expense)
+    if user.user_id not in [u.user_id for u in usr_splits]:
+        msg = f"User '{user.user_id}' has no splits in this expense"
+        raise ExpenseFlowError(msg)
+
+    if not is_valid_expense_change(status, usr_split_status, cur_expense_status):
+        msg = f"Unable to change your expense status from '{usr_split_status.value}' to '{status.value}'"
+        raise ExpenseFlowError(msg)
+
+    # Do some status change
+    update_stmt = (
+        update(ExpenseItemSplitModel)
+        .where(
+            ExpenseItemSplitModel.expense_item_id == ExpenseItemModel.expense_item_id
+        )
+        .where(ExpenseItemModel.expense_id == ExpenseModel.expense_id)
+        .where(ExpenseModel.expense_id == expense.expense_id)
+        .where(ExpenseItemSplitModel.user_id == user.user_id)
+        .values(status=status)
+    )
+
+    await session.execute(update_stmt)
+
+
+def is_valid_expense_change(
+    input_status: ExpenseStatus, usr_status: ExpenseStatus, exp_status: ExpenseStatus
+) -> bool:
+    """Function to manage expense state changes."""
+    status_map = {
+        ExpenseStatus.requested: 1,
+        ExpenseStatus.accepted: 2,
+        ExpenseStatus.paid: 3,
+    }
+    input_status_num = status_map[input_status]
+    usr_status_num = status_map[usr_status]
+    exp_status_num = status_map[exp_status]
+    INVALID_SKIP_NUM = 2  # noqa: N806
+
+    if (
+        exp_status_num > usr_status_num
+        or abs(usr_status_num - exp_status_num) == INVALID_SKIP_NUM
+    ):
+        msg = (
+            f"The expense should only be in state '{exp_status}' if everyone is in state "
+            f"'{exp_status}' or above, so this split is invalid as its in state '{usr_status}'"
+        )
+        logger.error(msg)
+        raise InvalidStateError(msg)
+
+    # Don't do anything when the status are the same
+    if input_status == usr_status and usr_status == exp_status:
+        return True
+
+    if (
+        abs(input_status_num - usr_status_num) == INVALID_SKIP_NUM
+        or abs(input_status_num - exp_status_num) == INVALID_SKIP_NUM
+    ):
+        return False
+
+    # Can't decrease usr's state when everything is requested or accepted or paid
+    if (  # noqa: SIM103
+        exp_status == usr_status and input_status_num - usr_status_num == -1
+    ):
+        return False
+
+    return True
+
+
+async def get_user_split_status(
+    session: AsyncSession, expense: ExpenseModel, user: UserModel
+) -> ExpenseStatus:
+    """Get current status of a users split."""
+    stmt = (
+        select(ExpenseItemSplitModel.status)
+        .join(
+            ExpenseItemModel,
+            ExpenseItemModel.expense_item_id == ExpenseItemSplitModel.expense_item_id,
+        )
+        .join_from(ExpenseModel, ExpenseModel.expense_id == ExpenseItemModel.expense_id)
+        .where(ExpenseModel.expense_id == expense.expense_id)
+        .where(ExpenseItemSplitModel.user_id == user.user_id)
+    )
+
+    statuses = (await session.execute(stmt)).scalars().all()
+
+    if len(statuses) == 0:
+        msg = f"User '{user.user_id}' is not have any splits in this expense."
+        raise ExpenseFlowError(msg)
+
+    uniques = set(statuses)
+    if len(uniques) != 1:
+        msg = f"User '{user.user_id}' has splits in expense '{expense.expense_id}' that don't have the same status"
+        raise Exception(msg)  # noqa: TRY002
+
+    return uniques.pop()
+
+
+async def get_split_users(
+    session: AsyncSession, expense: ExpenseModel
+) -> list[UserModel]:
+    """Get the users an expense is split with."""
+    stmt = (
+        select(UserModel)
+        .join(ExpenseItemSplitModel, ExpenseItemSplitModel.user_id == UserModel.user_id)
+        .join(
+            ExpenseItemModel,
+            ExpenseItemModel.expense_item_id == ExpenseItemSplitModel.expense_item_id,
+        )
+        .join(ExpenseModel, ExpenseModel.expense_id == ExpenseItemModel.expense_id)
+        .where(ExpenseModel.expense_id == expense.expense_id)
+        .distinct()
+    )
+    return list((await session.execute(stmt)).scalars().all())
+
+
+async def get_expense_status(
+    session: AsyncSession, expense: ExpenseModel
+) -> ExpenseStatus:
+    """Get the status of an expense."""
+    stmt = (
+        select(ExpenseItemSplitModel.status)
+        .join(
+            ExpenseItemModel,
+            ExpenseItemModel.expense_item_id == ExpenseItemSplitModel.expense_item_id,
+        )
+        .join_from(ExpenseModel, ExpenseModel.expense_id == ExpenseItemModel.expense_id)
+        .where(ExpenseModel.expense_id == expense.expense_id)
+    )
+
+    statuses: list[ExpenseStatus] = list((await session.execute(stmt)).scalars().all())
+
+    if all(status == ExpenseStatus.paid for status in statuses):
+        return ExpenseStatus.paid
+
+    if all(status == ExpenseStatus.accepted for status in statuses):
+        return ExpenseStatus.accepted
+
+    return ExpenseStatus.requested
 
 
 async def get_uploaded_expenses(
