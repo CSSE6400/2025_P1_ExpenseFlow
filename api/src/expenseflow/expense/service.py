@@ -63,10 +63,20 @@ async def update_expense(
         msg = f"User does not have permission to modify the expense '{expense.expense_id}'"
         raise RoleError(msg)
 
-    # TODO: Also check if the creator is only person on splits, if so they can change it
+    user_splits = await get_split_users(session, expense)
+    exp_status = await get_expense_status(session, expense)
 
-    # TODO: Check status of expense
-    # If already accepted, can no longer update
+    # If an expense is split solely with its creator, they can change it around
+    split_soley_w_creator = (
+        len(user_splits) == 1 and user_splits[0].user_id == expense.uploader_id
+    )
+
+    if (
+        exp_status in (ExpenseStatus.accepted, ExpenseStatus.paid)
+        and not split_soley_w_creator
+    ):
+        msg = f"Unable to modify the '{expense.expense_id}' expense when it is in the '{exp_status.value}' state"
+        raise ExpenseFlowError(msg)
 
     items: list[ExpenseItemModel] = await create_expense_items(
         session, modifier, expense_in.items
