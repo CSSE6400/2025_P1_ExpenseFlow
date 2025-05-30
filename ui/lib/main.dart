@@ -1,5 +1,6 @@
 // Flutter imports
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/screens/manage_groups_screen/manage_groups_screen.dart';
 import 'package:flutter_frontend/services/api_service.dart' show ApiService;
 import 'package:flutter_frontend/services/auth_service.dart' show AuthService;
 import 'package:flutter_frontend/screens/overview_screen/overview_screen.dart';
@@ -92,6 +93,8 @@ class MyApp extends StatelessWidget {
             return MaterialPageRoute(builder: (_) => const OverviewScreen());
           case '/manage_friends':
             return MaterialPageRoute(builder: (_) => const ManageFriendsScreen());
+          case '/manage_groups':
+            return MaterialPageRoute(builder: (_) => const ManageGroupsScreen());
           case '/split_with':
             final args = settings.arguments as Map<String, dynamic>?;
 
