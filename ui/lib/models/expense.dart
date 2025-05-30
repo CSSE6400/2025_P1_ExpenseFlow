@@ -1,8 +1,31 @@
 import 'package:flutter_frontend/models/enums.dart'
-    show ExpenseCategory, ExpenseCategoryConverter;
+    show
+        ExpenseCategory,
+        ExpenseCategoryConverter,
+        ExpenseStatus,
+        ExpenseStatusConverter;
 import 'package:json_annotation/json_annotation.dart';
 
 part 'expense.g.dart';
+
+@JsonSerializable(fieldRename: FieldRename.snake)
+class SplitStatusInfo {
+  final String userId;
+  final String nickname;
+
+  @ExpenseStatusConverter()
+  final ExpenseStatus status;
+
+  SplitStatusInfo({
+    required this.userId,
+    required this.nickname,
+    required this.status,
+  });
+
+  factory SplitStatusInfo.fromJson(Map<String, dynamic> json) =>
+      _$SplitStatusInfoFromJson(json);
+  Map<String, dynamic> toJson() => _$SplitStatusInfoToJson(this);
+}
 
 @JsonSerializable(fieldRename: FieldRename.snake)
 class ExpenseRead {

@@ -7,13 +7,13 @@ import 'package:logging/logging.dart' show Logger;
 
 class AuthenticatedClient extends http.BaseClient {
   final http.Client _client;
-  final AuthService _authService;
+  final AuthService authService;
 
-  AuthenticatedClient(this._authService) : _client = http.Client();
+  AuthenticatedClient(this.authService) : _client = http.Client();
 
   @override
   Future<http.StreamedResponse> send(http.BaseRequest request) async {
-    final token = await _authService.getAccessToken();
+    final token = await authService.getAccessToken();
     if (token == null) {
       throw Exception('No access token found. Please log in.');
     }
