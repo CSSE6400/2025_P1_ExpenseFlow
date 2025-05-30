@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/common/snack_bar.dart';
+import 'package:flutter_frontend/models/enums.dart';
 import 'package:flutter_frontend/models/group.dart' show GroupCreate;
 import 'package:flutter_frontend/screens/manage_groups_screen/elements/add_group_fields.dart';
 import 'package:flutter_frontend/services/api_service.dart' show ApiService;
@@ -17,6 +18,7 @@ class AddGroupScreenMainBody extends StatefulWidget {
 class _AddGroupScreenMainBodyState extends State<AddGroupScreenMainBody> {
   bool isFormValid = false;
   GroupCreate? _currentGroup;
+  final List<String> _selectedUserIds = [];
   final Logger _logger = Logger("AddGroupScreenMainBody");
 
   void updateFormValid(bool isValid) {
@@ -28,28 +30,49 @@ class _AddGroupScreenMainBodyState extends State<AddGroupScreenMainBody> {
   }
 
   Future<void> onCreateGroup() async {
-    final apiService = Provider.of<ApiService>(context, listen: false);
+  final apiService = Provider.of<ApiService>(context, listen: false);
 
-    if (_currentGroup == null) {
-      showCustomSnackBar(context, normalText: "Please fill in all fields");
-      return;
-    }
-
-    try {
-      await apiService.groupApi.createGroup(_currentGroup!);
-      if (!mounted) return;
-      showCustomSnackBar(
-        context,
-        normalText: "Group created successfully",
-        backgroundColor: Colors.green,
-      );
-      Navigator.pushNamed(context, '/'); // or wherever you want to go next
-    } catch (e) {
-      _logger.severe("Failed to create group", e);
-      if (!mounted) return;
-      showCustomSnackBar(context, normalText: "Failed to create group");
-    }
+  if (_currentGroup == null) {
+    showCustomSnackBar(context, normalText: "Please fill in all fields");
+    return;
   }
+
+  try {
+    final createdGroup = await apiService.groupApi.createGroup(_currentGroup!);
+
+    // Add current user as admin
+    final currentUser = await apiService.userApi.getCurrentUser();
+    if (currentUser != null) {
+      await apiService.groupApi.createUpdateGroupUser(
+        createdGroup.groupId,
+        currentUser.userId,
+        
+        GroupRole.admin,
+      );
+    }
+
+    // Add other selected members
+    for (final userId in _selectedUserIds) {
+      await apiService.groupApi.createUpdateGroupUser(
+        createdGroup.groupId,
+        userId,
+        GroupRole.user,
+      );
+    }
+
+    if (!mounted) return;
+    showCustomSnackBar(
+      context,
+      normalText: "Group created successfully",
+      backgroundColor: Colors.green,
+    );
+    Navigator.pushNamed(context, '/');
+  } catch (e) {
+    _logger.severe("Failed to create group", e);
+    if (!mounted) return;
+    showCustomSnackBar(context, normalText: "Failed to create group");
+  }
+}
 
   @override
   Widget build(BuildContext context) {
