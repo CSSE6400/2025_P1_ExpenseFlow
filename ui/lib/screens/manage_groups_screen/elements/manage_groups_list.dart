@@ -46,40 +46,45 @@ class _ManageGroupsListState extends State<ManageGroupsList> {
   void _filterGroups(String query) {
     setState(() {
       filteredGroups = allGroups
-          .where((Group) =>
-              Group.name.toLowerCase().contains(query.toLowerCase()))
+          .where((group) =>
+              group.name.toLowerCase().contains(query.toLowerCase()))
           .toList();
     });
   }
 
   Future<void> _fetchGroups() async {
-    final apiService = Provider.of<ApiService>(context, listen: false);
-    try {
-      final userReads = await apiService.groupApi.getUserGroups();
+  final apiService = Provider.of<ApiService>(context, listen: false);
+  try {
+    final userReads = await apiService.groupApi.getUserGroups();
 
-      // Convert UserRead to Group
-      allGroups = userReads
-          .map((group) => Group(
-                name: '@${group.name}',
-              ))
-          .toList();
+    final fetchedGroups = userReads
+        .map((group) => Group(name: '@${group.name}'))
+        .toList();
 
-    } on ApiException catch (e) {
-      _logger.warning("API exception while fetching Groups: ${e.message}");
-      showCustomSnackBar(
-        context,
-        normalText: "Failed to load Groups",
-      );
-    } catch (e) {
-      _logger.severe("Unexpected error: $e");
-      showCustomSnackBar(
-        context,
-        normalText: "Something went wrong",
-      );
+    _logger.info("Fetched all groups");
+
+    setState(() {
+      allGroups = fetchedGroups;
+      filteredGroups = List.from(fetchedGroups);
+    });
+
+    if (fetchedGroups.isEmpty) {
+      _logger.info("User has no groups");
     }
-    filteredGroups = List.from(allGroups);
-
+  } on ApiException catch (e) {
+    _logger.warning("API exception while fetching Groups: ${e.message}");
+    showCustomSnackBar(
+      context,
+      normalText: "Failed to load Groups",
+    );
+  } catch (e) {
+    _logger.severe("Unexpected error: $e");
+    showCustomSnackBar(
+      context,
+      normalText: "Something went wrong",
+    );
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -109,7 +114,7 @@ class _ManageGroupsListState extends State<ManageGroupsList> {
             ),
           )
         else
-        ...filteredGroups.map((Group) => Padding(
+        ...filteredGroups.map((group) => Padding(
               padding: EdgeInsets.symmetric(
                 vertical: proportionalSizes.scaleHeight(8),
               ),
@@ -118,7 +123,7 @@ class _ManageGroupsListState extends State<ManageGroupsList> {
                   Navigator.pushNamed(
                     context,
                     '/Group_expense',
-                    arguments: {'username': Group.name},
+                    arguments: {'username': group.name},
                   );
                 },
                 child: Row(
@@ -127,7 +132,7 @@ class _ManageGroupsListState extends State<ManageGroupsList> {
                     // Group name in a flexible container with ellipsis
                     Expanded(
                       child: Text(
-                        Group.name,
+                        group.name,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: GoogleFonts.roboto(

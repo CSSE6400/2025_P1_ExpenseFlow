@@ -63,7 +63,7 @@ class _GroupsAndFriendsGroupListState
           .toList();
 
       if (allGroups.isEmpty) { 
-      _logger.info("User has no groups"); //TODO: handle when they are in no groups
+        _logger.info("User has no groups"); //TODO: handle when they are in no groups?
       // allGroups = [
       //   Group(name: 'Trip', isActive: true),
         // Group(name: 'Flatmates', isActive: false),

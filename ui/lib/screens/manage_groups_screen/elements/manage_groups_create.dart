@@ -36,6 +36,7 @@ class _AddGroupScreenMainBodyState extends State<AddGroupScreenMainBody> {
     showCustomSnackBar(context, normalText: "Please fill in all fields");
     return;
   }
+  _logger.info("feilds valid");
 
   try {
     final createdGroup = await apiService.groupApi.createGroup(_currentGroup!);
@@ -46,7 +47,6 @@ class _AddGroupScreenMainBodyState extends State<AddGroupScreenMainBody> {
       await apiService.groupApi.createUpdateGroupUser(
         createdGroup.groupId,
         currentUser.userId,
-        
         GroupRole.admin,
       );
     }
