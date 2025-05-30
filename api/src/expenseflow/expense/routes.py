@@ -1,8 +1,9 @@
 """Expense Routes."""
 
+from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, Query, status
 
 from expenseflow.auth.deps import CurrentUser
 from expenseflow.database.deps import DbSession
@@ -125,7 +126,10 @@ async def get_overall_status(
 
 @r.put("/{expense_id}/status", response_model=ExpenseRead)
 async def update_stautus(
-    db: DbSession, user: CurrentUser, expense_id: UUID, new_status: ExpenseStatus
+    db: DbSession,
+    user: CurrentUser,
+    expense_id: UUID,
+    new_status: Annotated[ExpenseStatus, Query(alias="status")],
 ) -> ExpenseModel:
     """Get status of an expense."""
     expense = await get_expense(db, user, expense_id)

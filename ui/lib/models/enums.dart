@@ -50,7 +50,7 @@ class GroupRoleConverter implements JsonConverter<GroupRole, String> {
   }
 
   @override
-  String toJson(GroupRole category) => category.label;
+  String toJson(GroupRole role) => role.label;
 }
 
 enum GroupRole {
@@ -73,7 +73,7 @@ class FriendStatusConverter implements JsonConverter<FriendStatus, String> {
   }
 
   @override
-  String toJson(FriendStatus category) => category.label;
+  String toJson(FriendStatus status) => status.label;
 }
 
 enum FriendStatus {
@@ -82,4 +82,28 @@ enum FriendStatus {
 
   final String label;
   const FriendStatus(this.label);
+}
+
+class ExpenseStatusConverter implements JsonConverter<ExpenseStatus, String> {
+  const ExpenseStatusConverter();
+
+  @override
+  ExpenseStatus fromJson(String json) {
+    return ExpenseStatus.values.firstWhere(
+      (e) => e.label == json,
+      orElse: () => ExpenseStatus.requested,
+    );
+  }
+
+  @override
+  String toJson(ExpenseStatus status) => status.label;
+}
+
+enum ExpenseStatus {
+  requested('requested'),
+  accepted('accepted'),
+  paid('paid');
+
+  final String label;
+  const ExpenseStatus(this.label);
 }
