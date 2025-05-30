@@ -344,6 +344,28 @@ async def get_uploaded_expenses(
     )
 
 
+async def get_expense_status_map(
+    session: AsyncSession, expense: ExpenseModel
+) -> dict[UserModel, ExpenseStatus]:
+    """Get a mapping of all the statuses for an expense."""
+    stmt = (
+        select(UserModel, ExpenseItemSplitModel.status)
+        .join(
+            ExpenseItemModel,
+            ExpenseItemModel.expense_item_id == ExpenseItemSplitModel.expense_item_id,
+        )
+        .join(
+            UserModel,
+            UserModel.user_id == ExpenseItemSplitModel.user_id,
+        )
+        .where(ExpenseItemModel.expense_id == expense.expense_id)
+    )
+
+    splits = (await session.execute(stmt)).all()
+
+    return dict([row.tuple() for row in splits])
+
+
 async def get_owned_expenses(
     session: AsyncSession, parent: EntityModel
 ) -> list[ExpenseModel]:
