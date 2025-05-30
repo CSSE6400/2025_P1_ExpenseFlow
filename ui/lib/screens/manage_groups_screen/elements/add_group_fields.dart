@@ -1,25 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/utils/string_utils.dart';
 // Common imports
 import '../../../common/fields/general_field.dart';
 import '../../../common/custom_divider.dart';
-import '../../../common/fields/date_field/date_field.dart';
-import '../../../common/fields/dropdown_field.dart';
 import '../../../models/group.dart';
 import '../../../common/fields/custom_icon_field.dart';
-import '../../../common/proportional_sizes.dart';
-// import '../../../common/show_image.dart';
-import '../../../common/snack_bar.dart';
-import '../../add_items_screen/add_items_screen.dart';
 
 class AddGroupScreenFields extends StatefulWidget {
   final void Function(bool isValid) onValidityChanged;
   final void Function(GroupCreate group)? onGroupChanged;
+  final VoidCallback onSelectFriends;
+  final int selectedFriendCount;
 
   const AddGroupScreenFields({
     super.key,
     required this.onValidityChanged,
     required this.onGroupChanged,
+    required this.onSelectFriends,
+    required this.selectedFriendCount,
   });
 
   @override
@@ -82,16 +79,14 @@ class _AddGroupScreenFieldsState extends State<AddGroupScreenFields> {
         ),
         CustomDivider(),
 
-        // You can implement this later to actually select users:
         CustomIconField(
           label: 'Add Friends',
-          value: '', // show selected count or names here
+          value:'${widget.selectedFriendCount} selected',
           hintText: 'Select friends to add',
           trailingIconPath: 'assets/icons/search.png',
-          onTap: () {
-            Navigator.pushNamed(context, '/select_friends'); // placeholder
-          },
+          onTap: widget.onSelectFriends, 
         ),
+    
         CustomDivider(),
 
         SizedBox(height: 20),

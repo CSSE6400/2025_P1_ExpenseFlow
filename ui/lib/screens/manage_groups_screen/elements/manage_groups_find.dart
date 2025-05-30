@@ -84,7 +84,7 @@ class _ManageGroupsFindState extends State<ManageGroupsFind> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         search.SearchBar(
-          hintText: 'Search by username',
+          hintText: 'Search by group name',
           onChanged: _filterUsers,
         ),
         const SizedBox(height: 16),
