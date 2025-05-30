@@ -34,7 +34,7 @@ class ExpenseModel(BaseDBModel, TimestampMixin):
     )
     parent: Mapped[EntityModel] = relationship(foreign_keys=[parent_id], lazy="joined")
     items: Mapped[list["ExpenseItemModel"]] = relationship(
-        back_populates="expense", lazy="subquery"
+        lazy="subquery", cascade="all, delete-orphan"
     )
 
 
@@ -44,15 +44,16 @@ class ExpenseItemModel(BaseDBModel, TimestampMixin):
     __tablename__ = "expense_item"
 
     expense_item_id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
-    expense_id: Mapped[UUID] = mapped_column(ForeignKey("expense.expense_id"))
+    expense_id: Mapped[UUID] = mapped_column(
+        ForeignKey("expense.expense_id", ondelete="CASCADE")
+    )
     name: Mapped[str]
     quantity: Mapped[int]
     price: Mapped[float]
 
     # relationships
-    expense: Mapped[ExpenseModel] = relationship(back_populates="items", lazy="select")
     splits: Mapped[list["ExpenseItemSplitModel"]] = relationship(
-        back_populates="item", lazy="joined"
+        back_populates="item", lazy="joined", cascade="all, delete-orphan"
     )
 
 
@@ -62,18 +63,18 @@ class ExpenseItemSplitModel(BaseDBModel, TimestampMixin):
     __tablename__ = "expense_item_split"
 
     expense_item_id: Mapped[UUID] = mapped_column(
-        ForeignKey("expense_item.expense_item_id"),
+        ForeignKey("expense_item.expense_item_id", ondelete="CASCADE"),
         primary_key=True,
     )
     user_id: Mapped[UUID] = mapped_column(ForeignKey("user.user_id"), primary_key=True)
     proportion: Mapped[float]
 
     # Relationships
-    item: Mapped[ExpenseItemModel] = relationship()
+    item: Mapped[ExpenseItemModel] = relationship(back_populates="splits")
     user: Mapped[UserModel] = relationship(lazy="joined")
     status: Mapped[ExpenseStatus]
 
     @property
     def user_fullname(self) -> str:
         """Name of person splitting."""
-        return self.user.first_name + self.user.last_name
+        return self.user.first_name + " " + self.user.last_name

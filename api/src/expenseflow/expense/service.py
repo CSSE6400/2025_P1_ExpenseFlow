@@ -3,7 +3,7 @@
 from uuid import UUID
 
 from loguru import logger
-from sqlalchemy import or_, select, update
+from sqlalchemy import delete, or_, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from expenseflow.entity.models import EntityModel
@@ -81,11 +81,25 @@ async def update_expense(
     items: list[ExpenseItemModel] = await create_expense_items(
         session, modifier, expense_in.items
     )
+
     expense.name = expense_in.name
     expense.description = expense_in.description
     expense.category = expense_in.category
     expense.expense_date = expense_in.expense_date
-    expense.items = items
+
+    # remove existing items
+    await session.execute(
+        delete(ExpenseItemModel).where(
+            ExpenseItemModel.expense_id == expense.expense_id
+        )
+    )
+
+    # attach new items
+    for item in items:
+        item.expense_id = expense.expense_id
+        session.add(item)  # Explicitly add
+
+    await session.commit()
 
     return expense
 
@@ -253,7 +267,7 @@ async def get_user_split_status(
             ExpenseItemModel,
             ExpenseItemModel.expense_item_id == ExpenseItemSplitModel.expense_item_id,
         )
-        .join_from(ExpenseModel, ExpenseModel.expense_id == ExpenseItemModel.expense_id)
+        .join(ExpenseModel, ExpenseModel.expense_id == ExpenseItemModel.expense_id)
         .where(ExpenseModel.expense_id == expense.expense_id)
         .where(ExpenseItemSplitModel.user_id == user.user_id)
     )
@@ -300,7 +314,7 @@ async def get_expense_status(
             ExpenseItemModel,
             ExpenseItemModel.expense_item_id == ExpenseItemSplitModel.expense_item_id,
         )
-        .join_from(ExpenseModel, ExpenseModel.expense_id == ExpenseItemModel.expense_id)
+        .join(ExpenseModel, ExpenseModel.expense_id == ExpenseItemModel.expense_id)
         .where(ExpenseModel.expense_id == expense.expense_id)
     )
 
