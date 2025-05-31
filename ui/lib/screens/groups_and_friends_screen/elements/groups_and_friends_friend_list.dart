@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/common/custom_button.dart';
+import 'package:flutter_frontend/common/icon_maker.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_frontend/services/api_service.dart';
 import 'package:provider/provider.dart' show Provider;
@@ -83,6 +85,7 @@ class _GroupsAndFriendsFriendListState
   Widget build(BuildContext context) {
     final proportionalSizes = ProportionalSizes(context: context);
     final textColor = ColorPalette.primaryText;
+    final buttonBackgroundColor = ColorPalette.background;
 
     if (filteredFriends == null) {
       return const Center(child: CircularProgressIndicator());
@@ -95,6 +98,18 @@ class _GroupsAndFriendsFriendListState
           hintText: 'Search friends',
           onChanged: _filterFriends,
         ),
+        const SizedBox(height: 16),
+        Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: CustomButton(
+                    label: 'Manage Friends',
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/manage_friends');
+                    },
+                    state: ButtonState.enabled,
+                    sizeType: ButtonSizeType.full,
+                  ),
+                ),
         const SizedBox(height: 16),
         if (allFriends.isEmpty)
           Padding(

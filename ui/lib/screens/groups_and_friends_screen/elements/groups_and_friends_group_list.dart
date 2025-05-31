@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/common/custom_button.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../common/color_palette.dart';
 import '../../../common/proportional_sizes.dart';
@@ -118,6 +119,18 @@ class _GroupsAndFriendsGroupListState
           hintText: 'Search groups',
           onChanged: _filterGroups,
         ),
+        const SizedBox(height: 16),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: CustomButton(
+                    label: 'Manage Groups',
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/manage_groups');
+                    },
+                    state: ButtonState.enabled,
+                    sizeType: ButtonSizeType.full,
+                  ),
+                ),
         const SizedBox(height: 16),
         if (allGroups.isEmpty)
           Padding(
