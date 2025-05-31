@@ -103,8 +103,10 @@ class S3AttachmentPlugin(Plugin[S3AttachmentPluginSettings]):
                             f"{e.response["Error"]["Message"]}"
                 ) from e
         try:
+            contents = ""
             with open(f"{expense_id}.png", "r") as file:
-                return file.read()
+                contents = file.read()
+            return contents
         except:
             raise HTTPException(
                 status.HTTP_500_INTERNAL_SERVER_ERROR,
