@@ -110,5 +110,5 @@ class S3AttachmentPlugin(Plugin[S3AttachmentPluginSettings]):
         except:
             raise HTTPException(
                 status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    detail=f"Could read downloaded file, {expense_id}.png"
+                    detail=f"Couldn't download file {expense_id}.png"
                 ) from e
