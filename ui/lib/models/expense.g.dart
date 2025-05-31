@@ -6,6 +6,20 @@ part of 'expense.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+SplitStatusInfo _$SplitStatusInfoFromJson(Map<String, dynamic> json) =>
+    SplitStatusInfo(
+      userId: json['user_id'] as String,
+      nickname: json['nickname'] as String,
+      status: const ExpenseStatusConverter().fromJson(json['status'] as String),
+    );
+
+Map<String, dynamic> _$SplitStatusInfoToJson(SplitStatusInfo instance) =>
+    <String, dynamic>{
+      'user_id': instance.userId,
+      'nickname': instance.nickname,
+      'status': const ExpenseStatusConverter().toJson(instance.status),
+    };
+
 ExpenseRead _$ExpenseReadFromJson(Map<String, dynamic> json) => ExpenseRead(
   expenseId: json['expense_id'] as String,
   name: json['name'] as String,

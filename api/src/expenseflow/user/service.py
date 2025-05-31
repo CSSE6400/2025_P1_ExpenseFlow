@@ -15,6 +15,11 @@ async def get_user_by_id(session: AsyncSession, user_id: UUID) -> UserModel | No
     return await session.get(UserModel, user_id)
 
 
+async def get_all_users(session: AsyncSession) -> list[UserModel]:
+    """Get all users."""
+    return list((await session.execute(select(UserModel))).scalars().all())
+
+
 async def get_user_by_token_id(
     session: AsyncSession, token_id: str
 ) -> UserModel | None:

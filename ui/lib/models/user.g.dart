@@ -6,6 +6,18 @@ part of 'user.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+UserReadMinimal _$UserReadMinimalFromJson(Map<String, dynamic> json) =>
+    UserReadMinimal(
+      userId: json['user_id'] as String,
+      nickname: json['nickname'] as String,
+    );
+
+Map<String, dynamic> _$UserReadMinimalToJson(UserReadMinimal instance) =>
+    <String, dynamic>{
+      'user_id': instance.userId,
+      'nickname': instance.nickname,
+    };
+
 UserRead _$UserReadFromJson(Map<String, dynamic> json) => UserRead(
   userId: json['user_id'] as String,
   nickname: json['nickname'] as String,
