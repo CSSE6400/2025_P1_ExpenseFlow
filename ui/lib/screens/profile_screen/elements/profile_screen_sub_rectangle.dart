@@ -63,9 +63,6 @@ class _ProfileScreenSubRectangleState extends State<ProfileScreenSubRectangle> {
       return const Center(child: CircularProgressIndicator());
     }
 
-    // Look at TODO
-    // final apiService = Provider.of<ApiService>(context, listen: false);
-    // apiService.getCurrentUser();
 
     return Container(
       width: double.infinity,

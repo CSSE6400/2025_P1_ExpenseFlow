@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/common/custom_button.dart';
-import 'package:flutter_frontend/common/icon_maker.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_frontend/services/api_service.dart';
 import 'package:provider/provider.dart' show Provider;
@@ -85,7 +84,6 @@ class _GroupsAndFriendsFriendListState
   Widget build(BuildContext context) {
     final proportionalSizes = ProportionalSizes(context: context);
     final textColor = ColorPalette.primaryText;
-    final buttonBackgroundColor = ColorPalette.background;
 
     if (filteredFriends == null) {
       return const Center(child: CircularProgressIndicator());

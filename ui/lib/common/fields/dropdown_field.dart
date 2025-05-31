@@ -133,7 +133,7 @@ class _DropdownFieldState extends State<DropdownField> {
                                       selectedOption = newCategory;
                                     });
                                     widget.onChanged?.call(newCategory);
-                                    // TODO: Save new category to persistent store
+                                    // Save new category to persistent store. No
                                   }
                                   Navigator.pop(context);
                                 },

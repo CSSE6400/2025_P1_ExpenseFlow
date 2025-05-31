@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import '../../../common/color_palette.dart';
-import '../../../common/custom_divider.dart';
 import '../../../common/proportional_sizes.dart';
 import '../../../common/search_bar.dart' as search;
 
@@ -70,19 +67,9 @@ class _AddFriendsScreenItemState extends State<AddFriendsScreenItem> {
     });
   }
 
-  void _removeFriend(Friend friend) {
-    setState(() {
-      allFriends.remove(friend);
-      filteredFriends = List.from(allFriends);
-      hasChanges = true;
-    });
-    widget.onItemsChanged(allFriends, hasChanges);
-  }
-
   @override
   Widget build(BuildContext context) {
     final proportionalSizes = ProportionalSizes(context: context);
-    final textColor = ColorPalette.primaryText;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

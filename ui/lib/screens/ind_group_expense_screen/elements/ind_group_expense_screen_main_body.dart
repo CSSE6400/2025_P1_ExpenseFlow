@@ -186,6 +186,39 @@ class _IndGroupExpenseScreenMainBodyState
     return result;
   }
 
+  Widget buildGroupMembersSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Group Members',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 8),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: groupMembers.map((member) {
+              return Container(
+                margin: const EdgeInsets.only(right: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: Colors.blue.shade50,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  member,
+                  style: const TextStyle(fontSize: 14, color: Colors.black87),
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+        const SizedBox(height: 20),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final proportionalSizes = ProportionalSizes(context: context);
@@ -201,6 +234,7 @@ class _IndGroupExpenseScreenMainBodyState
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              buildGroupMembersSection(),
               // Segment Control
               ExpensesScreenSegmentControl(
                 selectedSegment: selectedSegment,

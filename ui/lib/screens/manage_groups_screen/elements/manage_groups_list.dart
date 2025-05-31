@@ -122,8 +122,8 @@ class _ManageGroupsListState extends State<ManageGroupsList> {
                 onTap: () {
                   Navigator.pushNamed(
                     context,
-                    '/Group_expense',
-                    arguments: {'username': group.name},
+                    '/group_expense',
+                    arguments: {'groupName': group.name},
                   );
                 },
                 child: Row(

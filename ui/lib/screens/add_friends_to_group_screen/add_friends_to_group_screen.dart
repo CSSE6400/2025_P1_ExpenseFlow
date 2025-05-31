@@ -7,8 +7,6 @@ import '../../common/custom_button.dart';
 import 'elements/add_friends_to_group_friends.dart';
 import 'package:flutter_frontend/services/api_service.dart';
 import 'package:provider/provider.dart' show Provider;
-import 'package:flutter_frontend/common/snack_bar.dart';
-import 'package:logging/logging.dart';
 
 class AddFriendsScreen extends StatefulWidget {
   final List<Friend> existingFriends;
