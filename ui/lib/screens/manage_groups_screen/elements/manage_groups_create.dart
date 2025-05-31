@@ -26,15 +26,21 @@ class _AddGroupScreenMainBodyState extends State<AddGroupScreenMainBody> {
   List<Friend> _selectedFriends = [];
   final Logger _logger = Logger("AddGroupScreenMainBody");
 
-  void updateFormValid(bool isValid) {
-    setState(() => isFormValid = isValid);
+  // void updateFormValid(bool isValid) {
+  //   setState(() => isFormValid = isValid);
+  // }
+  void updateFormValid(bool isValidFields) {
+    final isFormValidWithFriends = isValidFields && _selectedUserIds.isNotEmpty;
+    setState(() => isFormValid = isFormValidWithFriends);
   }
 
   Future<void> _selectFriends() async {
     final selectedFriends = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const AddFriendsScreen(),
+        builder: (context) => AddFriendsScreen(
+        existingFriends: _selectedFriends,
+      ),
       ),
     );
 
@@ -50,6 +56,7 @@ class _AddGroupScreenMainBodyState extends State<AddGroupScreenMainBody> {
           ..clear()
           ..addAll(_selectedFriends.map((f) => f.userId));
       });
+      updateFormValid(isFormValid);
     }
   }
 
@@ -123,21 +130,8 @@ class _AddGroupScreenMainBodyState extends State<AddGroupScreenMainBody> {
                 onGroupChanged: updateGroup,
                 onSelectFriends: _selectFriends,
                 selectedFriendCount: _selectedUserIds.length,
+                selectedFriends: _selectedFriends,
               ),
-              SizedBox(height: proportionalSizes.scaleHeight(24)),
-              if (_selectedUserIds.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Selected Friends:'),
-                      // ..._selectedUserIds.map((id) => Text(id)).toList(),
-                      ..._selectedFriends.map((f) => Text(f.name)).toList(),
-                    ],
-                  ),
-                ),
-            
               CustomButton(
                 label: 'Create Group',
                 onPressed: () async {

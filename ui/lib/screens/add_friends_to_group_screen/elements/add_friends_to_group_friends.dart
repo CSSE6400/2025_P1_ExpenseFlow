@@ -100,12 +100,6 @@ class _AddFriendsScreenItemState extends State<AddFriendsScreenItem> {
                       : (selected) => _toggleSelection(friend, selected),
                 ),
                 title: Text(friend.name),
-                trailing: widget.isReadOnly
-                    ? null
-                    : IconButton(
-                        icon: Icon(Icons.remove_circle),
-                        onPressed: () => _removeFriend(friend),
-                      ),
               );
             }).toList(),
           ),

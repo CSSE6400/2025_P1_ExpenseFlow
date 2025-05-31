@@ -4,12 +4,14 @@ import '../../../common/fields/general_field.dart';
 import '../../../common/custom_divider.dart';
 import '../../../models/group.dart';
 import '../../../common/fields/custom_icon_field.dart';
+import '../../add_friends_to_group_screen/elements/add_friends_to_group_friends.dart';
 
 class AddGroupScreenFields extends StatefulWidget {
   final void Function(bool isValid) onValidityChanged;
   final void Function(GroupCreate group)? onGroupChanged;
   final VoidCallback onSelectFriends;
   final int selectedFriendCount;
+  final List<Friend> selectedFriends;
 
   const AddGroupScreenFields({
     super.key,
@@ -17,6 +19,7 @@ class AddGroupScreenFields extends StatefulWidget {
     required this.onGroupChanged,
     required this.onSelectFriends,
     required this.selectedFriendCount,
+    required this.selectedFriends
   });
 
   @override
@@ -86,7 +89,26 @@ class _AddGroupScreenFieldsState extends State<AddGroupScreenFields> {
           trailingIconPath: 'assets/icons/search.png',
           onTap: widget.onSelectFriends, 
         ),
-    
+        if (widget.selectedFriends.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: widget.selectedFriends.map((friend) {
+                  return Chip(
+                    label: Text(friend.name),
+                    backgroundColor: Colors.grey.shade200,
+                    labelStyle: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+          ),
         CustomDivider(),
 
         SizedBox(height: 20),
