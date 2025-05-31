@@ -28,7 +28,7 @@ class _ManageGroupsScreenState extends State<ManageGroupsScreen> {
       body: ManageGroupsMainBody(),
       
       bottomNavigationBar: BottomNavBar(
-        currentScreen: 'Groups',
+        currentScreen: 'ManageGroups',
         inactive: false,
       ),
     );

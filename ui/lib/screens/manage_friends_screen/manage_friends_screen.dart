@@ -28,7 +28,7 @@ class _ManageFriendsScreenState extends State<ManageFriendsScreen> {
       body: ManageFriendsMainBody(),
       
       bottomNavigationBar: BottomNavBar(
-        currentScreen: 'Friends',
+        currentScreen: 'ManageFriends',
         inactive: false,
       ),
     );
