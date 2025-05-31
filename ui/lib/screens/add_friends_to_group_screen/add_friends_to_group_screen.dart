@@ -5,6 +5,10 @@ import '../../common/app_bar.dart';
 import '../../common/bottom_nav_bar.dart';
 import '../../common/custom_button.dart';
 import 'elements/add_friends_to_group_friends.dart';
+import 'package:flutter_frontend/services/api_service.dart';
+import 'package:provider/provider.dart' show Provider;
+import 'package:flutter_frontend/common/snack_bar.dart';
+import 'package:logging/logging.dart';
 
 class AddFriendsScreen extends StatefulWidget {
   final List<Friend> existingFriends;
@@ -26,16 +30,33 @@ class _AddFriendsScreenState extends State<AddFriendsScreen> {
 
   @override
   void initState() {
+    _fetchFriends();
     super.initState();
-    allFriends = widget.existingFriends.isNotEmpty
-      ? List.from(widget.existingFriends)
-      : [
-          Friend(name: '@alice'),
-          Friend(name: '@bob'),
-          Friend(name: '@charlie'),
-          Friend(name: '@diana'),
-        ];
+    // allFriends = widget.existingFriends.isNotEmpty
+    //   ? List.from(widget.existingFriends)
+    //   : [
+    //       Friend(userId: '1', name: '@alice'),
+    //       Friend(userId: '2', name: '@bob'),
+    //       Friend(userId: '3', name: '@charlie'),
+    //       Friend(userId: '4', name: '@diana'),
+    //     ];
   }
+
+  Future<void> _fetchFriends() async {
+  final apiService = Provider.of<ApiService>(context, listen: false);
+  try {
+    final userReads = await apiService.friendApi.getFriends();
+    setState(() {
+      allFriends = userReads.map((user) => Friend(
+        userId: user.userId,
+        name: user.nickname,
+      )).toList();
+    });
+    _logger.info("Friends is $allFriends");
+  } catch (e) {
+    _logger.warning("Failed to load friends: $e");
+  }
+}
 
   void _onFriendsChanged(List<Friend> updatedFriends, bool hasChanges) {
     setState(() {

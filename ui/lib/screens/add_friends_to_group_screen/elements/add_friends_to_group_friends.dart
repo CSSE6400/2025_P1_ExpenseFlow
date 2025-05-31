@@ -6,11 +6,13 @@ import '../../../common/proportional_sizes.dart';
 import '../../../common/search_bar.dart' as search;
 
 class Friend {
+  final String userId;
   final String name;
   bool isSelected;
 
-  Friend({required this.name, this.isSelected = false});
+  Friend({required this.userId, required this.name, this.isSelected = false});
 }
+
 
 class AddFriendsScreenItem extends StatefulWidget {
   final List<Friend> items;
@@ -38,6 +40,17 @@ class _AddFriendsScreenItemState extends State<AddFriendsScreenItem> {
     super.initState();
     allFriends = List.from(widget.items);
     filteredFriends = List.from(allFriends);
+  }
+
+  @override
+  void didUpdateWidget(covariant AddFriendsScreenItem oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.items != widget.items) {
+      setState(() {
+        allFriends = List.from(widget.items);
+        filteredFriends = List.from(allFriends);
+      });
+    }
   }
 
 

@@ -3,13 +3,13 @@ import 'package:flutter_frontend/common/snack_bar.dart';
 import 'package:flutter_frontend/models/enums.dart';
 import 'package:flutter_frontend/models/group.dart' show GroupCreate;
 import 'package:flutter_frontend/screens/add_friends_to_group_screen/add_friends_to_group_screen.dart';
-import 'package:flutter_frontend/screens/groups_and_friends_screen/elements/groups_and_friends_friend_list.dart';
 import 'package:flutter_frontend/screens/manage_groups_screen/elements/add_group_fields.dart';
 import 'package:flutter_frontend/services/api_service.dart' show ApiService;
 import 'package:logging/logging.dart' show Logger;
 import 'package:provider/provider.dart' show Provider;
 import '../../../common/proportional_sizes.dart';
 import '../../../common/custom_button.dart';
+import '../../add_friends_to_group_screen/elements/add_friends_to_group_friends.dart';
 
 
 class AddGroupScreenMainBody extends StatefulWidget {
@@ -23,6 +23,7 @@ class _AddGroupScreenMainBodyState extends State<AddGroupScreenMainBody> {
   bool isFormValid = false;
   GroupCreate? _currentGroup;
   final List<String> _selectedUserIds = [];
+  List<Friend> _selectedFriends = [];
   final Logger _logger = Logger("AddGroupScreenMainBody");
 
   void updateFormValid(bool isValid) {
@@ -44,8 +45,10 @@ class _AddGroupScreenMainBodyState extends State<AddGroupScreenMainBody> {
       _logger.info("selectedFriendsss is: ${selectedFriends}");
       _logger.info(selectedFriends.map((f) => f.name).runtimeType);
       setState(() {
-        _selectedUserIds.clear();
-        _selectedUserIds.addAll(selectedFriends.map((f) => f.name).cast<String>());
+        _selectedFriends = List<Friend>.from(selectedFriends);
+        _selectedUserIds
+          ..clear()
+          ..addAll(_selectedFriends.map((f) => f.userId));
       });
     }
   }
@@ -66,15 +69,15 @@ class _AddGroupScreenMainBodyState extends State<AddGroupScreenMainBody> {
     try {
       final createdGroup = await apiService.groupApi.createGroup(_currentGroup!);
 
-      // Add current user as admin
-      final currentUser = await apiService.userApi.getCurrentUser();
-      if (currentUser != null) {
-        await apiService.groupApi.createUpdateGroupUser(
-          createdGroup.groupId,
-          currentUser.userId,
-          GroupRole.admin,
-        );
-      }
+      // // add user that created the group. Seems that I do not need this?
+      // final currentUser = await apiService.userApi.getCurrentUser();
+      // if (currentUser != null) {
+      //   await apiService.groupApi.createUpdateGroupUser(
+      //     createdGroup.groupId,
+      //     currentUser.userId,
+      //     GroupRole.admin,
+      //   );
+      // }
 
       // add other group members
       _logger.info("_selectedUserIds count is ${_selectedUserIds.length}");
@@ -129,7 +132,8 @@ class _AddGroupScreenMainBodyState extends State<AddGroupScreenMainBody> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text('Selected Friends:'),
-                      ..._selectedUserIds.map((id) => Text(id)).toList(),
+                      // ..._selectedUserIds.map((id) => Text(id)).toList(),
+                      ..._selectedFriends.map((f) => Text(f.name)).toList(),
                     ],
                   ),
                 ),
