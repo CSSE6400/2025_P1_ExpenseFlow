@@ -1,6 +1,7 @@
 import 'dart:convert';
 
-import 'package:flutter_frontend/models/user.dart' show UserCreate, UserRead;
+import 'package:flutter_frontend/models/user.dart'
+    show UserCreate, UserRead, UserReadMinimal;
 import 'package:flutter_frontend/services/api/common.dart';
 import 'package:flutter_frontend/services/api_service.dart' show ApiException;
 
@@ -22,6 +23,24 @@ class UserApiClient extends BaseApiClient {
         throw ApiException(
           response.statusCode,
           "Failed to fetch current user",
+          response.body,
+        );
+    }
+  }
+
+  Future<List<UserReadMinimal>> getAllUsers() async {
+    final response = await client.get(backendUri("/users/all"));
+
+    switch (response.statusCode) {
+      case 200:
+        return safeJsonDecodeList(response.body, UserReadMinimal.fromJson);
+      default:
+        logger.info(
+          "Failed to fetch all users: ${response.statusCode} ${response.body}",
+        );
+        throw ApiException(
+          response.statusCode,
+          "Failed to fetch all users",
           response.body,
         );
     }

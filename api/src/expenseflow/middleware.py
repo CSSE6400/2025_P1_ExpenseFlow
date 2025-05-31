@@ -3,7 +3,6 @@
 from fastapi import status
 from fastapi.responses import JSONResponse, Response
 from loguru import logger
-from pydantic import ValidationError
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.requests import Request
 
@@ -29,28 +28,6 @@ class ExceptionMiddleware(BaseHTTPMiddleware):
         """
         try:
             response = await call_next(request)
-        except ValidationError as e:
-            logger.warning(
-                f"Had to auto catch {type(e).__qualname__}. This should have been caught manually."
-            )
-            logger.error(e)
-            response = JSONResponse(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                content={"detail": e.errors()},
-            )
-        except ValueError as e:
-            logger.error(e)
-            logger.warning(
-                f"Had to auto catch {type(e).__qualname__}. This should have been caught manually."
-            )
-            response = JSONResponse(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                content={
-                    "detail": [
-                        {"msg": "Unknown", "loc": ["Unknown"], "type": "Unknown"}
-                    ]
-                },
-            )
         except ExpenseFlowError as e:
             logger.error(e)
             logger.warning(
