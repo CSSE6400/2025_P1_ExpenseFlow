@@ -34,7 +34,6 @@ class _ManageFriendsRequestsState extends State<ManageFriendsRequests> {
     super.initState();
     _fetchRequests();
 
-    // TODO: Load friend requests from backend
     // Incoming means the user has received a request,
     // Outgoing means the user has sent a request
     // allRequests = [
@@ -122,16 +121,46 @@ class _ManageFriendsRequestsState extends State<ManageFriendsRequests> {
       description: 'Do you want to accept the friend request from $username?',
       buttonCount: 2,
       button2Text: 'Yes',
-      onButton2Pressed: () {
-        setState(() {
-          allRequests.removeWhere(
-              (r) => r.name == username && r.isIncoming);
-          filteredRequests.removeWhere(
-              (r) => r.name == username && r.isIncoming);
-        });
-        Navigator.of(context).pop();
-        // TODO: Call backend to accept the friend request
-      },
+      onButton2Pressed: () async {
+      Navigator.of(context).pop();
+
+      final apiService = Provider.of<ApiService>(context, listen: false);
+      try {
+        final nickname = username.replaceFirst('@', '');
+        final result = await apiService.friendApi
+            .sendAcceptFriendRequestNickname(nickname);
+
+        if (result != null) {
+          setState(() {
+            allRequests.removeWhere((r) => r.name == username && r.isIncoming);
+            filteredRequests.removeWhere(
+                (r) => r.name == username && r.isIncoming);
+          });
+
+          showCustomSnackBar(
+            context,
+            normalText: 'Friend request accepted!',
+          );
+        } else {
+          showCustomSnackBar(
+            context,
+            normalText: 'User not found.',
+          );
+        }
+      } on ApiException catch (e) {
+        _logger.warning("API exception: ${e.message}");
+        showCustomSnackBar(
+          context,
+          normalText: 'Failed to accept request.',
+        );
+      } catch (e) {
+        _logger.severe("Unexpected error: $e");
+        showCustomSnackBar(
+          context,
+          normalText: 'Something went wrong.',
+        );
+      }
+    },
       button1Text: 'Cancel',
       button1Color: ColorPalette.error,
       onButton1Pressed: () => Navigator.of(context).pop(),

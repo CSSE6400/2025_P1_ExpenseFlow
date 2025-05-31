@@ -5,7 +5,6 @@ import '../../../common/proportional_sizes.dart';
 // Elements
 import 'manage_groups_segment_control.dart';
 import 'manage_groups_list.dart';
-import 'manage_groups_find.dart';
 
 class ManageGroupsMainBody extends StatefulWidget {
   const ManageGroupsMainBody({super.key});
@@ -47,8 +46,6 @@ class _ManageGroupsMainBodyState extends State<ManageGroupsMainBody> {
 
               if (selectedSegment == 'Groups') ...[
                 const ManageGroupsList(),
-              // ] else if (selectedSegment == 'Find') ...[
-              //   const ManageGroupsFind(),
               ] else if (selectedSegment == 'Create') ...[
                 const AddGroupScreenMainBody(),
               ],

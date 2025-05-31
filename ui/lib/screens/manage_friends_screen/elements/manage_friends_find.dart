@@ -35,7 +35,6 @@ class _ManageFriendsFindState extends State<ManageFriendsFind> {
     super.initState();
     _fetchAllUsers();
     
-    // // TODO: Load list of all users from backend for friend search
     // allUsers = [
     //   Friend(name: '@abc123'),
     //   Friend(name: '@xyz987'),

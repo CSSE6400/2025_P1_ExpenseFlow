@@ -60,7 +60,7 @@ class _ManageFriendsListState extends State<ManageFriendsList> {
       setState(() {
         allFriends = userReads
             .map((user) => Friend(
-                  name: '@${user.firstName}',
+                  name: '@${user.nickname}',
                 ))
             .toList();
         filteredFriends = allFriends;

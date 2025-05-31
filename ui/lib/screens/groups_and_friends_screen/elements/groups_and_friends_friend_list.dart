@@ -46,7 +46,7 @@ class _GroupsAndFriendsFriendListState
       setState(() {
         allFriends = userReads
             .map((user) => Friend(
-                  name: '@${user.firstName}',
+                  name: '@${user.nickname}',
                   isActive: true,
                 ))
             .toList();

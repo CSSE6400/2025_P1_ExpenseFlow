@@ -137,7 +137,7 @@ class _GroupsAndFriendsGroupListState
             padding: const EdgeInsets.only(top: 32.0),
             child: Center(
               child: Text(
-                "You have no friends :(",
+                "You have no groups :(",
                 style: GoogleFonts.roboto(
                   fontSize: proportionalSizes.scaleText(16),
                   fontWeight: FontWeight.w500,
