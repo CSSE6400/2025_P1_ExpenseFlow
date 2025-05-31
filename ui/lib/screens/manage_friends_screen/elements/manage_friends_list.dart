@@ -81,7 +81,6 @@ class _ManageFriendsListState extends State<ManageFriendsList> {
       );
     }
     filteredFriends = allFriends;
-
   }
 
   @override

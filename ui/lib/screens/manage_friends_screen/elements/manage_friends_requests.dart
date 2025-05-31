@@ -54,20 +54,20 @@ class _ManageFriendsRequestsState extends State<ManageFriendsRequests> {
   Future<void> _fetchRequests() async {
     final apiService = Provider.of<ApiService>(context, listen: false);
     try {
-            final userReadsSent = await apiService.friendApi.getSentFriendRequests();
+      final userReadsSent = await apiService.friendApi.getSentFriendRequests();
       final userReadsIncoming =
           await apiService.friendApi.getReceivedFriendRequests();
 
       final sentRequests = userReadsSent
           .map((user) => FriendRequest(
-                name: '@${user.firstName}',
+                name: '@${user.nickname}',
                 isIncoming: false,
               ))
           .toList();
 
       final incomingRequests = userReadsIncoming
           .map((user) => FriendRequest(
-                name: '@${user.firstName}',
+                name: '@${user.nickname}',
                 isIncoming: true,
               ))
           .toList();

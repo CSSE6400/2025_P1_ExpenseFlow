@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:logging/logging.dart';
 import '../../../common/color_palette.dart';
 import '../../../common/proportional_sizes.dart';
 import '../../../common/search_bar.dart' as search;
 import '../../../common/custom_button.dart';
 import '../../../common/dialogs/app_dialog_box.dart';
+import 'package:flutter_frontend/services/api_service.dart';
+import 'package:provider/provider.dart' show Provider;
+import 'package:flutter_frontend/common/snack_bar.dart';
 
 class Friend {
   final String name;
+  final String userId;
 
-  Friend({required this.name});
+  Friend({required this.name, required this.userId});
 }
 
 class ManageFriendsFind extends StatefulWidget {
@@ -20,25 +25,70 @@ class ManageFriendsFind extends StatefulWidget {
 }
 
 class _ManageFriendsFindState extends State<ManageFriendsFind> {
-  late List<Friend> allUsers;
-  late List<Friend> filteredUsers;
+  List<Friend> allUsers = [];
+  List<Friend> filteredUsers = [];
   Set<String> sentRequests = {};
+  final Logger _logger = Logger("ManageFriendsFind");
 
   @override
   void initState() {
     super.initState();
+    _fetchAllUsers();
+    
+    // // TODO: Load list of all users from backend for friend search
+    // allUsers = [
+    //   Friend(name: '@abc123'),
+    //   Friend(name: '@xyz987'),
+    //   Friend(name: '@pqr456'),
+    //   Friend(name: '@mno789'),
+    //   Friend(name: '@def321'),
+    //   Friend(name: '@uvw654'),
+    // ];
 
-    // TODO: Load list of all users from backend for friend search
-    allUsers = [
-      Friend(name: '@abc123'),
-      Friend(name: '@xyz987'),
-      Friend(name: '@pqr456'),
-      Friend(name: '@mno789'),
-      Friend(name: '@def321'),
-      Friend(name: '@uvw654'),
-    ];
+    // filteredUsers = [];
+  }
 
-    filteredUsers = [];
+  Future<void> _fetchAllUsers() async {
+    final apiService = Provider.of<ApiService>(context, listen: false);
+    try {
+      final allUserReads = await apiService.userApi.getAllUsers();
+      final currentUser = await apiService.userApi.getCurrentUser();
+      final sentRequestsUsers = await apiService.friendApi.getSentFriendRequests();
+      final currentFriends = await apiService.friendApi.getFriends();
+      final currentUserId = currentUser?.userId;
+      final sentRequestIds = sentRequestsUsers.map((user) => user.userId).toSet();
+      final currentFriendsIds = currentFriends.map((user) => user.userId).toSet();
+
+      final filtered = allUserReads.where((user) {
+        return user.userId != currentUserId 
+            && !sentRequestIds.contains(user.userId) 
+            && !currentFriendsIds.contains(user.userId);
+      }).toList();
+
+      setState(() {
+        allUsers = filtered
+            .map((user) => Friend(
+                  name: '@${user.nickname}',
+                  userId: user.userId,
+                ))
+            .toList();
+        filteredUsers = allUsers;
+      });
+    } on ApiException catch (e) {
+      _logger.warning("API exception while fetching friends: ${e.message}");
+      showCustomSnackBar(
+        context,
+        normalText: "Failed to load friends",
+      );
+    } catch (e) {
+      _logger.severe("Unexpected error: $e");
+      showCustomSnackBar(
+        context,
+        normalText: "Something went wrong",
+      );
+    }
+    filteredUsers = allUsers;
+
   }
 
   void _filterUsers(String query) {
@@ -61,13 +111,29 @@ class _ManageFriendsFindState extends State<ManageFriendsFind> {
       description: 'Do you want to send a friend request to $username?',
       buttonCount: 2,
       button2Text: 'Yes',
-      onButton2Pressed: () {
-        // Mark request as sent
-        setState(() {
-          sentRequests.add(username);
-        });
+      onButton2Pressed: () async {
         Navigator.of(context).pop();
-        // TODO: Send the friend request to the backend here
+
+        final apiService = Provider.of<ApiService>(context, listen: false);
+        final nickname = username.replaceFirst('@', '');
+
+        try {
+          final result = await apiService.friendApi.sendAcceptFriendRequestNickname(nickname);
+          if (result != null) {
+            setState(() {
+              sentRequests.add(username);
+            });
+            showCustomSnackBar(context, normalText: 'Friend request sent to $username');
+          } else {
+            showCustomSnackBar(context, normalText: 'User not found.');
+          }
+        } on ApiException catch (e) {
+          _logger.warning("API exception sending request to $username: ${e.message}");
+          showCustomSnackBar(context, normalText: 'Failed to send friend request');
+        } catch (e) {
+          _logger.severe("Unexpected error: $e");
+          showCustomSnackBar(context, normalText: 'Something went wrong');
+        }
       },
       button1Text: 'Cancel',
       button1Color: ColorPalette.error,
