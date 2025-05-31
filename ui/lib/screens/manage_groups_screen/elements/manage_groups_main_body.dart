@@ -47,8 +47,8 @@ class _ManageGroupsMainBodyState extends State<ManageGroupsMainBody> {
 
               if (selectedSegment == 'Groups') ...[
                 const ManageGroupsList(),
-              ] else if (selectedSegment == 'Find') ...[
-                const ManageGroupsFind(),
+              // ] else if (selectedSegment == 'Find') ...[
+              //   const ManageGroupsFind(),
               ] else if (selectedSegment == 'Create') ...[
                 const AddGroupScreenMainBody(),
               ],

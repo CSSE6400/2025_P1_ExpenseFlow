@@ -41,13 +41,14 @@ class _GroupsAndFriendsFriendListState
     try {
       final userReads = await apiService.friendApi.getFriends();
 
-      // Convert UserRead to Friend
-      allFriends = userReads
-          .map((user) => Friend(
-                name: '@${user.firstName}',
-                isActive: true,
-              ))
-          .toList();
+      setState(() {
+        allFriends = userReads
+            .map((user) => Friend(
+                  name: '@${user.firstName}',
+                  isActive: true,
+                ))
+            .toList();
+      });
 
       setState(() {
         filteredFriends = List.from(allFriends)

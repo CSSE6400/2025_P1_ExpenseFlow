@@ -60,17 +60,17 @@ class _ManageGroupsSegmentControlState
                   ),
                 ),
               ),
-              'Find': Center(
-                child: Text(
-                  'Find',
-                  style: GoogleFonts.roboto(
-                    fontWeight: FontWeight.w600,
-                    color: widget.selectedSegment == 'Find'
-                        ? selectedTextColor
-                        : unselectedTextColor,
-                  ),
-                ),
-              ),
+              // 'Find': Center(
+              //   child: Text(
+              //     'Find',
+              //     style: GoogleFonts.roboto(
+              //       fontWeight: FontWeight.w600,
+              //       color: widget.selectedSegment == 'Find'
+              //           ? selectedTextColor
+              //           : unselectedTextColor,
+              //     ),
+              //   ),
+              // ),
               'Create': Center(
                 child: Text(
                   'Create',

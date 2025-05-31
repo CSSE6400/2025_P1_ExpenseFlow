@@ -57,12 +57,15 @@ class _ManageFriendsListState extends State<ManageFriendsList> {
     try {
       final userReads = await apiService.friendApi.getFriends();
 
-      // Convert UserRead to Friend
-      allFriends = userReads
-          .map((user) => Friend(
-                name: '@${user.firstName}',
-              ))
-          .toList();
+      setState(() {
+        allFriends = userReads
+            .map((user) => Friend(
+                  name: '@${user.firstName}',
+                ))
+            .toList();
+        filteredFriends = allFriends;
+      });
+      _logger.info(allFriends);
 
     } on ApiException catch (e) {
       _logger.warning("API exception while fetching friends: ${e.message}");
@@ -77,7 +80,7 @@ class _ManageFriendsListState extends State<ManageFriendsList> {
         normalText: "Something went wrong",
       );
     }
-    filteredFriends = List.from(allFriends);
+    filteredFriends = allFriends;
 
   }
 

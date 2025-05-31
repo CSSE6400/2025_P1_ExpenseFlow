@@ -45,7 +45,7 @@ class _AddFriendsScreenState extends State<AddFriendsScreen> {
 
   void _saveAndReturn() {
     final selectedFriends = allFriends.where((f) => f.isSelected).toList();
-    _logger.info("selectedFriends is ${selectedFriends}");
+    _logger.info("selectedFriends is $selectedFriends");
     _logger.info("selectedFriends length is ${selectedFriends.length}");
     Navigator.pop(context, selectedFriends);
   }
