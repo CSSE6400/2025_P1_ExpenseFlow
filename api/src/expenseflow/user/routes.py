@@ -8,8 +8,18 @@ from expenseflow.auth.deps import CurrentUser, CurrentUserTokenID
 from expenseflow.database.deps import DbSession
 from expenseflow.errors import ExistsError
 from expenseflow.user.models import UserModel
-from expenseflow.user.schemas import UserCreate, UserCreateInternal, UserRead
-from expenseflow.user.service import create_user, get_user_by_id, get_user_by_nickname
+from expenseflow.user.schemas import (
+    UserCreate,
+    UserCreateInternal,
+    UserRead,
+    UserReadMinimal,
+)
+from expenseflow.user.service import (
+    create_user,
+    get_all_users,
+    get_user_by_id,
+    get_user_by_nickname,
+)
 
 r = router = APIRouter()
 
@@ -18,6 +28,12 @@ r = router = APIRouter()
 async def get_me(user: CurrentUser) -> UserModel:
     """Get current user."""
     return user
+
+
+@r.get("/all", response_model=list[UserReadMinimal])
+async def get_all(db: DbSession, _: CurrentUser) -> list[UserModel]:
+    """Get all users."""
+    return await get_all_users(db)
 
 
 @r.get("/nickname-taken", response_model=bool)

@@ -5,6 +5,13 @@ from uuid import UUID
 from expenseflow.schemas import ExpenseFlowBase
 
 
+class UserReadMinimal(ExpenseFlowBase):
+    """User minimal read schema."""
+
+    user_id: UUID
+    nickname: str
+
+
 class UserRead(ExpenseFlowBase):
     """User read schema."""
 

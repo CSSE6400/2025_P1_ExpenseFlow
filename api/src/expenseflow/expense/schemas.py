@@ -3,9 +3,17 @@
 import datetime as dt
 from uuid import UUID
 
-from expenseflow.enums import ExpenseCategory
+from expenseflow.enums import ExpenseCategory, ExpenseStatus
 from expenseflow.schemas import ExpenseFlowBase
 from expenseflow.user.schemas import UserRead
+
+
+class SplitStatusInfo(ExpenseFlowBase):
+    """Info on a user's split."""
+
+    user_id: UUID
+    nickname: str
+    status: ExpenseStatus
 
 
 class ExpenseRead(ExpenseFlowBase):
