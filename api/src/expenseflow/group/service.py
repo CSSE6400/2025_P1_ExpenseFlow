@@ -124,6 +124,7 @@ async def create_update_group_user_role(
         return new_user_membership
 
     new_user_membership = GroupUserModel(user=new_user, group=group, role=new_role)
+    session.add(new_user_membership)
     await session.commit()
 
     return new_user_membership
