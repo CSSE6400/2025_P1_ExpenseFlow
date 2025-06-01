@@ -26,7 +26,7 @@ resource "aws_ecs_service" "expenseflow_api" {
   network_configuration {
     subnets          = data.aws_subnets.private.ids
     security_groups  = [aws_security_group.expenseflow_api.id]
-    assign_public_ip = true
+    assign_public_ip = false
   }
 
   load_balancer {
@@ -196,5 +196,20 @@ resource "aws_lb_listener" "expenseflow_api_https" {
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.expenseflow_api.arn
+  }
+}
+
+resource "aws_lb_listener" "expenseflow_api_http" {
+  load_balancer_arn = aws_lb.expenseflow_api.arn
+  port              = 80
+  protocol          = "HTTP"
+
+  default_action {
+    type = "redirect"
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
   }
 }
