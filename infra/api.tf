@@ -197,7 +197,7 @@ resource "aws_lb_listener" "expenseflow_api_https" {
   port              = "443"
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-2016-08"
-  certificate_arn   = "arn:aws:acm:us-east-1:654654409426:certificate/f42ac526-0744-4e99-9cdd-508ca173f310"
+  certificate_arn   = data.aws_acm_certificate.expenseflow.arn
 
   default_action {
     type             = "forward"

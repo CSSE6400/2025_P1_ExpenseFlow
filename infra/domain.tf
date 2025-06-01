@@ -24,3 +24,7 @@ resource "aws_route53_record" "expenseflow_api" {
     evaluate_target_health = true
   }
 }
+
+data "aws_acm_certificate" "expenseflow" {
+  domain = "*.g3.csse6400.xyz"
+}
