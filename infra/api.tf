@@ -65,6 +65,10 @@ resource "aws_ecs_task_definition" "expenseflow_api" {
           value = "postgresql+asyncpg://${local.db_username}:${var.db_password}@${aws_db_instance.expenseflow_db.address}:${aws_db_instance.expenseflow_db.port}/${aws_db_instance.expenseflow_db.db_name}"
         },
         {
+          name  = "FRONTEND_URL",
+          value = local.ui_url
+        },
+        {
           name  = "JWT_AUDIENCE",
           value = data.auth0_resource_server.expenseflow_api.identifier
         },
@@ -73,8 +77,8 @@ resource "aws_ecs_task_definition" "expenseflow_api" {
           value = var.auth0_domain
         },
         {
-          name  = "FRONTEND_URL",
-          value = local.ui_url
+          name  = "SENTRY_DSN",
+          value = var.sentry_dsn
         }
       ],
       logConfiguration = {
