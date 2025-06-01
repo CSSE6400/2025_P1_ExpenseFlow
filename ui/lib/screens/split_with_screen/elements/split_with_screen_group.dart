@@ -11,9 +11,9 @@ import 'package:provider/provider.dart' show Provider;
 import 'package:flutter_frontend/common/snack_bar.dart';
 
 // Group Member class
-// TODO: Consider adding userId, transactionId or unique identifier for backend syncing
 class GroupMember {
   String name;
+  String uuid;
   String percentage;
   bool checked;
   bool disabled;
@@ -21,6 +21,7 @@ class GroupMember {
 
   GroupMember({
     required this.name,
+    required this.uuid,
     required this.percentage,
     required this.checked,
     required this.disabled,
@@ -28,7 +29,6 @@ class GroupMember {
 }
 
 // Group class
-// TODO: Consider adding groupId, transactionId or unique identifier for backend syncing
 class Group {
   String name;
   List<GroupMember> members;
@@ -66,13 +66,11 @@ class SplitWithScreenGroupState extends State<SplitWithScreenGroup> {
   List<Group> filteredGroups = [];
   final Logger _logger = Logger("SplitWithGroup");
 
-  // Initialize groups and their members
   @override
   void initState() {
     super.initState();
 
     // Initialize groups
-    // TODO: Replace with actual data from the backend and add lazy loading if groups are numerous.
     _fetchGroups();
     // allGroups = getUserGroups
     // allGroups = [
@@ -108,16 +106,6 @@ class SplitWithScreenGroupState extends State<SplitWithScreenGroup> {
       ));
       }
 
-      // // Convert UserRead to Friend
-      // allGroups = userReads
-      //     .map((group) => Group(
-      //           name: '@${group.name}',
-      //           members: _generateMembers(group.groupId),
-      //           uuid: group.groupId,
-
-      //         ))
-      //     .toList();
-
       if (allGroups.isEmpty) { 
         _logger.info("User has no groups"); 
       }
@@ -140,38 +128,6 @@ class SplitWithScreenGroupState extends State<SplitWithScreenGroup> {
     }
   }
 
-  // Future<void> _generateMembers(groupId) async {
-  //   final apiService = Provider.of<ApiService>(context, listen: false);
-  //   try {
-  //     _logger.info(widget.groupUUID);
-  //     final userReads = await apiService.groupApi.getGroupUsers(widget.groupUUID);
-
-  //     final fetchedMembers = userReads
-  //         .map((user) => '@${user.nickname}')
-  //         .toList();
-
-  //     setState(() {
-  //       groupMembers = fetchedMembers;
-  //     });
-
-  //     if (fetchedMembers.isEmpty) {
-  //       _logger.info("Group has no members");
-  //     }
-  //   } on ApiException catch (e) {
-  //     _logger.info("API exception while fetching group members: ${e.message}");
-  //     showCustomSnackBar(
-  //       context,
-  //       normalText: "Failed to load group members",
-  //     );
-  //   } catch (e) {
-  //     _logger.info("Unexpected error: $e");
-  //     showCustomSnackBar(
-  //       context,
-  //       normalText: "Something went wrong",
-  //     );
-  //   }
-  // }
-
   Future<List<GroupMember>> _generateMembers(String groupId) async {
     final apiService = Provider.of<ApiService>(context, listen: false);
     try {
@@ -180,6 +136,7 @@ class SplitWithScreenGroupState extends State<SplitWithScreenGroup> {
       final members = userReads.map((user) {
         return GroupMember(
           name: '@${user.nickname}',
+          uuid: user.userId,
           percentage: '',
           checked: false,
           disabled: false,
@@ -191,6 +148,7 @@ class SplitWithScreenGroupState extends State<SplitWithScreenGroup> {
         0,
         GroupMember(
           name: 'You',
+          uuid: '1',
           percentage: '100',
           checked: true,
           disabled: false,
@@ -202,22 +160,10 @@ class SplitWithScreenGroupState extends State<SplitWithScreenGroup> {
       _logger.warning("Failed to fetch group members: $e");
       showCustomSnackBar(context, normalText: "Failed to load group members");
       return [
-        GroupMember(name: 'You', percentage: '100', checked: true, disabled: false)
+        GroupMember(name: 'You', percentage: '100', checked: true, disabled: false, uuid: '1')
       ];
     }
   }
-
-
-  // // Generate dummy members for each group
-  // // TODO: Replace with actual data from the backend and add lazy loading if group members are numerous.
-  // static List<GroupMember> _generateMembers(groupId) {
-  //   return [
-  //     GroupMember(name: 'You', percentage: '100', checked: true, disabled: false),
-  //     GroupMember(name: '@abc', percentage: '', checked: false, disabled: false),
-  //     GroupMember(name: '@xyz', percentage: '', checked: false, disabled: false),
-  //     GroupMember(name: '@def', percentage: '', checked: false, disabled: false),
-  //   ];
-  // }
 
   // Select a group and update its state
   void _selectGroup(int index) {
@@ -262,7 +208,7 @@ class SplitWithScreenGroupState extends State<SplitWithScreenGroup> {
 
   // Save group and member splits, then exit
   void saveAndExit(BuildContext context) {
-    // TODO: Save group + member splits
+    // TODO: Save group + member splits (and laod them in if needed)
     Navigator.pop(context);
   }
 

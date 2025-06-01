@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/common/color_palette.dart';
 import 'package:flutter_frontend/common/custom_divider.dart';
+import 'package:flutter_frontend/common/snack_bar.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:logging/logging.dart';
 import '../../../common/proportional_sizes.dart';
 import '../../../common/search_bar.dart' as search;
 import '../../../common/icon_maker.dart';
+import 'package:flutter_frontend/services/api_service.dart';
+import 'package:provider/provider.dart' show Provider;
 
 // Friend class
 // TODO: Consider adding userId, transactionId or unique identifier for backend syncing
@@ -43,6 +47,7 @@ class SplitWithScreenFriendState extends State<SplitWithScreenFriend> {
   late Friend you;
   List<Friend> otherFriends = [];
   List<Friend> filteredFriends = [];
+  final Logger _logger = Logger("SplitWithFriendScreen");
 
   // Initialize 'You' and other friends
   @override
@@ -60,19 +65,53 @@ class SplitWithScreenFriendState extends State<SplitWithScreenFriend> {
     // Initialize others
     // TODO: Replace with actual data from the backend and add lazy loading if friends are numerous.
     // For now, we are using dummy data. Maybe would need to restrcture the Friend class to include a userId, transactionId or something similar.
-    
-    otherFriends = [
-      Friend(name: '@lol2873', percentage: '', checked: false, disabled: false),
-      Friend(name: '@lmaoi187', percentage: '', checked: false, disabled: false),
-      Friend(name: '@xyz877', percentage: '', checked: false, disabled: false),
-      Friend(name: '@abc123', percentage: '', checked: false, disabled: false),
-    ];
+    _fetchFriends();
+    // otherFriends = [
+    //   Friend(name: '@lol2873', percentage: '', checked: false, disabled: false),
+    //   Friend(name: '@lmaoi187', percentage: '', checked: false, disabled: false),
+    //   Friend(name: '@xyz877', percentage: '', checked: false, disabled: false),
+    //   Friend(name: '@abc123', percentage: '', checked: false, disabled: false),
+    // ];
 
     filteredFriends = List.from(otherFriends);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       widget.onValidityChanged?.call(isTotalPercentageValid());
     });
+  }
+
+  Future<void> _fetchFriends() async {
+    final apiService = Provider.of<ApiService>(context, listen: false);
+    try {
+      final userReads = await apiService.friendApi.getFriends();
+
+      setState(() {
+        otherFriends = userReads
+            .map((user) => Friend(
+                  name: '@${user.nickname}',
+                  percentage: '',
+                  checked: false,
+                  disabled: false,
+                ))
+            .toList();
+      });
+
+      setState(() {
+        filteredFriends = List.from(otherFriends);
+      });
+    } on ApiException catch (e) {
+      _logger.warning("API exception while fetching friends: ${e.message}");
+      showCustomSnackBar(
+        context,
+        normalText: "Failed to load friends",
+      );
+    } catch (e) {
+      _logger.severe("Unexpected error: $e");
+      showCustomSnackBar(
+        context,
+        normalText: "Something went wrong",
+      );
+    }
   }
 
   // Filter friends based on search query
