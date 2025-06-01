@@ -94,10 +94,10 @@ resource "aws_ecs_task_definition" "expenseflow_api" {
   ])
 }
 
-# Security Group
-resource "aws_security_group" "expenseflow_api" {
-  name        = "expenseflow-api"
-  description = "ExpenseFlow API Security Group"
+# Create a separate SG for the ALB
+resource "aws_security_group" "expenseflow_api_alb" {
+  name        = "expenseflow-api-alb"
+  description = "Security group for the public api alb"
 
   ingress {
     from_port   = 443
@@ -106,11 +106,24 @@ resource "aws_security_group" "expenseflow_api" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  ingress {
-    from_port   = 8080
-    to_port     = 8080
-    protocol    = "tcp"
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+# Security Group
+resource "aws_security_group" "expenseflow_api" {
+  name        = "expenseflow-api"
+  description = "ExpenseFlow API Security Group"
+
+  ingress {
+    from_port       = 8080
+    to_port         = 8080
+    protocol        = "tcp"
+    security_groups = [aws_security_group.expenseflow_api_alb.id]
   }
 
   egress {
@@ -152,7 +165,7 @@ resource "aws_lb" "expenseflow_api" {
   internal           = false
   load_balancer_type = "application"
   subnets            = data.aws_subnets.private.ids
-  security_groups    = [aws_security_group.expenseflow_api.id]
+  security_groups    = [aws_security_group.expenseflow_api_alb.id]
 }
 
 resource "aws_lb_target_group" "expenseflow_api" {
