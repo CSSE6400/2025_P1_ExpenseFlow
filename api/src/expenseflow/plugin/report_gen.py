@@ -7,7 +7,8 @@ from typing import Any, Dict, List
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import Depends
 from expenseflow.expense.models import ExpenseModel
-from expenseflow.expense.service import get_uploaded_expenses, get_expense
+from expenseflow.expense.service import  get_owned_expenses
+# from expenseflow.user.service import get_user_by_id
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime as dt
@@ -50,7 +51,10 @@ class ReportGenPlugin(Plugin[PluginSettings]):
 
     def shutdown(self) -> None:
         """Shutdown plugin."""
-
+        if os.path.exists(self.CHART_PATH):
+            os.remove(self.CHART_PATH)
+        if os.path.exists(self.PDF_PATH):
+            os.remove(self.PDF_PATH)
 
     async def generate_report(self, db: DbSession, user: CurrentUser) -> FileResponse:
         """
@@ -64,31 +68,35 @@ class ReportGenPlugin(Plugin[PluginSettings]):
         budget_data = await self.get_budget_and_distribution(db, user)
         transactions = await self.get_recent_transactions(db, user)
         await self.generate_chart(db, user)
-        self.generate_pdf_report(budget_data, transactions)
+        self.generate_pdf_report(budget_data, transactions, user)
         return FileResponse(self.PDF_PATH, media_type='application/pdf', filename=self.PDF_PATH)
 
     async def get_budget_and_distribution(self, db: DbSession, user: CurrentUser) -> Dict[str, Any]:
         """Get budget data and category distribution using service methods."""
 
-        uploaded_expenses = await get_uploaded_expenses(db, user)
+        # uploaded_expenses = await get_uploaded_expenses(db, user)
+        owned_expenses = await get_owned_expenses(db, user)
         
         
         total_spent = sum(
             item.price * split.proportion * item.quantity
-            for expense in uploaded_expenses 
+            for expense in owned_expenses 
             for item in expense.items 
-            for split in item.splits
+            for split in item.splits if split.user_id == user.user_id
         )
 
         # Calculate category distribution
         category_distribution = {}
-        for expense in uploaded_expenses:
+        for expense in owned_expenses:
             for item in expense.items:
-                i_total_price = item.price * item.quantity * sum(split.proportion for split in item.splits)
-                if expense.category in category_distribution:
-                    category_distribution[expense.category] += i_total_price
-                else:
-                    category_distribution[expense.category] = i_total_price
+                for split in item.splits:
+                    if split.user_id != user.user_id:
+                        continue
+                    i_total_price = item.price * item.quantity * split.proportion 
+                    if expense.category in category_distribution:
+                        category_distribution[expense.category] += i_total_price
+                    else:
+                        category_distribution[expense.category] = i_total_price
 
         return {
             "budget": self._config.budget,
@@ -99,29 +107,44 @@ class ReportGenPlugin(Plugin[PluginSettings]):
 
     async def get_recent_transactions(self, db: DbSession, user: CurrentUser) -> List[ExpenseModel]:
         """Get recent transactions using service methods."""
-        uploaded = await get_uploaded_expenses(db, user)
+        uploaded = await get_owned_expenses(db, user)
 
         return sorted(uploaded, key=lambda x: x.created_at, reverse=True)
 
     async def generate_chart(self, db: DbSession, user: CurrentUser) -> None:
         """Generate expense distribution chart."""
         category_data = await self.get_budget_and_distribution(db, user)
-        categories = list(category_data["category_distribution"].keys())
+        categories = list(cat.split(".")[-1] for cat in category_data["category_distribution"].keys())
         amounts = list(category_data["category_distribution"].values())
         
         def _generate():
             plt.figure(figsize=(8, 6))
-            plt.pie(amounts, labels=categories, autopct='%1.1f%%')
-            plt.axis('equal')
-            plt.title(f"Expenses Distribution ({dt.now().strftime('%Y-%m-%d')})")
+            colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#9B59B6', '#F1C40F', '#2ECC71', '#E74C3C', '#3498DB', '#8E44AD', '#F39C12']  
+            wedges, texts, autotexts = plt.pie(
+                amounts,
+                labels=categories,
+                autopct='%1.1f%%',
+                wedgeprops=dict(width=0.5),
+                startangle=90,
+                colors=colors
+            )
+
+            for autotext in autotexts:
+                autotext.set_fontsize(12)
+                autotext.set_color('white')
+                autotext.set_weight('bold')
+
+            plt.legend(wedges, categories, title="Categories", loc="center left", bbox_to_anchor=(1, 0, 0.5, 1))
+
+            plt.title(f"Expenses Distribution ({dt.now().strftime('%Y-%m-%d')})", fontsize=14, fontweight='bold')
             plt.tight_layout()
-            plt.savefig(self.CHART_PATH, format='png')
+            plt.savefig(self.CHART_PATH, format='png', dpi=200)
             plt.close()
-        
+            
         loop = asyncio.get_event_loop()
         await loop.run_in_executor(ThreadPoolExecutor(max_workers=2), _generate)
 
-    def generate_pdf_report(self, budget_data: Dict[str, Any], recent_transactions: List[ExpenseModel]) -> None:
+    def generate_pdf_report(self, budget_data: Dict[str, Any], recent_transactions: List[ExpenseModel], user: CurrentUser) -> None:
         """Generate PDF report with budget data and recent transactions."""
         buffer = BytesIO()
         c = canvas.Canvas(buffer, pagesize=letter)
@@ -135,6 +158,11 @@ class ReportGenPlugin(Plugin[PluginSettings]):
         # Title
         c.setFont("Helvetica-Bold", 16)
         c.drawString(left_margin, top_margin, "Expense Report")
+        top_margin -= line_height + 10
+
+        # Show nickname
+        c.setFont("Helvetica-Bold", 12)
+        c.drawString(left_margin, top_margin, f"Hi, {user.first_name} {user.last_name}!")
         top_margin -= line_height + 10
 
         # Budget Data
@@ -174,7 +202,7 @@ class ReportGenPlugin(Plugin[PluginSettings]):
 
         x = left_margin
         y = top_margin
-        c.setFont("Helvetica-Bold", 10)
+        c.setFont("Helvetica", 10)
         for i, header in enumerate(headers):
             c.setFillColor(colors.lightblue)
             c.rect(x, y, col_widths[i], row_height, fill=1)
@@ -191,8 +219,9 @@ class ReportGenPlugin(Plugin[PluginSettings]):
             price = f"${sum(
             item.price * item.quantity * split.proportion
             for item in t.items
-            for split in item.splits
+            for split in item.splits if split.user_id == user.user_id
             ):.2f}"
+            
             
             for i, val in enumerate([date_str, name, price]):
                 c.rect(x, y, col_widths[i], row_height, fill=0)
@@ -206,8 +235,13 @@ class ReportGenPlugin(Plugin[PluginSettings]):
                 item_name = getattr(item, "name", "")
                 item_price = getattr(item, "price", "")
                 item_quantity = getattr(item, "quantity", "")
+                user_split = next((split.proportion for split in item.splits if split.user_id == user.user_id), None)
+                if user_split is not None:
+                    item_proportion = f"{user_split * 100:.1f}%"
+                else:
+                    item_proportion = "0.0%"
                 c.setFont("Helvetica", 9)
-                c.drawString(left_margin + 20, y + 5, f"Item: {item_name}, Price: {item_price}, Quantity: {item_quantity}")
+                c.drawString(left_margin + 20, y + 5, f"Item: {item_name}, Price: {item_price}, Quantity: {item_quantity}, Proportion: {item_proportion}")
                 y -= row_height
                 if y < 50:
                     c.showPage()
