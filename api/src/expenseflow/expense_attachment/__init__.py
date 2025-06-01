@@ -1,1 +1,0 @@
-"""Expense Attachment Module."""
