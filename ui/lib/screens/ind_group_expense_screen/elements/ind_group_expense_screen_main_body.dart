@@ -62,6 +62,8 @@ class _IndGroupExpenseScreenMainBodyState
 
     // TODO: Replace with actual data from your database
     // Shouldn't "paid" as active status turn "active" to false?
+
+
     allExpenses = [
       ExpenseItem(
         name: 'Uber Ride',
