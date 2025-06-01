@@ -10,8 +10,9 @@ import 'package:logging/logging.dart';
 
 class Group {
   final String name;
+  final String uuid;
 
-  Group({required this.name});
+  Group({required this.name, required this.uuid});
 }
 
 class ManageGroupsList extends StatefulWidget {
@@ -53,38 +54,38 @@ class _ManageGroupsListState extends State<ManageGroupsList> {
   }
 
   Future<void> _fetchGroups() async {
-  final apiService = Provider.of<ApiService>(context, listen: false);
-  try {
-    final userReads = await apiService.groupApi.getUserGroups();
+    final apiService = Provider.of<ApiService>(context, listen: false);
+    try {
+      final userReads = await apiService.groupApi.getUserGroups();
 
-    final fetchedGroups = userReads
-        .map((group) => Group(name: '@${group.name}'))
-        .toList();
+      final fetchedGroups = userReads
+          .map((group) => Group(name: '@${group.name}', uuid: group.groupId))
+          .toList();
 
-    _logger.info("Fetched all groups");
+      _logger.info("Fetched all groups");
 
-    setState(() {
-      allGroups = fetchedGroups;
-      filteredGroups = List.from(fetchedGroups);
-    });
+      setState(() {
+        allGroups = fetchedGroups;
+        filteredGroups = List.from(fetchedGroups);
+      });
 
-    if (fetchedGroups.isEmpty) {
-      _logger.info("User has no groups");
+      if (fetchedGroups.isEmpty) {
+        _logger.info("User has no groups");
+      }
+    } on ApiException catch (e) {
+      _logger.warning("API exception while fetching Groups: ${e.message}");
+      showCustomSnackBar(
+        context,
+        normalText: "Failed to load Groups",
+      );
+    } catch (e) {
+      _logger.severe("Unexpected error: $e");
+      showCustomSnackBar(
+        context,
+        normalText: "Something went wrong",
+      );
     }
-  } on ApiException catch (e) {
-    _logger.warning("API exception while fetching Groups: ${e.message}");
-    showCustomSnackBar(
-      context,
-      normalText: "Failed to load Groups",
-    );
-  } catch (e) {
-    _logger.severe("Unexpected error: $e");
-    showCustomSnackBar(
-      context,
-      normalText: "Something went wrong",
-    );
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -123,7 +124,7 @@ class _ManageGroupsListState extends State<ManageGroupsList> {
                   Navigator.pushNamed(
                     context,
                     '/group_expense',
-                    arguments: {'groupName': group.name},
+                    arguments: {'groupName': group.name, 'groupUUID': group.uuid},
                   );
                 },
                 child: Row(

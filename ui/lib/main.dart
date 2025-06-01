@@ -157,6 +157,7 @@ class MyApp extends StatelessWidget {
           case '/group_expense':
             final args = settings.arguments as Map<String, dynamic>?;
             final groupName = args?['groupName'] as String?;
+            final groupUUID = args?['groupUUID'] as String?;
 
             if (groupName == null) {
               return MaterialPageRoute(
@@ -167,7 +168,7 @@ class MyApp extends StatelessWidget {
             }
 
             return MaterialPageRoute(
-              builder: (_) => IndGroupExpenseScreen(groupName: groupName),
+              builder: (_) => IndGroupExpenseScreen(groupName: groupName, groupUUID: groupUUID!),
             );
           default:
             final logger = Logger("MyApp");

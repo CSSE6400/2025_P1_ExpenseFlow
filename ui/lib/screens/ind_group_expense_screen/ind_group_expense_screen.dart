@@ -7,10 +7,12 @@ import '../../common/bottom_nav_bar.dart';
 
 class IndGroupExpenseScreen extends StatefulWidget {
   final String groupName;
+  final String groupUUID;
 
   const IndGroupExpenseScreen({
     super.key,
     required this.groupName,
+    required this.groupUUID,
   });
 
   @override
@@ -31,6 +33,7 @@ class _IndGroupExpenseScreenState extends State<IndGroupExpenseScreen> {
 
       body: IndGroupExpenseScreenMainBody(
         groupName: widget.groupName,
+        groupUUID: widget.groupUUID
       ),
 
       bottomNavigationBar: BottomNavBar(

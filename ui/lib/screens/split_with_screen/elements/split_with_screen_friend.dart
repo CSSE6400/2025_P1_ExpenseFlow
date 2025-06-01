@@ -60,6 +60,7 @@ class SplitWithScreenFriendState extends State<SplitWithScreenFriend> {
     // Initialize others
     // TODO: Replace with actual data from the backend and add lazy loading if friends are numerous.
     // For now, we are using dummy data. Maybe would need to restrcture the Friend class to include a userId, transactionId or something similar.
+    
     otherFriends = [
       Friend(name: '@lol2873', percentage: '', checked: false, disabled: false),
       Friend(name: '@lmaoi187', percentage: '', checked: false, disabled: false),

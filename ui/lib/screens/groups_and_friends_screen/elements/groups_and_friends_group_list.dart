@@ -12,8 +12,9 @@ import 'package:logging/logging.dart';
 class Group {
   final String name;
   final bool isActive;
+  final String uuid;
 
-  Group({required this.name, required this.isActive});
+  Group({required this.name, required this.isActive, required this.uuid});
 }
 
 class GroupsAndFriendsGroupList extends StatefulWidget {
@@ -59,6 +60,7 @@ class _GroupsAndFriendsGroupListState
           .map((group) => Group(
                 name: '@${group.name}',
                 isActive: true, 
+                uuid: group.groupId,
               ))
           .toList();
 
@@ -155,7 +157,7 @@ class _GroupsAndFriendsGroupListState
                   Navigator.pushNamed(
                     context,
                     '/group_expense',
-                    arguments: {'groupName': group.name},
+                    arguments: {'groupName': group.name, 'groupUUID': group.uuid,},
                   );
                 },
                 child: Row(
