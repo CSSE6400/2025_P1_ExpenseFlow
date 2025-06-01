@@ -1,5 +1,5 @@
 resource "aws_security_group" "expenseflow_alb" {
-  name        = "expenseflow-api-alb"
+  name        = "expenseflow-alb"
   description = "Security group for the public api alb"
 
   ingress {
