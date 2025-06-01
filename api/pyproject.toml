@@ -19,6 +19,7 @@ dependencies = [
     "sqlalchemy[asyncio]>=2.0.40",
     "types-boto3>=1.38.17",
     "types-pyyaml>=6.0.12.20250402",
+    "types-reportlab>=4.4.1.20250601",
 ]
 
 [dependency-groups]
