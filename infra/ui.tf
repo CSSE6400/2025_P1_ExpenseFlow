@@ -102,6 +102,13 @@ resource "aws_security_group" "expenseflow_ui" {
   }
 
   ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
     from_port   = 3000
     to_port     = 3000
     protocol    = "tcp"
@@ -148,6 +155,19 @@ resource "aws_lb_listener" "expenseflow_ui" {
   load_balancer_arn = aws_lb.expenseflow_ui.arn
   port              = "80"
   protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.expenseflow_ui.arn
+  }
+}
+
+resource "aws_lb_listener" "expenseflow_ui_https" {
+  load_balancer_arn = aws_lb.expenseflow_ui.arn
+  port              = "443"
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-2016-08"
+  certificate_arn   = "arn:aws:acm:us-east-1:654654409426:certificate/f42ac526-0744-4e99-9cdd-508ca173f310"
 
   default_action {
     type             = "forward"
