@@ -57,12 +57,10 @@ class _IndGroupExpenseScreenMainBodyState
   void initState() {
     super.initState();
     _fetchGroupMembers();
-    // TODO: Fetch group members from backend using widget.groupUUID
-    //groupMembers = ['@abc123', '@xyz987', '@pqr456', '@mno789', 'You'];
 
     // TODO: Replace with actual data from your database
     // Shouldn't "paid" as active status turn "active" to false?
-
+    
 
     allExpenses = [
       ExpenseItem(

@@ -3,8 +3,12 @@ import 'package:flutter_frontend/common/color_palette.dart';
 import 'package:flutter_frontend/common/custom_divider.dart';
 import 'package:flutter_frontend/common/icon_maker.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:logging/logging.dart';
 import '../../../common/proportional_sizes.dart';
 import '../../../common/search_bar.dart' as search;
+import 'package:flutter_frontend/services/api_service.dart';
+import 'package:provider/provider.dart' show Provider;
+import 'package:flutter_frontend/common/snack_bar.dart';
 
 // Group Member class
 // TODO: Consider adding userId, transactionId or unique identifier for backend syncing
@@ -30,8 +34,10 @@ class Group {
   List<GroupMember> members;
   bool isSelected;
   bool isExpanded;
+  String uuid;
 
   Group({
+    required this.uuid,
     required this.name,
     required this.members,
     this.isSelected = false,
@@ -58,6 +64,7 @@ class SplitWithScreenGroup extends StatefulWidget {
 class SplitWithScreenGroupState extends State<SplitWithScreenGroup> {
   List<Group> allGroups = [];
   List<Group> filteredGroups = [];
+  final Logger _logger = Logger("SplitWithGroup");
 
   // Initialize groups and their members
   @override
@@ -66,33 +73,151 @@ class SplitWithScreenGroupState extends State<SplitWithScreenGroup> {
 
     // Initialize groups
     // TODO: Replace with actual data from the backend and add lazy loading if groups are numerous.
-    allGroups = [
-      Group(name: 'Flatmates', members: _generateMembers()),
-      Group(name: 'Project Team', members: _generateMembers()),
-      Group(name: 'Family', members: _generateMembers()),
-    ];
+    _fetchGroups();
+    // allGroups = getUserGroups
+    // allGroups = [
+    //   Group(uuid: '1', name: 'Flatmates', members: _generateMembers()),
+    //   Group(uuid: '2', name: 'Project Team', members: _generateMembers()),
+    //   Group(uuid: '3', name: 'Family', members: _generateMembers()),
+    // ];
 
-    filteredGroups = List.from(allGroups);
+    //filteredGroups = List.from(allGroups);
 
     // Default: first group selected & expanded
-    allGroups[0].isSelected = true;
-    allGroups[0].isExpanded = true;
-
+    if (allGroups.isNotEmpty) {
+      allGroups[0].isSelected = true;
+      allGroups[0].isExpanded = true;
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       widget.onValidityChanged?.call(isTotalPercentageValid());
     });
   }
 
-  // Generate dummy members for each group
-  // TODO: Replace with actual data from the backend and add lazy loading if group members are numerous.
-  static List<GroupMember> _generateMembers() {
-    return [
-      GroupMember(name: 'You', percentage: '100', checked: true, disabled: false),
-      GroupMember(name: '@abc', percentage: '', checked: false, disabled: false),
-      GroupMember(name: '@xyz', percentage: '', checked: false, disabled: false),
-      GroupMember(name: '@def', percentage: '', checked: false, disabled: false),
-    ];
+  Future<void> _fetchGroups() async {
+    final apiService = Provider.of<ApiService>(context, listen: false);
+    try {
+      final userReads = await apiService.groupApi.getUserGroups();
+      allGroups = [];
+
+      for (final group in userReads) {
+      final members = await _generateMembers(group.groupId);
+      allGroups.add(Group(
+        name: '@${group.name}',
+        members: members,
+        uuid: group.groupId,
+      ));
+      }
+
+      // // Convert UserRead to Friend
+      // allGroups = userReads
+      //     .map((group) => Group(
+      //           name: '@${group.name}',
+      //           members: _generateMembers(group.groupId),
+      //           uuid: group.groupId,
+
+      //         ))
+      //     .toList();
+
+      if (allGroups.isEmpty) { 
+        _logger.info("User has no groups"); 
+      }
+
+      setState(() {
+        filteredGroups = List.from(allGroups);
+      });
+    } on ApiException catch (e) {
+      _logger.warning("API exception while fetching friends: ${e.message}");
+      showCustomSnackBar(
+        context,
+        normalText: "Failed to load friends",
+      );
+    } catch (e) {
+      _logger.severe("Unexpected error: $e");
+      showCustomSnackBar(
+        context,
+        normalText: "Something went wrong",
+      );
+    }
   }
+
+  // Future<void> _generateMembers(groupId) async {
+  //   final apiService = Provider.of<ApiService>(context, listen: false);
+  //   try {
+  //     _logger.info(widget.groupUUID);
+  //     final userReads = await apiService.groupApi.getGroupUsers(widget.groupUUID);
+
+  //     final fetchedMembers = userReads
+  //         .map((user) => '@${user.nickname}')
+  //         .toList();
+
+  //     setState(() {
+  //       groupMembers = fetchedMembers;
+  //     });
+
+  //     if (fetchedMembers.isEmpty) {
+  //       _logger.info("Group has no members");
+  //     }
+  //   } on ApiException catch (e) {
+  //     _logger.info("API exception while fetching group members: ${e.message}");
+  //     showCustomSnackBar(
+  //       context,
+  //       normalText: "Failed to load group members",
+  //     );
+  //   } catch (e) {
+  //     _logger.info("Unexpected error: $e");
+  //     showCustomSnackBar(
+  //       context,
+  //       normalText: "Something went wrong",
+  //     );
+  //   }
+  // }
+
+  Future<List<GroupMember>> _generateMembers(String groupId) async {
+    final apiService = Provider.of<ApiService>(context, listen: false);
+    try {
+      final userReads = await apiService.groupApi.getGroupUsers(groupId);
+
+      final members = userReads.map((user) {
+        return GroupMember(
+          name: '@${user.nickname}',
+          percentage: '',
+          checked: false,
+          disabled: false,
+        );
+      }).toList();
+
+      // Add the 'You' member
+      members.insert(
+        0,
+        GroupMember(
+          name: 'You',
+          percentage: '100',
+          checked: true,
+          disabled: false,
+        ),
+      );
+
+      return members;
+    } catch (e) {
+      _logger.warning("Failed to fetch group members: $e");
+      showCustomSnackBar(context, normalText: "Failed to load group members");
+      return [
+        GroupMember(name: 'You', percentage: '100', checked: true, disabled: false)
+      ];
+    }
+  }
+
+
+  // // Generate dummy members for each group
+  // // TODO: Replace with actual data from the backend and add lazy loading if group members are numerous.
+  // static List<GroupMember> _generateMembers(groupId) {
+  //   return [
+  //     GroupMember(name: 'You', percentage: '100', checked: true, disabled: false),
+  //     GroupMember(name: '@abc', percentage: '', checked: false, disabled: false),
+  //     GroupMember(name: '@xyz', percentage: '', checked: false, disabled: false),
+  //     GroupMember(name: '@def', percentage: '', checked: false, disabled: false),
+  //   ];
+  // }
 
   // Select a group and update its state
   void _selectGroup(int index) {
