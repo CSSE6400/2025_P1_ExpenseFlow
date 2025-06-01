@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/common/custom_button.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_frontend/services/api_service.dart';
+import 'package:provider/provider.dart' show Provider;
+import 'package:flutter_frontend/common/snack_bar.dart';
+import 'package:logging/logging.dart';
 import '../../../common/color_palette.dart';
 import '../../../common/proportional_sizes.dart';
 import '../../../common/search_bar.dart' as search;
@@ -22,25 +27,47 @@ class GroupsAndFriendsFriendList extends StatefulWidget {
 class _GroupsAndFriendsFriendListState
     extends State<GroupsAndFriendsFriendList> {
   late List<Friend> allFriends;
-  late List<Friend> filteredFriends;
+  List<Friend>? filteredFriends;
+  final Logger _logger = Logger("GroupandFriendsFriendListLogger");
+
 
   @override
   void initState() {
+    _fetchFriends();
     super.initState();
+  }
 
-    // TODO: Load friends and their payment status from backend
-    allFriends = [
-      Friend(name: '@abc123', isActive: true),
-      Friend(name: '@xyz987', isActive: false),
-      Friend(name: '@pqr456', isActive: true),
-      Friend(name: '@mno789', isActive: false),
-      Friend(name: '@def321', isActive: false),
-      Friend(name: '@uvw654', isActive: true),
-    ];
+  Future<void> _fetchFriends() async {
+    final apiService = Provider.of<ApiService>(context, listen: false);
+    try {
+      final userReads = await apiService.friendApi.getFriends();
 
-    filteredFriends = List.from(allFriends)
-      ..sort((a, b) => b.isActive ? 1 : -1); // Active friends first
+      setState(() {
+        allFriends = userReads
+            .map((user) => Friend(
+                  name: '@${user.nickname}',
+                  isActive: true,
+                ))
+            .toList();
+      });
 
+      setState(() {
+        filteredFriends = List.from(allFriends)
+          ..sort((a, b) => b.isActive ? 1 : -1); // Active friends first
+      });
+    } on ApiException catch (e) {
+      _logger.warning("API exception while fetching friends: ${e.message}");
+      showCustomSnackBar(
+        context,
+        normalText: "Failed to load friends",
+      );
+    } catch (e) {
+      _logger.severe("Unexpected error: $e");
+      showCustomSnackBar(
+        context,
+        normalText: "Something went wrong",
+      );
+    }
   }
 
   void _filterFriends(String query) {
@@ -58,6 +85,10 @@ class _GroupsAndFriendsFriendListState
     final proportionalSizes = ProportionalSizes(context: context);
     final textColor = ColorPalette.primaryText;
 
+    if (filteredFriends == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -66,7 +97,34 @@ class _GroupsAndFriendsFriendListState
           onChanged: _filterFriends,
         ),
         const SizedBox(height: 16),
-        ...filteredFriends.map((friend) => Padding(
+        Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: CustomButton(
+                    label: 'Manage Friends',
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/manage_friends');
+                    },
+                    state: ButtonState.enabled,
+                    sizeType: ButtonSizeType.full,
+                  ),
+                ),
+        const SizedBox(height: 16),
+        if (allFriends.isEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: 32.0),
+            child: Center(
+              child: Text(
+                "You have no friends :(",
+                style: GoogleFonts.roboto(
+                  fontSize: proportionalSizes.scaleText(16),
+                  fontWeight: FontWeight.w500,
+                  color: textColor,
+                ),
+              ),
+            ),
+          )
+        else
+        ...filteredFriends!.map((friend) => Padding(
               padding: EdgeInsets.symmetric(
                 vertical: proportionalSizes.scaleHeight(8),
               ),
@@ -111,7 +169,7 @@ class _GroupsAndFriendsFriendListState
                           ),
                         ),
                         child: Text(
-                          'Active',
+                          'Friend',
                           style: GoogleFonts.roboto(
                             color: ColorPalette.accent,
                             fontWeight: FontWeight.bold,

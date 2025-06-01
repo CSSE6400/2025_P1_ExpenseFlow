@@ -4,16 +4,16 @@ import '../../common/color_palette.dart';
 import '../../common/bottom_nav_bar.dart';
 import '../../common/app_bar.dart';
 // Elements
-import 'elements/manage_friends_main_body.dart';
+import 'elements/manage_groups_main_body.dart';
 
-class ManageFriendsScreen extends StatefulWidget {
-  const ManageFriendsScreen({super.key});
+class ManageGroupsScreen extends StatefulWidget {
+  const ManageGroupsScreen({super.key});
 
   @override
-  State<ManageFriendsScreen> createState() => _ManageFriendsScreenState();
+  State<ManageGroupsScreen> createState() => _ManageGroupsScreenState();
 }
 
-class _ManageFriendsScreenState extends State<ManageFriendsScreen> {
+class _ManageGroupsScreenState extends State<ManageGroupsScreen> {
   @override
   Widget build(BuildContext context) {
     final backgroundColor = ColorPalette.background;
@@ -21,14 +21,14 @@ class _ManageFriendsScreenState extends State<ManageFriendsScreen> {
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBarWidget(
-        screenName: 'Manage Friends',
+        screenName: 'Manage Groups',
         showBackButton: true,
       ),
 
-      body: ManageFriendsMainBody(),
+      body: ManageGroupsMainBody(),
       
       bottomNavigationBar: BottomNavBar(
-        currentScreen: 'ManageFriends',
+        currentScreen: 'ManageGroups',
         inactive: false,
       ),
     );

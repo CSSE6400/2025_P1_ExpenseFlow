@@ -29,10 +29,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
       body: ProfileScreenMainBody(),
 
-      bottomNavigationBar: BottomNavBar(
-        currentScreen: 'Home',
-        inactive: true,
-      ),
+      bottomNavigationBar: BottomNavBar(currentScreen: 'Profile', inactive: false),
     );
   }
 }

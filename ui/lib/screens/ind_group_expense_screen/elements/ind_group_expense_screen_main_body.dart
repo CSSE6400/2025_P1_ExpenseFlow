@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/common/time_period_dropdown.dart';
+import 'package:logging/logging.dart';
 // Common imports
 import '../../../common/proportional_sizes.dart';
 import '../../expenses_screen/elements/expenses_screen_segment_control.dart';
 import '../elements/ind_group_expense_screen_list.dart';
+import 'package:flutter_frontend/services/api_service.dart';
+import 'package:provider/provider.dart' show Provider;
+import 'package:flutter_frontend/common/snack_bar.dart';
 
 class GroupMember {
   final String name;
@@ -31,8 +35,9 @@ class ExpenseItem {
 
 class IndGroupExpenseScreenMainBody extends StatefulWidget {
   final String groupName;
+  final String groupUUID;
 
-  const IndGroupExpenseScreenMainBody({super.key, required this.groupName});
+  const IndGroupExpenseScreenMainBody({super.key, required this.groupName, required this.groupUUID});
 
   @override
   State<IndGroupExpenseScreenMainBody> createState() =>
@@ -44,14 +49,16 @@ class _IndGroupExpenseScreenMainBodyState
   String selectedSegment = 'Active';
   String selectedPeriod = 'Last 30 Days';
   late final List<ExpenseItem> allExpenses;
-  late final List<String> groupMembers;
+  //late final List<String> groupMembers;
+  List<String> groupMembers = [];
+  final Logger _logger = Logger("IndividualGroupScreen");
 
   @override
   void initState() {
     super.initState();
-
-    // TODO: Fetch group members from backend using widget.groupName
-    groupMembers = ['@abc123', '@xyz987', '@pqr456', '@mno789', 'You'];
+    _fetchGroupMembers();
+    // TODO: Fetch group members from backend using widget.groupUUID
+    //groupMembers = ['@abc123', '@xyz987', '@pqr456', '@mno789', 'You'];
 
     // TODO: Replace with actual data from your database
     // Shouldn't "paid" as active status turn "active" to false?
@@ -145,6 +152,39 @@ class _IndGroupExpenseScreenMainBodyState
     ];
   }
 
+  Future<void> _fetchGroupMembers() async {
+    final apiService = Provider.of<ApiService>(context, listen: false);
+    try {
+      _logger.info(widget.groupUUID);
+      final userReads = await apiService.groupApi.getGroupUsers(widget.groupUUID);
+
+      final fetchedMembers = userReads
+          .map((user) => '@${user.nickname}')
+          .toList();
+
+      setState(() {
+        groupMembers = fetchedMembers;
+      });
+
+      if (fetchedMembers.isEmpty) {
+        _logger.info("Group has no members");
+      }
+    } on ApiException catch (e) {
+      _logger.info("API exception while fetching group members: ${e.message}");
+      showCustomSnackBar(
+        context,
+        normalText: "Failed to load group members",
+      );
+    } catch (e) {
+      _logger.info("Unexpected error: $e");
+      showCustomSnackBar(
+        context,
+        normalText: "Something went wrong",
+      );
+    }
+  }
+
+
   void handleSegmentChange(String newSegment) {
     setState(() {
       selectedSegment = newSegment;
@@ -186,6 +226,45 @@ class _IndGroupExpenseScreenMainBodyState
     return result;
   }
 
+  Widget buildGroupMembersSection() {
+    // if (groupMembers == null) {
+    //   return const CircularProgressIndicator();
+    // }
+    // if (groupMembers!.isEmpty) {
+    //   return const Text('No group members.');
+    // }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Group Members',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 8),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: groupMembers.map((member) {
+              return Container(
+                margin: const EdgeInsets.only(right: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: Colors.blue.shade50,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  member,
+                  style: const TextStyle(fontSize: 14, color: Colors.black87),
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+        const SizedBox(height: 20),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final proportionalSizes = ProportionalSizes(context: context);
@@ -201,6 +280,7 @@ class _IndGroupExpenseScreenMainBodyState
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              buildGroupMembersSection(),
               // Segment Control
               ExpensesScreenSegmentControl(
                 selectedSegment: selectedSegment,

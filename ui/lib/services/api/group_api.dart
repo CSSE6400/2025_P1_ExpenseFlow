@@ -109,7 +109,8 @@ class GroupApiClient extends BaseApiClient {
     GroupRole role,
   ) async {
     final response = await client.put(
-      backendUri("/groups/$groupId/users/$userId?role=$role"),
+      // backendUri("/groups/$groupId/users/$userId?role=$role"),
+      backendUri("/groups/$groupId/users/$userId?role=${role.label}"),
     );
 
     if (response.statusCode == 200) {

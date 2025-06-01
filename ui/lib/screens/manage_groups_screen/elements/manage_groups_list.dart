@@ -8,70 +8,75 @@ import 'package:provider/provider.dart' show Provider;
 import 'package:flutter_frontend/common/snack_bar.dart';
 import 'package:logging/logging.dart';
 
-class Friend {
+class Group {
   final String name;
+  final String uuid;
 
-  Friend({required this.name});
+  Group({required this.name, required this.uuid});
 }
 
-class ManageFriendsList extends StatefulWidget {
-  const ManageFriendsList({super.key});
+class ManageGroupsList extends StatefulWidget {
+  const ManageGroupsList({super.key});
 
   @override
-  State<ManageFriendsList> createState() => _ManageFriendsListState();
+  State<ManageGroupsList> createState() => _ManageGroupsListState();
 }
 
-class _ManageFriendsListState extends State<ManageFriendsList> {
-  List<Friend> allFriends = [];
-  late List<Friend> filteredFriends;
-  final Logger _logger = Logger("ManageFriendsList");
+class _ManageGroupsListState extends State<ManageGroupsList> {
+  List<Group> allGroups = [];
+  late List<Group> filteredGroups;
+  final Logger _logger = Logger("ManageGroupsList");
 
   @override
   void initState() {
-    _fetchFriends();
+    _fetchGroups();
     super.initState();
 
-    // allFriends = [
-    //   Friend(name: '@abc123'),
-    //   Friend(name: '@xyz987'),
-    //   Friend(name: '@pqr456'),
-    //   Friend(name: '@mno789'),
-    //   Friend(name: '@def321'),
-    //   Friend(name: '@uvw654'),
+    // allGroups = [
+    //   Group(name: '@abc123'),
+    //   Group(name: '@xyz987'),
+    //   Group(name: '@pqr456'),
+    //   Group(name: '@mno789'),
+    //   Group(name: '@def321'),
+    //   Group(name: '@uvw654'),
     // ];
 
-    // filteredFriends = List.from(allFriends);
+    // filteredGroups = List.from(allGroups);
   }
 
-  void _filterFriends(String query) {
+  void _filterGroups(String query) {
     setState(() {
-      filteredFriends = allFriends
-          .where((friend) =>
-              friend.name.toLowerCase().contains(query.toLowerCase()))
+      filteredGroups = allGroups
+          .where((group) =>
+              group.name.toLowerCase().contains(query.toLowerCase()))
           .toList();
     });
   }
 
-  Future<void> _fetchFriends() async {
+  Future<void> _fetchGroups() async {
     final apiService = Provider.of<ApiService>(context, listen: false);
     try {
-      final userReads = await apiService.friendApi.getFriends();
+      final userReads = await apiService.groupApi.getUserGroups();
+
+      final fetchedGroups = userReads
+          .map((group) => Group(name: '@${group.name}', uuid: group.groupId))
+          .toList();
+
+      _logger.info("Fetched all groups");
 
       setState(() {
-        allFriends = userReads
-            .map((user) => Friend(
-                  name: '@${user.nickname}',
-                ))
-            .toList();
-        filteredFriends = allFriends;
+        allGroups = fetchedGroups;
+        filteredGroups = List.from(fetchedGroups);
       });
-      _logger.info(allFriends);
 
+      if (fetchedGroups.isEmpty) {
+        _logger.info("User has no groups");
+      }
     } on ApiException catch (e) {
-      _logger.warning("API exception while fetching friends: ${e.message}");
+      _logger.warning("API exception while fetching Groups: ${e.message}");
       showCustomSnackBar(
         context,
-        normalText: "Failed to load friends",
+        normalText: "Failed to load Groups",
       );
     } catch (e) {
       _logger.severe("Unexpected error: $e");
@@ -80,7 +85,6 @@ class _ManageFriendsListState extends State<ManageFriendsList> {
         normalText: "Something went wrong",
       );
     }
-    filteredFriends = allFriends;
   }
 
   @override
@@ -92,16 +96,16 @@ class _ManageFriendsListState extends State<ManageFriendsList> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         search.SearchBar(
-          hintText: 'Search friends',
-          onChanged: _filterFriends,
+          hintText: 'Search Groups',
+          onChanged: _filterGroups,
         ),
         const SizedBox(height: 16),
-        if (allFriends.isEmpty)
+        if (allGroups.isEmpty)
           Padding(
             padding: const EdgeInsets.only(top: 32.0),
             child: Center(
               child: Text(
-                "You have no friends :(",
+                "You have no groups :(",
                 style: GoogleFonts.roboto(
                   fontSize: proportionalSizes.scaleText(16),
                   fontWeight: FontWeight.w500,
@@ -111,7 +115,7 @@ class _ManageFriendsListState extends State<ManageFriendsList> {
             ),
           )
         else
-        ...filteredFriends.map((friend) => Padding(
+        ...filteredGroups.map((group) => Padding(
               padding: EdgeInsets.symmetric(
                 vertical: proportionalSizes.scaleHeight(8),
               ),
@@ -119,17 +123,17 @@ class _ManageFriendsListState extends State<ManageFriendsList> {
                 onTap: () {
                   Navigator.pushNamed(
                     context,
-                    '/friend_expense',
-                    arguments: {'username': friend.name},
+                    '/group_expense',
+                    arguments: {'groupName': group.name, 'groupUUID': group.uuid},
                   );
                 },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    // Friend name in a flexible container with ellipsis
+                    // Group name in a flexible container with ellipsis
                     Expanded(
                       child: Text(
-                        friend.name,
+                        group.name,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: GoogleFonts.roboto(
