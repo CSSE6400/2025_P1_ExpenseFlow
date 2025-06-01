@@ -47,3 +47,11 @@ class FriendStatus(ExpenseFlowEnum):
 
     requested = "requested"
     accepted = "accepted"
+
+
+class ExpenseStatus(ExpenseFlowEnum):
+    """Enum for expense status."""
+
+    requested = "requested"
+    accepted = "accepted"
+    paid = "paid"

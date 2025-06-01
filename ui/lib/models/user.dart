@@ -5,6 +5,18 @@ import 'package:json_annotation/json_annotation.dart';
 part 'user.g.dart';
 
 @JsonSerializable(fieldRename: FieldRename.snake)
+class UserReadMinimal {
+  final String userId;
+  final String nickname;
+
+  UserReadMinimal({required this.userId, required this.nickname});
+
+  factory UserReadMinimal.fromJson(Map<String, dynamic> json) =>
+      _$UserReadMinimalFromJson(json);
+  Map<String, dynamic> toJson() => _$UserReadMinimalToJson(this);
+}
+
+@JsonSerializable(fieldRename: FieldRename.snake)
 class UserRead {
   final String userId;
   final String nickname;

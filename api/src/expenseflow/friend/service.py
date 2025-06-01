@@ -4,6 +4,7 @@ from sqlalchemy import and_, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from expenseflow.enums import FriendStatus
+from expenseflow.errors import ExpenseFlowError
 from expenseflow.friend.models import FriendModel
 from expenseflow.user.models import UserModel
 
@@ -46,7 +47,7 @@ async def get_received_friend_requests(
         .scalars()
         .all()
     )
-    return [r.receiver for r in requests]
+    return [r.sender for r in requests]
 
 
 async def get_sent_friend_requests(
@@ -69,6 +70,10 @@ async def create_accept_friend_request(
     session: AsyncSession, sender: UserModel, receiver: UserModel
 ) -> FriendModel:
     """Creates or accepts a friend request."""
+    if sender.user_id == receiver.user_id:
+        msg = f"User '{sender.user_id}' cannot friend itself."
+        raise ExpenseFlowError(msg)
+
     existing_request = (
         await session.execute(
             select(FriendModel).where(
