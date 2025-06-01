@@ -13,6 +13,11 @@ terraform {
       version = "1.19.1"
     }
   }
+  backend "s3" {
+    bucket = "expenseflow-tfstate"
+    key    = "state/terraform.tfstate"
+    region = "us-east-1"
+  }
 }
 
 provider "aws" {
