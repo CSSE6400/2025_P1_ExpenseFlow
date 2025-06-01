@@ -1,5 +1,5 @@
 locals {
   db_username = "administrator"
-  ui_url      = "http://${aws_lb.expenseflow_ui.dns_name}"
-  api_url     = "http://${aws_lb.expenseflow_api.dns_name}"
+  ui_url      = "https://${aws_route53_record.expenseflow_ui.name}"
+  api_url     = "https://${aws_route53_record.expenseflow_api.name}"
 }
