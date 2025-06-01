@@ -37,7 +37,7 @@ data "auth0_client" "expenseflow_ui_client" {
 
 resource "auth0_resource_server" "expenseflow_api" {
   name                   = "ExpenseFlow API"
-  identifier             = "https://expenseflow.com/api"
+  identifier             = "https://expenseflow.com/prd/api"
   signing_alg            = "RS256"
   token_dialect          = "access_token"
   token_lifetime         = 86400
