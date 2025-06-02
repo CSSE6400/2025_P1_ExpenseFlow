@@ -30,6 +30,7 @@ class UserModel(EntityModel):
     nickname: Mapped[str] = mapped_column(unique=True, index=True)
     first_name: Mapped[str]
     last_name: Mapped[str]
+    budget: Mapped[int]
 
     # Relationships
     groups: Mapped[list["GroupUserModel"]] = relationship(

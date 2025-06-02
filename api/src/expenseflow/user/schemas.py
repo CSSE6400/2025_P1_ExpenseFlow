@@ -2,6 +2,8 @@
 
 from uuid import UUID
 
+from pydantic import Field
+
 from expenseflow.schemas import ExpenseFlowBase
 
 
@@ -19,6 +21,7 @@ class UserRead(ExpenseFlowBase):
     nickname: str
     first_name: str
     last_name: str
+    budget: int
 
 
 class UserCreate(ExpenseFlowBase):
@@ -27,6 +30,13 @@ class UserCreate(ExpenseFlowBase):
     nickname: str
     first_name: str
     last_name: str
+    budget: int = Field(gt=0)
+
+
+class UserUpdate(ExpenseFlowBase):
+    """Update user schema."""
+
+    budget: int = Field(gt=0)
 
 
 class UserCreateInternal(UserCreate):

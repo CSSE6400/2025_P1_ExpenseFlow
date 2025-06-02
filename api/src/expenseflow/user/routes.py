@@ -13,12 +13,14 @@ from expenseflow.user.schemas import (
     UserCreateInternal,
     UserRead,
     UserReadMinimal,
+    UserUpdate,
 )
 from expenseflow.user.service import (
     create_user,
     get_all_users,
     get_user_by_id,
     get_user_by_nickname,
+    update_user,
 )
 
 r = router = APIRouter()
@@ -66,6 +68,7 @@ async def create(
         nickname=user_in.nickname,
         first_name=user_in.first_name,
         last_name=user_in.last_name,
+        budget=user_in.budget,
         token_id=user_token_id,
     )
     try:
@@ -75,3 +78,9 @@ async def create(
             status.HTTP_409_CONFLICT,
             detail=f"User already exists with the nickname '{user_in.nickname}'.",
         ) from e
+
+
+@r.put("", response_model=UserRead)
+async def update(user: CurrentUser, user_in: UserUpdate) -> UserModel:
+    """Create a new user."""
+    return await update_user(user, user_in)

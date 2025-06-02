@@ -23,6 +23,7 @@ UserRead _$UserReadFromJson(Map<String, dynamic> json) => UserRead(
   nickname: json['nickname'] as String,
   firstName: json['first_name'] as String,
   lastName: json['last_name'] as String,
+  budget: (json['budget'] as num).toInt(),
 );
 
 Map<String, dynamic> _$UserReadToJson(UserRead instance) => <String, dynamic>{
@@ -30,12 +31,14 @@ Map<String, dynamic> _$UserReadToJson(UserRead instance) => <String, dynamic>{
   'nickname': instance.nickname,
   'first_name': instance.firstName,
   'last_name': instance.lastName,
+  'budget': instance.budget,
 };
 
 UserCreate _$UserCreateFromJson(Map<String, dynamic> json) => UserCreate(
   nickname: json['nickname'] as String,
   firstName: json['first_name'] as String,
   lastName: json['last_name'] as String,
+  budget: (json['budget'] as num).toInt(),
 );
 
 Map<String, dynamic> _$UserCreateToJson(UserCreate instance) =>
@@ -43,7 +46,14 @@ Map<String, dynamic> _$UserCreateToJson(UserCreate instance) =>
       'nickname': instance.nickname,
       'first_name': instance.firstName,
       'last_name': instance.lastName,
+      'budget': instance.budget,
     };
+
+UserUpdate _$UserUpdateFromJson(Map<String, dynamic> json) =>
+    UserUpdate(budget: (json['budget'] as num).toInt());
+
+Map<String, dynamic> _$UserUpdateToJson(UserUpdate instance) =>
+    <String, dynamic>{'budget': instance.budget};
 
 UserGroupRead _$UserGroupReadFromJson(Map<String, dynamic> json) =>
     UserGroupRead(
