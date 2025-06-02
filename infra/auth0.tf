@@ -6,11 +6,10 @@ resource "auth0_client" "expenseflow_ui_client" {
   app_type            = "spa" // Flutter is spa, something server-side would be 'spa'
   oidc_conformant     = true
   is_first_party      = true
-  allowed_logout_urls = [local.ui_url, "http://localhost:3000", "http://127.0.0.1:3000"]
-  allowed_origins     = [local.ui_url, "http://localhost:3000", "http://127.0.0.1:3000"]
-  callbacks           = [local.ui_url, "http://localhost:3000", "http://127.0.0.1:3000"]
+  allowed_logout_urls = [local.ui_url]
+  allowed_origins     = [local.ui_url]
+  callbacks           = [local.ui_url]
   grant_types         = ["authorization_code", "refresh_token"]
-  #   logo_uri            = ""
 
   jwt_configuration {
     alg                 = "RS256"
@@ -37,7 +36,7 @@ data "auth0_client" "expenseflow_ui_client" {
 
 resource "auth0_resource_server" "expenseflow_api" {
   name                   = "ExpenseFlow API"
-  identifier             = "https://expenseflow.com/api"
+  identifier             = "https://expenseflow.com/prd/api"
   signing_alg            = "RS256"
   token_dialect          = "access_token"
   token_lifetime         = 86400

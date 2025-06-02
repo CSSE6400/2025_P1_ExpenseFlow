@@ -1,5 +1,6 @@
 """Factories module."""
 
+from expenseflow.enums import EntityKind
 from expenseflow.group.models import GroupModel, GroupUserModel
 from expenseflow.group.schemas import (
     GroupCreate,
@@ -15,7 +16,8 @@ from polyfactory.factories.sqlalchemy_factory import SQLAlchemyFactory
 
 
 # Users
-class UserModelFactory(SQLAlchemyFactory[UserModel]): ...
+class UserModelFactory(SQLAlchemyFactory[UserModel]):
+    kind = EntityKind.user
 
 
 class UserReadFactory(ModelFactory[UserRead]): ...
@@ -28,7 +30,8 @@ class UserCreateInternalFactory(ModelFactory[UserCreateInternal]): ...
 
 
 # Groups
-class GroupModelFactory(SQLAlchemyFactory[GroupModel]): ...
+class GroupModelFactory(SQLAlchemyFactory[GroupModel]):
+    group = EntityKind.group
 
 
 class GroupCreateFactory(ModelFactory[GroupCreate]): ...

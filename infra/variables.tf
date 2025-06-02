@@ -13,3 +13,7 @@ variable "auth0_client_id" {
 variable "auth0_client_secret" {
   description = "Auth0 M2M Application Client Secret"
 }
+
+variable "sentry_dsn" {
+  description = "Data source name for sentry plugin"
+}
