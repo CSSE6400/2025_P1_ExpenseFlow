@@ -1,6 +1,11 @@
 // Flutter imports
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/common/snack_bar.dart';
+import 'package:flutter_frontend/models/expense.dart';
+import 'package:flutter_frontend/models/user.dart';
+import 'package:flutter_frontend/services/api_service.dart' show ApiService;
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart' show Provider;
 // Common imports
 import '../../../common/color_palette.dart';
 import '../../../common/proportional_sizes.dart';
@@ -9,10 +14,12 @@ class OverviewScreenAmountWidget extends StatefulWidget {
   const OverviewScreenAmountWidget({super.key});
 
   @override
-  State<OverviewScreenAmountWidget> createState() => _OverviewScreenAmountWidgetState();
+  State<OverviewScreenAmountWidget> createState() =>
+      _OverviewScreenAmountWidgetState();
 }
 
-class _OverviewScreenAmountWidgetState extends State<OverviewScreenAmountWidget> {
+class _OverviewScreenAmountWidgetState
+    extends State<OverviewScreenAmountWidget> {
   double monthlyBudget = 0.0;
   double spent = 0.0;
   double remaining = 0.0;
@@ -25,9 +32,26 @@ class _OverviewScreenAmountWidgetState extends State<OverviewScreenAmountWidget>
   }
 
   Future<void> _loadAccountOverview() async {
-    // TODO: Replace with actual data from backend
-    const double fetchedBudget = 5000.00;
-    const double fetchedSpent = 3560.00;
+    final apiService = Provider.of<ApiService>(context, listen: false);
+    UserRead userResult;
+    ExpenseOverview overview;
+    try {
+      userResult = await apiService.userApi.mustGetCurrentUser();
+      overview = await apiService.expenseApi.getOverview();
+    } catch (e) {
+      if (!mounted) return;
+      showCustomSnackBar(
+        context,
+        normalText: "Unable to retrieve user overview",
+      );
+      setState(() {
+        isLoading = false;
+      });
+      return;
+    }
+
+    double fetchedBudget = userResult.budget.toDouble();
+    double fetchedSpent = overview.total;
     final double fetchedRemaining = fetchedBudget - fetchedSpent;
 
     if (mounted) {
@@ -53,9 +77,7 @@ class _OverviewScreenAmountWidgetState extends State<OverviewScreenAmountWidget>
       width: double.infinity,
       decoration: BoxDecoration(
         color: backgroundColor,
-        borderRadius: BorderRadius.circular(
-          proportionalSizes.scaleWidth(10),
-        ),
+        borderRadius: BorderRadius.circular(proportionalSizes.scaleWidth(10)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -92,7 +114,11 @@ class _OverviewScreenAmountWidgetState extends State<OverviewScreenAmountWidget>
     );
   }
 
-  Widget _buildRow(String label, double amount, ProportionalSizes proportionalSizes) {
+  Widget _buildRow(
+    String label,
+    double amount,
+    ProportionalSizes proportionalSizes,
+  ) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [

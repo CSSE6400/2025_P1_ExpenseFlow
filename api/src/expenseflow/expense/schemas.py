@@ -71,3 +71,17 @@ class ExpenseItemSplitRead(ExpenseFlowBase):
     user_id: UUID
     proportion: float
     user_fullname: str
+
+
+class ExpenseOverviewCategory(ExpenseFlowBase):
+    """Expense overview category."""
+
+    category: ExpenseCategory
+    total: float
+
+
+class ExpenseOverview(ExpenseFlowBase):
+    """Overview of a users expenses."""
+
+    total: float
+    categories: list[ExpenseOverviewCategory]

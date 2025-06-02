@@ -2,7 +2,12 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter_frontend/models/expense.dart' show ExpenseOverview;
+import 'package:flutter_frontend/models/user.dart' show UserRead;
+import 'package:flutter_frontend/services/api_service.dart' show ApiService;
 import 'package:google_fonts/google_fonts.dart';
+import 'package:logging/logging.dart' show Logger;
+import 'package:provider/provider.dart' show Provider;
 // Common imports
 import '../../../common/color_palette.dart';
 import '../../../common/proportional_sizes.dart';
@@ -11,18 +16,34 @@ class HomeScreenOverview extends StatefulWidget {
   const HomeScreenOverview({super.key});
 
   @override
-  State<HomeScreenOverview> createState() => _HomeScreenOverviewState();
+  HomeScreenOverviewState createState() => HomeScreenOverviewState();
 }
 
-class _HomeScreenOverviewState extends State<HomeScreenOverview> {
+class HomeScreenOverviewState extends State<HomeScreenOverview> {
   late final List<_CategoryData> categories;
-  late List<_CategoryData> visibleCategories;
+  final logger = Logger("HomeScreenOverview");
+  late List<_CategoryData> visibleCategories = [];
   final List<Color> availableColors = [
-    Color(0xFF75E3EA), Color(0xFF4DC4D3), Color(0xFF3C74A6), Color(0xFF6C539F),
-    Color(0xFF7B438D), Color(0xFFFD9BBA), Color(0xFFFFC785), Color(0xFF9FE6A0),
-    Color(0xFFFFD6E0), Color(0xFFB7C0EE), Color(0xFFADC698), Color(0xFF71B3B7),
-    Color(0xFFBCA9F5), Color(0xFFF5C3AF), Color(0xFF92E3A9), Color(0xFFDA9BCB),
-    Color(0xFFFCB9AA), Color(0xFF84B6F4), Color(0xFFF9F871), Color(0xFFE0A9F5),
+    Color(0xFF75E3EA),
+    Color(0xFF4DC4D3),
+    Color(0xFF3C74A6),
+    Color(0xFF6C539F),
+    Color(0xFF7B438D),
+    Color(0xFFFD9BBA),
+    Color(0xFFFFC785),
+    Color(0xFF9FE6A0),
+    Color(0xFFFFD6E0),
+    Color(0xFFB7C0EE),
+    Color(0xFFADC698),
+    Color(0xFF71B3B7),
+    Color(0xFFBCA9F5),
+    Color(0xFFF5C3AF),
+    Color(0xFF92E3A9),
+    Color(0xFFDA9BCB),
+    Color(0xFFFCB9AA),
+    Color(0xFF84B6F4),
+    Color(0xFFF9F871),
+    Color(0xFFE0A9F5),
   ];
 
   double monthlyBudget = 0.0;
@@ -38,16 +59,41 @@ class _HomeScreenOverviewState extends State<HomeScreenOverview> {
     _loadData();
   }
 
+  // Public method to refresh data
+  void refreshData() {
+    setState(() {
+      isLoading = true;
+    });
+    _loadData();
+  }
+
   Future<void> _loadData() async {
-    // TODO: Replace with actual backend call
-    monthlyBudget = 5000.0;
-    final rawCategories = [
-      _CategoryData(name: 'Rent', amount: 1200),
-      _CategoryData(name: 'Bills', amount: 300),
-      _CategoryData(name: 'Groceries', amount: 450),
-      _CategoryData(name: 'Subscriptions', amount: 80),
-      _CategoryData(name: 'Dining Out', amount: 200),
-    ];
+    final apiService = Provider.of<ApiService>(context, listen: false);
+    final UserRead user;
+    final ExpenseOverview overview;
+
+    try {
+      user = await apiService.userApi.mustGetCurrentUser();
+      overview = await apiService.expenseApi.getOverview();
+    } catch (e) {
+      // Handle error, e.g., show a snackbar
+      logger.severe("Failed to load overview data", e);
+      logger.info(e.toString());
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to load overview data')));
+      setState(() {
+        isLoading = false;
+      });
+      return;
+    }
+
+    monthlyBudget = user.budget.toDouble();
+    final rawCategories =
+        (overview.categories).map((cat) {
+          return _CategoryData(name: cat.category.label, amount: cat.total);
+        }).toList();
 
     for (var category in rawCategories) {
       category.color = availableColors[_random.nextInt(availableColors.length)];
@@ -56,20 +102,27 @@ class _HomeScreenOverviewState extends State<HomeScreenOverview> {
     spent = rawCategories.fold(0, (sum, cat) => sum + cat.amount);
     remaining = monthlyBudget - spent;
 
-    final top3 = rawCategories.toList()
-      ..sort((a, b) => b.amount.compareTo(a.amount));
+    final top3 =
+        rawCategories.toList()..sort((a, b) => b.amount.compareTo(a.amount));
 
     final displayed = top3.take(3).toList();
     final otherAmount = top3.skip(3).fold(0.0, (sum, c) => sum + c.amount);
 
     visibleCategories = [...displayed];
     if (otherAmount > 0) {
-      final otherColor = availableColors[_random.nextInt(availableColors.length)];
-      visibleCategories.add(_CategoryData(name: 'Others', amount: otherAmount)..color = otherColor);
+      final otherColor =
+          availableColors[_random.nextInt(availableColors.length)];
+      visibleCategories.add(
+        _CategoryData(name: 'Others', amount: otherAmount)..color = otherColor,
+      );
     }
 
-    final remainingColor = availableColors[_random.nextInt(availableColors.length)];
-    visibleCategories.add(_CategoryData(name: 'Remaining', amount: remaining)..color = remainingColor);
+    final remainingColor =
+        availableColors[_random.nextInt(availableColors.length)];
+    visibleCategories.add(
+      _CategoryData(name: 'Remaining', amount: remaining)
+        ..color = remainingColor,
+    );
 
     setState(() {
       isLoading = false;
@@ -91,9 +144,7 @@ class _HomeScreenOverviewState extends State<HomeScreenOverview> {
         padding: EdgeInsets.all(proportionalSizes.scaleWidth(16)),
         decoration: BoxDecoration(
           color: backgroundColor,
-          borderRadius: BorderRadius.circular(
-            proportionalSizes.scaleWidth(16),
-          ),
+          borderRadius: BorderRadius.circular(proportionalSizes.scaleWidth(16)),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -126,7 +177,9 @@ class _HomeScreenOverviewState extends State<HomeScreenOverview> {
                   ),
                   SizedBox(height: proportionalSizes.scaleHeight(12)),
                   ..._buildTopCategories(proportionalSizes),
-                  Divider(color: ColorPalette.primaryText.withValues(alpha: 0.5)),
+                  Divider(
+                    color: ColorPalette.primaryText.withValues(alpha: 0.5),
+                  ),
                   _buildAmountRow('Budget:', monthlyBudget, proportionalSizes),
                   _buildAmountRow('Spent:', spent, proportionalSizes),
                   _buildAmountRow('Remaining:', remaining, proportionalSizes),
@@ -180,11 +233,13 @@ class _HomeScreenOverviewState extends State<HomeScreenOverview> {
     }).toList();
   }
 
-  Widget _buildAmountRow(String label, double value, ProportionalSizes proportionalSizes) {
+  Widget _buildAmountRow(
+    String label,
+    double value,
+    ProportionalSizes proportionalSizes,
+  ) {
     return Padding(
-      padding: EdgeInsets.symmetric(
-        vertical: proportionalSizes.scaleHeight(2),
-      ),
+      padding: EdgeInsets.symmetric(vertical: proportionalSizes.scaleHeight(2)),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

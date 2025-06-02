@@ -28,6 +28,24 @@ class UserApiClient extends BaseApiClient {
     }
   }
 
+  Future<UserRead> mustGetCurrentUser() async {
+    final response = await client.get(backendUri("/users"));
+
+    switch (response.statusCode) {
+      case 200:
+        return UserRead.fromJson(safeJsonDecode(response.body));
+      default:
+        logger.info(
+          "Failed to fetch current user: ${response.statusCode} ${response.body}",
+        );
+        throw ApiException(
+          response.statusCode,
+          "Failed to fetch current user",
+          response.body,
+        );
+    }
+  }
+
   Future<List<UserReadMinimal>> getAllUsers() async {
     final response = await client.get(backendUri("/users/all"));
 

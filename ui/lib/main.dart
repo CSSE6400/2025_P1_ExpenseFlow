@@ -49,12 +49,16 @@ void main() async {
   );
 
   logger.info("Starting App");
+  // create route observer for navigation events
+  final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
+
   runApp(
     MultiProvider(
       providers: [
         Provider<Config>.value(value: config),
         Provider<AuthService>.value(value: authService),
         Provider<ApiService>.value(value: apiService),
+        Provider<RouteObserver<PageRoute>>.value(value: routeObserver),
       ],
       child: const MyApp(),
     ),
@@ -68,18 +72,28 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthService>(context, listen: false);
 
+    final routeObserver = Provider.of<RouteObserver<PageRoute>>(
+      context,
+      listen: false,
+    );
+
     return MaterialApp(
       title: 'Expense Flow',
       debugShowCheckedModeBanner: false,
       themeMode: ThemeMode.light,
+      navigatorObservers: [routeObserver], // Add the route observer
 
       initialRoute: auth.isLoggedIn ? '/' : '/initial_startup',
       onGenerateRoute: (RouteSettings settings) {
         switch (settings.name) {
           case '/initial_startup':
-            return MaterialPageRoute(builder: (_) => const InitialStartupScreen());
+            return MaterialPageRoute(
+              builder: (_) => const InitialStartupScreen(),
+            );
           case '/profile_setup':
-            return MaterialPageRoute(builder: (_) => const ProfileSetupScreen());
+            return MaterialPageRoute(
+              builder: (_) => const ProfileSetupScreen(),
+            );
           case '/profile':
             return MaterialPageRoute(builder: (_) => const ProfileScreen());
           case '/':
@@ -89,13 +103,19 @@ class MyApp extends StatelessWidget {
           case '/expenses':
             return MaterialPageRoute(builder: (_) => const ExpensesScreen());
           case '/groups_and_friends':
-            return MaterialPageRoute(builder: (_) => const GroupsAndFriendsScreen());
+            return MaterialPageRoute(
+              builder: (_) => const GroupsAndFriendsScreen(),
+            );
           case '/overview':
             return MaterialPageRoute(builder: (_) => const OverviewScreen());
           case '/manage_friends':
-            return MaterialPageRoute(builder: (_) => const ManageFriendsScreen());
+            return MaterialPageRoute(
+              builder: (_) => const ManageFriendsScreen(),
+            );
           case '/manage_groups':
-            return MaterialPageRoute(builder: (_) => const ManageGroupsScreen());
+            return MaterialPageRoute(
+              builder: (_) => const ManageGroupsScreen(),
+            );
           case '/select_friends':
             return MaterialPageRoute(builder: (_) => const AddFriendsScreen());
           case '/split_with':
@@ -105,10 +125,11 @@ class MyApp extends StatelessWidget {
             final isReadOnly = args?['isReadOnly'] as bool? ?? false;
 
             return MaterialPageRoute(
-              builder: (_) => SplitWithScreen(
-                transactionId: transactionId,
-                isReadOnly: isReadOnly,
-              ),
+              builder:
+                  (_) => SplitWithScreen(
+                    transactionId: transactionId,
+                    isReadOnly: isReadOnly,
+                  ),
             );
           case '/add_items':
             final args = settings.arguments as Map<String, dynamic>?;
@@ -117,11 +138,12 @@ class MyApp extends StatelessWidget {
             final isReadOnly = args?['isReadOnly'] as bool? ?? false;
 
             return MaterialPageRoute(
-              builder: (_) => AddItemsScreen(
-                amount: args?['amount'],
-                transactionId: transactionId,
-                isReadOnly: isReadOnly,
-              ),
+              builder:
+                  (_) => AddItemsScreen(
+                    amount: args?['amount'],
+                    transactionId: transactionId,
+                    isReadOnly: isReadOnly,
+                  ),
             );
           case '/see_expenses':
             final args = settings.arguments as Map<String, dynamic>?;
@@ -145,9 +167,10 @@ class MyApp extends StatelessWidget {
 
             if (username == null) {
               return MaterialPageRoute(
-                builder: (_) => const Scaffold(
-                  body: Center(child: Text('Error: Missing username')),
-                ),
+                builder:
+                    (_) => const Scaffold(
+                      body: Center(child: Text('Error: Missing username')),
+                    ),
               );
             }
 
@@ -161,14 +184,19 @@ class MyApp extends StatelessWidget {
 
             if (groupName == null) {
               return MaterialPageRoute(
-                builder: (_) => const Scaffold(
-                  body: Center(child: Text('Error: Missing group name')),
-                ),
+                builder:
+                    (_) => const Scaffold(
+                      body: Center(child: Text('Error: Missing group name')),
+                    ),
               );
             }
 
             return MaterialPageRoute(
-              builder: (_) => IndGroupExpenseScreen(groupName: groupName, groupUUID: groupUUID!),
+              builder:
+                  (_) => IndGroupExpenseScreen(
+                    groupName: groupName,
+                    groupUUID: groupUUID!,
+                  ),
             );
           default:
             final logger = Logger("MyApp");

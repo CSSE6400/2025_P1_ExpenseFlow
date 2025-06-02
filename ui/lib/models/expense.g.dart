@@ -133,3 +133,37 @@ Map<String, dynamic> _$ExpenseItemSplitReadToJson(
   'proportion': instance.proportion,
   'user_fullname': instance.userFullname,
 };
+
+ExpenseOverviewCategory _$ExpenseOverviewCategoryFromJson(
+  Map<String, dynamic> json,
+) => ExpenseOverviewCategory(
+  total: (json['total'] as num).toDouble(),
+  category: const ExpenseCategoryConverter().fromJson(
+    json['category'] as String,
+  ),
+);
+
+Map<String, dynamic> _$ExpenseOverviewCategoryToJson(
+  ExpenseOverviewCategory instance,
+) => <String, dynamic>{
+  'category': const ExpenseCategoryConverter().toJson(instance.category),
+  'total': instance.total,
+};
+
+ExpenseOverview _$ExpenseOverviewFromJson(Map<String, dynamic> json) =>
+    ExpenseOverview(
+      total: (json['total'] as num).toDouble(),
+      categories:
+          (json['categories'] as List<dynamic>)
+              .map(
+                (e) =>
+                    ExpenseOverviewCategory.fromJson(e as Map<String, dynamic>),
+              )
+              .toList(),
+    );
+
+Map<String, dynamic> _$ExpenseOverviewToJson(ExpenseOverview instance) =>
+    <String, dynamic>{
+      'total': instance.total,
+      'categories': instance.categories,
+    };
