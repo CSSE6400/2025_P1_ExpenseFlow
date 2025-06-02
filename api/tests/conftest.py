@@ -104,7 +104,6 @@ async def session(db) -> AsyncGenerator[AsyncSession]:  # noqa: ANN001
 
 
 register_fixture(UserModelFactory)
-register_fixture(UserModelFactory)
 register_fixture(GroupUserModelFactory)
 
 
