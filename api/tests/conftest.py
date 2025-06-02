@@ -90,6 +90,7 @@ async def db() -> AsyncGenerator[None]:
     await initialise_database(test_engine)
     yield
     drop_database(SYNC_TEST_DB_URL)
+    create_database(SYNC_TEST_DB_URL)
 
 
 @pytest_asyncio.fixture(scope="function", autouse=True)
