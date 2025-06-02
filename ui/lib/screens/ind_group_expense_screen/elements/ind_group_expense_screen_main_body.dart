@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/common/time_period_dropdown.dart';
+import 'package:flutter_frontend/models/group.dart';
 import 'package:logging/logging.dart';
 // Common imports
 import '../../../common/proportional_sizes.dart';
@@ -65,10 +66,13 @@ class _IndGroupExpenseScreenMainBodyState
         name: "loading...",
         description: "loading...",
       );
+  bool isEditingDescription = false;
+  late TextEditingController _descriptionController;
 
   @override
   void initState() {
     super.initState();
+    _descriptionController = TextEditingController();
     _initialiseData();
     _fetchGroupMembers();
 
@@ -171,6 +175,7 @@ class _IndGroupExpenseScreenMainBodyState
     if (fetchedGroup != null) {
       setState(() {
         group = fetchedGroup;
+        _descriptionController.text = group.description;
       });
     }
   }
@@ -286,6 +291,32 @@ class _IndGroupExpenseScreenMainBodyState
     return result;
   }
 
+  Future<void> _saveGroupDescription() async {
+    final apiService = Provider.of<ApiService>(context, listen: false);
+
+    try {
+      final updatedGroup = await apiService.groupApi.updateGroup(
+        group.groupId,
+        GroupCreate(name: group.name, description: _descriptionController.text),
+      );
+
+      setState(() {
+        group = Group(
+          groupId: updatedGroup.groupId,
+          name: updatedGroup.name,
+          description: updatedGroup.description,
+        );
+        isEditingDescription = false;
+      });
+
+      showCustomSnackBar(context, normalText: "Group description updated.");
+    } on ApiException catch (e) {
+      showCustomSnackBar(context, normalText: "Failed to update description.");
+      Logger("GroupScreen").warning("Failed to update group: ${e.message}");
+    }
+  }
+
+
   Widget buildGroupMembersSection() {
     // if (groupMembers == null) {
     //   return const CircularProgressIndicator();
@@ -347,12 +378,50 @@ class _IndGroupExpenseScreenMainBodyState
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 8),
-              Text(
-                group.description,
-                style: const TextStyle(fontSize: 14, color: Colors.black87),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 20),
+              isEditingDescription
+                ? Column(
+                    children: [
+                      TextField(
+                        controller: _descriptionController,
+                        maxLines: null,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'Edit Description',
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      ElevatedButton(
+                        onPressed: _saveGroupDescription,
+                        child: const Text("Save"),
+                      ),
+                    ],
+                  )
+                : Column(
+                    children: [
+                      Text(
+                        group.description,
+                        style: const TextStyle(fontSize: 14, color: Colors.black87),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 4),
+                      TextButton(
+                        onPressed: () {
+                          setState(() {
+                            isEditingDescription = true;
+                          });
+                        },
+                        child: const Text("Edit"),
+                      ),
+                    ],
+                  ),
+
+
+              // Text(
+              //   group.description,
+              //   style: const TextStyle(fontSize: 14, color: Colors.black87),
+              //   textAlign: TextAlign.center,
+              // ),
+              // const SizedBox(height: 20),
               // Segment Control
               ExpensesScreenSegmentControl(
                 selectedSegment: selectedSegment,
@@ -376,5 +445,11 @@ class _IndGroupExpenseScreenMainBodyState
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _descriptionController.dispose();
+    super.dispose();
   }
 }
