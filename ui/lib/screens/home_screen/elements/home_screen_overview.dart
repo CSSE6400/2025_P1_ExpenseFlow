@@ -45,7 +45,7 @@ class _HomeScreenOverviewState extends State<HomeScreenOverview> {
     monthlyBudget = 5000.0;
     // when made a suitable end point
     final rawCategories = await _fetchUserExpenses();
-    // final rawCategories = [ // Really??? Like are we actually going to have this as a backend call????
+    // final rawCategories = [
     //   _CategoryData(name: 'Rent', amount: 1200),
     //   _CategoryData(name: 'Bills', amount: 300),
     //   _CategoryData(name: 'Groceries', amount: 450),
@@ -121,7 +121,7 @@ class _HomeScreenOverviewState extends State<HomeScreenOverview> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // donut chart, it constantly changed colours but shssss
+            // donut chart
             SizedBox(
               width: chartSize,
               height: chartSize,
