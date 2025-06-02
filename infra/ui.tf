@@ -25,7 +25,7 @@ resource "aws_ecs_service" "expenseflow_ui" {
   network_configuration {
     subnets          = data.aws_subnets.private.ids
     security_groups  = [aws_security_group.expenseflow_ui.id]
-    assign_public_ip = true
+    assign_public_ip = false
   }
 
   load_balancer {
@@ -89,23 +89,17 @@ resource "aws_ecs_task_definition" "expenseflow_ui" {
   ])
 }
 
+
 # Security Group
 resource "aws_security_group" "expenseflow_ui" {
   name        = "expenseflow-ui"
   description = "Expenseflow UI Security Group"
 
   ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 3000
-    to_port     = 3000
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    from_port       = 3000
+    to_port         = 3000
+    protocol        = "tcp"
+    security_groups = [aws_security_group.expenseflow_alb.id]
   }
 
   egress {
@@ -123,7 +117,7 @@ resource "aws_lb" "expenseflow_ui" {
   internal           = false
   load_balancer_type = "application"
   subnets            = data.aws_subnets.private.ids
-  security_groups    = [aws_security_group.expenseflow_ui.id]
+  security_groups    = [aws_security_group.expenseflow_alb.id]
 }
 
 resource "aws_lb_target_group" "expenseflow_ui" {
@@ -144,13 +138,30 @@ resource "aws_lb_target_group" "expenseflow_ui" {
   }
 }
 
-resource "aws_lb_listener" "expenseflow_ui" {
+resource "aws_lb_listener" "expenseflow_ui_https" {
   load_balancer_arn = aws_lb.expenseflow_ui.arn
-  port              = "80"
-  protocol          = "HTTP"
+  port              = "443"
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-2016-08"
+  certificate_arn   = data.aws_acm_certificate.expenseflow.arn
 
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.expenseflow_ui.arn
+  }
+}
+
+resource "aws_lb_listener" "expenseflow_ui_http" {
+  load_balancer_arn = aws_lb.expenseflow_ui.arn
+  port              = 80
+  protocol          = "HTTP"
+
+  default_action {
+    type = "redirect"
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
   }
 }

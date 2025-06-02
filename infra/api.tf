@@ -26,7 +26,7 @@ resource "aws_ecs_service" "expenseflow_api" {
   network_configuration {
     subnets          = data.aws_subnets.private.ids
     security_groups  = [aws_security_group.expenseflow_api.id]
-    assign_public_ip = true
+    assign_public_ip = false
   }
 
   load_balancer {
@@ -65,6 +65,10 @@ resource "aws_ecs_task_definition" "expenseflow_api" {
           value = "postgresql+asyncpg://${local.db_username}:${var.db_password}@${aws_db_instance.expenseflow_db.address}:${aws_db_instance.expenseflow_db.port}/${aws_db_instance.expenseflow_db.db_name}"
         },
         {
+          name  = "FRONTEND_URL",
+          value = local.ui_url
+        },
+        {
           name  = "JWT_AUDIENCE",
           value = data.auth0_resource_server.expenseflow_api.identifier
         },
@@ -73,8 +77,8 @@ resource "aws_ecs_task_definition" "expenseflow_api" {
           value = var.auth0_domain
         },
         {
-          name  = "FRONTEND_URL",
-          value = local.ui_url
+          name  = "SENTRY_DSN",
+          value = var.sentry_dsn
         }
       ],
       logConfiguration = {
@@ -96,17 +100,10 @@ resource "aws_security_group" "expenseflow_api" {
   description = "ExpenseFlow API Security Group"
 
   ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 8080
-    to_port     = 8080
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    from_port       = 8080
+    to_port         = 8080
+    protocol        = "tcp"
+    security_groups = [aws_security_group.expenseflow_alb.id]
   }
 
   egress {
@@ -148,7 +145,7 @@ resource "aws_lb" "expenseflow_api" {
   internal           = false
   load_balancer_type = "application"
   subnets            = data.aws_subnets.private.ids
-  security_groups    = [aws_security_group.expenseflow_api.id]
+  security_groups    = [aws_security_group.expenseflow_alb.id]
 }
 
 resource "aws_lb_target_group" "expenseflow_api" {
@@ -169,13 +166,30 @@ resource "aws_lb_target_group" "expenseflow_api" {
   }
 }
 
-resource "aws_lb_listener" "expenseflow_api" {
+resource "aws_lb_listener" "expenseflow_api_https" {
   load_balancer_arn = aws_lb.expenseflow_api.arn
-  port              = "80"
-  protocol          = "HTTP"
+  port              = "443"
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-2016-08"
+  certificate_arn   = data.aws_acm_certificate.expenseflow.arn
 
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.expenseflow_api.arn
+  }
+}
+
+resource "aws_lb_listener" "expenseflow_api_http" {
+  load_balancer_arn = aws_lb.expenseflow_api.arn
+  port              = 80
+  protocol          = "HTTP"
+
+  default_action {
+    type = "redirect"
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
   }
 }

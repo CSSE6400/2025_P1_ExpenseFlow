@@ -16,6 +16,8 @@ fi
 AWS_REGION="us-east-1"
 AWS_ACCOUNT_ID="654654409426"
 
+PLATFORM="linux/amd64"
+
 # ecr stuff
 API_NAME="expenseflow-api"
 UI_NAME="expenseflow-ui"
@@ -56,13 +58,14 @@ fi
 # docker auth
 aws ecr get-login-password --region "$AWS_REGION" | docker login --username AWS --password-stdin "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
 
+
 # build and push api
-docker build -t "$API_NAME" ./api
+docker build --platform $PLATFORM -t "$API_NAME" ./api
 docker tag "$API_NAME" "$API_ECR:latest"
 docker push "$API_ECR:latest"
 
 # build and push ui
-docker build -t "$UI_NAME" ./ui
+docker build --platform $PLATFORM -t "$UI_NAME" ./ui
 docker tag "$UI_NAME" "$UI_ECR:latest"
 docker push "$UI_ECR:latest"
 
