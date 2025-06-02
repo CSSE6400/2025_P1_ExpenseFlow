@@ -22,23 +22,19 @@ class _ExpensesScreenListState extends State<ExpensesScreenList> {
   late List<dynamic> filteredExpenses;
   late List<bool> expansionStates;
 
-  // Initialize the list of expenses and expansion states
   @override
   void initState() {
     super.initState();
     filteredExpenses = widget.expenses;
-    // Initialize expansion states to false for all items
     expansionStates = List<bool>.filled(widget.expenses.length, false);
   }
 
-  // Toggle the expansion state of an item
   void _toggleExpansion(int index) {
     setState(() {
       expansionStates[index] = !expansionStates[index];
     });
   }
 
-  // Filter the expenses based on the search query
   void _filterExpenses(String query) {
     final lowerQuery = query.toLowerCase();
     final result = widget.expenses
@@ -54,8 +50,7 @@ class _ExpensesScreenListState extends State<ExpensesScreenList> {
     });
   }
 
-  // Format the date from AWS timestamp to a readable format
-  // Example: "2024-06-10T14:20:00Z" to "Jun 10, 2024"
+  // format the date from AWS timestamp to a readable format
   String _formatDate(String awsTimestamp) {
     try {
       final dateTime = DateTime.parse(awsTimestamp).toLocal();
@@ -65,7 +60,7 @@ class _ExpensesScreenListState extends State<ExpensesScreenList> {
     }
   }
 
-  // Update the filtered expenses and expansion states when the widget updates
+  // update the filtered expenses and expansion states when the widget updates
   @override
   void didUpdateWidget(covariant ExpensesScreenList oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -104,7 +99,7 @@ class _ExpensesScreenListState extends State<ExpensesScreenList> {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      // Expand/collapse arrow
+                      // expand arrow
                       Transform.rotate(
                         angle: isExpanded ? 4.71 : 0,
                         child: IconMaker(
@@ -113,7 +108,7 @@ class _ExpensesScreenListState extends State<ExpensesScreenList> {
                       ),
                       SizedBox(width: proportionalSizes.scaleWidth(8)),
 
-                      // Expense name
+                      // expense name
                       SizedBox(
                         width: proportionalSizes.scaleWidth(180),
                         child: Text(
@@ -128,7 +123,7 @@ class _ExpensesScreenListState extends State<ExpensesScreenList> {
                         ),
                       ),
 
-                      // Right-aligned price + tag
+                      // right-aligned price + tag
                       Expanded(
                         child: Align(
                           alignment: Alignment.centerRight,
@@ -160,7 +155,7 @@ class _ExpensesScreenListState extends State<ExpensesScreenList> {
                                 SizedBox(width: proportionalSizes.scaleWidth(6)),
                               ],
 
-                              // Price tag
+                              // price tag
                               Container(
                                 padding: EdgeInsets.symmetric(
                                   vertical: proportionalSizes.scaleHeight(4),

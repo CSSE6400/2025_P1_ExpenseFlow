@@ -1,9 +1,7 @@
-// Flutter imports
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:google_fonts/google_fonts.dart';
-// Common imports
 import '../../../common/color_palette.dart';
 import '../../../common/proportional_sizes.dart';
 
@@ -98,7 +96,7 @@ class _HomeScreenOverviewState extends State<HomeScreenOverview> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Donut chart
+            // donut chart, it constantly changed colours but shssss
             SizedBox(
               width: chartSize,
               height: chartSize,

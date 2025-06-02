@@ -1,7 +1,5 @@
-// Flutter imports
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-// Common imports
 import '../../../common/color_palette.dart';
 import '../../../common/proportional_sizes.dart';
 
@@ -32,9 +30,9 @@ class _HomeScreenRecentExpensesState extends State<HomeScreenRecentExpenses> {
     _loadRecentExpenses();
   }
 
-  // Simulated backend call
+  // simulated backend call
   Future<void> _loadRecentExpenses() async {
-    await Future.delayed(const Duration(milliseconds: 800)); // Simulate network latency
+    await Future.delayed(const Duration(milliseconds: 800)); // simulate network latency
 
     // TODO: Replace with actual data from your database. Fetch 6 most recent expenses.
     final mockExpenses = [
@@ -78,7 +76,6 @@ class _HomeScreenRecentExpensesState extends State<HomeScreenRecentExpenses> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Heading
             Padding(
               padding: EdgeInsets.all(proportionalSizes.scaleWidth(16)),
               child: Text(
@@ -91,7 +88,7 @@ class _HomeScreenRecentExpensesState extends State<HomeScreenRecentExpenses> {
               ),
             ),
 
-            // Loading state
+            // loading state
             if (isLoading)
               Padding(
                 padding: EdgeInsets.symmetric(

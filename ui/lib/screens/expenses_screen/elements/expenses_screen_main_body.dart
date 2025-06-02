@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/common/time_period_dropdown.dart';
-// Common imports
 import '../../../common/proportional_sizes.dart';
 import 'expenses_screen_segment_control.dart';
 import 'expenses_screen_list.dart';
 
-// Define a class to represent an expense item
 class ExpenseItem {
   final String name;
   final String price;
-  final String date; // ISO 8601 format
+  final String date; // iso 8601 format
   final bool active;
 
   ExpenseItem({
@@ -32,11 +30,9 @@ class _ExpensesScreenMainBodyState extends State<ExpensesScreenMainBody> {
   String selectedPeriod = 'Last 30 Days';
   late final List<ExpenseItem> allExpenses;
 
-  // Initialize the list of expenses
   @override
   void initState() {
     super.initState();
-    // Sample data for expenses
     // TODO: Replace with actual data from your database
     allExpenses = [
       ExpenseItem(name: 'Shopping at Coles', price: '\$78.9', date: '2024-06-10T14:20:00Z', active: false),
@@ -57,14 +53,12 @@ class _ExpensesScreenMainBodyState extends State<ExpensesScreenMainBody> {
     ];
   }
 
-  // Handle segment change
   void handleSegmentChange(String newSegment) {
     setState(() {
       selectedSegment = newSegment;
     });
   }
 
-  // Handle time period change
   void handleTimePeriodChange(String? newPeriod) {
     if (newPeriod != null) {
       setState(() {
@@ -73,11 +67,10 @@ class _ExpensesScreenMainBodyState extends State<ExpensesScreenMainBody> {
     }
   }
 
-  // Filter expenses based on selected time period and segment
+  // filter based on selected time period and segment
   List<ExpenseItem> getFilteredExpenses() {
     List<ExpenseItem> result = allExpenses;
 
-    // Filter by time period
     if (selectedPeriod != 'From Start') {
       final match = RegExp(r'Last (\d+) Days').firstMatch(selectedPeriod);
       if (match != null) {
@@ -93,7 +86,7 @@ class _ExpensesScreenMainBodyState extends State<ExpensesScreenMainBody> {
       }
     }
 
-    // Filter by segment (Active vs All)
+    // filter by segment active or all
     if (selectedSegment == 'Active') {
       result = result.where((e) => e.active).toList();
     }
@@ -116,13 +109,11 @@ class _ExpensesScreenMainBodyState extends State<ExpensesScreenMainBody> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Segment Control
               ExpensesScreenSegmentControl(
                 selectedSegment: selectedSegment,
                 onSegmentChanged: handleSegmentChange,
               ),
 
-              // Time Period Dropdown
               Align(
                 alignment: Alignment.centerRight,
                 child: TimePeriodDropdown(
@@ -132,7 +123,6 @@ class _ExpensesScreenMainBodyState extends State<ExpensesScreenMainBody> {
               ),
               SizedBox(height: proportionalSizes.scaleHeight(20)),
 
-              // Expense List
               ExpensesScreenList(expenses: getFilteredExpenses()),
             ],
           ),

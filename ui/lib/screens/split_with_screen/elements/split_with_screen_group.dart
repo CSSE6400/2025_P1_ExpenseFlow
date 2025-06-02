@@ -10,7 +10,6 @@ import 'package:flutter_frontend/services/api_service.dart';
 import 'package:provider/provider.dart' show Provider;
 import 'package:flutter_frontend/common/snack_bar.dart';
 
-// Group Member class
 class GroupMember {
   String name;
   String uuid;
@@ -28,7 +27,6 @@ class GroupMember {
   }) : controller = TextEditingController(text: percentage);
 }
 
-// Group class
 class Group {
   String name;
   List<GroupMember> members;
@@ -69,23 +67,13 @@ class SplitWithScreenGroupState extends State<SplitWithScreenGroup> {
   @override
   void initState() {
     super.initState();
-
-    // Initialize groups
     _fetchGroups();
-    // allGroups = getUserGroups
-    // allGroups = [
-    //   Group(uuid: '1', name: 'Flatmates', members: _generateMembers()),
-    //   Group(uuid: '2', name: 'Project Team', members: _generateMembers()),
-    //   Group(uuid: '3', name: 'Family', members: _generateMembers()),
-    // ];
 
-    //filteredGroups = List.from(allGroups);
-
-    // Default: first group selected & expanded
-    if (allGroups.isNotEmpty) {
+    if (allGroups.isNotEmpty) { // dont think this works anymore but ehh
       allGroups[0].isSelected = true;
       allGroups[0].isExpanded = true;
     }
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       widget.onValidityChanged?.call(isTotalPercentageValid());
     });
@@ -127,7 +115,6 @@ class SplitWithScreenGroupState extends State<SplitWithScreenGroup> {
       );
     }
   }
-
 
   Future<List<GroupMember>> _generateMembers(String groupId) async {
     final apiService = Provider.of<ApiService>(context, listen: false);
@@ -175,8 +162,6 @@ class SplitWithScreenGroupState extends State<SplitWithScreenGroup> {
     }
   }
 
-
-  // Select a group and update its state
   void _selectGroup(int index) {
     if (widget.isReadOnly) return;
 
@@ -200,12 +185,10 @@ class SplitWithScreenGroupState extends State<SplitWithScreenGroup> {
           }
         }
       }
-
       widget.onValidityChanged?.call(isTotalPercentageValid());
     });
   }
 
-  // Check if the total percentage of selected members is valid (100%)
   bool isTotalPercentageValid() {
     final expandedGroup =
         allGroups.firstWhere((g) => g.isExpanded, orElse: () => allGroups[0]);
@@ -217,13 +200,11 @@ class SplitWithScreenGroupState extends State<SplitWithScreenGroup> {
     return total == 100;
   }
 
-  // Save group and member splits, then exit
   void saveAndExit(BuildContext context) {
     // TODO: Save group + member splits (and laod them in if needed)
     Navigator.pop(context);
   }
 
-  // Toggle member selection and update percentage
   void _toggleMemberSelection(Group group, GroupMember member) {
     if (widget.isReadOnly || member.disabled || member.name == 'You') return;
 
@@ -244,7 +225,6 @@ class SplitWithScreenGroupState extends State<SplitWithScreenGroup> {
     });
   }
 
-  // Filter groups based on search query
   void _filterGroups(String query) {
     setState(() {
       filteredGroups = allGroups
@@ -308,7 +288,7 @@ class SplitWithScreenGroupState extends State<SplitWithScreenGroup> {
                   CustomDivider(),
 
                   ...[
-                    // sort group members: 'You' → selected → unselected
+                    // sort group members so it is you then selected thenunselected
                     ...[
                       group.members.firstWhere((m) => m.name == 'You'),
                       ...group.members
@@ -327,7 +307,6 @@ class SplitWithScreenGroupState extends State<SplitWithScreenGroup> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              // Username
                               Text(
                                 member.name,
                                 style: GoogleFonts.roboto(
@@ -339,8 +318,6 @@ class SplitWithScreenGroupState extends State<SplitWithScreenGroup> {
                                           : ColorPalette.secondaryText,
                                 ),
                               ),
-
-                              // Checkbox + percentage field
                               Row(
                                 children: [
                                   if (member.checked || member.name == 'You')

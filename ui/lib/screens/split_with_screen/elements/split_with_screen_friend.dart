@@ -119,7 +119,7 @@ class SplitWithScreenFriendState extends State<SplitWithScreenFriend> {
     }
   }
 
-  // Filter friends based on search query
+  // based on search query
   void _filterFriends(String query) {
     final results = otherFriends.where((friend) {
       return friend.name.toLowerCase().contains(query.toLowerCase());
@@ -130,26 +130,23 @@ class SplitWithScreenFriendState extends State<SplitWithScreenFriend> {
     });
   }
 
-  // Toggle friend selection
   void _toggleFriendSelection(Friend friend) {
     if (widget.isReadOnly || friend.disabled || friend.name == 'You') return;
 
     setState(() {
       friend.checked = !friend.checked;
 
-      // Assign default percentage on select
+      // default percentage
       if (friend.checked && friend.percentage.isEmpty) {
         friend.percentage = '0';
         friend.controller.text = '0';
       }
 
-      // Clear percentage on deselect
       if (!friend.checked) {
         friend.controller.text = '';
         friend.percentage = '';
       }
-
-      // Re-sort: selected friends first
+      
       filteredFriends.sort((a, b) {
         if (a.checked == b.checked) return 0;
         return a.checked ? -1 : 1;
