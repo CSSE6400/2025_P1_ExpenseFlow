@@ -89,7 +89,7 @@ class _OverviewScreenReportWidgetState
                 context,
                 boldText: 'Info:',
                 normalText: 'Please wait 5 minutes and then return.',
-                backgroundColor: ColorPalette.primaryAction,
+                type: SnackBarType.failed,
               );
               // TODO: Trigger actual report generation request to backend here.
             },

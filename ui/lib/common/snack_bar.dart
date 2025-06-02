@@ -6,15 +6,18 @@ import 'package:google_fonts/google_fonts.dart';
 import 'color_palette.dart';
 
 /// Shows a customizable snackbar with optional bold and normal text,
-/// optional background color, and optional text color.
+/// and a type (success or failed) that sets the background color.
+enum SnackBarType { success, failed }
+
 void showCustomSnackBar(
   BuildContext context, {
-  String? boldText, // Optional bold part
   required String normalText, // Required normal part
-  Color? backgroundColor,
+  SnackBarType type = SnackBarType.failed,
+  String? boldText, // Optional bold part
   Color? textColor,
 }) {
-  final bgColor = backgroundColor ?? ColorPalette.error;
+  final bgColor =
+      type == SnackBarType.success ? Colors.green : ColorPalette.error;
   final fgColor = textColor ?? ColorPalette.buttonText;
 
   ScaffoldMessenger.of(context).showSnackBar(
@@ -22,10 +25,7 @@ void showCustomSnackBar(
       backgroundColor: bgColor,
       content: RichText(
         text: TextSpan(
-          style: GoogleFonts.roboto(
-            fontSize: 14,
-            color: fgColor,
-          ),
+          style: GoogleFonts.roboto(fontSize: 14, color: fgColor),
           children: [
             if (boldText != null)
               TextSpan(

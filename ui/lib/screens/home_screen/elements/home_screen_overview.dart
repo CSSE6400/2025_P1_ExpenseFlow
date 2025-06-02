@@ -78,8 +78,8 @@ class HomeScreenOverviewState extends State<HomeScreenOverview> {
       overview = await apiService.expenseApi.getOverview();
     } catch (e) {
       // Handle error, e.g., show a snackbar
-      logger.severe("Failed to load overview data", e);
-      logger.info(e.toString());
+      _logger.severe("Failed to load overview data", e);
+      _logger.info(e.toString());
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,

@@ -13,7 +13,8 @@ import 'package:flutter_frontend/common/snack_bar.dart';
 
 class GroupMember {
   final String name;
-  final String? status; // null for 'You', else: 'Needs Approval', 'Approved', 'Needs Payment', 'Paid'
+  final String?
+  status; // null for 'You', else: 'Needs Approval', 'Approved', 'Needs Payment', 'Paid'
   final String amount;
 
   GroupMember({required this.name, this.status, required this.amount});
@@ -49,7 +50,11 @@ class IndGroupExpenseScreenMainBody extends StatefulWidget {
   final String groupName;
   final String groupUUID;
 
-  const IndGroupExpenseScreenMainBody({super.key, required this.groupName, required this.groupUUID});
+  const IndGroupExpenseScreenMainBody({
+    super.key,
+    required this.groupName,
+    required this.groupUUID,
+  });
 
   @override
   State<IndGroupExpenseScreenMainBody> createState() =>
@@ -64,10 +69,10 @@ class _IndGroupExpenseScreenMainBodyState
   List<String> groupMembers = [];
   final Logger _logger = Logger("IndividualGroupExpenseScreen");
   Group group = Group(
-        groupId: "loading...",
-        name: "loading...",
-        description: "loading...",
-      );
+    groupId: "loading...",
+    name: "loading...",
+    description: "loading...",
+  );
   bool isEditingDescription = false;
   late TextEditingController _descriptionController;
 
@@ -171,47 +176,49 @@ class _IndGroupExpenseScreenMainBodyState
     // ];
   }
 
-  Future<void> _fetchGroupExpenses() async { //TODO: fix this and test it
+  Future<void> _fetchGroupExpenses() async {
+    //TODO: fix this and test it
     final apiService = Provider.of<ApiService>(context, listen: false);
     try {
       _logger.info("Fetching group expenses for ${widget.groupUUID}");
-      final expensesFromApi = await apiService.groupApi.getGroupExpenses(widget.groupUUID);
+      final expensesFromApi = await apiService.groupApi.getGroupExpenses(
+        widget.groupUUID,
+      );
       _logger.info(expensesFromApi.length);
 
-      final parsedExpenses = await Future.wait(expensesFromApi.map<Future<ExpenseItem>>((expense) async {
-      final status = await apiService.expenseApi.getOverallExpenseStatus(expense.expenseId);
-      return ExpenseItem(
-        name: expense.name,
-        transactionId: expense.expenseId,
-        price: '100', // TODO:, replace with total amount of expense
-        date: expense.expenseDate.toIso8601String(),
-        active: status != ExpenseStatus.paid,
-        members: [], // TODO: replace with actual group members
-        //expense.members.map<GroupMember>((m) {
+      final parsedExpenses = await Future.wait(
+        expensesFromApi.map<Future<ExpenseItem>>((expense) async {
+          final status = await apiService.expenseApi.getOverallExpenseStatus(
+            expense.expenseId,
+          );
+          return ExpenseItem(
+            name: expense.name,
+            transactionId: expense.expenseId,
+            price: '100', // TODO:, replace with total amount of expense
+            date: expense.expenseDate.toIso8601String(),
+            active: status != ExpenseStatus.paid,
+            members: [], // TODO: replace with actual group members
+            //expense.members.map<GroupMember>((m) {
             // return GroupMember(
             //   name: m.nickname == null ? 'You' : '@${m.nickname}', // this probs wrong
             //   amount: '\$${m.amount.toStringAsFixed(2)}',
             //   status: m.status, // e.g., "Needs Payment", "Paid"
             // );
-          // }).toList(),
+            // }).toList(),
+          );
+        }),
       );
-    }
-    ));
 
       setState(() {
         _logger.info("all Expense length is ${allExpenses.length}");
         allExpenses = parsedExpenses;
       });
-
     } catch (e) {
       _logger.warning("Error fetching expenses: $e");
-      showCustomSnackBar(
-        context,
-        normalText: "Failed to load group expenses",
-      );
+      if (!mounted) return;
+      showCustomSnackBar(context, normalText: "Failed to load group expenses");
     }
   }
-
 
   Future<void> _initialiseData() async {
     await _fetchGroupMembers();
@@ -235,13 +242,9 @@ class _IndGroupExpenseScreenMainBodyState
         description: userReads.description,
       );
       return group;
-      
     } on ApiException catch (e) {
       _logger.info("API exception while fetching group members: ${e.message}");
-      showCustomSnackBar(
-        context,
-        normalText: "Failed to load group members",
-      );
+      showCustomSnackBar(context, normalText: "Failed to load group members");
       return Group(
         groupId: "loading...",
         name: "loading...",
@@ -249,10 +252,7 @@ class _IndGroupExpenseScreenMainBodyState
       );
     } catch (e) {
       _logger.info("Unexpected error: $e");
-      showCustomSnackBar(
-        context,
-        normalText: "Something went wrong",
-      );
+      showCustomSnackBar(context, normalText: "Something went wrong");
       return Group(
         groupId: "loading...",
         name: "loading...",
@@ -265,11 +265,12 @@ class _IndGroupExpenseScreenMainBodyState
     final apiService = Provider.of<ApiService>(context, listen: false);
     try {
       _logger.info(widget.groupUUID);
-      final userReads = await apiService.groupApi.getGroupUsers(widget.groupUUID);
+      final userReads = await apiService.groupApi.getGroupUsers(
+        widget.groupUUID,
+      );
 
-      final fetchedMembers = userReads
-          .map((user) => '@${user.nickname}')
-          .toList();
+      final fetchedMembers =
+          userReads.map((user) => '@${user.nickname}').toList();
 
       setState(() {
         groupMembers = fetchedMembers;
@@ -280,19 +281,12 @@ class _IndGroupExpenseScreenMainBodyState
       }
     } on ApiException catch (e) {
       _logger.info("API exception while fetching group members: ${e.message}");
-      showCustomSnackBar(
-        context,
-        normalText: "Failed to load group members",
-      );
+      showCustomSnackBar(context, normalText: "Failed to load group members");
     } catch (e) {
       _logger.info("Unexpected error: $e");
-      showCustomSnackBar(
-        context,
-        normalText: "Something went wrong",
-      );
+      showCustomSnackBar(context, normalText: "Something went wrong");
     }
   }
-
 
   void handleSegmentChange(String newSegment) {
     setState(() {
@@ -317,13 +311,14 @@ class _IndGroupExpenseScreenMainBodyState
       if (match != null) {
         final int days = int.parse(match.group(1)!);
         final DateTime cutoff = DateTime.now().subtract(Duration(days: days));
-        result = result.where((e) {
-          try {
-            return DateTime.parse(e.date).isAfter(cutoff);
-          } catch (_) {
-            return false;
-          }
-        }).toList();
+        result =
+            result.where((e) {
+              try {
+                return DateTime.parse(e.date).isAfter(cutoff);
+              } catch (_) {
+                return false;
+              }
+            }).toList();
       }
     }
 
@@ -360,7 +355,6 @@ class _IndGroupExpenseScreenMainBodyState
     }
   }
 
-
   Widget buildGroupMembersSection() {
     // if (groupMembers == null) {
     //   return const CircularProgressIndicator();
@@ -379,20 +373,27 @@ class _IndGroupExpenseScreenMainBodyState
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Row(
-            children: groupMembers.map((member) {
-              return Container(
-                margin: const EdgeInsets.only(right: 8),
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: Colors.blue.shade50,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  member,
-                  style: const TextStyle(fontSize: 14, color: Colors.black87),
-                ),
-              );
-            }).toList(),
+            children:
+                groupMembers.map((member) {
+                  return Container(
+                    margin: const EdgeInsets.only(right: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.shade50,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      member,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  );
+                }).toList(),
           ),
         ),
         const SizedBox(height: 20),
@@ -418,12 +419,15 @@ class _IndGroupExpenseScreenMainBodyState
               buildGroupMembersSection(),
               Text(
                 "Description",
-                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
                 textAlign: TextAlign.left,
               ),
               const SizedBox(height: 8),
               isEditingDescription
-                ? Column(
+                  ? Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Container(
@@ -439,7 +443,10 @@ class _IndGroupExpenseScreenMainBodyState
                           decoration: const InputDecoration.collapsed(
                             hintText: 'Edit group description...',
                           ),
-                          style: const TextStyle(fontSize: 14, color: Colors.black87),
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.black87,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -464,7 +471,7 @@ class _IndGroupExpenseScreenMainBodyState
                       ),
                     ],
                   )
-                : Column(
+                  : Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Container(
@@ -476,7 +483,10 @@ class _IndGroupExpenseScreenMainBodyState
                         ),
                         child: Text(
                           group.description,
-                          style: const TextStyle(fontSize: 14, color: Colors.black87),
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.black87,
+                          ),
                           textAlign: TextAlign.left,
                         ),
                       ),
@@ -496,7 +506,7 @@ class _IndGroupExpenseScreenMainBodyState
                         ),
                       ),
                     ],
-                  ),      
+                  ),
 
               ExpensesScreenSegmentControl(
                 selectedSegment: selectedSegment,

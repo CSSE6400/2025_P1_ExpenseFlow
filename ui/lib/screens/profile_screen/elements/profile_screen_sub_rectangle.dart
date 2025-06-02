@@ -79,7 +79,7 @@ class _ProfileScreenSubRectangleState extends State<ProfileScreenSubRectangle> {
           showCustomSnackBar(
             context,
             normalText: "Successfully updated budget",
-            backgroundColor: Colors.green,
+            type: SnackBarType.success,
           );
         } catch (e) {
           _logger.info(e);
