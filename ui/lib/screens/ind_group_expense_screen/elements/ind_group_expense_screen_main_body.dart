@@ -17,10 +17,18 @@ class GroupMember {
   GroupMember({required this.name, this.status, required this.amount});
 }
 
+class Group {
+  final String groupId;
+  final String name;
+  final String description;
+
+  Group({required this.groupId, required this.name, required this.description});
+}
+
 class ExpenseItem {
   final String name;
   final String price;
-  final String date; // ISO 8601 format
+  final String date; // iso 8601 format
   final bool active;
   final List<GroupMember> members;
 
@@ -52,15 +60,20 @@ class _IndGroupExpenseScreenMainBodyState
   //late final List<String> groupMembers;
   List<String> groupMembers = [];
   final Logger _logger = Logger("IndividualGroupScreen");
+  Group group = Group(
+        groupId: "loading...",
+        name: "loading...",
+        description: "loading...",
+      );
 
   @override
   void initState() {
     super.initState();
+    _initialiseData();
     _fetchGroupMembers();
 
     // TODO: Replace with actual data from your database
     // Shouldn't "paid" as active status turn "active" to false?
-    
 
     allExpenses = [
       ExpenseItem(
@@ -150,6 +163,53 @@ class _IndGroupExpenseScreenMainBodyState
         ],
       ),
     ];
+  }
+
+  Future<void> _initialiseData() async {
+    await _fetchGroupMembers();
+    final fetchedGroup = await _fetchGroupNameandDescription();
+    if (fetchedGroup != null) {
+      setState(() {
+        group = fetchedGroup;
+      });
+    }
+  }
+
+  Future<Group> _fetchGroupNameandDescription() async {
+    final apiService = Provider.of<ApiService>(context, listen: false);
+    try {
+      _logger.info(widget.groupUUID);
+      final userReads = await apiService.groupApi.getGroup(widget.groupUUID);
+      final group = Group(
+        groupId: userReads!.groupId,
+        name: userReads.name,
+        description: userReads.description,
+      );
+      return group;
+      
+    } on ApiException catch (e) {
+      _logger.info("API exception while fetching group members: ${e.message}");
+      showCustomSnackBar(
+        context,
+        normalText: "Failed to load group members",
+      );
+      return Group(
+        groupId: "loading...",
+        name: "loading...",
+        description: "loading...",
+      );
+    } catch (e) {
+      _logger.info("Unexpected error: $e");
+      showCustomSnackBar(
+        context,
+        normalText: "Something went wrong",
+      );
+      return Group(
+        groupId: "loading...",
+        name: "loading...",
+        description: "loading...",
+      );
+    }
   }
 
   Future<void> _fetchGroupMembers() async {
@@ -281,6 +341,18 @@ class _IndGroupExpenseScreenMainBodyState
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               buildGroupMembersSection(),
+              Text(
+                "Description",
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                group.description,
+                style: const TextStyle(fontSize: 14, color: Colors.black87),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 20),
               // Segment Control
               ExpensesScreenSegmentControl(
                 selectedSegment: selectedSegment,
