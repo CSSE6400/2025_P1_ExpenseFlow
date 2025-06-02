@@ -14,12 +14,10 @@ from expenseflow.errors import ExpenseFlowError
 @pytest.mark.asyncio
 async def test_add_friend(
     session: AsyncSession,
-    default_user: UserModel,
-    user_model: UserModel
+    user_model_factory
 ):
-    
-    sender = default_user
-    receiver = user_model
+    sender = user_model_factory.build()
+    receiver = user_model_factory.build()
     friend_model = await create_accept_friend_request(session,
                                                       sender,
                                                       receiver)
@@ -58,11 +56,10 @@ async def test_add_friend(
 @pytest.mark.asyncio
 async def test_accepted_request(
     session: AsyncSession,
-    default_user: UserModel,
-    user_model: UserModel
+    user_model_factory
 ):
-    sender = default_user
-    receiver = user_model
+    sender = user_model_factory.build()
+    receiver = user_model_factory.build()
     friend_model = await create_accept_friend_request(session,
                                                       sender,
                                                       receiver)
@@ -86,11 +83,10 @@ async def test_accepted_request(
 @pytest.mark.asyncio
 async def test_remove_friend(
     session: AsyncSession,
-    default_user: UserModel,
-    user_model: UserModel
+    user_model_factory
 ):
-    sender = default_user
-    receiver = user_model
+    sender = user_model_factory.build()
+    receiver = user_model_factory.build()
     friend_model = await create_accept_friend_request(session,
                                                       sender,
                                                       receiver)
@@ -121,11 +117,10 @@ async def test_remove_friend(
 @pytest.mark.asyncio
 async def test_fuzz_create_friend(
     session: AsyncSession,
-    default_user: UserModel,
-    user_model: UserModel
+    user_model_factory
 ):
-    sender = default_user
-    receiver = user_model
+    sender = user_model_factory.build()
+    receiver = user_model_factory.build()
     
     with pytest.raises(ExpenseFlowError) as eferror:
         await create_accept_friend_request(session, sender, sender)
