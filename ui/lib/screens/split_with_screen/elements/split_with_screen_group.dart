@@ -128,27 +128,39 @@ class SplitWithScreenGroupState extends State<SplitWithScreenGroup> {
     }
   }
 
+
   Future<List<GroupMember>> _generateMembers(String groupId) async {
     final apiService = Provider.of<ApiService>(context, listen: false);
     try {
-      final userReads = await apiService.groupApi.getGroupUsers(groupId);
-
-      final members = userReads.map((user) {
-        return GroupMember(
-          name: '@${user.nickname}',
-          uuid: user.userId,
-          percentage: '',
-          checked: false,
-          disabled: false,
+      _logger.info("Calling the API");
+      final fetchedUser = await apiService.userApi.getCurrentUser();
+      if (fetchedUser == null) {
+        showCustomSnackBar(
+          context,
+          normalText: "Unable to get current user",
         );
-      }).toList();
+        Navigator.pushNamed(context, "/");
+        return []; 
+      }
 
-      // Add the 'You' member
+      final userReads = await apiService.groupApi.getGroupUsers(groupId);
+      final members = userReads
+          .where((user) => user.userId != fetchedUser.userId)
+          .map((user) {
+            return GroupMember(
+              name: '@${user.nickname}',
+              uuid: user.userId,
+              percentage: '',
+              checked: false,
+              disabled: false,
+            );
+          }).toList();
+
       members.insert(
         0,
         GroupMember(
           name: 'You',
-          uuid: '1',
+          uuid: fetchedUser.userId,
           percentage: '100',
           checked: true,
           disabled: false,
@@ -159,11 +171,10 @@ class SplitWithScreenGroupState extends State<SplitWithScreenGroup> {
     } catch (e) {
       _logger.warning("Failed to fetch group members: $e");
       showCustomSnackBar(context, normalText: "Failed to load group members");
-      return [
-        GroupMember(name: 'You', percentage: '100', checked: true, disabled: false, uuid: '1')
-      ];
+      return [];
     }
   }
+
 
   // Select a group and update its state
   void _selectGroup(int index) {

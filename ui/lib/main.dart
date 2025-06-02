@@ -103,10 +103,11 @@ class MyApp extends StatelessWidget {
 
             final transactionId = args?['transactionId'] as String?;
             final isReadOnly = args?['isReadOnly'] as bool? ?? false;
+            // TODO: friends/ group to split with
 
             return MaterialPageRoute(
               builder: (_) => SplitWithScreen(
-                transactionId: transactionId,
+                transactionId: transactionId, // Does this ever actually get used??
                 isReadOnly: isReadOnly,
               ),
             );

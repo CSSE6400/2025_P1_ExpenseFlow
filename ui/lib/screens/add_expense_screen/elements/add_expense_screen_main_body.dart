@@ -75,10 +75,10 @@ class _AddExpenseScreenMainBodyState extends State<AddExpenseScreenMainBody> {
               AddExpenseScreenScanReceipt(),
               SizedBox(height: proportionalSizes.scaleHeight(20)),
 
-              // Pass validity up from fields
+              // pass validity up from fields
               AddExpenseScreenFields(
                 onValidityChanged: updateFormValid,
-                onExpenseChanged: updateExpense, // <-- pass callback here
+                onExpenseChanged: updateExpense, 
               ),
               SizedBox(height: proportionalSizes.scaleHeight(24)),
 

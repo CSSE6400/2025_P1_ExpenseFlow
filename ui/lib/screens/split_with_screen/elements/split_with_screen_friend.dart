@@ -10,13 +10,12 @@ import '../../../common/icon_maker.dart';
 import 'package:flutter_frontend/services/api_service.dart';
 import 'package:provider/provider.dart' show Provider;
 
-// Friend class
-// TODO: Consider adding userId, transactionId or unique identifier for backend syncing
 class Friend {
   String name;
   String percentage;
   bool checked;
   bool disabled;
+  String userId;
   final TextEditingController controller;
 
   Friend({
@@ -24,6 +23,7 @@ class Friend {
     required this.percentage,
     required this.checked,
     required this.disabled,
+    required this.userId,
   }) : controller = TextEditingController(text: percentage);
 }
 
@@ -44,40 +44,44 @@ class SplitWithScreenFriend extends StatefulWidget {
 }
 
 class SplitWithScreenFriendState extends State<SplitWithScreenFriend> {
-  late Friend you;
+  late Friend you = Friend( name: 'Loading', userId: '1', percentage: '100', checked: true, disabled: false);
   List<Friend> otherFriends = [];
   List<Friend> filteredFriends = [];
   final Logger _logger = Logger("SplitWithFriendScreen");
 
-  // Initialize 'You' and other friends
   @override
   void initState() {
     super.initState();
-
-    // Initialize 'You'
-    you = Friend(
-      name: 'You',
-      percentage: '100',
-      checked: true,
-      disabled: false,
-    );
-
-    // Initialize others
-    // TODO: Replace with actual data from the backend and add lazy loading if friends are numerous.
-    // For now, we are using dummy data. Maybe would need to restrcture the Friend class to include a userId, transactionId or something similar.
+    _fetchUser();
     _fetchFriends();
-    // otherFriends = [
-    //   Friend(name: '@lol2873', percentage: '', checked: false, disabled: false),
-    //   Friend(name: '@lmaoi187', percentage: '', checked: false, disabled: false),
-    //   Friend(name: '@xyz877', percentage: '', checked: false, disabled: false),
-    //   Friend(name: '@abc123', percentage: '', checked: false, disabled: false),
-    // ];
-
     filteredFriends = List.from(otherFriends);
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       widget.onValidityChanged?.call(isTotalPercentageValid());
     });
+  }
+
+  Future<void> _fetchUser() async {
+    _logger.info("Calling the API");
+    final apiService = Provider.of<ApiService>(context, listen: false);
+    final fetchedUser = await apiService.userApi.getCurrentUser();
+    if (!mounted) return;
+    if (fetchedUser == null) {
+      showCustomSnackBar(
+        context,
+        normalText: "Unable to view profile information",
+      );
+      Navigator.pushNamed(context, "/");
+    } else {
+      setState(() {
+            you = Friend(
+            name: 'You',
+            userId: fetchedUser.userId,
+            percentage: '100',
+            checked: true,
+            disabled: false,
+            );
+      });
+    }
   }
 
   Future<void> _fetchFriends() async {
@@ -89,6 +93,7 @@ class SplitWithScreenFriendState extends State<SplitWithScreenFriend> {
         otherFriends = userReads
             .map((user) => Friend(
                   name: '@${user.nickname}',
+                  userId: user.userId,
                   percentage: '',
                   checked: false,
                   disabled: false,
