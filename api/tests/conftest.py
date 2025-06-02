@@ -84,13 +84,11 @@ async def db() -> AsyncGenerator[None]:
         logger.warning(f"Already found db at {SYNC_TEST_DB_URL}. Dropping now...")
         drop_database(SYNC_TEST_DB_URL)
 
-    # Create test database
+    # Create fresh new one
     create_database(SYNC_TEST_DB_URL)
 
     await initialise_database(test_engine)
     yield
-    drop_database(SYNC_TEST_DB_URL)
-    create_database(SYNC_TEST_DB_URL)
 
 
 @pytest_asyncio.fixture(scope="function", autouse=True)
