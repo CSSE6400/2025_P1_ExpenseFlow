@@ -220,7 +220,7 @@ class _ExpensesScreenListState extends State<ExpensesScreenList> {
                             context,
                             '/see_expenses',
                             arguments: {
-                              'transactionId': expense.name, // TODO: Update with actual transaction ID
+                              'transactionId': expense.transactionId, // TODO: Update with actual transaction ID
                             },
                           );
                         },

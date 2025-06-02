@@ -41,10 +41,8 @@ class _HomeScreenOverviewState extends State<HomeScreenOverview> {
   }
 
   Future<void> _loadData() async {
-    // TODO: Replace with actual backend call
     monthlyBudget = 5000.0;
-    // when made a suitable end point
-    final rawCategories = await _fetchUserExpenses();
+    final rawCategories = await _fetchUserExpenses(); 
     // final rawCategories = [
     //   _CategoryData(name: 'Rent', amount: 1200),
     //   _CategoryData(name: 'Bills', amount: 300),
@@ -88,7 +86,7 @@ class _HomeScreenOverviewState extends State<HomeScreenOverview> {
       final rawCategories = userReads.map((category) {
         return _CategoryData(
           name:category.name,
-          amount: 100, // TODO: change to better fitting end point with a price.
+          amount: 100, // TODO: change to better fitting end point with a price
         );
       }).toList();
       _logger.info("number of recent categories: ${rawCategories.length}");

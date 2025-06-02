@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/common/time_period_dropdown.dart';
+import 'package:flutter_frontend/models/enums.dart';
 import 'package:flutter_frontend/models/group.dart';
 import 'package:logging/logging.dart';
 // Common imports
@@ -28,6 +29,7 @@ class Group {
 
 class ExpenseItem {
   final String name;
+  final String transactionId;
   final String price;
   final String date; // iso 8601 format
   final bool active;
@@ -39,6 +41,7 @@ class ExpenseItem {
     required this.date,
     required this.active,
     required this.members,
+    required this.transactionId,
   });
 }
 
@@ -57,10 +60,9 @@ class _IndGroupExpenseScreenMainBodyState
     extends State<IndGroupExpenseScreenMainBody> {
   String selectedSegment = 'Active';
   String selectedPeriod = 'Last 30 Days';
-  late final List<ExpenseItem> allExpenses;
-  //late final List<String> groupMembers;
+  List<ExpenseItem> allExpenses = [];
   List<String> groupMembers = [];
-  final Logger _logger = Logger("IndividualGroupScreen");
+  final Logger _logger = Logger("IndividualGroupExpenseScreen");
   Group group = Group(
         groupId: "loading...",
         name: "loading...",
@@ -75,99 +77,141 @@ class _IndGroupExpenseScreenMainBodyState
     _descriptionController = TextEditingController();
     _initialiseData();
     _fetchGroupMembers();
+    _fetchGroupExpenses();
 
-    // TODO: Replace with actual data from your database
-    // Shouldn't "paid" as active status turn "active" to false?
+    // Shouldn't "paid" as active status turn "active" to false? Yes
 
-    allExpenses = [
-      ExpenseItem(
-        name: 'Uber Ride',
-        price: '\$427.28',
-        date: '2025-05-09T00:00:00',
-        active: true,
-        members: [
-          GroupMember(name: 'You', amount: '\$150.00'),
-          GroupMember(name: '@abc123', status: 'Needs Approval', amount: '\$100.00'),
-          GroupMember(name: '@xyz987', status: 'Approved', amount: '\$90.00'),
-          GroupMember(name: '@pqr456', status: 'Needs Payment', amount: '\$87.28'),
-        ],
-      ),
-      ExpenseItem(
-        name: 'Dinner at Sushi Train',
-        price: '\$78.38',
-        date: '2024-12-26T00:00:00',
-        active: true,
-        members: [
-          GroupMember(name: 'You', amount: '\$28.38'),
-          GroupMember(name: '@mno789', status: 'Needs Payment', amount: '\$50.00'),
-        ],
-      ),
-      ExpenseItem(
-        name: 'Movie Tickets',
-        price: '\$373.11',
-        date: '2025-01-04T00:00:00',
-        active: true,
-        members: [
-          GroupMember(name: 'You', amount: '\$123.11'),
-          GroupMember(name: '@xyz987', status: 'Needs Payment', amount: '\$100.00'),
-          GroupMember(name: '@abc123', status: 'Approved', amount: '\$100.00'),
-          GroupMember(name: '@pqr456', status: 'Needs Approval', amount: '\$50.00'),
-        ],
-      ),
-      ExpenseItem(
-        name: 'Taxi Split',
-        price: '\$210.00',
-        date: '2025-04-01T00:00:00',
-        active: false,
-        members: [
-          GroupMember(name: 'You', amount: '\$70.00'),
-          GroupMember(name: '@abc123', status: 'Paid', amount: '\$70.00'),
-          GroupMember(name: '@xyz987', status: 'Paid', amount: '\$70.00'),
-        ],
-      ),
-      ExpenseItem(
-        name: 'Team Coffee',
-        price: '\$95.00',
-        date: '2025-02-12T00:00:00',
-        active: false,
-        members: [
-          GroupMember(name: '@mno789', status: 'Paid', amount: '\$65.00'),
-          GroupMember(name: '@pqr456', status: 'Paid', amount: '\$30.00'),
-        ],
-      ),
-      ExpenseItem(
-        name: 'Board Game Night',
-        price: '\$120.00',
-        date: '2025-03-15T00:00:00',
-        active: false,
-        members: [
-          GroupMember(name: '@abc123', status: 'Paid', amount: '\$60.00'),
-          GroupMember(name: 'You', amount: '\$60.00'),
-        ],
-      ),
-      ExpenseItem(
-        name: 'Flight Booking',
-        price: '\$393.95',
-        date: '2024-11-30T00:00:00',
-        active: true,
-        members: [
-          GroupMember(name: '@xyz987', status: 'Needs Payment', amount: '\$100.00'),
-          GroupMember(name: 'You', amount: '\$143.95'),
-          GroupMember(name: '@mno789', status: 'Needs Approval', amount: '\$150.00'),
-        ],
-      ),
-      ExpenseItem(
-        name: 'Haircut Subscription',
-        price: '\$100.00',
-        date: '2025-04-26T00:00:00',
-        active: true,
-        members: [
-          GroupMember(name: 'You', amount: '\$50.00'),
-          GroupMember(name: '@xyz987', status: 'Needs Payment', amount: '\$50.00'),
-        ],
-      ),
-    ];
+    // allExpenses = [
+    //   ExpenseItem(
+    //     name: 'Uber Ride',
+    //     price: '\$427.28',
+    //     date: '2025-05-09T00:00:00',
+    //     active: true,
+    //     members: [
+    //       GroupMember(name: 'You', amount: '\$150.00'),
+    //       GroupMember(name: '@abc123', status: 'Needs Approval', amount: '\$100.00'),
+    //       GroupMember(name: '@xyz987', status: 'Approved', amount: '\$90.00'),
+    //       GroupMember(name: '@pqr456', status: 'Needs Payment', amount: '\$87.28'),
+    //     ],
+    //   ),
+    //   ExpenseItem(
+    //     name: 'Dinner at Sushi Train',
+    //     price: '\$78.38',
+    //     date: '2024-12-26T00:00:00',
+    //     active: true,
+    //     members: [
+    //       GroupMember(name: 'You', amount: '\$28.38'),
+    //       GroupMember(name: '@mno789', status: 'Needs Payment', amount: '\$50.00'),
+    //     ],
+    //   ),
+    //   ExpenseItem(
+    //     name: 'Movie Tickets',
+    //     price: '\$373.11',
+    //     date: '2025-01-04T00:00:00',
+    //     active: true,
+    //     members: [
+    //       GroupMember(name: 'You', amount: '\$123.11'),
+    //       GroupMember(name: '@xyz987', status: 'Needs Payment', amount: '\$100.00'),
+    //       GroupMember(name: '@abc123', status: 'Approved', amount: '\$100.00'),
+    //       GroupMember(name: '@pqr456', status: 'Needs Approval', amount: '\$50.00'),
+    //     ],
+    //   ),
+    //   ExpenseItem(
+    //     name: 'Taxi Split',
+    //     price: '\$210.00',
+    //     date: '2025-04-01T00:00:00',
+    //     active: false,
+    //     members: [
+    //       GroupMember(name: 'You', amount: '\$70.00'),
+    //       GroupMember(name: '@abc123', status: 'Paid', amount: '\$70.00'),
+    //       GroupMember(name: '@xyz987', status: 'Paid', amount: '\$70.00'),
+    //     ],
+    //   ),
+    //   ExpenseItem(
+    //     name: 'Team Coffee',
+    //     price: '\$95.00',
+    //     date: '2025-02-12T00:00:00',
+    //     active: false,
+    //     members: [
+    //       GroupMember(name: '@mno789', status: 'Paid', amount: '\$65.00'),
+    //       GroupMember(name: '@pqr456', status: 'Paid', amount: '\$30.00'),
+    //     ],
+    //   ),
+    //   ExpenseItem(
+    //     name: 'Board Game Night',
+    //     price: '\$120.00',
+    //     date: '2025-03-15T00:00:00',
+    //     active: false,
+    //     members: [
+    //       GroupMember(name: '@abc123', status: 'Paid', amount: '\$60.00'),
+    //       GroupMember(name: 'You', amount: '\$60.00'),
+    //     ],
+    //   ),
+    //   ExpenseItem(
+    //     name: 'Flight Booking',
+    //     price: '\$393.95',
+    //     date: '2024-11-30T00:00:00',
+    //     active: true,
+    //     members: [
+    //       GroupMember(name: '@xyz987', status: 'Needs Payment', amount: '\$100.00'),
+    //       GroupMember(name: 'You', amount: '\$143.95'),
+    //       GroupMember(name: '@mno789', status: 'Needs Approval', amount: '\$150.00'),
+    //     ],
+    //   ),
+    //   ExpenseItem(
+    //     name: 'Haircut Subscription',
+    //     price: '\$100.00',
+    //     date: '2025-04-26T00:00:00',
+    //     active: true,
+    //     members: [
+    //       GroupMember(name: 'You', amount: '\$50.00'),
+    //       GroupMember(name: '@xyz987', status: 'Needs Payment', amount: '\$50.00'),
+    //     ],
+    //   ),
+    // ];
   }
+
+  Future<void> _fetchGroupExpenses() async { //TODO: fix this and test it
+    final apiService = Provider.of<ApiService>(context, listen: false);
+    try {
+      _logger.info("Fetching group expenses for ${widget.groupUUID}");
+      final expensesFromApi = await apiService.groupApi.getGroupExpenses(widget.groupUUID);
+      _logger.info(expensesFromApi.length);
+
+      final parsedExpenses = await Future.wait(expensesFromApi.map<Future<ExpenseItem>>((expense) async {
+      final status = await apiService.expenseApi.getOverallExpenseStatus(expense.expenseId);
+      return ExpenseItem(
+        name: expense.name,
+        transactionId: expense.expenseId,
+        price: '100', // TODO:, replace with total amount of expense
+        date: expense.expenseDate.toIso8601String(),
+        active: status != ExpenseStatus.paid,
+        members: [], // TODO: replace with actual group members
+        //expense.members.map<GroupMember>((m) {
+            // return GroupMember(
+            //   name: m.nickname == null ? 'You' : '@${m.nickname}', // this probs wrong
+            //   amount: '\$${m.amount.toStringAsFixed(2)}',
+            //   status: m.status, // e.g., "Needs Payment", "Paid"
+            // );
+          // }).toList(),
+      );
+    }
+    ));
+
+      setState(() {
+        _logger.info("all Expense length is ${allExpenses.length}");
+        allExpenses = parsedExpenses;
+      });
+
+    } catch (e) {
+      _logger.warning("Error fetching expenses: $e");
+      showCustomSnackBar(
+        context,
+        normalText: "Failed to load group expenses",
+      );
+    }
+  }
+
 
   Future<void> _initialiseData() async {
     await _fetchGroupMembers();
@@ -379,125 +423,80 @@ class _IndGroupExpenseScreenMainBodyState
               ),
               const SizedBox(height: 8),
               isEditingDescription
-    ? Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.grey.shade100,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.grey.shade300),
-            ),
-            child: TextField(
-              controller: _descriptionController,
-              maxLines: null,
-              decoration: const InputDecoration.collapsed(
-                hintText: 'Edit group description...',
-              ),
-              style: const TextStyle(fontSize: 14, color: Colors.black87),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              TextButton(
-                onPressed: () {
-                  setState(() {
-                    isEditingDescription = false;
-                    _descriptionController.text = group.description;
-                  });
-                },
-                child: const Text("Cancel"),
-              ),
-              const SizedBox(width: 8),
-              ElevatedButton(
-                onPressed: _saveGroupDescription,
-                child: const Text("Save"),
-              ),
-            ],
-          ),
-        ],
-      )
-    : Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.blue.shade50,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Text(
-              group.description,
-              style: const TextStyle(fontSize: 14, color: Colors.black87),
-              textAlign: TextAlign.left,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Align(
-            alignment: Alignment.centerRight,
-            child: TextButton(
-              onPressed: () {
-                setState(() {
-                  isEditingDescription = true;
-                });
-              },
-              style: TextButton.styleFrom(
-                foregroundColor: Colors.blue.shade800,
-              ),
-              child: const Text("Edit"),
-            ),
-          ),
-        ],
-      ),
-              // isEditingDescription
-              //   ? Column(
-              //       children: [
-              //         TextField(
-              //           controller: _descriptionController,
-              //           maxLines: null,
-              //           decoration: InputDecoration(
-              //             border: OutlineInputBorder(),
-              //             labelText: 'Edit Description',
-              //           ),
-              //         ),
-              //         const SizedBox(height: 8),
-              //         ElevatedButton(
-              //           onPressed: _saveGroupDescription,
-              //           child: const Text("Save"),
-              //         ),
-              //       ],
-              //     )
-              //   : Column(
-              //       children: [
-              //         Text(
-              //           group.description,
-              //           style: const TextStyle(fontSize: 14, color: Colors.black87),
-              //           textAlign: TextAlign.center,
-              //         ),
-              //         const SizedBox(height: 4),
-              //         TextButton(
-              //           onPressed: () {
-              //             setState(() {
-              //               isEditingDescription = true;
-              //             });
-              //           },
-              //           child: const Text("Edit"),
-              //         ),
-              //       ],
-              //     ),
-
-
-              // Text(
-              //   group.description,
-              //   style: const TextStyle(fontSize: 14, color: Colors.black87),
-              //   textAlign: TextAlign.center,
-              // ),
-              // const SizedBox(height: 20),
-              
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade100,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.grey.shade300),
+                        ),
+                        child: TextField(
+                          controller: _descriptionController,
+                          maxLines: null,
+                          decoration: const InputDecoration.collapsed(
+                            hintText: 'Edit group description...',
+                          ),
+                          style: const TextStyle(fontSize: 14, color: Colors.black87),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton(
+                            onPressed: () {
+                              setState(() {
+                                isEditingDescription = false;
+                                _descriptionController.text = group.description;
+                              });
+                            },
+                            child: const Text("Cancel"),
+                          ),
+                          const SizedBox(width: 8),
+                          ElevatedButton(
+                            onPressed: _saveGroupDescription,
+                            child: const Text("Save"),
+                          ),
+                        ],
+                      ),
+                    ],
+                  )
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.blue.shade50,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          group.description,
+                          style: const TextStyle(fontSize: 14, color: Colors.black87),
+                          textAlign: TextAlign.left,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton(
+                          onPressed: () {
+                            setState(() {
+                              isEditingDescription = true;
+                            });
+                          },
+                          style: TextButton.styleFrom(
+                            foregroundColor: Colors.blue.shade800,
+                          ),
+                          child: const Text("Edit"),
+                        ),
+                      ),
+                    ],
+                  ),      
 
               ExpensesScreenSegmentControl(
                 selectedSegment: selectedSegment,

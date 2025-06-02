@@ -111,7 +111,7 @@ class _ProfileScreenSubRectangleState extends State<ProfileScreenSubRectangle> {
             // Budget field
             GeneralField(
               label: 'Monthly Budget (\$):',
-              initialValue: '1000', //TODO: Add actual budget
+              initialValue: '5000', //TODO: Add actual budget
               isEditable: false,
               showStatusIcon: false,
             ),
