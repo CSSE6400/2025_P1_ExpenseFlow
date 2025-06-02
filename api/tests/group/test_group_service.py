@@ -8,7 +8,7 @@ from expenseflow.user.models import UserModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_create_group(
     session: AsyncSession, group_create: GroupCreate, user_model: UserModel
 ):
@@ -20,7 +20,7 @@ async def test_create_group(
     assert new_group.description == group_create.description
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_create_group_owner_created(
     session: AsyncSession, group_create: GroupCreate, user_model: UserModel
 ):
@@ -38,7 +38,7 @@ async def test_create_group_owner_created(
     assert group_user_model.user == user_model
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_get_user_groups(
     session: AsyncSession, group_create: GroupCreate, user_model: UserModel
 ):
@@ -62,7 +62,7 @@ async def test_get_user_groups(
     assert u_g2.user == user_model
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_get_user_groups_empty(session: AsyncSession, user_model: UserModel):
     from expenseflow.group.service import get_user_groups
 
@@ -71,7 +71,7 @@ async def test_get_user_groups_empty(session: AsyncSession, user_model: UserMode
     assert len(user_groups) == 0
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_get_user_groups_other_user(
     session: AsyncSession,
     group_create: GroupCreate,
@@ -87,7 +87,7 @@ async def test_get_user_groups_other_user(
     assert len(user_groups) == 0
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_get_group_users_empty(
     group_model: GroupModel,
 ):
@@ -98,7 +98,7 @@ async def test_get_group_users_empty(
     assert len(users) == 0
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_get_group(
     session: AsyncSession, group_create: GroupCreate, user_model: UserModel
 ):
@@ -112,7 +112,7 @@ async def test_get_group(
     assert g1_found == g1
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_get_group_no_group(
     session: AsyncSession,
     group_create: GroupCreate,
@@ -127,7 +127,7 @@ async def test_get_group_no_group(
     assert g1_search is None
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_update_group(
     session: AsyncSession,
     group_update: GroupUpdate,
@@ -145,7 +145,7 @@ async def test_update_group(
     assert g_updated.description == group_update.description
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_get_group_user(
     session: AsyncSession,
     user_model: UserModel,
@@ -164,7 +164,7 @@ async def test_get_group_user(
     assert owner_membership.role == GroupRole.admin
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_get_group_user_none(
     session: AsyncSession,
     user_model: UserModel,
@@ -181,7 +181,7 @@ async def test_get_group_user_none(
     assert owner_membership is None
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_create_update_group_user_role(
     session: AsyncSession,
     user_model: UserModel,
