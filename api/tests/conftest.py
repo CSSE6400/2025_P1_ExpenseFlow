@@ -20,6 +20,7 @@ from expenseflow.user.schemas import UserCreate, UserCreateInternal, UserRead
 from fastapi import FastAPI
 from httpx import ASGITransport, AsyncClient
 from loguru import logger
+from polyfactory.pytest_plugin import register_fixture
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
@@ -84,13 +85,11 @@ async def db() -> AsyncGenerator[None]:
         logger.warning(f"Already found db at {SYNC_TEST_DB_URL}. Dropping now...")
         drop_database(SYNC_TEST_DB_URL)
 
-    # Create test database
+    # Create fresh new one
     create_database(SYNC_TEST_DB_URL)
 
     await initialise_database(test_engine)
     yield
-    drop_database(SYNC_TEST_DB_URL)
-    create_database(SYNC_TEST_DB_URL)
 
 
 @pytest_asyncio.fixture(scope="function", autouse=True)
@@ -102,6 +101,11 @@ async def session(db) -> AsyncGenerator[AsyncSession]:  # noqa: ANN001
 
     async with async_session_factory() as session:
         yield session
+
+
+register_fixture(UserModelFactory)
+register_fixture(UserModelFactory)
+register_fixture(GroupUserModelFactory)
 
 
 @pytest.fixture(scope="session")
