@@ -1,4 +1,3 @@
-// Flutter imports
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -8,9 +7,11 @@ import 'package:flutter_frontend/services/api_service.dart' show ApiService;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:logging/logging.dart' show Logger;
 import 'package:provider/provider.dart' show Provider;
-// Common imports
+import 'package:logging/logging.dart';
 import '../../../common/color_palette.dart';
 import '../../../common/proportional_sizes.dart';
+import 'package:flutter_frontend/services/api_service.dart';
+import 'package:provider/provider.dart' show Provider;
 
 class HomeScreenOverview extends StatefulWidget {
   const HomeScreenOverview({super.key});
@@ -21,8 +22,8 @@ class HomeScreenOverview extends StatefulWidget {
 
 class HomeScreenOverviewState extends State<HomeScreenOverview> {
   late final List<_CategoryData> categories;
-  final logger = Logger("HomeScreenOverview");
   late List<_CategoryData> visibleCategories = [];
+  final Logger _logger = Logger("HomeOverviewCategoriesScreen");
   final List<Color> availableColors = [
     Color(0xFF75E3EA),
     Color(0xFF4DC4D3),
@@ -129,6 +130,29 @@ class HomeScreenOverviewState extends State<HomeScreenOverview> {
     });
   }
 
+  Future<List<_CategoryData>> _fetchUserExpenses() async {
+    final apiService = Provider.of<ApiService>(context, listen: false);
+    try {
+      final userReads =
+          await apiService.expenseApi
+              .getExpensesUploadedByMe(); //TODO: make appropriate end point
+
+      final rawCategories =
+          userReads.map((category) {
+            return _CategoryData(
+              name: category.name,
+              amount:
+                  100, // TODO: change to better fitting end point with a price
+            );
+          }).toList();
+      _logger.info("number of recent categories: ${rawCategories.length}");
+      return rawCategories;
+    } catch (e) {
+      _logger.warning("Failed to get recent categories: $e");
+      return [];
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final proportionalSizes = ProportionalSizes(context: context);
@@ -149,7 +173,7 @@ class HomeScreenOverviewState extends State<HomeScreenOverview> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Donut chart
+            // donut chart
             SizedBox(
               width: chartSize,
               height: chartSize,

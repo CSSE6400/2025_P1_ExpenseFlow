@@ -36,7 +36,7 @@ class _SplitWithScreenMainBodyState extends State<SplitWithScreenMainBody> {
   void initState() {
     super.initState();
 
-    if (widget.transactionId != null) {
+    if (widget.transactionId != null) { // What the hell even is this?? :_(
       // TODO: If transactionId is provided, fetch split-with data from backend.
       // 1. Set `selectedSegment` to either 'Friend' or 'Group'.
       // 2. Populate the corresponding widget (friendKey/groupKey) with the data.

@@ -23,12 +23,12 @@ class _IndGroupExpenseScreenListState extends State<IndGroupExpenseScreenList> {
   late List<dynamic> filteredExpenses;
   late List<bool> expansionStates;
 
-  // Initialize the list of expenses and expansion states
+  // initialise the list of expenses and expansion states
   @override
   void initState() {
     super.initState();
     filteredExpenses = widget.expenses;
-    // Initialize expansion states to false for all items
+    // initialise expansion states to false for all items
     expansionStates = List<bool>.filled(widget.expenses.length, false);
   }
 
@@ -47,7 +47,7 @@ class _IndGroupExpenseScreenListState extends State<IndGroupExpenseScreenList> {
     });
   }
 
-  // Filter the expenses based on the search query
+  // filter the expenses based on the search
   void _filterExpenses(String query) {
     final lowerQuery = query.toLowerCase();
     final result = widget.expenses
@@ -121,7 +121,6 @@ class _IndGroupExpenseScreenListState extends State<IndGroupExpenseScreenList> {
                       ),
                       SizedBox(width: proportionalSizes.scaleWidth(8)),
 
-                      // Expense name (left, ellipsis if needed)
                       Expanded(
                         child: Text(
                           expense.name,

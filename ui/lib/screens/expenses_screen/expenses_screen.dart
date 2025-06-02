@@ -1,6 +1,4 @@
-// Flutter imports
 import 'package:flutter/material.dart';
-// Common imports
 import '../../common/color_palette.dart';
 import '../../common/bottom_nav_bar.dart';
 import '../../common/app_bar.dart';

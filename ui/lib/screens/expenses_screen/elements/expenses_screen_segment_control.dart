@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_frontend/common/color_palette.dart';
 import 'package:google_fonts/google_fonts.dart';
-// Common
 import '../../../common/proportional_sizes.dart';
 
 class ExpensesScreenSegmentControl extends StatefulWidget {

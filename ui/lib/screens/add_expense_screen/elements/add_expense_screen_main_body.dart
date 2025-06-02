@@ -4,11 +4,8 @@ import 'package:flutter_frontend/models/expense.dart' show ExpenseCreate;
 import 'package:flutter_frontend/services/api_service.dart' show ApiService;
 import 'package:logging/logging.dart' show Logger;
 import 'package:provider/provider.dart' show Provider;
-// Third-party imports
-// Common imports
 import '../../../common/proportional_sizes.dart';
 import '../../../common/custom_button.dart';
-// Elements
 import 'add_expense_screen_scan_receipt.dart';
 import 'add_expense_screen_fields.dart';
 
@@ -75,10 +72,10 @@ class _AddExpenseScreenMainBodyState extends State<AddExpenseScreenMainBody> {
               AddExpenseScreenScanReceipt(),
               SizedBox(height: proportionalSizes.scaleHeight(20)),
 
-              // Pass validity up from fields
+              // pass validity up from fields
               AddExpenseScreenFields(
                 onValidityChanged: updateFormValid,
-                onExpenseChanged: updateExpense, // <-- pass callback here
+                onExpenseChanged: updateExpense, 
               ),
               SizedBox(height: proportionalSizes.scaleHeight(24)),
 
