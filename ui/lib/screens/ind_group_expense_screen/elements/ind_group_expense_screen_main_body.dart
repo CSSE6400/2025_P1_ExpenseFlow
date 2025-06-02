@@ -375,45 +375,120 @@ class _IndGroupExpenseScreenMainBodyState
               Text(
                 "Description",
                 style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
+                textAlign: TextAlign.left,
               ),
               const SizedBox(height: 8),
               isEditingDescription
-                ? Column(
-                    children: [
-                      TextField(
-                        controller: _descriptionController,
-                        maxLines: null,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Edit Description',
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      ElevatedButton(
-                        onPressed: _saveGroupDescription,
-                        child: const Text("Save"),
-                      ),
-                    ],
-                  )
-                : Column(
-                    children: [
-                      Text(
-                        group.description,
-                        style: const TextStyle(fontSize: 14, color: Colors.black87),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 4),
-                      TextButton(
-                        onPressed: () {
-                          setState(() {
-                            isEditingDescription = true;
-                          });
-                        },
-                        child: const Text("Edit"),
-                      ),
-                    ],
-                  ),
+    ? Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade100,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.grey.shade300),
+            ),
+            child: TextField(
+              controller: _descriptionController,
+              maxLines: null,
+              decoration: const InputDecoration.collapsed(
+                hintText: 'Edit group description...',
+              ),
+              style: const TextStyle(fontSize: 14, color: Colors.black87),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    isEditingDescription = false;
+                    _descriptionController.text = group.description;
+                  });
+                },
+                child: const Text("Cancel"),
+              ),
+              const SizedBox(width: 8),
+              ElevatedButton(
+                onPressed: _saveGroupDescription,
+                child: const Text("Save"),
+              ),
+            ],
+          ),
+        ],
+      )
+    : Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.blue.shade50,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Text(
+              group.description,
+              style: const TextStyle(fontSize: 14, color: Colors.black87),
+              textAlign: TextAlign.left,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton(
+              onPressed: () {
+                setState(() {
+                  isEditingDescription = true;
+                });
+              },
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.blue.shade800,
+              ),
+              child: const Text("Edit"),
+            ),
+          ),
+        ],
+      ),
+              // isEditingDescription
+              //   ? Column(
+              //       children: [
+              //         TextField(
+              //           controller: _descriptionController,
+              //           maxLines: null,
+              //           decoration: InputDecoration(
+              //             border: OutlineInputBorder(),
+              //             labelText: 'Edit Description',
+              //           ),
+              //         ),
+              //         const SizedBox(height: 8),
+              //         ElevatedButton(
+              //           onPressed: _saveGroupDescription,
+              //           child: const Text("Save"),
+              //         ),
+              //       ],
+              //     )
+              //   : Column(
+              //       children: [
+              //         Text(
+              //           group.description,
+              //           style: const TextStyle(fontSize: 14, color: Colors.black87),
+              //           textAlign: TextAlign.center,
+              //         ),
+              //         const SizedBox(height: 4),
+              //         TextButton(
+              //           onPressed: () {
+              //             setState(() {
+              //               isEditingDescription = true;
+              //             });
+              //           },
+              //           child: const Text("Edit"),
+              //         ),
+              //       ],
+              //     ),
 
 
               // Text(
@@ -422,7 +497,8 @@ class _IndGroupExpenseScreenMainBodyState
               //   textAlign: TextAlign.center,
               // ),
               // const SizedBox(height: 20),
-              // Segment Control
+              
+
               ExpensesScreenSegmentControl(
                 selectedSegment: selectedSegment,
                 onSegmentChanged: handleSegmentChange,
