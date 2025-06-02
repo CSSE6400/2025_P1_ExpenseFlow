@@ -2,8 +2,11 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:logging/logging.dart';
 import '../../../common/color_palette.dart';
 import '../../../common/proportional_sizes.dart';
+import 'package:flutter_frontend/services/api_service.dart';
+import 'package:provider/provider.dart' show Provider;
 
 class HomeScreenOverview extends StatefulWidget {
   const HomeScreenOverview({super.key});
@@ -14,7 +17,8 @@ class HomeScreenOverview extends StatefulWidget {
 
 class _HomeScreenOverviewState extends State<HomeScreenOverview> {
   late final List<_CategoryData> categories;
-  late List<_CategoryData> visibleCategories;
+  late List<_CategoryData> visibleCategories = [];
+  final Logger _logger = Logger("HomeOverviewCategoriesScreen");
   final List<Color> availableColors = [
     Color(0xFF75E3EA), Color(0xFF4DC4D3), Color(0xFF3C74A6), Color(0xFF6C539F),
     Color(0xFF7B438D), Color(0xFFFD9BBA), Color(0xFFFFC785), Color(0xFF9FE6A0),
@@ -39,13 +43,15 @@ class _HomeScreenOverviewState extends State<HomeScreenOverview> {
   Future<void> _loadData() async {
     // TODO: Replace with actual backend call
     monthlyBudget = 5000.0;
-    final rawCategories = [
-      _CategoryData(name: 'Rent', amount: 1200),
-      _CategoryData(name: 'Bills', amount: 300),
-      _CategoryData(name: 'Groceries', amount: 450),
-      _CategoryData(name: 'Subscriptions', amount: 80),
-      _CategoryData(name: 'Dining Out', amount: 200),
-    ];
+    // when made a suitable end point
+    final rawCategories = await _fetchUserExpenses();
+    // final rawCategories = [ // Really??? Like are we actually going to have this as a backend call????
+    //   _CategoryData(name: 'Rent', amount: 1200),
+    //   _CategoryData(name: 'Bills', amount: 300),
+    //   _CategoryData(name: 'Groceries', amount: 450),
+    //   _CategoryData(name: 'Subscriptions', amount: 80),
+    //   _CategoryData(name: 'Dining Out', amount: 200),
+    // ];
 
     for (var category in rawCategories) {
       category.color = availableColors[_random.nextInt(availableColors.length)];
@@ -72,6 +78,25 @@ class _HomeScreenOverviewState extends State<HomeScreenOverview> {
     setState(() {
       isLoading = false;
     });
+  }
+
+  Future<List<_CategoryData>> _fetchUserExpenses() async {
+    final apiService = Provider.of<ApiService>(context, listen: false);
+    try {
+      final userReads = await apiService.expenseApi.getExpensesUploadedByMe(); //TODO: make appropriate end point
+
+      final rawCategories = userReads.map((category) {
+        return _CategoryData(
+          name:category.name,
+          amount: 100, // TODO: change to better fitting end point with a price.
+        );
+      }).toList();
+      _logger.info("number of recent categories: ${rawCategories.length}");
+      return rawCategories;
+    } catch (e) {
+      _logger.warning("Failed to get recent categories: $e");
+      return [];
+    }
   }
 
   @override
