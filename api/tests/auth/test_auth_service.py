@@ -14,7 +14,7 @@ def jwt_manager():
 @patch("expenseflow.auth.service.jwt.PyJWKClient")
 @pytest.mark.asyncio
 async def test_verify_jwk_client_error(
-    mock_jwk_client: MagicMock, jwt_manager: MagicMock
+    mock_jwk_client: MagicMock, jwt_manager: JWTManager
 ):
     mock_jwk_client.return_value.get_signing_key_from_jwt.side_effect = Exception(
         "Key error"
@@ -29,7 +29,7 @@ async def test_verify_jwk_client_error(
 @patch("expenseflow.auth.service.jwt.decode")
 @pytest.mark.asyncio
 async def test_verify_missing_sub(
-    mock_decode: MagicMock, mock_jwk_client: MagicMock, jwt_manager: MagicMock
+    mock_decode: MagicMock, mock_jwk_client: MagicMock, jwt_manager: JWTManager
 ):
     mock_key = MagicMock()
     mock_jwk_client.return_value.get_signing_key_from_jwt.return_value.key = mock_key
@@ -44,7 +44,7 @@ async def test_verify_missing_sub(
 @patch("expenseflow.auth.service.jwt.decode")
 @pytest.mark.asyncio
 async def test_verify_invalid_signature(
-    mock_decode: MagicMock, mock_jwk_client: MagicMock, jwt_manager: MagicMock
+    mock_decode: MagicMock, mock_jwk_client: MagicMock, jwt_manager: JWTManager
 ):
     mock_key = MagicMock()
     mock_jwk_client.return_value.get_signing_key_from_jwt.return_value.key = mock_key
