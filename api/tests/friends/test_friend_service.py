@@ -11,7 +11,7 @@ from expenseflow.friend.service import create_accept_friend_request, \
 from sqlalchemy.ext.asyncio import AsyncSession
 from expenseflow.errors import ExpenseFlowError
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_add_friend(
     session: AsyncSession,
     default_user: UserModel,
@@ -55,8 +55,8 @@ async def test_add_friend(
     assert recv_friends[0].user_id == sender.user_id
     _ = await remove_friend(session, sender, receiver)
 
-@pytest.mark.asyncio()
-async def test_remove_request(
+@pytest.mark.asyncio
+async def test_accepted_request(
     session: AsyncSession,
     default_user: UserModel,
     user_model: UserModel
@@ -72,16 +72,18 @@ async def test_remove_request(
                                                                sender)
 
     requests = await get_sent_friend_requests(session, sender)
-    assert len(requests) == 0
+    assert len(requests) == 1
+    assert requests[0].user_id == receiver.user_id
     empty_requests = await get_sent_friend_requests(session, receiver)
     assert len(empty_requests) == 0
 
     recv_requests = await get_received_friend_requests(session, receiver)
-    assert len(recv_requests) == 0
-    empty_recv_requests = await get_sent_friend_requests(session, sender)
+    assert len(recv_requests) == 1
+    assert recv_requests[0].user_id == sender.user_id
+    empty_recv_requests = await get_received_friend_requests(session, sender)
     assert len(empty_recv_requests) == 0
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_remove_friend(
     session: AsyncSession,
     default_user: UserModel,
@@ -116,7 +118,7 @@ async def test_remove_friend(
     assert other_request is None
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_fuzz_create_friend(
     session: AsyncSession,
     default_user: UserModel,
