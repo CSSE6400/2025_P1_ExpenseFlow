@@ -78,7 +78,7 @@ class _GroupsAndFriendsGroupListState
 
       setState(() {
         filteredGroups = List.from(allGroups)
-          ..sort((a, b) => b.isActive ? 1 : -1); // Active groups first
+          ..sort((a, b) => b.isActive ? 1 : -1); // active groups first
       });
     } on ApiException catch (e) {
       _logger.warning("API exception while fetching friends: ${e.message}");
@@ -101,7 +101,7 @@ class _GroupsAndFriendsGroupListState
           .where((group) =>
               group.name.toLowerCase().contains(query.toLowerCase()))
           .toList()
-        ..sort((a, b) => b.isActive ? 1 : -1); // Active groups first
+        ..sort((a, b) => b.isActive ? 1 : -1); // active groups first
     });
   }
 
@@ -163,7 +163,6 @@ class _GroupsAndFriendsGroupListState
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // Group name with ellipsis and underline
                     Expanded(
                       child: Text(
                         group.name,
@@ -178,7 +177,7 @@ class _GroupsAndFriendsGroupListState
                       ),
                     ),
 
-                    // Active tag
+                    // active tag
                     if (group.isActive) ...[
                       SizedBox(width: proportionalSizes.scaleWidth(12)),
                       Container(

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-// Common imports
 import '../../../common/proportional_sizes.dart';
-// Elements
 import 'home_screen_overview.dart';
 import 'home_screen_add_an_expense.dart';
 import 'home_screen_recent_expenses.dart';
@@ -26,15 +24,15 @@ class HomeScreenMainBody extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Overview
+              // overview
               HomeScreenOverview(),
               SizedBox(height: proportionalSizes.scaleHeight(20)),
 
-              // Add an expense
+              // add an expense
               HomeScreenAddAnExpense(),
               SizedBox(height: proportionalSizes.scaleHeight(20)),
 
-              // Recent expenses
+              // recent expenses
               HomeScreenRecentExpenses(),
             ],
           ),

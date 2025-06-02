@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/models/enums.dart' show ExpenseCategory;
 import 'package:flutter_frontend/utils/string_utils.dart';
-// Common imports
 import '../../../common/fields/general_field.dart';
 import '../../../common/custom_divider.dart';
 import '../../../common/fields/date_field/date_field.dart';
@@ -62,7 +61,6 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
     });
   }
 
-  // Calculate amount based on expense items
   void _updateCalculatedAmount() {
     double total = 0;
     for (var item in _expenseItems) {
@@ -231,11 +229,10 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
 
   @override
   void dispose() {
-    _amountController.dispose(); // Prevents memory leaks
+    _amountController.dispose(); // this prevents memory leaks
     super.dispose();
   }
 
-  // Method to get the current expense data
   ExpenseCreate getExpenseData() {
     return ExpenseCreate(
       name: _name,

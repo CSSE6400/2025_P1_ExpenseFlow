@@ -41,33 +41,26 @@ class _AddFriendsScreenState extends State<AddFriendsScreen> {
   }
 
   Future<void> _fetchFriends() async {
-  final apiService = Provider.of<ApiService>(context, listen: false);
-  try {
-    final userReads = await apiService.friendApi.getFriends();
+    final apiService = Provider.of<ApiService>(context, listen: false);
+    try {
+      final userReads = await apiService.friendApi.getFriends();
 
-    final existingIds = widget.existingFriends.map((f) => f.userId).toSet();
+      final existingIds = widget.existingFriends.map((f) => f.userId).toSet();
 
-    setState(() {
-      allFriends = userReads.map((user) {
-        return Friend(
-          userId: user.userId,
-          name: user.nickname,
-          isSelected: existingIds.contains(user.userId),
-        );
-      }).toList();
-    });
-
-    // setState(() {
-    //   allFriends = userReads.map((user) => Friend(
-    //     userId: user.userId,
-    //     name: user.nickname,
-    //   )).toList();
-    // });
-    _logger.info("Friends is $allFriends");
-  } catch (e) {
-    _logger.warning("Failed to load friends: $e");
+      setState(() {
+        allFriends = userReads.map((user) {
+          return Friend(
+            userId: user.userId,
+            name: user.nickname,
+            isSelected: existingIds.contains(user.userId),
+          );
+        }).toList();
+      });
+      _logger.info("Friends is $allFriends");
+    } catch (e) {
+      _logger.warning("Failed to load friends: $e");
+    }
   }
-}
 
   void _onFriendsChanged(List<Friend> updatedFriends, bool hasChanges) {
     setState(() {
