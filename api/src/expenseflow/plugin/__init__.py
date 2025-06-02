@@ -15,8 +15,6 @@ from fastapi import FastAPI
 from loguru import logger
 from pydantic import BaseModel
 
-from expenseflow.utils import SingletonMeta
-
 
 class DynamicValue(ABC):
     """Dynamic value abc."""
