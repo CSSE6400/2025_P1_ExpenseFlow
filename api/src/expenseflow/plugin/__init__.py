@@ -75,7 +75,7 @@ class PluginProperty:
                 DynamicValue.create(property_value[start + 2 : end - 2])
             )
             last_end_idx = end
-        if last_end_idx != len(property_value) - 1:
+        if last_end_idx != len(property_value):
             self._values.append(property_value[last_end_idx:])
 
     async def to_value(self) -> str:
