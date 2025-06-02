@@ -20,6 +20,7 @@ from expenseflow.user.schemas import UserCreate, UserCreateInternal, UserRead
 from fastapi import FastAPI
 from httpx import ASGITransport, AsyncClient
 from loguru import logger
+from polyfactory.pytest_plugin import register_fixture
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
@@ -100,6 +101,11 @@ async def session(db) -> AsyncGenerator[AsyncSession]:  # noqa: ANN001
 
     async with async_session_factory() as session:
         yield session
+
+
+register_fixture(UserModelFactory)
+register_fixture(UserModelFactory)
+register_fixture(GroupUserModelFactory)
 
 
 @pytest.fixture(scope="session")
