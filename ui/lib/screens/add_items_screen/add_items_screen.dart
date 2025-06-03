@@ -13,9 +13,9 @@ class AddItemsScreen extends StatefulWidget {
 
   const AddItemsScreen({
     super.key,
+    required this.isReadOnly,
     this.existingItems = const [],
     this.transactionId,
-    this.isReadOnly = false,
     this.amount,
   });
 

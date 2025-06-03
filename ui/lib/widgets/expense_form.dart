@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_frontend/models/enums.dart' show ExpenseCategory;
 import 'package:flutter_frontend/screens/add_items_screen/add_items_screen.dart'
     show AddItemsScreen;
+import 'package:flutter_frontend/screens/split_with_screen/split_with_screen.dart';
 import 'package:flutter_frontend/utils/string_utils.dart';
 import '../../../common/fields/general_field.dart';
 import '../../../common/custom_divider.dart';
@@ -112,11 +113,40 @@ class _ExpenseFormState extends State<ExpenseForm> {
     return '$count ${count == 1 ? 'Item' : 'Items'}';
   }
 
-  void _navigateToItemsScreen(BuildContext context) async {
+  void _navigateToItemsScreen(BuildContext context, bool isReadOnly) async {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => AddItemsScreen(existingItems: _expenseItems),
+        builder:
+            (context) => AddItemsScreen(
+              existingItems: _expenseItems,
+              isReadOnly: isReadOnly,
+            ),
+      ),
+    );
+
+    if (result != null) {
+      final List<ExpenseItemCreate> updatedItems = result;
+      setState(() {
+        _expenseItems = updatedItems;
+        _updateCalculatedAmount();
+      });
+      _notifyExpenseChanged();
+      _updateFormValidity();
+    }
+  }
+
+  void _navigateToSplitsScreen(BuildContext context, bool isReadyOnly) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (context) => SplitWithScreen(
+              existingItems: _expenseItems,
+              isReadOnly: isReadyOnly,
+              groups: [],
+              users: [],
+            ),
       ),
     );
 
@@ -187,11 +217,11 @@ class _ExpenseFormState extends State<ExpenseForm> {
         CustomDivider(),
         CustomIconField(
           label: 'Items',
-          isEnabled: widget.canEditItems && widget.canEdit,
+          isEnabled: true,
           value: formattedItemsString,
           hintText: 'No items',
           trailingIconPath: 'assets/icons/add.png',
-          onTap: () => _navigateToItemsScreen(context),
+          onTap: () => _navigateToItemsScreen(context, widget.canEditItems),
         ),
         CustomDivider(),
         DropdownField(
@@ -219,7 +249,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
         CustomIconField(
           label: 'Split With',
           value: '',
-          isEnabled: widget.canEditSplits && widget.canEdit,
+          isEnabled: true,
           hintText: 'Select Group or Friends',
           trailingIconPath: 'assets/icons/search.png',
           inactive: _expenseItems.isEmpty,
@@ -230,7 +260,10 @@ class _ExpenseFormState extends State<ExpenseForm> {
                 normalText: 'Please add at least one item before splitting.',
               );
             } else {
-              Navigator.pushNamed(context, '/split_with');
+              () => _navigateToSplitsScreen(
+                context,
+                widget.canEditSplits && widget.canEdit,
+              );
             }
           },
         ),

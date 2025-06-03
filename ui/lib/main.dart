@@ -116,34 +116,6 @@ class MyApp extends StatelessWidget {
             return MaterialPageRoute(builder: (_) => const CreateGroupScreen());
           case '/select_friends':
             return MaterialPageRoute(builder: (_) => const AddFriendsScreen());
-          case '/split_with':
-            final args = settings.arguments as Map<String, dynamic>?;
-
-            final transactionId = args?['transactionId'] as String?;
-            final isReadOnly = args?['isReadOnly'] as bool? ?? false;
-            // TODO: friends/ group to split with
-
-            return MaterialPageRoute(
-              builder:
-                  (_) => SplitWithScreen(
-                    transactionId: transactionId,
-                    isReadOnly: isReadOnly,
-                  ),
-            );
-          case '/add_items':
-            final args = settings.arguments as Map<String, dynamic>?;
-
-            final transactionId = args?['transactionId'] as String?;
-            final isReadOnly = args?['isReadOnly'] as bool? ?? false;
-
-            return MaterialPageRoute(
-              builder:
-                  (_) => AddItemsScreen(
-                    amount: args?['amount'],
-                    transactionId: transactionId,
-                    isReadOnly: isReadOnly,
-                  ),
-            );
           case '/see_expense':
             final args = settings.arguments as Map<String, dynamic>?;
             final expenseId = args?['expenseId'] as String?;
