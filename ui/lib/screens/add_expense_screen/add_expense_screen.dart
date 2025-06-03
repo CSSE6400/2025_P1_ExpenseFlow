@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/common/snack_bar.dart';
 import 'package:flutter_frontend/models/expense.dart' show ExpenseCreate;
+import 'package:flutter_frontend/models/user.dart';
 import 'package:flutter_frontend/services/api_service.dart' show ApiService;
 import 'package:flutter_frontend/widgets/expense_form.dart';
 import 'package:logging/logging.dart' show Logger;
@@ -23,6 +24,11 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   bool isFormValid = false;
   ExpenseCreate? _currentExpense;
   final Logger _logger = Logger("AddExpenseScreen");
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   void updateFormValid(bool isValid) {
     setState(() => isFormValid = isValid);

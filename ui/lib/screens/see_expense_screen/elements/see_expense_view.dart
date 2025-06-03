@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/models/expense.dart';
+import 'package:flutter_frontend/models/user.dart' show UserRead;
 import 'package:flutter_frontend/widgets/expense_form.dart';
 import 'package:google_fonts/google_fonts.dart' show GoogleFonts;
 import '../../../common/custom_button.dart';
@@ -17,6 +18,7 @@ class SeeExpenseView extends StatelessWidget {
   final VoidCallback onSave;
   final VoidCallback onEdit;
   final VoidCallback onCancel;
+  final UserRead currentUser;
 
   const SeeExpenseView({
     super.key,
@@ -31,7 +33,10 @@ class SeeExpenseView extends StatelessWidget {
     required this.onSave,
     required this.onEdit,
     required this.onCancel,
+    required this.currentUser,
   });
+
+  // Sorry in advance for this this
 
   @override
   Widget build(BuildContext context) {

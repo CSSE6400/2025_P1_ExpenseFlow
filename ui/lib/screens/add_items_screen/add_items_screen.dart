@@ -7,7 +7,6 @@ import 'elements/add_items_screen_items.dart';
 
 class AddItemsScreen extends StatefulWidget {
   final double? amount;
-  final String? transactionId;
   final bool isReadOnly;
   final List<ExpenseItemCreate> existingItems;
 
@@ -15,7 +14,6 @@ class AddItemsScreen extends StatefulWidget {
     super.key,
     required this.isReadOnly,
     this.existingItems = const [],
-    this.transactionId,
     this.amount,
   });
 
@@ -63,7 +61,6 @@ class _AddItemsScreenState extends State<AddItemsScreen> {
                     items: items,
                     onItemsChanged: _onItemsChanged,
                     isReadOnly: widget.isReadOnly,
-                    transactionId: widget.transactionId,
                   ),
                 ),
               ),

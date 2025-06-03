@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/common/color_palette.dart' show ColorPalette;
 import 'package:flutter_frontend/models/enums.dart' show ExpenseCategory;
+import 'package:flutter_frontend/models/group.dart' show GroupReadWithMembers;
+import 'package:flutter_frontend/models/user.dart' show UserRead;
 import 'package:flutter_frontend/screens/add_items_screen/add_items_screen.dart'
     show AddItemsScreen;
 import 'package:flutter_frontend/screens/split_with_screen/split_with_screen.dart';
+import 'package:flutter_frontend/services/api_service.dart' show ApiService;
 import 'package:flutter_frontend/utils/string_utils.dart';
+import 'package:logging/logging.dart' show Logger;
+import 'package:provider/provider.dart' show Provider;
 import '../../../common/fields/general_field.dart';
 import '../../../common/custom_divider.dart';
 import '../../../common/fields/date_field/date_field.dart';
@@ -47,11 +53,19 @@ class _ExpenseFormState extends State<ExpenseForm> {
   late ExpenseCategory _selectedCategory;
   late List<ExpenseItemCreate> _expenseItems;
 
+  UserRead? me;
+  List<UserRead> friends = [];
+  List<GroupReadWithMembers> groups = [];
+  bool isLoading = true;
+
   late TextEditingController _amountController;
+
+  final _logger = Logger('ExpenseForm');
 
   @override
   void initState() {
     super.initState();
+    _loadData();
 
     // populate fields
     _name = widget.initialExpense?.name ?? '';
@@ -75,6 +89,47 @@ class _ExpenseFormState extends State<ExpenseForm> {
       _updateFormValidity();
       _notifyExpenseChanged();
     });
+  }
+
+  Future<void> _loadData() async {
+    setState(() => isLoading = true);
+    final apiService = Provider.of<ApiService>(context, listen: false);
+
+    try {
+      me = await apiService.userApi.mustGetCurrentUser();
+      if (me == null) {
+        _logger.warning('Current user not found');
+        if (!mounted) return;
+
+        showCustomSnackBar(context, normalText: 'Unable to find current user');
+        setState(() => isLoading = false);
+
+        Navigator.of(context).pushNamed('/');
+        return;
+      }
+      setState(() {
+        me = me;
+      });
+
+      final fetchedFriends = await apiService.friendApi.getFriends();
+
+      setState(() {
+        friends = fetchedFriends;
+      });
+
+      final fetchedGroups =
+          await apiService.groupApi.getUsersGroupsWithMembers();
+
+      setState(() {
+        groups = fetchedGroups;
+        isLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      _logger.severe('Error fetching data: $e');
+      showCustomSnackBar(context, normalText: 'Failed to fetch expense data');
+      setState(() => isLoading = false);
+    }
   }
 
   void _updateField<T>(void Function() updateState) {
@@ -142,10 +197,11 @@ class _ExpenseFormState extends State<ExpenseForm> {
       MaterialPageRoute(
         builder:
             (context) => SplitWithScreen(
-              existingItems: _expenseItems,
+              items: _expenseItems,
               isReadOnly: isReadyOnly,
-              groups: [],
-              users: [],
+              groups: groups,
+              friends: friends,
+              currentUser: me!,
             ),
       ),
     );
@@ -164,6 +220,10 @@ class _ExpenseFormState extends State<ExpenseForm> {
   @override
   Widget build(BuildContext context) {
     final proportionalSizes = ProportionalSizes(context: context);
+
+    if (isLoading || me == null) {
+      return Center(child: CircularProgressIndicator());
+    }
 
     return Column(
       children: [
@@ -221,7 +281,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
           value: formattedItemsString,
           hintText: 'No items',
           trailingIconPath: 'assets/icons/add.png',
-          onTap: () => _navigateToItemsScreen(context, widget.canEditItems),
+          onTap: () => _navigateToItemsScreen(context, !widget.canEditItems),
         ),
         CustomDivider(),
         DropdownField(
@@ -254,15 +314,16 @@ class _ExpenseFormState extends State<ExpenseForm> {
           trailingIconPath: 'assets/icons/search.png',
           inactive: _expenseItems.isEmpty,
           onTap: () {
+            _logger.info('Navigating to splits screen');
             if (_expenseItems.isEmpty) {
               showCustomSnackBar(
                 context,
                 normalText: 'Please add at least one item before splitting.',
               );
             } else {
-              () => _navigateToSplitsScreen(
+              _navigateToSplitsScreen(
                 context,
-                widget.canEditSplits && widget.canEdit,
+                !(widget.canEditSplits && widget.canEdit),
               );
             }
           },

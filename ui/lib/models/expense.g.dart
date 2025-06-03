@@ -101,8 +101,8 @@ ExpenseItemCreate _$ExpenseItemCreateFromJson(Map<String, dynamic> json) =>
       name: json['name'] as String,
       quantity: (json['quantity'] as num).toInt(),
       price: (json['price'] as num).toDouble(),
-      items:
-          (json['items'] as List<dynamic>?)
+      splits:
+          (json['splits'] as List<dynamic>?)
               ?.map(
                 (e) =>
                     ExpenseItemSplitCreate.fromJson(e as Map<String, dynamic>),
@@ -115,7 +115,7 @@ Map<String, dynamic> _$ExpenseItemCreateToJson(ExpenseItemCreate instance) =>
       'name': instance.name,
       'quantity': instance.quantity,
       'price': instance.price,
-      'items': instance.items,
+      'splits': instance.splits,
     };
 
 ExpenseItemSplitCreate _$ExpenseItemSplitCreateFromJson(

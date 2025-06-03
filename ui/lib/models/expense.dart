@@ -99,7 +99,7 @@ class ExpenseCreate {
                   name: item.name,
                   quantity: item.quantity,
                   price: item.price,
-                  items:
+                  splits:
                       item.splits.map((e) {
                         return ExpenseItemSplitCreate(
                           userId: e.userId,
@@ -143,13 +143,13 @@ class ExpenseItemCreate {
   final String name;
   final int quantity;
   final double price;
-  final List<ExpenseItemSplitCreate>? items;
+  final List<ExpenseItemSplitCreate>? splits;
 
   ExpenseItemCreate({
     required this.name,
     required this.quantity,
     required this.price,
-    this.items,
+    this.splits,
   });
 
   factory ExpenseItemCreate.fromJson(Map<String, dynamic> json) =>

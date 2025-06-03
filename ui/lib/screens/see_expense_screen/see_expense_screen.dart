@@ -195,7 +195,7 @@ class _SeeExpenseScreenState extends State<SeeExpenseScreen> {
       return const Center(child: CircularProgressIndicator());
     }
 
-    if (expense == null) {
+    if (expense == null || me == null) {
       _logger.warning("Expense is null");
       return const Scaffold(body: Center(child: Text("Expense not found")));
     }
@@ -219,6 +219,7 @@ class _SeeExpenseScreenState extends State<SeeExpenseScreen> {
                 child:
                     selectedSegment == ExpenseViewSegment.information
                         ? SeeExpenseView(
+                          currentUser: me!,
                           expense: expense!,
                           currentExpense: _currentExpense,
                           isEditMode: isEditMode,
