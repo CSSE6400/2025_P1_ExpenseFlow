@@ -46,10 +46,13 @@ class _ManageGroupsListState extends State<ManageGroupsList> {
 
   void _filterGroups(String query) {
     setState(() {
-      filteredGroups = allGroups
-          .where((group) =>
-              group.name.toLowerCase().contains(query.toLowerCase()))
-          .toList();
+      filteredGroups =
+          allGroups
+              .where(
+                (group) =>
+                    group.name.toLowerCase().contains(query.toLowerCase()),
+              )
+              .toList();
     });
   }
 
@@ -58,9 +61,12 @@ class _ManageGroupsListState extends State<ManageGroupsList> {
     try {
       final userReads = await apiService.groupApi.getUserGroups();
 
-      final fetchedGroups = userReads
-          .map((group) => Group(name: '@${group.name}', uuid: group.groupId))
-          .toList();
+      final fetchedGroups =
+          userReads
+              .map(
+                (group) => Group(name: '@${group.name}', uuid: group.groupId),
+              )
+              .toList();
 
       _logger.info("Fetched all groups");
 
@@ -74,16 +80,10 @@ class _ManageGroupsListState extends State<ManageGroupsList> {
       }
     } on ApiException catch (e) {
       _logger.warning("API exception while fetching Groups: ${e.message}");
-      showCustomSnackBar(
-        context,
-        normalText: "Failed to load Groups",
-      );
+      showCustomSnackBar(context, normalText: "Failed to load Groups");
     } catch (e) {
       _logger.severe("Unexpected error: $e");
-      showCustomSnackBar(
-        context,
-        normalText: "Something went wrong",
-      );
+      showCustomSnackBar(context, normalText: "Something went wrong");
     }
   }
 
@@ -95,10 +95,7 @@ class _ManageGroupsListState extends State<ManageGroupsList> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        search.SearchBar(
-          hintText: 'Search Groups',
-          onChanged: _filterGroups,
-        ),
+        search.SearchBar(hintText: 'Search Groups', onChanged: _filterGroups),
         const SizedBox(height: 16),
         if (allGroups.isEmpty)
           Padding(
@@ -115,7 +112,8 @@ class _ManageGroupsListState extends State<ManageGroupsList> {
             ),
           )
         else
-        ...filteredGroups.map((group) => Padding(
+          ...filteredGroups.map(
+            (group) => Padding(
               padding: EdgeInsets.symmetric(
                 vertical: proportionalSizes.scaleHeight(8),
               ),
@@ -124,7 +122,10 @@ class _ManageGroupsListState extends State<ManageGroupsList> {
                   Navigator.pushNamed(
                     context,
                     '/group_expense',
-                    arguments: {'groupName': group.name, 'groupUUID': group.uuid},
+                    arguments: {
+                      'groupName': group.name,
+                      'groupUUID': group.uuid,
+                    },
                   );
                 },
                 child: Row(
@@ -147,7 +148,8 @@ class _ManageGroupsListState extends State<ManageGroupsList> {
                   ],
                 ),
               ),
-            )),
+            ),
+          ),
       ],
     );
   }
