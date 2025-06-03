@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_frontend/common/snack_bar.dart';
 import 'package:flutter_frontend/models/expense.dart' show ExpenseCreate;
 import 'package:flutter_frontend/services/api_service.dart' show ApiService;
+import 'package:flutter_frontend/widgets/expense_form.dart';
 import 'package:logging/logging.dart' show Logger;
 import 'package:provider/provider.dart' show Provider;
 import '../../../common/proportional_sizes.dart';
 import '../../../common/custom_button.dart';
 import 'add_expense_screen_scan_receipt.dart';
-import 'add_expense_screen_fields.dart';
 
 class AddExpenseScreenMainBody extends StatefulWidget {
   const AddExpenseScreenMainBody({super.key});
@@ -73,9 +73,11 @@ class _AddExpenseScreenMainBodyState extends State<AddExpenseScreenMainBody> {
               SizedBox(height: proportionalSizes.scaleHeight(20)),
 
               // pass validity up from fields
-              AddExpenseScreenFields(
+              ExpenseForm(
                 onValidityChanged: updateFormValid,
                 onExpenseChanged: updateExpense,
+                canEditItems: true,
+                canEditSplits: true,
               ),
               SizedBox(height: proportionalSizes.scaleHeight(24)),
 

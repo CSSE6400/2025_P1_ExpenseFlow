@@ -24,7 +24,7 @@ class ExpenseListView extends StatefulWidget {
 class _ExpenseListViewState extends State<ExpenseListView> {
   String selectedPeriod = 'Last 30 Days';
   String searchText = '';
-  String selectedSegment = 'Active';
+  ExpenseSegment selectedSegment = ExpenseSegment.unpaid;
 
   List<ExpenseRead> get filteredExpenses {
     final now = DateTime.now();
@@ -49,7 +49,7 @@ class _ExpenseListViewState extends State<ExpenseListView> {
       return expenseDate.isAfter(cutoff);
     });
 
-    if (selectedSegment == 'Active') {
+    if (selectedSegment == ExpenseSegment.unpaid) {
       filteredByPeriod = filteredByPeriod.where(
         (e) => e.status != ExpenseStatus.paid,
       );

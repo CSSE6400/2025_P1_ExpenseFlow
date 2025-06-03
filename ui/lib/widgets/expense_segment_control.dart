@@ -1,11 +1,19 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_frontend/common/color_palette.dart';
+import 'package:flutter_frontend/utils/string_utils.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../common/proportional_sizes.dart';
 
+enum ExpenseSegment {
+  unpaid,
+  all;
+
+  String get label => titleCaseString(name);
+}
+
 class ExpenseSegmentControl extends StatelessWidget {
-  final String selectedSegment;
-  final void Function(String) onSegmentChanged;
+  final ExpenseSegment selectedSegment;
+  final void Function(ExpenseSegment) onSegmentChanged;
 
   const ExpenseSegmentControl({
     super.key,
@@ -36,18 +44,18 @@ class ExpenseSegmentControl extends StatelessWidget {
             ),
           ),
           child: CupertinoSlidingSegmentedControl<String>(
-            groupValue: selectedSegment,
+            groupValue: selectedSegment.label,
             thumbColor: selectedColor,
             backgroundColor: backgroundColor,
             padding: const EdgeInsets.all(4),
             children: {
-              'Active': Center(
+              'Unpaid': Center(
                 child: Text(
-                  'Active',
+                  'Unpaid',
                   style: GoogleFonts.roboto(
                     fontWeight: FontWeight.w600,
                     color:
-                        selectedSegment == 'Active'
+                        selectedSegment == ExpenseSegment.unpaid
                             ? selectedTextColor
                             : unselectedTextColor,
                   ),
@@ -59,7 +67,7 @@ class ExpenseSegmentControl extends StatelessWidget {
                   style: GoogleFonts.roboto(
                     fontWeight: FontWeight.w600,
                     color:
-                        selectedSegment == 'All'
+                        selectedSegment == ExpenseSegment.all
                             ? selectedTextColor
                             : unselectedTextColor,
                   ),
@@ -67,8 +75,16 @@ class ExpenseSegmentControl extends StatelessWidget {
               ),
             },
             onValueChanged: (String? value) {
-              if (value != null) {
-                onSegmentChanged(value);
+              // convert string value back to ExpenseSegment
+              ExpenseSegment? valueSegment;
+              if (value == 'Unpaid') {
+                valueSegment = ExpenseSegment.unpaid;
+              } else if (value == 'All') {
+                valueSegment = ExpenseSegment.all;
+              }
+
+              if (valueSegment != null) {
+                onSegmentChanged(valueSegment);
               }
             },
           ),

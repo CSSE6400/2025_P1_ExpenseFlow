@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/models/enums.dart' show ExpenseCategory;
+import 'package:flutter_frontend/screens/add_items_screen/add_items_screen.dart'
+    show AddItemsScreen;
 import 'package:flutter_frontend/utils/string_utils.dart';
 import '../../../common/fields/general_field.dart';
 import '../../../common/custom_divider.dart';
@@ -8,27 +10,68 @@ import '../../../common/fields/dropdown_field.dart';
 import '../../../models/expense.dart';
 import '../../../common/fields/custom_icon_field.dart';
 import '../../../common/proportional_sizes.dart';
-// import '../../../common/show_image.dart';
 import '../../../common/snack_bar.dart';
-import '../../add_items_screen/add_items_screen.dart';
 
-class AddExpenseScreenFields extends StatefulWidget {
+class ExpenseForm extends StatefulWidget {
+  final ExpenseCreate? initialExpense; // optional for editing
+
   final void Function(bool isValid) onValidityChanged;
   final void Function(ExpenseCreate expense)? onExpenseChanged;
+  final bool canEditItems;
+  final bool canEditSplits;
 
-  const AddExpenseScreenFields({
+  const ExpenseForm({
     super.key,
+    this.initialExpense,
     required this.onValidityChanged,
     required this.onExpenseChanged,
+    required this.canEditItems,
+    required this.canEditSplits,
   });
 
   @override
-  State<AddExpenseScreenFields> createState() => _AddExpenseScreenFieldsState();
+  State<ExpenseForm> createState() => _ExpenseFormState();
 }
 
-class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
+class _ExpenseFormState extends State<ExpenseForm> {
   bool isNameValid = false;
   bool isDescriptionValid = false;
+
+  late String _name;
+  late String _description;
+  late DateTime _selectedDate;
+  late ExpenseCategory _selectedCategory;
+  late List<ExpenseItemCreate> _expenseItems;
+
+  late TextEditingController _amountController;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // populate fields
+    _name = widget.initialExpense?.name ?? '';
+    _description = widget.initialExpense?.description ?? '';
+    _selectedDate = widget.initialExpense?.expenseDate ?? DateTime.now();
+    _selectedCategory =
+        widget.initialExpense?.category ?? ExpenseCategory.other;
+    _expenseItems = widget.initialExpense?.items ?? [];
+
+    _amountController = TextEditingController(text: '0.00');
+
+    // update total amount
+    _updateCalculatedAmount();
+
+    // validate initial name and description
+    isNameValid = _name.trim().isNotEmpty;
+    isDescriptionValid = _description.trim().isNotEmpty;
+
+    // notify initial validity and expense data
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _updateFormValidity();
+      _notifyExpenseChanged();
+    });
+  }
 
   void _updateField<T>(void Function() updateState) {
     setState(updateState);
@@ -46,15 +89,6 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
     widget.onExpenseChanged?.call(expense);
   }
 
-  String _name = "";
-  String _description = "";
-  DateTime _selectedDate = DateTime.now();
-  ExpenseCategory _selectedCategory = ExpenseCategory.other;
-  List<ExpenseItemCreate> _expenseItems = [];
-  final TextEditingController _amountController = TextEditingController(
-    text: '0.00',
-  );
-
   void updateNameValidity(bool isValid) {
     setState(() {
       isNameValid = isValid;
@@ -66,19 +100,15 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
     for (var item in _expenseItems) {
       total += item.price * item.quantity;
     }
-    setState(() {
-      _amountController.text = total.toStringAsFixed(2);
-    });
+    _amountController.text = total.toStringAsFixed(2);
   }
 
-  // get overview of items for display
   String get formattedItemsString {
     final count = _expenseItems.length;
     if (count == 0) return '';
     return '$count ${count == 1 ? 'Item' : 'Items'}';
   }
 
-  // go to items screen
   void _navigateToItemsScreen(BuildContext context) async {
     final result = await Navigator.push(
       context,
@@ -87,7 +117,6 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
       ),
     );
 
-    // check for non-null result - I spent so long figuring out this, rip
     if (result != null) {
       final List<ExpenseItemCreate> updatedItems = result;
       setState(() {
@@ -95,7 +124,7 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
         _updateCalculatedAmount();
       });
       _notifyExpenseChanged();
-      _updateFormValidity(); // check whether items is empty
+      _updateFormValidity();
     }
   }
 
@@ -107,7 +136,7 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
       children: [
         GeneralField(
           label: 'Name*',
-          initialValue: '',
+          initialValue: _name,
           isEditable: true,
           showStatusIcon: true,
           validationRule: (value) => value.trim().isNotEmpty,
@@ -121,10 +150,9 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
           onChanged: (value) => _updateField(() => _name = value),
         ),
         CustomDivider(),
-
         GeneralField(
           label: 'Description*',
-          initialValue: '',
+          initialValue: _description,
           isEditable: true,
           showStatusIcon: true,
           validationRule: (value) => value.trim().isNotEmpty,
@@ -138,14 +166,12 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
           onChanged: (value) => _updateField(() => _description = value),
         ),
         CustomDivider(),
-
         DateField(
           label: 'Date',
           initialDate: _selectedDate,
           onChanged: (value) => _updateField(() => _selectedDate = value),
         ),
         CustomDivider(),
-
         GeneralField(
           label: 'Amount (\$)',
           controller: _amountController,
@@ -155,7 +181,6 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
           maxLength: 10,
         ),
         CustomDivider(),
-
         CustomIconField(
           label: 'Items',
           value: formattedItemsString,
@@ -164,7 +189,6 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
           onTap: () => _navigateToItemsScreen(context),
         ),
         CustomDivider(),
-
         DropdownField(
           label: 'Category',
           options:
@@ -178,20 +202,16 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
           onChanged:
               (value) => _updateField(() {
                 final selectedCategory = ExpenseCategory.values.firstWhere(
-                  (e) => capitalizeString(e.label) == value,
+                  (e) => titleCaseString(e.label) == value,
                   orElse: () => ExpenseCategory.other,
                 );
                 _selectedCategory = selectedCategory;
               }),
+          selectedValue: titleCaseString(_selectedCategory.label),
         ),
-
         CustomDivider(),
-
         CustomIconField(
           label: 'Split With',
-          // TODO: Fetch the group or friends names from the database & set the value.
-          // For group, the value should be of the form 'Group - Group Name'
-          // For friends, the value should be of the form 'Friend - Friend Name'
           value: '',
           hintText: 'Select Group or Friends',
           trailingIconPath: 'assets/icons/search.png',
@@ -208,20 +228,16 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
           },
         ),
         CustomDivider(),
-
         CustomIconField(
           label: 'Receipt',
-          // TODO: Fetch the attachments with the image
           value: '',
           hintText: 'Save your Receipt here',
           trailingIconPath: 'assets/icons/clip.png',
           onTap: () {
-            // TODO: Expand to show the receipt
-            // For example, like "showFullScreenImage(context, imageUrl: 'https://example.com/image.png');"
+            // TODO: Show receipt or attachment viewer
           },
         ),
         CustomDivider(),
-
         SizedBox(height: proportionalSizes.scaleHeight(24)),
       ],
     );
@@ -229,7 +245,7 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
 
   @override
   void dispose() {
-    _amountController.dispose(); // this prevents memory leaks
+    _amountController.dispose();
     super.dispose();
   }
 
