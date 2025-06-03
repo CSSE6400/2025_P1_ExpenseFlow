@@ -47,14 +47,14 @@ async def create(
         )
     try:
         return await create_expense(db, user, expense_in, parent)
+    except NotFoundError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
+        ) from e
     except ExpenseFlowError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="The total proportion of an expense item does not add to 1.",
-        ) from e
-    except NotFoundError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
         ) from e
 
 
