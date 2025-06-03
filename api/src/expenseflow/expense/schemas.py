@@ -3,6 +3,8 @@
 import datetime as dt
 from uuid import UUID
 
+from pydantic import computed_field
+
 from expenseflow.enums import ExpenseCategory, ExpenseStatus
 from expenseflow.schemas import ExpenseFlowBase
 from expenseflow.user.schemas import UserRead
@@ -27,6 +29,11 @@ class ExpenseRead(ExpenseFlowBase):
 
     uploader: UserRead
     items: list["ExpenseItemRead"]
+
+    @computed_field
+    def expense_total(self) -> float:
+        """Total cost of the expense."""
+        return sum(item.quantity * item.price for item in self.items)
 
 
 class ExpenseCreate(ExpenseFlowBase):

@@ -33,6 +33,7 @@ class ExpenseRead {
   final String name;
   final String description;
   final DateTime expenseDate;
+  final double expenseTotal;
 
   @ExpenseCategoryConverter()
   final ExpenseCategory category;
@@ -43,6 +44,7 @@ class ExpenseRead {
     required this.expenseDate,
     required this.description,
     required this.category,
+    required this.expenseTotal,
   });
 
   factory ExpenseRead.fromJson(Map<String, dynamic> json) =>
