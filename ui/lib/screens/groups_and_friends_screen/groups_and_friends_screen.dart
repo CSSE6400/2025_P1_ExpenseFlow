@@ -7,7 +7,7 @@ import 'package:flutter_frontend/screens/groups_and_friends_screen/elements/grou
 import 'package:flutter_frontend/screens/groups_and_friends_screen/elements/groups_and_friends_segment_control.dart'
     show GroupsAndFriendsSegmentControl;
 import 'package:flutter_frontend/services/api_service.dart' show ApiService;
-import 'package:flutter_frontend/types.dart' show Friend;
+import 'package:flutter_frontend/types.dart' show Friend, Group;
 import 'package:logging/logging.dart' show Logger;
 import 'package:provider/provider.dart' show Provider;
 import 'package:flutter/material.dart';
@@ -17,13 +17,6 @@ import 'package:flutter_frontend/services/api_service.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_frontend/common/snack_bar.dart';
 import 'package:logging/logging.dart';
-
-class Group {
-  final String name;
-  final String uuid;
-
-  Group({required this.name, required this.uuid});
-}
 
 class GroupsAndFriendsScreen extends StatefulWidget {
   const GroupsAndFriendsScreen({super.key});
@@ -56,7 +49,13 @@ class _GroupsAndFriendsScreenState extends State<GroupsAndFriendsScreen> {
       setState(() {
         _groups =
             userGroups
-                .map((g) => Group(name: '@${g.name}', uuid: g.groupId))
+                .map(
+                  (g) => Group(
+                    name: '@${g.name}',
+                    groupId: g.groupId,
+                    description: g.description,
+                  ),
+                )
                 .toList();
         _friends =
             userFriends

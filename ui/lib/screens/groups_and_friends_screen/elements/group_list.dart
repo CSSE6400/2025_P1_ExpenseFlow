@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/screens/groups_and_friends_screen/groups_and_friends_screen.dart'
-    show Group;
+import 'package:flutter_frontend/types.dart' show Group;
 import 'package:google_fonts/google_fonts.dart';
 import '../../../common/proportional_sizes.dart';
 import '../../../common/color_palette.dart';
@@ -44,7 +43,7 @@ class GroupsListView extends StatelessWidget {
                     '/group_expense',
                     arguments: {
                       'groupName': group.name,
-                      'groupUUID': group.uuid,
+                      'groupUUID': group.groupId,
                     },
                   );
                 },

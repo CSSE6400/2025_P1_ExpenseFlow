@@ -43,3 +43,11 @@ class Friend {
 
   Friend({required this.userId, required this.name, this.isSelected = false});
 }
+
+class Group {
+  final String groupId;
+  final String name;
+  final String description;
+
+  Group({required this.groupId, required this.name, required this.description});
+}

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_frontend/common/time_period_dropdown.dart';
 import 'package:flutter_frontend/models/enums.dart';
 import 'package:flutter_frontend/models/group.dart';
+import 'package:flutter_frontend/types.dart' show Group;
 import 'package:logging/logging.dart';
 // Common imports
 import '../../../common/proportional_sizes.dart';
@@ -18,14 +19,6 @@ class GroupMember {
   final String amount;
 
   GroupMember({required this.name, this.status, required this.amount});
-}
-
-class Group {
-  final String groupId;
-  final String name;
-  final String description;
-
-  Group({required this.groupId, required this.name, required this.description});
 }
 
 class ExpenseItem {

@@ -10,7 +10,7 @@ import 'package:flutter_frontend/services/api_service.dart';
 import 'package:provider/provider.dart' show Provider;
 import 'package:flutter_frontend/common/snack_bar.dart';
 
-class GroupMember {
+class GroupMemberSplit {
   String name;
   String uuid;
   String percentage;
@@ -18,7 +18,7 @@ class GroupMember {
   bool disabled;
   final TextEditingController controller;
 
-  GroupMember({
+  GroupMemberSplit({
     required this.name,
     required this.uuid,
     required this.percentage,
@@ -27,14 +27,14 @@ class GroupMember {
   }) : controller = TextEditingController(text: percentage);
 }
 
-class Group {
+class GroupDetailed {
   String name;
-  List<GroupMember> members;
+  List<GroupMemberSplit> members;
   bool isSelected;
   bool isExpanded;
   String uuid;
 
-  Group({
+  GroupDetailed({
     required this.uuid,
     required this.name,
     required this.members,
@@ -60,8 +60,8 @@ class SplitWithScreenGroup extends StatefulWidget {
 }
 
 class SplitWithScreenGroupState extends State<SplitWithScreenGroup> {
-  List<Group> allGroups = [];
-  List<Group> filteredGroups = [];
+  List<GroupDetailed> allGroups = [];
+  List<GroupDetailed> filteredGroups = [];
   final Logger _logger = Logger("SplitWithGroup");
 
   @override
@@ -69,7 +69,8 @@ class SplitWithScreenGroupState extends State<SplitWithScreenGroup> {
     super.initState();
     _fetchGroups();
 
-    if (allGroups.isNotEmpty) { // dont think this works anymore but ehh
+    if (allGroups.isNotEmpty) {
+      // dont think this works anymore but ehh
       allGroups[0].isSelected = true;
       allGroups[0].isExpanded = true;
     }
@@ -86,16 +87,18 @@ class SplitWithScreenGroupState extends State<SplitWithScreenGroup> {
       allGroups = [];
 
       for (final group in userReads) {
-      final members = await _generateMembers(group.groupId);
-      allGroups.add(Group(
-        name: '@${group.name}',
-        members: members,
-        uuid: group.groupId,
-      ));
+        final members = await _generateMembers(group.groupId);
+        allGroups.add(
+          GroupDetailed(
+            name: '@${group.name}',
+            members: members,
+            uuid: group.groupId,
+          ),
+        );
       }
 
-      if (allGroups.isEmpty) { 
-        _logger.info("User has no groups"); 
+      if (allGroups.isEmpty) {
+        _logger.info("User has no groups");
       }
 
       setState(() {
@@ -103,38 +106,30 @@ class SplitWithScreenGroupState extends State<SplitWithScreenGroup> {
       });
     } on ApiException catch (e) {
       _logger.warning("API exception while fetching friends: ${e.message}");
-      showCustomSnackBar(
-        context,
-        normalText: "Failed to load friends",
-      );
+      showCustomSnackBar(context, normalText: "Failed to load friends");
     } catch (e) {
       _logger.severe("Unexpected error: $e");
-      showCustomSnackBar(
-        context,
-        normalText: "Something went wrong",
-      );
+      showCustomSnackBar(context, normalText: "Something went wrong");
     }
   }
 
-  Future<List<GroupMember>> _generateMembers(String groupId) async {
+  Future<List<GroupMemberSplit>> _generateMembers(String groupId) async {
     final apiService = Provider.of<ApiService>(context, listen: false);
     try {
       _logger.info("Calling the API");
       final fetchedUser = await apiService.userApi.getCurrentUser();
       if (fetchedUser == null) {
-        showCustomSnackBar(
-          context,
-          normalText: "Unable to get current user",
-        );
+        showCustomSnackBar(context, normalText: "Unable to get current user");
         Navigator.pushNamed(context, "/");
-        return []; 
+        return [];
       }
 
       final userReads = await apiService.groupApi.getGroupUsers(groupId);
-      final members = userReads
-          .where((user) => user.userId != fetchedUser.userId)
-          .map((user) {
-            return GroupMember(
+      final members =
+          userReads.where((user) => user.userId != fetchedUser.userId).map((
+            user,
+          ) {
+            return GroupMemberSplit(
               name: '@${user.nickname}',
               uuid: user.userId,
               percentage: '',
@@ -145,7 +140,7 @@ class SplitWithScreenGroupState extends State<SplitWithScreenGroup> {
 
       members.insert(
         0,
-        GroupMember(
+        GroupMemberSplit(
           name: 'You',
           uuid: fetchedUser.userId,
           percentage: '100',
@@ -190,9 +185,13 @@ class SplitWithScreenGroupState extends State<SplitWithScreenGroup> {
   }
 
   bool isTotalPercentageValid() {
-    final expandedGroup =
-        allGroups.firstWhere((g) => g.isExpanded, orElse: () => allGroups[0]);
-    final members = expandedGroup.members.where((m) => m.checked || m.name == 'You');
+    final expandedGroup = allGroups.firstWhere(
+      (g) => g.isExpanded,
+      orElse: () => allGroups[0],
+    );
+    final members = expandedGroup.members.where(
+      (m) => m.checked || m.name == 'You',
+    );
     final total = members.fold<double>(
       0,
       (sum, m) => sum + (double.tryParse(m.percentage) ?? 0),
@@ -205,7 +204,7 @@ class SplitWithScreenGroupState extends State<SplitWithScreenGroup> {
     Navigator.pop(context);
   }
 
-  void _toggleMemberSelection(Group group, GroupMember member) {
+  void _toggleMemberSelection(GroupDetailed group, GroupMemberSplit member) {
     if (widget.isReadOnly || member.disabled || member.name == 'You') return;
 
     setState(() {
@@ -227,9 +226,13 @@ class SplitWithScreenGroupState extends State<SplitWithScreenGroup> {
 
   void _filterGroups(String query) {
     setState(() {
-      filteredGroups = allGroups
-          .where((group) => group.name.toLowerCase().contains(query.toLowerCase()))
-          .toList();
+      filteredGroups =
+          allGroups
+              .where(
+                (group) =>
+                    group.name.toLowerCase().contains(query.toLowerCase()),
+              )
+              .toList();
     });
   }
 
@@ -243,10 +246,7 @@ class SplitWithScreenGroupState extends State<SplitWithScreenGroup> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          search.SearchBar(
-            hintText: 'Search groups',
-            onChanged: _filterGroups,
-          ),
+          search.SearchBar(hintText: 'Search groups', onChanged: _filterGroups),
           const SizedBox(height: 16),
 
           ...filteredGroups.map((group) {
@@ -273,9 +273,10 @@ class SplitWithScreenGroupState extends State<SplitWithScreenGroup> {
                           style: GoogleFonts.roboto(
                             fontSize: proportionalSizes.scaleHeight(18),
                             fontWeight: FontWeight.bold,
-                            color: group.isSelected
-                                ? textColor
-                                : ColorPalette.secondaryText,
+                            color:
+                                group.isSelected
+                                    ? textColor
+                                    : ColorPalette.secondaryText,
                           ),
                         ),
                       ],
@@ -291,12 +292,12 @@ class SplitWithScreenGroupState extends State<SplitWithScreenGroup> {
                     // sort group members so it is you then selected thenunselected
                     ...[
                       group.members.firstWhere((m) => m.name == 'You'),
-                      ...group.members
-                          .where((m) => m.name != 'You' && m.checked)
-                          ,
-                      ...group.members
-                          .where((m) => m.name != 'You' && !m.checked)
-                          ,
+                      ...group.members.where(
+                        (m) => m.name != 'You' && m.checked,
+                      ),
+                      ...group.members.where(
+                        (m) => m.name != 'You' && !m.checked,
+                      ),
                     ].map((member) {
                       return GestureDetector(
                         onTap: () => _toggleMemberSelection(group, member),
@@ -311,9 +312,10 @@ class SplitWithScreenGroupState extends State<SplitWithScreenGroup> {
                                 member.name,
                                 style: GoogleFonts.roboto(
                                   fontSize: proportionalSizes.scaleHeight(16),
-                                  color: member.name == 'You'
-                                      ? textColor
-                                      : member.checked
+                                  color:
+                                      member.name == 'You'
+                                          ? textColor
+                                          : member.checked
                                           ? textColor
                                           : ColorPalette.secondaryText,
                                 ),
@@ -323,50 +325,71 @@ class SplitWithScreenGroupState extends State<SplitWithScreenGroup> {
                                   if (member.checked || member.name == 'You')
                                     Padding(
                                       padding: EdgeInsets.only(
-                                          right: proportionalSizes.scaleWidth(6)),
+                                        right: proportionalSizes.scaleWidth(6),
+                                      ),
                                       child: IconMaker(
-                                        assetPath: 'assets/icons/check_nofilled.png',
+                                        assetPath:
+                                            'assets/icons/check_nofilled.png',
                                       ),
                                     ),
                                   Container(
                                     width: proportionalSizes.scaleWidth(70),
                                     padding: EdgeInsets.symmetric(
-                                      horizontal: proportionalSizes.scaleWidth(8),
-                                      vertical: proportionalSizes.scaleHeight(4),
+                                      horizontal: proportionalSizes.scaleWidth(
+                                        8,
+                                      ),
+                                      vertical: proportionalSizes.scaleHeight(
+                                        4,
+                                      ),
                                     ),
                                     decoration: BoxDecoration(
-                                      color: (member.checked || member.name == 'You')
-                                          ? ColorPalette.secondaryText.withAlpha(100)
-                                          : textColor.withAlpha(25),
+                                      color:
+                                          (member.checked ||
+                                                  member.name == 'You')
+                                              ? ColorPalette.secondaryText
+                                                  .withAlpha(100)
+                                              : textColor.withAlpha(25),
                                       borderRadius: BorderRadius.circular(
                                         proportionalSizes.scaleWidth(6),
                                       ),
                                     ),
                                     child: TextField(
                                       controller: member.controller,
-                                      enabled: !widget.isReadOnly && (member.checked || member.name == 'You'),
+                                      enabled:
+                                          !widget.isReadOnly &&
+                                          (member.checked ||
+                                              member.name == 'You'),
                                       keyboardType: TextInputType.number,
-                                      onChanged: widget.isReadOnly
-                                        ? null
-                                        : (value) {
-                                            setState(() {
-                                              member.percentage = value;
-                                              widget.onValidityChanged?.call(isTotalPercentageValid());
-                                            });
-                                          },
+                                      onChanged:
+                                          widget.isReadOnly
+                                              ? null
+                                              : (value) {
+                                                setState(() {
+                                                  member.percentage = value;
+                                                  widget.onValidityChanged?.call(
+                                                    isTotalPercentageValid(),
+                                                  );
+                                                });
+                                              },
                                       textAlign: TextAlign.center,
                                       style: GoogleFonts.roboto(
                                         fontWeight: FontWeight.bold,
-                                        fontSize: proportionalSizes.scaleHeight(14),
-                                        color: (member.checked || member.name == 'You')
-                                            ? textColor
-                                            : ColorPalette.secondaryText,
+                                        fontSize: proportionalSizes.scaleHeight(
+                                          14,
+                                        ),
+                                        color:
+                                            (member.checked ||
+                                                    member.name == 'You')
+                                                ? textColor
+                                                : ColorPalette.secondaryText,
                                       ),
                                       decoration: const InputDecoration(
                                         isCollapsed: true,
                                         border: InputBorder.none,
                                         suffixText: '%',
-                                        suffixStyle: TextStyle(color: Color(0xFF0F2F63)),
+                                        suffixStyle: TextStyle(
+                                          color: Color(0xFF0F2F63),
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -380,7 +403,7 @@ class SplitWithScreenGroupState extends State<SplitWithScreenGroup> {
                   ],
 
                   const SizedBox(height: 12),
-                ]
+                ],
               ],
             );
           }),
