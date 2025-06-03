@@ -59,6 +59,21 @@ class HomeScreenRecentExpenses extends StatelessWidget {
                   ),
                 ),
               )
+            else if (recentExpenses.isEmpty)
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  vertical: proportionalSizes.scaleHeight(20),
+                ),
+                child: Center(
+                  child: Text(
+                    "You've got no recent expenses",
+                    style: TextStyle(
+                      fontSize: proportionalSizes.scaleText(16),
+                      color: ColorPalette.primaryText.withOpacity(0.7),
+                    ),
+                  ),
+                ),
+              )
             else
               ...recentExpenses.map(
                 (expense) => Padding(

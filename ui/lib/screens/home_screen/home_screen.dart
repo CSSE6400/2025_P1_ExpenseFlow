@@ -217,25 +217,27 @@ class _HomeScreenState extends State<HomeScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                HomeScreenOverview(
-                  isLoading: isOverviewLoading,
-                  monthlyBudget: user?.budget.toDouble() ?? 0.0,
-                  categories:
-                      isOverviewLoading
-                          ? []
-                          : assignRandomColors(
-                            overview!.categories
-                                .map(
-                                  (c) => CategoryData(
-                                    name: c.category.name,
-                                    amount: c.total.toDouble(),
-                                  ),
-                                )
-                                .toList(),
-                            availableColors,
-                          ),
-                  spent: overview?.total.toDouble() ?? 0.0,
-                ),
+                if (!isOverviewLoading &&
+                    overview != null &&
+                    overview!.categories.isNotEmpty) ...[
+                  HomeScreenOverview(
+                    isLoading: false,
+                    monthlyBudget: user?.budget.toDouble() ?? 0.0,
+                    categories: assignRandomColors(
+                      overview!.categories
+                          .map(
+                            (c) => CategoryData(
+                              name: c.category.name,
+                              amount: c.total.toDouble(),
+                            ),
+                          )
+                          .toList(),
+                      availableColors,
+                    ),
+                    spent: overview!.total.toDouble(),
+                  ),
+                  SizedBox(height: proportionalSizes.scaleHeight(20)),
+                ],
                 SizedBox(height: proportionalSizes.scaleHeight(20)),
                 HomeScreenAddAnExpense(),
                 SizedBox(height: proportionalSizes.scaleHeight(20)),
