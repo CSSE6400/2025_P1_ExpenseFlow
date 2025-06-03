@@ -79,6 +79,22 @@ async def test_accepted_request(
     assert recv_requests[0].user_id == sender.user_id
     empty_recv_requests = await get_received_friend_requests(session, sender)
     assert len(empty_recv_requests) == 0
+    
+    friend_model = await create_accept_friend_request(session,
+                                                      sender,
+                                                      receiver)
+    
+    requests = await get_sent_friend_requests(session, sender)
+    assert len(requests) == 1
+    assert requests[0].user_id == receiver.user_id
+    empty_requests = await get_sent_friend_requests(session, receiver)
+    assert len(empty_requests) == 0
+
+    recv_requests = await get_received_friend_requests(session, receiver)
+    assert len(recv_requests) == 1
+    assert recv_requests[0].user_id == sender.user_id
+    empty_recv_requests = await get_received_friend_requests(session, sender)
+    assert len(empty_recv_requests) == 0
 
 @pytest.mark.asyncio
 async def test_remove_friend(
