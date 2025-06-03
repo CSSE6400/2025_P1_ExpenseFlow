@@ -3,7 +3,6 @@ import 'package:flutter_frontend/common/app_bar.dart';
 import 'package:flutter_frontend/common/bottom_nav_bar.dart';
 import 'package:flutter_frontend/common/color_palette.dart';
 import 'package:flutter_frontend/common/snack_bar.dart';
-import 'package:flutter_frontend/common/time_period_dropdown.dart';
 import 'package:flutter_frontend/models/enums.dart';
 import 'package:flutter_frontend/models/expense.dart';
 import 'package:flutter_frontend/models/user.dart';
@@ -30,7 +29,6 @@ class _IndFriendExpenseScreenState extends State<IndFriendExpenseScreen> {
   List<ExpenseRead> expenses = [];
   bool isLoading = true;
   String selectedSegment = 'Active';
-  String selectedPeriod = 'Last 30 Days';
 
   @override
   void initState() {
@@ -106,20 +104,9 @@ class _IndFriendExpenseScreenState extends State<IndFriendExpenseScreen> {
                   onSegmentChanged:
                       (segment) => setState(() => selectedSegment = segment),
                 ),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TimePeriodDropdown(
-                    selectedPeriod: selectedPeriod,
-                    onChanged: (period) {
-                      if (period != null) {
-                        setState(() => selectedPeriod = period);
-                      }
-                    },
-                  ),
-                ),
                 SizedBox(height: proportionalSizes.scaleHeight(20)),
                 ExpenseListView(
-                  expenses: filteredExpenses,
+                  expenses: filteredExpenses, // filtered by segment here
                   onExpenseTap: (expense) {
                     Navigator.pushNamed(
                       context,
