@@ -53,6 +53,7 @@ def to_user_group(model: GroupUserModel) -> UserGroupRead:
         nickname=model.user.nickname,
         role=model.role,
         joined_at=model.joined_at,
+        budget=model.user.budget,
     )
 
 
