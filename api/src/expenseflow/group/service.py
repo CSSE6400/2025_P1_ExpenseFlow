@@ -5,12 +5,14 @@ from uuid import UUID
 from loguru import logger
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from expenseflow.enums import GroupRole
 from expenseflow.errors import ExistsError, ExpenseFlowError, RoleError
 from expenseflow.group.models import GroupModel, GroupUserModel
-from expenseflow.group.schemas import GroupCreate, GroupUpdate
+from expenseflow.group.schemas import GroupCreate, GroupReadWithMembers, GroupUpdate
 from expenseflow.user.models import UserModel
+from expenseflow.user.schemas import UserReadMinimal
 
 
 async def create_group(
@@ -36,6 +38,41 @@ async def get_user_groups(user: UserModel) -> list[GroupUserModel]:
 async def get_group_users(group: GroupModel) -> list[GroupUserModel]:
     """Get a users groups."""
     return await group.awaitable_attrs.users
+
+
+async def get_groups_with_members(
+    session: AsyncSession, user: UserModel
+) -> list[GroupReadWithMembers]:
+    """Get all groups with their members."""
+    result = await session.execute(
+        select(GroupModel)
+        .join(GroupModel.users)
+        .where(GroupUserModel.user_id == user.user_id)
+        .options(selectinload(GroupModel.users).selectinload(GroupUserModel.user))
+    )
+
+    groups = result.scalars().unique().all()
+
+    group_list: list[GroupReadWithMembers] = []
+
+    for group in groups:
+        members = [
+            UserReadMinimal(
+                user_id=gu.user.user_id,
+                nickname=gu.user.nickname,
+            )
+            for gu in group.users
+        ]
+
+        group_data = GroupReadWithMembers(
+            group_id=group.group_id,
+            name=group.name,
+            description=group.description,
+            members=members,
+        )
+        group_list.append(group_data)
+
+    return group_list
 
 
 async def get_group(
