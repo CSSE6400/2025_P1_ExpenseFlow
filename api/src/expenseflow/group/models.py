@@ -24,7 +24,7 @@ class GroupModel(EntityModel):
     }
 
     group_id: Mapped[UUID] = mapped_column(
-        ForeignKey("entity.entity_id"),
+        ForeignKey("entity.entity_id", ondelete="CASCADE"),
         primary_key=True,
         default=uuid4,
     )
@@ -33,7 +33,7 @@ class GroupModel(EntityModel):
 
     # Relationships
     users: Mapped[list["GroupUserModel"]] = relationship(
-        back_populates="group", lazy="select"
+        back_populates="group", lazy="select", cascade="all, delete-orphan"
     )
 
 
@@ -44,11 +44,11 @@ class GroupUserModel(BaseDBModel):
 
     # Identities
     group_id: Mapped[UUID] = mapped_column(
-        ForeignKey("group.group_id"),
+        ForeignKey("group.group_id", ondelete="CASCADE"),
         primary_key=True,
     )
     user_id: Mapped[UUID] = mapped_column(
-        ForeignKey("user.user_id"),
+        ForeignKey("user.user_id", ondelete="CASCADE"),
         primary_key=True,
     )
 

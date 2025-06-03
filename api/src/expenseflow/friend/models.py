@@ -17,10 +17,10 @@ class FriendModel(BaseDBModel, TimestampMixin):
     __tablename__ = "friend"
 
     sender_id: Mapped[UserModel] = mapped_column(
-        ForeignKey("user.user_id"), primary_key=True, default=uuid4
+        ForeignKey("user.user_id", ondelete="CASCADE"), primary_key=True, default=uuid4
     )
     receiver_id: Mapped[UserModel] = mapped_column(
-        ForeignKey("user.user_id"), primary_key=True, default=uuid4
+        ForeignKey("user.user_id", ondelete="CASCADE"), primary_key=True, default=uuid4
     )
     status: Mapped[FriendStatus] = mapped_column(default=FriendStatus.requested)
 
