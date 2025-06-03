@@ -53,7 +53,7 @@ class _GroupsAndFriendsFriendListState
 
       setState(() {
         filteredFriends = List.from(allFriends)
-          ..sort((a, b) => b.isActive ? 1 : -1); // Active friends first
+          ..sort((a, b) => b.isActive ? 1 : -1); // active friends first
       });
     } on ApiException catch (e) {
       _logger.warning("API exception while fetching friends: ${e.message}");
@@ -76,7 +76,7 @@ class _GroupsAndFriendsFriendListState
           .where((friend) =>
               friend.name.toLowerCase().contains(query.toLowerCase()))
           .toList()
-        ..sort((a, b) => b.isActive ? 1 : -1); // Active friends first
+        ..sort((a, b) => b.isActive ? 1 : -1); // active friends first
     });
   }
 
@@ -139,7 +139,6 @@ class _GroupsAndFriendsFriendListState
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // Friend name in a flexible container with ellipsis
                     Expanded(
                       child: Text(
                         friend.name,
@@ -154,7 +153,6 @@ class _GroupsAndFriendsFriendListState
                       ),
                     ),
 
-                    // Gap between name and tag
                     if (friend.isActive) ...[
                       SizedBox(width: proportionalSizes.scaleWidth(12)),
                       Container(

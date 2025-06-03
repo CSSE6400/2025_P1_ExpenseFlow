@@ -91,7 +91,6 @@ class _AddItemsScreenState extends State<AddItemsScreen> {
 
   // return items to calling screen
   void _saveAndReturn() {
-    // Convert Item objects to ExpenseItemCreate objects
     final expenseItems =
         items
             .map(
@@ -106,7 +105,7 @@ class _AddItemsScreenState extends State<AddItemsScreen> {
             )
             .toList();
 
-    // Return the items list to the previous screen
+    // return the items list to the previous screen
     Navigator.pop(context, expenseItems);
   }
 }

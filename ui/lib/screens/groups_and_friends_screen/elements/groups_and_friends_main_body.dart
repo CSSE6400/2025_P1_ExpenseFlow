@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-// Common imports
 import '../../../common/proportional_sizes.dart';
 import 'groups_and_friends_segment_control.dart';
 import 'groups_and_friends_friend_list.dart';
@@ -36,7 +35,6 @@ class _GroupsAndFriendsMainBodyState extends State<GroupsAndFriendsMainBody> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Segment Control
               GroupsAndFriendsSegmentControl(
                 selectedSegment: widget.selectedSegment,
                 onSegmentChanged: widget.onSegmentChanged,
