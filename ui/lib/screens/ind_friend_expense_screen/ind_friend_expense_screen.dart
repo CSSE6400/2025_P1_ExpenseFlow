@@ -123,7 +123,7 @@ class _IndFriendExpenseScreenState extends State<IndFriendExpenseScreen> {
                   onExpenseTap: (expense) {
                     Navigator.pushNamed(
                       context,
-                      '/see_expenses',
+                      '/see_expense',
                       arguments: {'expenseId': expense.expenseId},
                     );
                   },

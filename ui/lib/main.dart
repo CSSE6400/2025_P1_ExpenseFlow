@@ -144,21 +144,19 @@ class MyApp extends StatelessWidget {
                     isReadOnly: isReadOnly,
                   ),
             );
-          case '/see_expenses':
+          case '/see_expense':
             final args = settings.arguments as Map<String, dynamic>?;
-            final transactionId = args?['transactionId'] as String?;
-            if (transactionId == null) {
+            final expenseId = args?['expenseId'] as String?;
+            if (expenseId == null) {
               return MaterialPageRoute(
                 builder:
                     (_) => const Scaffold(
-                      body: Center(
-                        child: Text('Error: Missing transaction ID'),
-                      ),
+                      body: Center(child: Text('Error: Missing expense ID')),
                     ),
               );
             }
             return MaterialPageRoute(
-              builder: (_) => SeeExpenseScreen(transactionId: transactionId),
+              builder: (_) => SeeExpenseScreen(expenseId: expenseId),
             );
           case '/friend_expense':
             final args = settings.arguments as Map<String, dynamic>?;

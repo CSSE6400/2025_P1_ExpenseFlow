@@ -10,13 +10,11 @@ import 'package:intl/intl.dart';
 class IndGroupExpenseScreenList extends StatefulWidget {
   final List<dynamic> expenses;
 
-  const IndGroupExpenseScreenList({
-    super.key,
-    required this.expenses,
-  });
+  const IndGroupExpenseScreenList({super.key, required this.expenses});
 
   @override
-  State<IndGroupExpenseScreenList> createState() => _IndGroupExpenseScreenListState();
+  State<IndGroupExpenseScreenList> createState() =>
+      _IndGroupExpenseScreenListState();
 }
 
 class _IndGroupExpenseScreenListState extends State<IndGroupExpenseScreenList> {
@@ -50,12 +48,14 @@ class _IndGroupExpenseScreenListState extends State<IndGroupExpenseScreenList> {
   // filter the expenses based on the search
   void _filterExpenses(String query) {
     final lowerQuery = query.toLowerCase();
-    final result = widget.expenses
-        .asMap()
-        .entries
-        .where((entry) =>
-            entry.value.name.toLowerCase().contains(lowerQuery))
-        .toList();
+    final result =
+        widget.expenses
+            .asMap()
+            .entries
+            .where(
+              (entry) => entry.value.name.toLowerCase().contains(lowerQuery),
+            )
+            .toList();
 
     setState(() {
       filteredExpenses = result.map((e) => e.value).toList();
@@ -77,7 +77,12 @@ class _IndGroupExpenseScreenListState extends State<IndGroupExpenseScreenList> {
   String _titleCase(String input) {
     return input
         .split(' ')
-        .map((word) => word.isEmpty ? '' : '${word[0].toUpperCase()}${word.substring(1).toLowerCase()}')
+        .map(
+          (word) =>
+              word.isEmpty
+                  ? ''
+                  : '${word[0].toUpperCase()}${word.substring(1).toLowerCase()}',
+        )
         .join(' ');
   }
 
@@ -218,10 +223,8 @@ class _IndGroupExpenseScreenListState extends State<IndGroupExpenseScreenList> {
                         onPressed: () {
                           Navigator.pushNamed(
                             context,
-                            '/see_expenses',
-                            arguments: {
-                              'transactionId': expense.name,
-                            },
+                            '/see_expense',
+                            arguments: {'expenseId': expense.expenseId},
                           );
                         },
                         child: Row(
@@ -235,8 +238,11 @@ class _IndGroupExpenseScreenListState extends State<IndGroupExpenseScreenList> {
                                 fontSize: proportionalSizes.scaleText(18),
                               ),
                             ),
-                            const Icon(Icons.chevron_right,
-                                size: 20, color: Colors.black),
+                            const Icon(
+                              Icons.chevron_right,
+                              size: 20,
+                              color: Colors.black,
+                            ),
                           ],
                         ),
                       ),
@@ -246,95 +252,115 @@ class _IndGroupExpenseScreenListState extends State<IndGroupExpenseScreenList> {
                 CustomDivider(),
                 ...(() {
                   final members = [...expense.members];
-                  members.sort((a, b) => a.name == 'You' ? -1 : b.name == 'You' ? 1 : 0);
-                  return members.map((member) => Padding(
-                    padding: EdgeInsets.only(
-                      left: proportionalSizes.scaleWidth(32),
-                      top: proportionalSizes.scaleHeight(6),
-                      right: proportionalSizes.scaleWidth(12),
-                    ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: member.name == 'You'
-                                ? null
-                                : () {
-                                    Navigator.pushNamed(
-                                      context,
-                                      '/friend_expense',
-                                      arguments: {'username': member.name},
-                                    );
-                                  },
-                            child: Row(
-                              children: [
-                                Flexible(
+                  members.sort(
+                    (a, b) =>
+                        a.name == 'You'
+                            ? -1
+                            : b.name == 'You'
+                            ? 1
+                            : 0,
+                  );
+                  return members.map(
+                    (member) => Padding(
+                      padding: EdgeInsets.only(
+                        left: proportionalSizes.scaleWidth(32),
+                        top: proportionalSizes.scaleHeight(6),
+                        right: proportionalSizes.scaleWidth(12),
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: GestureDetector(
+                              onTap:
+                                  member.name == 'You'
+                                      ? null
+                                      : () {
+                                        Navigator.pushNamed(
+                                          context,
+                                          '/friend_expense',
+                                          arguments: {'username': member.name},
+                                        );
+                                      },
+                              child: Row(
+                                children: [
+                                  Flexible(
+                                    child: Text(
+                                      member.name,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: GoogleFonts.roboto(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: proportionalSizes.scaleText(
+                                          16,
+                                        ),
+                                        color: textColor,
+                                        decoration:
+                                            member.name == 'You'
+                                                ? TextDecoration.none
+                                                : TextDecoration.underline,
+                                      ),
+                                    ),
+                                  ),
+                                  if (member.name != 'You') ...[
+                                    IconMaker(
+                                      assetPath:
+                                          'assets/icons/angle_small_right.png',
+                                      width: proportionalSizes.scaleWidth(16),
+                                      height: proportionalSizes.scaleHeight(16),
+                                    ),
+                                    SizedBox(
+                                      width: proportionalSizes.scaleWidth(6),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ),
+                          ),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (member.status != null) ...[
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: proportionalSizes.scaleHeight(2),
+                                    horizontal: proportionalSizes.scaleWidth(6),
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: ColorPalette.accent.withValues(
+                                      alpha: 0.2,
+                                    ),
+                                    borderRadius: BorderRadius.circular(
+                                      proportionalSizes.scaleWidth(6),
+                                    ),
+                                  ),
                                   child: Text(
-                                    member.name,
-                                    overflow: TextOverflow.ellipsis,
+                                    _titleCase(member.status!),
                                     style: GoogleFonts.roboto(
+                                      color: ColorPalette.accent,
+                                      fontSize: proportionalSizes.scaleText(12),
                                       fontWeight: FontWeight.bold,
-                                      fontSize: proportionalSizes.scaleText(16),
-                                      color: textColor,
-                                      decoration: member.name == 'You'
-                                          ? TextDecoration.none
-                                          : TextDecoration.underline,
                                     ),
                                   ),
                                 ),
-                                if (member.name != 'You') ...[
-                                  IconMaker(
-                                    assetPath: 'assets/icons/angle_small_right.png',
-                                    width: proportionalSizes.scaleWidth(16),
-                                    height: proportionalSizes.scaleHeight(16),
-                                  ),
-                                  SizedBox(width: proportionalSizes.scaleWidth(6)),
-                                ],
+                                SizedBox(
+                                  width: proportionalSizes.scaleWidth(8),
+                                ),
                               ],
-                            ),
-                          ),
-                        ),
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            if (member.status != null) ...[
-                              Container(
-                                padding: EdgeInsets.symmetric(
-                                  vertical: proportionalSizes.scaleHeight(2),
-                                  horizontal: proportionalSizes.scaleWidth(6),
-                                ),
-                                decoration: BoxDecoration(
-                                  color: ColorPalette.accent.withValues(alpha: 0.2),
-                                  borderRadius: BorderRadius.circular(
-                                    proportionalSizes.scaleWidth(6),
-                                  ),
-                                ),
-                                child: Text(
-                                  _titleCase(member.status!),
-                                  style: GoogleFonts.roboto(
-                                    color: ColorPalette.accent,
-                                    fontSize: proportionalSizes.scaleText(12),
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                              Text(
+                                member.amount,
+                                style: GoogleFonts.roboto(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: proportionalSizes.scaleText(14),
+                                  color: textColor,
                                 ),
                               ),
-                              SizedBox(width: proportionalSizes.scaleWidth(8)),
                             ],
-                            Text(
-                              member.amount,
-                              style: GoogleFonts.roboto(
-                                fontWeight: FontWeight.bold,
-                                fontSize: proportionalSizes.scaleText(14),
-                                color: textColor,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ));
+                  );
                 })(),
-              ]
+              ],
             ],
           );
         }),

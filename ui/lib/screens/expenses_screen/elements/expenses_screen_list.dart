@@ -9,10 +9,7 @@ import 'package:intl/intl.dart';
 class ExpensesScreenList extends StatefulWidget {
   final List<dynamic> expenses;
 
-  const ExpensesScreenList({
-    super.key,
-    required this.expenses,
-  });
+  const ExpensesScreenList({super.key, required this.expenses});
 
   @override
   State<ExpensesScreenList> createState() => _ExpensesScreenListState();
@@ -37,12 +34,14 @@ class _ExpensesScreenListState extends State<ExpensesScreenList> {
 
   void _filterExpenses(String query) {
     final lowerQuery = query.toLowerCase();
-    final result = widget.expenses
-        .asMap()
-        .entries
-        .where((entry) =>
-            entry.value.name.toLowerCase().contains(lowerQuery))
-        .toList();
+    final result =
+        widget.expenses
+            .asMap()
+            .entries
+            .where(
+              (entry) => entry.value.name.toLowerCase().contains(lowerQuery),
+            )
+            .toList();
 
     setState(() {
       filteredExpenses = result.map((e) => e.value).toList();
@@ -138,9 +137,11 @@ class _ExpensesScreenListState extends State<ExpensesScreenList> {
                                     horizontal: proportionalSizes.scaleWidth(6),
                                   ),
                                   decoration: BoxDecoration(
-                                    color: ColorPalette.accent.withValues(alpha: 0.2),
+                                    color: ColorPalette.accent.withValues(
+                                      alpha: 0.2,
+                                    ),
                                     borderRadius: BorderRadius.circular(
-                                      proportionalSizes.scaleWidth(6)
+                                      proportionalSizes.scaleWidth(6),
                                     ),
                                   ),
                                   child: Text(
@@ -152,7 +153,9 @@ class _ExpensesScreenListState extends State<ExpensesScreenList> {
                                     ),
                                   ),
                                 ),
-                                SizedBox(width: proportionalSizes.scaleWidth(6)),
+                                SizedBox(
+                                  width: proportionalSizes.scaleWidth(6),
+                                ),
                               ],
 
                               // price tag
@@ -218,9 +221,11 @@ class _ExpensesScreenListState extends State<ExpensesScreenList> {
                         onPressed: () {
                           Navigator.pushNamed(
                             context,
-                            '/see_expenses',
+                            '/see_expense',
                             arguments: {
-                              'transactionId': expense.transactionId, // TODO: Update with actual transaction ID
+                              'expenseId':
+                                  expense
+                                      .transactionId, // TODO: Update with actual transaction ID
                             },
                           );
                         },
@@ -235,8 +240,11 @@ class _ExpensesScreenListState extends State<ExpensesScreenList> {
                                 fontSize: proportionalSizes.scaleText(18),
                               ),
                             ),
-                            const Icon(Icons.chevron_right,
-                                size: 20, color: Colors.black),
+                            const Icon(
+                              Icons.chevron_right,
+                              size: 20,
+                              color: Colors.black,
+                            ),
                           ],
                         ),
                       ),

@@ -7,15 +7,13 @@ import 'see_expense_screen_fields.dart';
 import 'see_expense_screen_active_status.dart';
 
 class SeeExpenseScreenMainBody extends StatefulWidget {
-  final String transactionId;
+  final String expenseId;
 
-  const SeeExpenseScreenMainBody({
-    super.key,
-    required this.transactionId,
-  });
+  const SeeExpenseScreenMainBody({super.key, required this.expenseId});
 
   @override
-  State<SeeExpenseScreenMainBody> createState() => _SeeExpenseScreenMainBodyState();
+  State<SeeExpenseScreenMainBody> createState() =>
+      _SeeExpenseScreenMainBodyState();
 }
 
 class _SeeExpenseScreenMainBodyState extends State<SeeExpenseScreenMainBody> {
@@ -58,7 +56,9 @@ class _SeeExpenseScreenMainBodyState extends State<SeeExpenseScreenMainBody> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              SeeExpenseScreenActiveStatus(isActive: true), // TODO: Fetch active status from backend
+              SeeExpenseScreenActiveStatus(
+                isActive: true,
+              ), // TODO: Fetch active status from backend
               SizedBox(height: proportionalSizes.scaleHeight(20)),
 
               SeeExpenseScreenFields(
@@ -66,19 +66,21 @@ class _SeeExpenseScreenMainBodyState extends State<SeeExpenseScreenMainBody> {
                 onAmountValidityChanged: updateAmountValidity,
                 isAmountValid: isAmountValid,
                 isReadOnly: !isEditMode,
-                transactionId: widget.transactionId,
+                transactionId: widget.expenseId,
               ),
               SizedBox(height: proportionalSizes.scaleHeight(24)),
 
               CustomButton(
                 label: isEditMode ? 'Save' : 'Edit',
-                onPressed: isEditMode
-                    ? (isFormValid ? _onSave : () {})
-                    : _onEdit,
+                onPressed:
+                    isEditMode ? (isFormValid ? _onSave : () {}) : _onEdit,
                 sizeType: ButtonSizeType.full,
-                state: isEditMode
-                    ? (isFormValid ? ButtonState.enabled : ButtonState.disabled)
-                    : ButtonState.enabled,
+                state:
+                    isEditMode
+                        ? (isFormValid
+                            ? ButtonState.enabled
+                            : ButtonState.disabled)
+                        : ButtonState.enabled,
               ),
               SizedBox(height: proportionalSizes.scaleHeight(96)),
             ],
