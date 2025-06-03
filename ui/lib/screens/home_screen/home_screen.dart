@@ -3,7 +3,7 @@ import 'package:flutter_frontend/common/snack_bar.dart' show showCustomSnackBar;
 import 'package:flutter_frontend/models/expense.dart' show ExpenseOverview;
 import 'package:flutter_frontend/models/user.dart' show UserRead;
 import 'package:flutter_frontend/types.dart'
-    show CategoryData, assignRandomColors;
+    show CategoryData, Expense, assignRandomColors;
 import 'package:logging/logging.dart' show Logger;
 // Common imports
 import '../../common/color_palette.dart';
@@ -35,15 +35,14 @@ class _HomeScreenState extends State<HomeScreen>
   UserRead? user;
 
   bool isRecentExpensesLoading = true;
-  List<RecentExpense> recentExpenses = [];
+  List<Expense> recentExpenses = [];
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    // check auth before loading data
     _checkAuth();
-    _loadRecentExpenses(); // load recent expenses on init
-    _loadOverview();
 
     // get singleton route observer
     _routeObserver = Provider.of<RouteObserver<PageRoute>>(
@@ -115,7 +114,7 @@ class _HomeScreenState extends State<HomeScreen>
 
       final loadedExpenses =
           userReads.map((expense) {
-            return RecentExpense(
+            return Expense(
               name: expense.name,
               price: expense.expenseTotal.toString(),
               expenseId: expense.expenseId,
@@ -156,6 +155,9 @@ class _HomeScreenState extends State<HomeScreen>
       setState(() {
         _checkedUser = true;
       });
+
+      _loadRecentExpenses();
+      _loadOverview();
     } catch (e) {
       _logger.warning(e);
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -215,25 +217,27 @@ class _HomeScreenState extends State<HomeScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                HomeScreenOverview(
-                  isLoading: isOverviewLoading,
-                  monthlyBudget: user?.budget.toDouble() ?? 0.0,
-                  categories:
-                      isOverviewLoading
-                          ? []
-                          : assignRandomColors(
-                            overview!.categories
-                                .map(
-                                  (c) => CategoryData(
-                                    name: c.category.name,
-                                    amount: c.total.toDouble(),
-                                  ),
-                                )
-                                .toList(),
-                            availableColors,
-                          ),
-                  spent: overview?.total.toDouble() ?? 0.0,
-                ),
+                if (!isOverviewLoading &&
+                    overview != null &&
+                    overview!.categories.isNotEmpty) ...[
+                  HomeScreenOverview(
+                    isLoading: false,
+                    monthlyBudget: user?.budget.toDouble() ?? 0.0,
+                    categories: assignRandomColors(
+                      overview!.categories
+                          .map(
+                            (c) => CategoryData(
+                              name: c.category.name,
+                              amount: c.total.toDouble(),
+                            ),
+                          )
+                          .toList(),
+                      availableColors,
+                    ),
+                    spent: overview!.total.toDouble(),
+                  ),
+                  SizedBox(height: proportionalSizes.scaleHeight(20)),
+                ],
                 SizedBox(height: proportionalSizes.scaleHeight(20)),
                 HomeScreenAddAnExpense(),
                 SizedBox(height: proportionalSizes.scaleHeight(20)),
@@ -250,16 +254,4 @@ class _HomeScreenState extends State<HomeScreen>
       bottomNavigationBar: BottomNavBar(currentScreen: 'Home', inactive: false),
     );
   }
-}
-
-class RecentExpense {
-  final String name;
-  final String price;
-  final String expenseId;
-
-  RecentExpense({
-    required this.name,
-    required this.price,
-    required this.expenseId,
-  });
 }

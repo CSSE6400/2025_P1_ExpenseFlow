@@ -22,7 +22,7 @@ class UserModel(EntityModel):
     }
 
     user_id: Mapped[UUID] = mapped_column(
-        ForeignKey("entity.entity_id"),
+        ForeignKey("entity.entity_id", ondelete="CASCADE"),
         primary_key=True,
         default=uuid4,
     )

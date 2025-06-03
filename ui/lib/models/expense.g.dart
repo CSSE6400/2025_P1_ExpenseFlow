@@ -23,12 +23,18 @@ Map<String, dynamic> _$SplitStatusInfoToJson(SplitStatusInfo instance) =>
 ExpenseRead _$ExpenseReadFromJson(Map<String, dynamic> json) => ExpenseRead(
   expenseId: json['expense_id'] as String,
   name: json['name'] as String,
-  expenseDate: DateTime.parse(json['expense_date'] as String),
   description: json['description'] as String,
   category: const ExpenseCategoryConverter().fromJson(
     json['category'] as String,
   ),
+  expenseDate: DateTime.parse(json['expense_date'] as String),
+  uploader: UserRead.fromJson(json['uploader'] as Map<String, dynamic>),
+  items:
+      (json['items'] as List<dynamic>)
+          .map((e) => ExpenseItemRead.fromJson(e as Map<String, dynamic>))
+          .toList(),
   expenseTotal: (json['expense_total'] as num).toDouble(),
+  status: const ExpenseStatusConverter().fromJson(json['status'] as String),
 );
 
 Map<String, dynamic> _$ExpenseReadToJson(ExpenseRead instance) =>
@@ -36,9 +42,12 @@ Map<String, dynamic> _$ExpenseReadToJson(ExpenseRead instance) =>
       'expense_id': instance.expenseId,
       'name': instance.name,
       'description': instance.description,
-      'expense_date': instance.expenseDate.toIso8601String(),
-      'expense_total': instance.expenseTotal,
       'category': const ExpenseCategoryConverter().toJson(instance.category),
+      'expense_date': instance.expenseDate.toIso8601String(),
+      'uploader': instance.uploader,
+      'items': instance.items,
+      'expense_total': instance.expenseTotal,
+      'status': const ExpenseStatusConverter().toJson(instance.status),
     };
 
 ExpenseCreate _$ExpenseCreateFromJson(Map<String, dynamic> json) =>
@@ -64,36 +73,17 @@ Map<String, dynamic> _$ExpenseCreateToJson(ExpenseCreate instance) =>
       'category': const ExpenseCategoryConverter().toJson(instance.category),
     };
 
-ExpenseItemCreate _$ExpenseItemCreateFromJson(Map<String, dynamic> json) =>
-    ExpenseItemCreate(
-      name: json['name'] as String,
-      quantity: (json['quantity'] as num).toInt(),
-      price: (json['price'] as num).toDouble(),
-      items:
-          (json['items'] as List<dynamic>?)
-              ?.map(
-                (e) => ExpenseItemCreate.fromJson(e as Map<String, dynamic>),
-              )
-              .toList(),
-    );
-
-Map<String, dynamic> _$ExpenseItemCreateToJson(ExpenseItemCreate instance) =>
-    <String, dynamic>{
-      'name': instance.name,
-      'quantity': instance.quantity,
-      'price': instance.price,
-      'items': instance.items,
-    };
-
 ExpenseItemRead _$ExpenseItemReadFromJson(Map<String, dynamic> json) =>
     ExpenseItemRead(
       expenseItemId: json['expense_item_id'] as String,
       name: json['name'] as String,
       quantity: (json['quantity'] as num).toInt(),
       price: (json['price'] as num).toDouble(),
-      items:
-          (json['items'] as List<dynamic>)
-              .map((e) => ExpenseItemCreate.fromJson(e as Map<String, dynamic>))
+      splits:
+          (json['splits'] as List<dynamic>)
+              .map(
+                (e) => ExpenseItemSplitRead.fromJson(e as Map<String, dynamic>),
+              )
               .toList(),
     );
 
@@ -103,7 +93,29 @@ Map<String, dynamic> _$ExpenseItemReadToJson(ExpenseItemRead instance) =>
       'name': instance.name,
       'quantity': instance.quantity,
       'price': instance.price,
-      'items': instance.items,
+      'splits': instance.splits,
+    };
+
+ExpenseItemCreate _$ExpenseItemCreateFromJson(Map<String, dynamic> json) =>
+    ExpenseItemCreate(
+      name: json['name'] as String,
+      quantity: (json['quantity'] as num).toInt(),
+      price: (json['price'] as num).toDouble(),
+      splits:
+          (json['splits'] as List<dynamic>?)
+              ?.map(
+                (e) =>
+                    ExpenseItemSplitCreate.fromJson(e as Map<String, dynamic>),
+              )
+              .toList(),
+    );
+
+Map<String, dynamic> _$ExpenseItemCreateToJson(ExpenseItemCreate instance) =>
+    <String, dynamic>{
+      'name': instance.name,
+      'quantity': instance.quantity,
+      'price': instance.price,
+      'splits': instance.splits,
     };
 
 ExpenseItemSplitCreate _$ExpenseItemSplitCreateFromJson(
@@ -126,6 +138,7 @@ ExpenseItemSplitRead _$ExpenseItemSplitReadFromJson(
   userId: json['user_id'] as String,
   proportion: (json['proportion'] as num).toDouble(),
   userFullname: json['user_fullname'] as String,
+  status: const ExpenseStatusConverter().fromJson(json['status'] as String),
 );
 
 Map<String, dynamic> _$ExpenseItemSplitReadToJson(
@@ -134,6 +147,7 @@ Map<String, dynamic> _$ExpenseItemSplitReadToJson(
   'user_id': instance.userId,
   'proportion': instance.proportion,
   'user_fullname': instance.userFullname,
+  'status': const ExpenseStatusConverter().toJson(instance.status),
 };
 
 ExpenseOverviewCategory _$ExpenseOverviewCategoryFromJson(

@@ -1,27 +1,26 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_frontend/common/color_palette.dart';
+import 'package:flutter_frontend/utils/string_utils.dart' show titleCaseString;
 import 'package:google_fonts/google_fonts.dart';
 // Common
 import '../../../common/proportional_sizes.dart';
 
-class SplitWithScreenSegmentControl extends StatefulWidget {
-  final String selectedSegment;
-  final void Function(String) onSegmentChanged;
+enum SplitWithSegment {
+  friend,
+  group;
+
+  String get label => titleCaseString(name);
+}
+
+class SplitWithScreenSegmentControl extends StatelessWidget {
+  final SplitWithSegment selectedSegment;
+  final void Function(SplitWithSegment) onSegmentChanged;
 
   const SplitWithScreenSegmentControl({
     super.key,
     required this.selectedSegment,
     required this.onSegmentChanged,
   });
-
-  @override
-  State<SplitWithScreenSegmentControl> createState() =>
-      _SplitWithScreenSegmentControlState();
-}
-
-class _SplitWithScreenSegmentControlState
-    extends State<SplitWithScreenSegmentControl> {
-  String selectedSegment = 'Friend';
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +45,7 @@ class _SplitWithScreenSegmentControlState
             ),
           ),
           child: CupertinoSlidingSegmentedControl<String>(
-            groupValue: widget.selectedSegment,
+            groupValue: selectedSegment.label,
             thumbColor: selectedColor,
             backgroundColor: backgroundColor,
             padding: const EdgeInsets.all(4),
@@ -56,9 +55,10 @@ class _SplitWithScreenSegmentControlState
                   'Friend',
                   style: GoogleFonts.roboto(
                     fontWeight: FontWeight.w600,
-                    color: widget.selectedSegment == 'Friend'
-                        ? selectedTextColor
-                        : unselectedTextColor,
+                    color:
+                        selectedSegment == SplitWithSegment.friend
+                            ? selectedTextColor
+                            : unselectedTextColor,
                   ),
                 ),
               ),
@@ -67,16 +67,25 @@ class _SplitWithScreenSegmentControlState
                   'Group',
                   style: GoogleFonts.roboto(
                     fontWeight: FontWeight.w600,
-                    color: widget.selectedSegment == 'Group'
-                        ? selectedTextColor
-                        : unselectedTextColor,
+                    color:
+                        selectedSegment == SplitWithSegment.group
+                            ? selectedTextColor
+                            : unselectedTextColor,
                   ),
                 ),
               ),
             },
             onValueChanged: (String? value) {
-              if (value != null) {
-                widget.onSegmentChanged(value);
+              // convert string value back to ExpenseListSegment
+              SplitWithSegment? valueSegment;
+              if (value == 'Friend') {
+                valueSegment = SplitWithSegment.friend;
+              } else if (value == 'All') {
+                valueSegment = SplitWithSegment.group;
+              }
+
+              if (valueSegment != null) {
+                onSegmentChanged(valueSegment);
               }
             },
           ),

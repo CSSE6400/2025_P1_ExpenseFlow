@@ -1,4 +1,5 @@
 import 'package:flutter_frontend/models/enums.dart';
+import 'package:flutter_frontend/models/user.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'group.g.dart';
@@ -18,6 +19,26 @@ class GroupRead {
   factory GroupRead.fromJson(Map<String, dynamic> json) =>
       _$GroupReadFromJson(json);
   Map<String, dynamic> toJson() => _$GroupReadToJson(this);
+}
+
+@JsonSerializable(fieldRename: FieldRename.snake)
+class GroupReadWithMembers {
+  final String groupId;
+  final String name;
+  final String description;
+
+  final List<UserReadMinimal> members;
+
+  GroupReadWithMembers({
+    required this.groupId,
+    required this.name,
+    required this.description,
+    required this.members,
+  });
+
+  factory GroupReadWithMembers.fromJson(Map<String, dynamic> json) =>
+      _$GroupReadWithMembersFromJson(json);
+  Map<String, dynamic> toJson() => _$GroupReadWithMembersToJson(this);
 }
 
 @JsonSerializable(fieldRename: FieldRename.snake)

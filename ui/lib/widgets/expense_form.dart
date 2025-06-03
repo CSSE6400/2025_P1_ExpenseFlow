@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/models/enums.dart' show ExpenseCategory;
+import 'package:flutter_frontend/models/group.dart' show GroupReadWithMembers;
+import 'package:flutter_frontend/models/user.dart' show UserRead;
+import 'package:flutter_frontend/screens/add_items_screen/add_items_screen.dart'
+    show AddItemsScreen;
+import 'package:flutter_frontend/screens/split_with_screen/split_with_screen.dart';
+import 'package:flutter_frontend/services/api_service.dart' show ApiService;
 import 'package:flutter_frontend/utils/string_utils.dart';
+import 'package:logging/logging.dart' show Logger;
+import 'package:provider/provider.dart' show Provider;
 import '../../../common/fields/general_field.dart';
 import '../../../common/custom_divider.dart';
 import '../../../common/fields/date_field/date_field.dart';
@@ -8,27 +16,120 @@ import '../../../common/fields/dropdown_field.dart';
 import '../../../models/expense.dart';
 import '../../../common/fields/custom_icon_field.dart';
 import '../../../common/proportional_sizes.dart';
-// import '../../../common/show_image.dart';
 import '../../../common/snack_bar.dart';
-import '../../add_items_screen/add_items_screen.dart';
 
-class AddExpenseScreenFields extends StatefulWidget {
+class ExpenseForm extends StatefulWidget {
+  final ExpenseCreate? initialExpense; // optional for editing
+
   final void Function(bool isValid) onValidityChanged;
   final void Function(ExpenseCreate expense)? onExpenseChanged;
 
-  const AddExpenseScreenFields({
+  final bool canEdit;
+  final bool canEditItems;
+  final bool canEditSplits;
+
+  const ExpenseForm({
     super.key,
+    this.initialExpense,
     required this.onValidityChanged,
     required this.onExpenseChanged,
+    required this.canEdit,
+    required this.canEditItems,
+    required this.canEditSplits,
   });
 
   @override
-  State<AddExpenseScreenFields> createState() => _AddExpenseScreenFieldsState();
+  State<ExpenseForm> createState() => _ExpenseFormState();
 }
 
-class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
+class _ExpenseFormState extends State<ExpenseForm> {
   bool isNameValid = false;
   bool isDescriptionValid = false;
+
+  late String _name;
+  late String _description;
+  late DateTime _selectedDate;
+  late ExpenseCategory _selectedCategory;
+  late List<ExpenseItemCreate> _expenseItems;
+
+  UserRead? me;
+  List<UserRead> friends = [];
+  List<GroupReadWithMembers> groups = [];
+  bool isLoading = true;
+
+  late TextEditingController _amountController;
+
+  final _logger = Logger('ExpenseForm');
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+
+    // populate fields
+    _name = widget.initialExpense?.name ?? '';
+    _description = widget.initialExpense?.description ?? '';
+    _selectedDate = widget.initialExpense?.expenseDate ?? DateTime.now();
+    _selectedCategory =
+        widget.initialExpense?.category ?? ExpenseCategory.other;
+    _expenseItems = widget.initialExpense?.items ?? [];
+
+    _amountController = TextEditingController(text: '0.00');
+
+    // update total amount
+    _updateCalculatedAmount();
+
+    // validate initial name and description
+    isNameValid = _name.trim().isNotEmpty;
+    isDescriptionValid = _description.trim().isNotEmpty;
+
+    // notify initial validity and expense data
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _updateFormValidity();
+      _notifyExpenseChanged();
+    });
+  }
+
+  Future<void> _loadData() async {
+    setState(() => isLoading = true);
+    final apiService = Provider.of<ApiService>(context, listen: false);
+
+    try {
+      me = await apiService.userApi.mustGetCurrentUser();
+      if (me == null) {
+        _logger.warning('Current user not found');
+        if (!mounted) return;
+
+        showCustomSnackBar(context, normalText: 'Unable to find current user');
+        setState(() => isLoading = false);
+
+        Navigator.of(context).pushNamed('/');
+        return;
+      }
+      setState(() {
+        me = me;
+      });
+
+      final fetchedFriends = await apiService.friendApi.getFriends();
+
+      setState(() {
+        friends = fetchedFriends;
+      });
+
+      final fetchedGroups =
+          await apiService.groupApi.getUsersGroupsWithMembers();
+
+      setState(() {
+        groups = fetchedGroups;
+        isLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      _logger.severe('Error fetching data: $e');
+      showCustomSnackBar(context, normalText: 'Failed to fetch expense data');
+      setState(() => isLoading = false);
+    }
+  }
 
   void _updateField<T>(void Function() updateState) {
     setState(updateState);
@@ -46,15 +147,6 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
     widget.onExpenseChanged?.call(expense);
   }
 
-  String _name = "";
-  String _description = "";
-  DateTime _selectedDate = DateTime.now();
-  ExpenseCategory _selectedCategory = ExpenseCategory.other;
-  List<ExpenseItemCreate> _expenseItems = [];
-  final TextEditingController _amountController = TextEditingController(
-    text: '0.00',
-  );
-
   void updateNameValidity(bool isValid) {
     setState(() {
       isNameValid = isValid;
@@ -66,28 +158,27 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
     for (var item in _expenseItems) {
       total += item.price * item.quantity;
     }
-    setState(() {
-      _amountController.text = total.toStringAsFixed(2);
-    });
+    _amountController.text = total.toStringAsFixed(2);
   }
 
-  // get overview of items for display
   String get formattedItemsString {
     final count = _expenseItems.length;
     if (count == 0) return '';
     return '$count ${count == 1 ? 'Item' : 'Items'}';
   }
 
-  // go to items screen
-  void _navigateToItemsScreen(BuildContext context) async {
+  void _navigateToItemsScreen(BuildContext context, bool isReadOnly) async {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => AddItemsScreen(existingItems: _expenseItems),
+        builder:
+            (context) => AddItemsScreen(
+              existingItems: _expenseItems,
+              isReadOnly: isReadOnly,
+            ),
       ),
     );
 
-    // check for non-null result - I spent so long figuring out this, rip
     if (result != null) {
       final List<ExpenseItemCreate> updatedItems = result;
       setState(() {
@@ -95,7 +186,33 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
         _updateCalculatedAmount();
       });
       _notifyExpenseChanged();
-      _updateFormValidity(); // check whether items is empty
+      _updateFormValidity();
+    }
+  }
+
+  void _navigateToSplitsScreen(BuildContext context, bool isReadyOnly) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (context) => SplitWithScreen(
+              items: _expenseItems,
+              isReadOnly: isReadyOnly,
+              groups: groups,
+              friends: friends,
+              currentUser: me!,
+            ),
+      ),
+    );
+
+    if (result != null) {
+      final List<ExpenseItemCreate> updatedItems = result;
+      setState(() {
+        _expenseItems = updatedItems;
+        _updateCalculatedAmount();
+      });
+      _notifyExpenseChanged();
+      _updateFormValidity();
     }
   }
 
@@ -103,13 +220,17 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
   Widget build(BuildContext context) {
     final proportionalSizes = ProportionalSizes(context: context);
 
+    if (isLoading || me == null) {
+      return Center(child: CircularProgressIndicator());
+    }
+
     return Column(
       children: [
         GeneralField(
           label: 'Name*',
-          initialValue: '',
-          isEditable: true,
-          showStatusIcon: true,
+          initialValue: _name,
+          isEditable: widget.canEdit,
+          showStatusIcon: widget.canEdit,
           validationRule: (value) => value.trim().isNotEmpty,
           onValidityChanged: (isValid) {
             setState(() {
@@ -118,15 +239,15 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
             _updateFormValidity();
           },
           maxLength: 50,
+
           onChanged: (value) => _updateField(() => _name = value),
         ),
         CustomDivider(),
-
         GeneralField(
           label: 'Description*',
-          initialValue: '',
-          isEditable: true,
-          showStatusIcon: true,
+          initialValue: _description,
+          isEditable: widget.canEdit,
+          showStatusIcon: widget.canEdit,
           validationRule: (value) => value.trim().isNotEmpty,
           onValidityChanged: (isValid) {
             setState(() {
@@ -138,14 +259,12 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
           onChanged: (value) => _updateField(() => _description = value),
         ),
         CustomDivider(),
-
         DateField(
           label: 'Date',
           initialDate: _selectedDate,
           onChanged: (value) => _updateField(() => _selectedDate = value),
         ),
         CustomDivider(),
-
         GeneralField(
           label: 'Amount (\$)',
           controller: _amountController,
@@ -155,22 +274,22 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
           maxLength: 10,
         ),
         CustomDivider(),
-
         CustomIconField(
           label: 'Items',
+          isEnabled: true,
           value: formattedItemsString,
           hintText: 'No items',
           trailingIconPath: 'assets/icons/add.png',
-          onTap: () => _navigateToItemsScreen(context),
+          onTap: () => _navigateToItemsScreen(context, !widget.canEditItems),
         ),
         CustomDivider(),
-
         DropdownField(
           label: 'Category',
           options:
               ExpenseCategory.values
                   .map((e) => capitalizeString(e.label))
                   .toList(),
+          isEditable: widget.canEdit,
           placeholder: 'Select Category',
           addDialogHeading: 'New Category',
           addDialogHintText: 'Enter category name',
@@ -178,50 +297,48 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
           onChanged:
               (value) => _updateField(() {
                 final selectedCategory = ExpenseCategory.values.firstWhere(
-                  (e) => capitalizeString(e.label) == value,
+                  (e) => titleCaseString(e.label) == value,
                   orElse: () => ExpenseCategory.other,
                 );
                 _selectedCategory = selectedCategory;
               }),
+          selectedValue: titleCaseString(_selectedCategory.label),
         ),
-
         CustomDivider(),
-
         CustomIconField(
           label: 'Split With',
-          // TODO: Fetch the group or friends names from the database & set the value.
-          // For group, the value should be of the form 'Group - Group Name'
-          // For friends, the value should be of the form 'Friend - Friend Name'
           value: '',
+          isEnabled: true,
           hintText: 'Select Group or Friends',
           trailingIconPath: 'assets/icons/search.png',
           inactive: _expenseItems.isEmpty,
           onTap: () {
+            _logger.info('Navigating to splits screen');
             if (_expenseItems.isEmpty) {
               showCustomSnackBar(
                 context,
                 normalText: 'Please add at least one item before splitting.',
               );
             } else {
-              Navigator.pushNamed(context, '/split_with');
+              _navigateToSplitsScreen(
+                context,
+                !(widget.canEditSplits && widget.canEdit),
+              );
             }
           },
         ),
         CustomDivider(),
-
         CustomIconField(
           label: 'Receipt',
-          // TODO: Fetch the attachments with the image
           value: '',
+          isEnabled: widget.canEdit,
           hintText: 'Save your Receipt here',
           trailingIconPath: 'assets/icons/clip.png',
           onTap: () {
-            // TODO: Expand to show the receipt
-            // For example, like "showFullScreenImage(context, imageUrl: 'https://example.com/image.png');"
+            // TODO: Show receipt or attachment viewer
           },
         ),
         CustomDivider(),
-
         SizedBox(height: proportionalSizes.scaleHeight(24)),
       ],
     );
@@ -229,7 +346,7 @@ class _AddExpenseScreenFieldsState extends State<AddExpenseScreenFields> {
 
   @override
   void dispose() {
-    _amountController.dispose(); // this prevents memory leaks
+    _amountController.dispose();
     super.dispose();
   }
 

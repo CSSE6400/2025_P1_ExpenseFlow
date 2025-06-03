@@ -15,6 +15,7 @@ from expenseflow.group.models import GroupModel, GroupUserModel
 from expenseflow.group.schemas import (
     GroupCreate,
     GroupRead,
+    GroupReadWithMembers,
     GroupUpdate,
     GroupUserRead,
     UserGroupRead,
@@ -25,6 +26,7 @@ from expenseflow.group.service import (
     delete_user_from_group,
     get_group,
     get_group_users,
+    get_groups_with_members,
     get_user_groups,
     update_group,
 )
@@ -62,6 +64,14 @@ async def get_many(user: CurrentUser) -> list[GroupUserRead]:
     """Get user groups."""
     groups = await get_user_groups(user)
     return [to_group_user(g) for g in groups]
+
+
+@r.get("/with-members", response_model=list[GroupReadWithMembers])
+async def get_many_with_members(
+    session: DbSession, user: CurrentUser
+) -> list[GroupReadWithMembers]:
+    """Get user groups."""
+    return await get_groups_with_members(session, user)
 
 
 @r.get("/{group_id}", response_model=GroupRead)

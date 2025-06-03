@@ -41,7 +41,6 @@ class ExpenseItem {
 class AddItemsScreenItems extends StatefulWidget {
   final List<ExpenseItem> items;
   final bool isReadOnly;
-  final String? transactionId;
 
   final Function(List<ExpenseItem> items, bool hasChanges) onItemsChanged;
 
@@ -50,7 +49,6 @@ class AddItemsScreenItems extends StatefulWidget {
     required this.items,
     required this.onItemsChanged,
     this.isReadOnly = false,
-    this.transactionId,
   });
 
   @override
@@ -229,7 +227,7 @@ class AddItemsScreenItemsState extends State<AddItemsScreenItems> {
                     fontSize: proportionalSizes.scaleHeight(16),
                   ),
                 ),
-              ]
+              ],
             ],
           ),
         ),

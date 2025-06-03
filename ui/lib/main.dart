@@ -1,7 +1,7 @@
 // Flutter imports
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/screens/add_friends_to_group_screen/add_friends_to_group_screen.dart';
-import 'package:flutter_frontend/screens/manage_groups_screen/manage_groups_screen.dart';
+import 'package:flutter_frontend/screens/create_group_screen/create_group_screen.dart';
 import 'package:flutter_frontend/services/api_service.dart' show ApiService;
 import 'package:flutter_frontend/services/auth_service.dart' show AuthService;
 import 'package:flutter_frontend/screens/overview_screen/overview_screen.dart';
@@ -14,13 +14,11 @@ import '../../screens/profile_setup_screen/profile_setup_screen.dart';
 import '../../screens/profile_screen/profile_screen.dart';
 import '../../screens/home_screen/home_screen.dart';
 import '../../screens/add_expense_screen/add_expense_screen.dart';
-import '../../screens/split_with_screen/split_with_screen.dart';
-import '../../screens/add_items_screen/add_items_screen.dart';
 import 'screens/expenses_screen/expenses_screen.dart';
 import 'screens/see_expense_screen/see_expense_screen.dart';
 import '../../screens/groups_and_friends_screen/groups_and_friends_screen.dart';
-import '../../screens/ind_friend_expense_screen/ind_friend_expense_screen.dart';
-import '../../screens/ind_group_expense_screen/ind_group_expense_screen.dart';
+import 'screens/view_friend_screen/view_friend_screen.dart';
+import 'screens/view_group_screen/view_group_screen.dart';
 import '../../screens/manage_friends_screen/manage_friends_screen.dart';
 
 void main() async {
@@ -112,61 +110,29 @@ class MyApp extends StatelessWidget {
             return MaterialPageRoute(
               builder: (_) => const ManageFriendsScreen(),
             );
-          case '/manage_groups':
-            return MaterialPageRoute(
-              builder: (_) => const ManageGroupsScreen(),
-            );
+          case '/create_group':
+            return MaterialPageRoute(builder: (_) => const CreateGroupScreen());
           case '/select_friends':
             return MaterialPageRoute(builder: (_) => const AddFriendsScreen());
-          case '/split_with':
+          case '/see_expense':
             final args = settings.arguments as Map<String, dynamic>?;
-
-            final transactionId = args?['transactionId'] as String?;
-            final isReadOnly = args?['isReadOnly'] as bool? ?? false;
-            // TODO: friends/ group to split with
-
-            return MaterialPageRoute(
-              builder:
-                  (_) => SplitWithScreen(
-                    transactionId: transactionId,
-                    isReadOnly: isReadOnly,
-                  ),
-            );
-          case '/add_items':
-            final args = settings.arguments as Map<String, dynamic>?;
-
-            final transactionId = args?['transactionId'] as String?;
-            final isReadOnly = args?['isReadOnly'] as bool? ?? false;
-
-            return MaterialPageRoute(
-              builder:
-                  (_) => AddItemsScreen(
-                    amount: args?['amount'],
-                    transactionId: transactionId,
-                    isReadOnly: isReadOnly,
-                  ),
-            );
-          case '/see_expenses':
-            final args = settings.arguments as Map<String, dynamic>?;
-            final transactionId = args?['transactionId'] as String?;
-            if (transactionId == null) {
+            final expenseId = args?['expenseId'] as String?;
+            if (expenseId == null) {
               return MaterialPageRoute(
                 builder:
                     (_) => const Scaffold(
-                      body: Center(
-                        child: Text('Error: Missing transaction ID'),
-                      ),
+                      body: Center(child: Text('Error: Missing expense ID')),
                     ),
               );
             }
             return MaterialPageRoute(
-              builder: (_) => SeeExpenseScreen(transactionId: transactionId),
+              builder: (_) => SeeExpenseScreen(expenseId: expenseId),
             );
-          case '/friend_expense':
+          case '/view_friend':
             final args = settings.arguments as Map<String, dynamic>?;
-            final username = args?['username'] as String?;
+            final userId = args?['userId'] as String?;
 
-            if (username == null) {
+            if (userId == null) {
               return MaterialPageRoute(
                 builder:
                     (_) => const Scaffold(
@@ -176,28 +142,23 @@ class MyApp extends StatelessWidget {
             }
 
             return MaterialPageRoute(
-              builder: (_) => IndFriendExpenseScreen(username: username),
+              builder: (_) => ViewFriendScreen(userId: userId),
             );
-          case '/group_expense':
+          case '/view_group':
             final args = settings.arguments as Map<String, dynamic>?;
-            final groupName = args?['groupName'] as String?;
-            final groupUUID = args?['groupUUID'] as String?;
+            final groupId = args?['groupId'] as String?;
 
-            if (groupName == null) {
+            if (groupId == null) {
               return MaterialPageRoute(
                 builder:
                     (_) => const Scaffold(
-                      body: Center(child: Text('Error: Missing group name')),
+                      body: Center(child: Text('Error: Missing group id')),
                     ),
               );
             }
 
             return MaterialPageRoute(
-              builder:
-                  (_) => IndGroupExpenseScreen(
-                    groupName: groupName,
-                    groupUUID: groupUUID!,
-                  ),
+              builder: (_) => ViewGroupScreen(groupId: groupId),
             );
           default:
             final logger = Logger("MyApp");

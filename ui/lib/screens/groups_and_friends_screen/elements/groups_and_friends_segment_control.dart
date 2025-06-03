@@ -3,7 +3,7 @@ import 'package:flutter_frontend/common/color_palette.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../common/proportional_sizes.dart';
 
-class GroupsAndFriendsSegmentControl extends StatefulWidget {
+class GroupsAndFriendsSegmentControl extends StatelessWidget {
   final String selectedSegment;
   final void Function(String) onSegmentChanged;
 
@@ -13,13 +13,6 @@ class GroupsAndFriendsSegmentControl extends StatefulWidget {
     required this.onSegmentChanged,
   });
 
-  @override
-  State<GroupsAndFriendsSegmentControl> createState() =>
-      _GroupsAndFriendsSegmentControlState();
-}
-
-class _GroupsAndFriendsSegmentControlState
-    extends State<GroupsAndFriendsSegmentControl> {
   @override
   Widget build(BuildContext context) {
     final proportionalSizes = ProportionalSizes(context: context);
@@ -43,7 +36,7 @@ class _GroupsAndFriendsSegmentControlState
             ),
           ),
           child: CupertinoSlidingSegmentedControl<String>(
-            groupValue: widget.selectedSegment,
+            groupValue: selectedSegment,
             thumbColor: selectedColor,
             backgroundColor: backgroundColor,
             padding: const EdgeInsets.all(4),
@@ -53,9 +46,10 @@ class _GroupsAndFriendsSegmentControlState
                   'Friends',
                   style: GoogleFonts.roboto(
                     fontWeight: FontWeight.w600,
-                    color: widget.selectedSegment == 'Friends'
-                        ? selectedTextColor
-                        : unselectedTextColor,
+                    color:
+                        selectedSegment == 'Friends'
+                            ? selectedTextColor
+                            : unselectedTextColor,
                   ),
                 ),
               ),
@@ -64,16 +58,17 @@ class _GroupsAndFriendsSegmentControlState
                   'Groups',
                   style: GoogleFonts.roboto(
                     fontWeight: FontWeight.w600,
-                    color: widget.selectedSegment == 'Groups'
-                        ? selectedTextColor
-                        : unselectedTextColor,
+                    color:
+                        selectedSegment == 'Groups'
+                            ? selectedTextColor
+                            : unselectedTextColor,
                   ),
                 ),
               ),
             },
             onValueChanged: (String? value) {
               if (value != null) {
-                widget.onSegmentChanged(value);
+                onSegmentChanged(value);
               }
             },
           ),

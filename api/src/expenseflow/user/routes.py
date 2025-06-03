@@ -33,9 +33,10 @@ async def get_me(user: CurrentUser) -> UserModel:
 
 
 @r.get("/all", response_model=list[UserReadMinimal])
-async def get_all(db: DbSession, _: CurrentUser) -> list[UserModel]:
+async def get_all(db: DbSession, me: CurrentUser) -> list[UserModel]:
     """Get all users."""
-    return await get_all_users(db)
+    users = await get_all_users(db)
+    return [u for u in users if u.user_id != me.user_id]
 
 
 @r.get("/nickname-taken", response_model=bool)

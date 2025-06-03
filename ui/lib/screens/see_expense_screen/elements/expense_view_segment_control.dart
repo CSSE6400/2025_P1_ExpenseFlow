@@ -1,26 +1,26 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_frontend/common/color_palette.dart';
+import 'package:flutter_frontend/utils/string_utils.dart';
 import 'package:google_fonts/google_fonts.dart';
-// Common
-import '../../../common/proportional_sizes.dart';
+import '../../../../../common/proportional_sizes.dart';
 
-class ManageFriendsSegmentControl extends StatefulWidget {
-  final String selectedSegment;
-  final void Function(String) onSegmentChanged;
+enum ExpenseViewSegment {
+  information,
+  approvals;
 
-  const ManageFriendsSegmentControl({
+  String get label => titleCaseString(name);
+}
+
+class ExpenseViewSegmentControl extends StatelessWidget {
+  final ExpenseViewSegment selectedSegment;
+  final void Function(ExpenseViewSegment) onSegmentChanged;
+
+  const ExpenseViewSegmentControl({
     super.key,
     required this.selectedSegment,
     required this.onSegmentChanged,
   });
 
-  @override
-  State<ManageFriendsSegmentControl> createState() =>
-      _ManageFriendsSegmentControlState();
-}
-
-class _ManageFriendsSegmentControlState
-    extends State<ManageFriendsSegmentControl> {
   @override
   Widget build(BuildContext context) {
     final proportionalSizes = ProportionalSizes(context: context);
@@ -44,48 +44,47 @@ class _ManageFriendsSegmentControlState
             ),
           ),
           child: CupertinoSlidingSegmentedControl<String>(
-            groupValue: widget.selectedSegment,
+            groupValue: selectedSegment.label,
             thumbColor: selectedColor,
             backgroundColor: backgroundColor,
             padding: const EdgeInsets.all(4),
             children: {
-              'Friends': Center(
+              'Information': Center(
                 child: Text(
-                  'Friends',
+                  'Information',
                   style: GoogleFonts.roboto(
                     fontWeight: FontWeight.w600,
-                    color: widget.selectedSegment == 'Friends'
-                        ? selectedTextColor
-                        : unselectedTextColor,
+                    color:
+                        selectedSegment == ExpenseViewSegment.information
+                            ? selectedTextColor
+                            : unselectedTextColor,
                   ),
                 ),
               ),
-              'Find': Center(
+              'Approvals': Center(
                 child: Text(
-                  'Find',
+                  'Approvals',
                   style: GoogleFonts.roboto(
                     fontWeight: FontWeight.w600,
-                    color: widget.selectedSegment == 'Find'
-                        ? selectedTextColor
-                        : unselectedTextColor,
-                  ),
-                ),
-              ),
-              'Requests': Center(
-                child: Text(
-                  'Requests',
-                  style: GoogleFonts.roboto(
-                    fontWeight: FontWeight.w600,
-                    color: widget.selectedSegment == 'Requests'
-                        ? selectedTextColor
-                        : unselectedTextColor,
+                    color:
+                        selectedSegment == ExpenseViewSegment.information
+                            ? selectedTextColor
+                            : unselectedTextColor,
                   ),
                 ),
               ),
             },
             onValueChanged: (String? value) {
-              if (value != null) {
-                widget.onSegmentChanged(value);
+              // convert string value back to ExpenseListSegment
+              ExpenseViewSegment? valueSegment;
+              if (value == 'Information') {
+                valueSegment = ExpenseViewSegment.information;
+              } else if (value == 'Approvals') {
+                valueSegment = ExpenseViewSegment.approvals;
+              }
+
+              if (valueSegment != null) {
+                onSegmentChanged(valueSegment);
               }
             },
           ),
