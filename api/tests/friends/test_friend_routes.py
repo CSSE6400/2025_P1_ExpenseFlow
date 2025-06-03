@@ -130,6 +130,7 @@ async def test_create_by_nickname(session: AsyncSession,
 
     bad_response = await test_client.send(bad_request)
 
+    assert bad_response.status_code == 404
     assert bad_response.json()['detail'] == \
         "User under the nickname 'faker' could not be found"
     
@@ -166,6 +167,7 @@ async def test_create(session: AsyncSession,
     
     bad_response = await test_client.send(bad_request)
 
+    assert bad_response.status_code == 404
     assert bad_response.json()['detail'] == \
         f"User under the id '{bad_uuid}' could not be found"
 
@@ -206,5 +208,6 @@ async def test_delete(session: AsyncSession,
     
     bad_response = await test_client.send(bad_request)
 
+    assert bad_response.status_code == 404
     assert bad_response.json()['detail'] == \
         f"User under the id '{bad_uuid}' could not be found"
