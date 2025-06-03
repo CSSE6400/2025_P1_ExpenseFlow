@@ -7,16 +7,23 @@ from collections.abc import AsyncGenerator
 import pytest
 import pytest_asyncio
 from expenseflow.database.service import initialise_database
+from expenseflow.expense.models import (
+    ExpenseItemModel,
+    ExpenseItemSplitModel,
+    ExpenseModel,
+)
+from expenseflow.expense.schemas import (
+    ExpenseCreate,
+)
 from expenseflow.group.models import GroupModel, GroupUserModel
 from expenseflow.group.schemas import (
     GroupCreate,
-    GroupRead,
     GroupUpdate,
     GroupUserRead,
     UserGroupRead,
 )
 from expenseflow.user.models import UserModel
-from expenseflow.user.schemas import UserCreate, UserCreateInternal, UserRead
+from expenseflow.user.schemas import UserCreate, UserCreateInternal
 from fastapi import FastAPI
 from httpx import ASGITransport, AsyncClient
 from loguru import logger
@@ -30,9 +37,12 @@ from sqlalchemy.ext.asyncio import (
 from sqlalchemy_utils import create_database, database_exists, drop_database
 
 from tests.factories import (
+    ExpenseCreateFactory,
+    ExpenseItemModelFactory,
+    ExpenseItemSplitModelFactory,
+    ExpenseModelFactory,
     GroupCreateFactory,
     GroupModelFactory,
-    GroupReadFactory,
     GroupUpdateFactory,
     GroupUserModelFactory,
     GroupUserReadFactory,
@@ -40,7 +50,6 @@ from tests.factories import (
     UserCreateInternalFactory,
     UserGroupReadFactory,
     UserModelFactory,
-    UserReadFactory,
 )
 
 # Hardcoded docker compose db so that no-one runs tests on prod db
@@ -101,14 +110,18 @@ async def session(db) -> AsyncGenerator[AsyncSession]:  # noqa: ANN001
 
     async with async_session_factory() as session:
         yield session
+        await session.rollback()
 
 
 register_fixture(UserModelFactory)
-register_fixture(UserModelFactory)
+register_fixture(GroupModelFactory)
 register_fixture(GroupUserModelFactory)
+register_fixture(ExpenseModelFactory)
+register_fixture(ExpenseItemModelFactory)
+register_fixture(ExpenseItemSplitModelFactory)
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture()
 def default_user() -> UserModel:
     """Default user fixture."""
     return UserModelFactory.build()
@@ -145,11 +158,6 @@ def user_model() -> UserModel:
 
 
 @pytest.fixture()
-def user_read() -> UserRead:
-    return UserReadFactory.build()
-
-
-@pytest.fixture()
 def user_create() -> UserCreate:
     return UserCreateFactory.build()
 
@@ -173,11 +181,6 @@ def group_create() -> GroupCreate:
 
 
 @pytest.fixture()
-def group_read() -> GroupRead:
-    return GroupReadFactory.build()
-
-
-@pytest.fixture()
 def group_update() -> GroupUpdate:
     return GroupUpdateFactory.build()
 
@@ -195,3 +198,29 @@ def user_group_read() -> UserGroupRead:
 @pytest.fixture()
 def group_user_read() -> GroupUserRead:
     return GroupUserReadFactory.build()
+
+
+# Expense fixtures
+
+
+@pytest.fixture()
+def expense_model() -> ExpenseModel:
+    return ExpenseModelFactory.build()
+
+
+@pytest.fixture()
+def expense_create() -> ExpenseCreate:
+    return ExpenseCreateFactory.build()
+
+
+# Expense item fixtures
+
+
+@pytest.fixture()
+def expense_item_model() -> ExpenseItemModel:
+    return ExpenseItemModelFactory.build()
+
+
+@pytest.fixture()
+def expense_item_split_model() -> ExpenseItemSplitModel:
+    return ExpenseItemSplitModelFactory.build()
