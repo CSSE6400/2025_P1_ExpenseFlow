@@ -5,12 +5,11 @@ import 'package:flutter_frontend/common/snack_bar.dart' show showCustomSnackBar;
 import 'package:flutter_frontend/models/expense.dart';
 import 'package:flutter_frontend/models/group.dart' show GroupCreate, GroupRead;
 import 'package:flutter_frontend/models/user.dart' show UserGroupRead;
-import 'package:flutter_frontend/screens/ind_group_expense_screen/elements/ind_group_description.dart';
+import 'package:flutter_frontend/screens/ind_group_expense_screen/elements/ind_group_edit.dart';
 import 'package:flutter_frontend/screens/ind_group_expense_screen/elements/ind_group_group_members.dart';
 import 'package:flutter_frontend/services/api_service.dart' show ApiService;
 import 'package:flutter_frontend/widgets/expense_list_view.dart';
 import 'package:provider/provider.dart' show Provider;
-// Common imports
 import '../../common/color_palette.dart';
 import '../../common/app_bar.dart';
 import '../../common/bottom_nav_bar.dart';
@@ -83,13 +82,10 @@ class _IndGroupExpenseScreenState extends State<IndGroupExpenseScreen> {
     );
   }
 
-  void editDescription(String description) async {
+  void onSave(String name, String description) async {
     if (group == null) return;
 
-    final updateGroup = GroupCreate(
-      name: group!.name,
-      description: description,
-    );
+    final updateGroup = GroupCreate(name: name, description: description);
 
     final apiService = Provider.of<ApiService>(context, listen: false);
 
@@ -140,9 +136,10 @@ class _IndGroupExpenseScreenState extends State<IndGroupExpenseScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 GroupMembersSection(groupMembers: groupMembers),
-                GroupDescriptionEditor(
+                GroupEditor(
+                  name: group!.name,
                   description: group!.description,
-                  onSave: editDescription,
+                  onSave: onSave,
                 ),
                 SizedBox(height: proportionalSizes.scaleHeight(8)),
                 ExpenseListView(expenses: expenses, onExpenseTap: onExpenseTap),
