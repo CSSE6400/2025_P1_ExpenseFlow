@@ -43,6 +43,25 @@ class FriendApiClient extends BaseApiClient {
     }
   }
 
+  Future<UserRead?> getFriend(String userId) async {
+    final response = await client.get(backendUri("/friends/$userId"));
+
+    if (response.statusCode == 200) {
+      return UserRead.fromJson(safeJsonDecode((response.body)));
+    } else if (response.statusCode == 404) {
+      return null;
+    } else {
+      logger.info(
+        "Failed to fetch friend: ${response.statusCode} ${response.body}",
+      );
+      throw ApiException(
+        response.statusCode,
+        'Failed to fetch friend',
+        response.body,
+      );
+    }
+  }
+
   Future<List<UserRead>> getSentFriendRequests() => _getFriendRequests(true);
   Future<List<UserRead>> getReceivedFriendRequests() =>
       _getFriendRequests(false);

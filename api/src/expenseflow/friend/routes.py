@@ -39,6 +39,19 @@ async def get_requests(
     return await get_received_friend_requests(db, user)
 
 
+@r.get("/{user_id}", response_model=UserRead)
+async def get(db: DbSession, user: CurrentUser, user_id: UUID) -> UserModel:
+    """Get user by id."""
+    other_user = await get_user_by_id(db, user_id)
+    my_friends = await get_friends(db, user)
+    if other_user is None or other_user.user_id not in [f.user_id for f in my_friends]:
+        raise HTTPException(
+            status.HTTP_404_NOT_FOUND,
+            detail=f"User under the id '{user_id}' could not be found",
+        )
+    return other_user
+
+
 @r.put("", response_model=FriendRead)
 async def create_w_nickname(
     db: DbSession, user: CurrentUser, nickname: str
