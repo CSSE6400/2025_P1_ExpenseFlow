@@ -176,24 +176,19 @@ class MyApp extends StatelessWidget {
             );
           case '/group_expense':
             final args = settings.arguments as Map<String, dynamic>?;
-            final groupName = args?['groupName'] as String?;
-            final groupUUID = args?['groupUUID'] as String?;
+            final groupId = args?['groupId'] as String?;
 
-            if (groupName == null) {
+            if (groupId == null) {
               return MaterialPageRoute(
                 builder:
                     (_) => const Scaffold(
-                      body: Center(child: Text('Error: Missing group name')),
+                      body: Center(child: Text('Error: Missing group id')),
                     ),
               );
             }
 
             return MaterialPageRoute(
-              builder:
-                  (_) => IndGroupExpenseScreen(
-                    groupName: groupName,
-                    groupUUID: groupUUID!,
-                  ),
+              builder: (_) => IndGroupExpenseScreen(groupId: groupId),
             );
           default:
             final logger = Logger("MyApp");

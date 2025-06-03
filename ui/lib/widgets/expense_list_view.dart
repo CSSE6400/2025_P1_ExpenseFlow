@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/common/search_bar.dart' as search;
+import 'package:flutter_frontend/models/enums.dart' show ExpenseStatus;
 import 'package:flutter_frontend/models/expense.dart';
+import 'package:flutter_frontend/screens/expenses_screen/elements/expenses_screen_segment_control.dart'
+    show ExpensesScreenSegmentControl;
 import 'package:flutter_frontend/widgets/expense_view.dart';
 import 'package:flutter_frontend/common/time_period_dropdown.dart';
 import 'package:flutter_frontend/common/proportional_sizes.dart';
@@ -22,6 +25,7 @@ class ExpenseListView extends StatefulWidget {
 class _ExpenseListViewState extends State<ExpenseListView> {
   String selectedPeriod = 'Last 30 Days';
   String searchText = '';
+  String selectedSegment = 'Active';
 
   List<ExpenseRead> get filteredExpenses {
     final now = DateTime.now();
@@ -41,10 +45,16 @@ class _ExpenseListViewState extends State<ExpenseListView> {
         cutoff = DateTime.fromMillisecondsSinceEpoch(0);
     }
 
-    final filteredByPeriod = widget.expenses.where((expense) {
+    var filteredByPeriod = widget.expenses.where((expense) {
       final expenseDate = expense.expenseDate;
       return expenseDate.isAfter(cutoff);
     });
+
+    if (selectedSegment == 'Active') {
+      filteredByPeriod = filteredByPeriod.where(
+        (e) => e.status != ExpenseStatus.paid,
+      );
+    }
 
     if (searchText.isEmpty) {
       return filteredByPeriod.toList();
@@ -66,6 +76,13 @@ class _ExpenseListViewState extends State<ExpenseListView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        ExpensesScreenSegmentControl(
+          selectedSegment: selectedSegment,
+          onSegmentChanged: (segment) {
+            setState(() => selectedSegment = segment);
+          },
+        ),
+        SizedBox(height: proportionalSizes.scaleHeight(16)),
         search.SearchBar(
           hintText: 'Search expenses',
           onChanged: (value) {

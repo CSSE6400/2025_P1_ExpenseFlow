@@ -2,6 +2,7 @@ import 'package:flutter_frontend/common/app_bar.dart' show AppBarWidget;
 import 'package:flutter_frontend/common/color_palette.dart' show ColorPalette;
 import 'package:flutter_frontend/common/dialogs/app_dialog_box.dart'
     show AppDialogBox;
+import 'package:flutter_frontend/models/group.dart' show GroupRead;
 import 'package:flutter_frontend/screens/groups_and_friends_screen/elements/friend_list.dart'
     show FriendsListView;
 import 'package:flutter_frontend/screens/groups_and_friends_screen/elements/group_list.dart'
@@ -10,7 +11,7 @@ import 'package:flutter_frontend/screens/groups_and_friends_screen/elements/grou
     show GroupsAndFriendsSegmentControl;
 import 'package:flutter_frontend/services/api_service.dart' show ApiService;
 import 'package:flutter_frontend/types.dart'
-    show Friend, FriendRequest, FriendRequestViewStatus, Group;
+    show Friend, FriendRequest, FriendRequestViewStatus;
 import 'package:logging/logging.dart' show Logger;
 import 'package:provider/provider.dart' show Provider;
 import 'package:flutter/material.dart';
@@ -30,9 +31,9 @@ class GroupsAndFriendsScreen extends StatefulWidget {
 
 class _GroupsAndFriendsScreenState extends State<GroupsAndFriendsScreen> {
   final Logger _logger = Logger("GroupsAndFriendsScreen");
-  String _selected = 'Groups';
+  String _selected = 'Friends';
   String _searchQuery = '';
-  List<Group> _groups = [];
+  List<GroupRead> _groups = [];
   List<FriendRequest> _friends = [];
 
   bool _loading = true;
@@ -52,8 +53,8 @@ class _GroupsAndFriendsScreenState extends State<GroupsAndFriendsScreen> {
         _groups =
             userGroups
                 .map(
-                  (g) => Group(
-                    name: '@${g.name}',
+                  (g) => GroupRead(
+                    name: g.name,
                     groupId: g.groupId,
                     description: g.description,
                   ),

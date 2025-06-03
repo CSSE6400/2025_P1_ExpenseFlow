@@ -3,11 +3,8 @@ import 'package:flutter_frontend/common/app_bar.dart';
 import 'package:flutter_frontend/common/bottom_nav_bar.dart';
 import 'package:flutter_frontend/common/color_palette.dart';
 import 'package:flutter_frontend/common/snack_bar.dart';
-import 'package:flutter_frontend/models/enums.dart';
 import 'package:flutter_frontend/models/expense.dart';
 import 'package:flutter_frontend/models/user.dart';
-import 'package:flutter_frontend/screens/expenses_screen/elements/expenses_screen_segment_control.dart'
-    show ExpensesScreenSegmentControl;
 import 'package:flutter_frontend/services/api_service.dart';
 import 'package:flutter_frontend/widgets/expense_list_view.dart';
 import 'package:provider/provider.dart';
@@ -28,7 +25,6 @@ class _IndFriendExpenseScreenState extends State<IndFriendExpenseScreen> {
   UserRead? friend;
   List<ExpenseRead> expenses = [];
   bool isLoading = true;
-  String selectedSegment = 'Active';
 
   @override
   void initState() {
@@ -65,13 +61,6 @@ class _IndFriendExpenseScreenState extends State<IndFriendExpenseScreen> {
     }
   }
 
-  List<ExpenseRead> get filteredExpenses {
-    if (selectedSegment == 'Active') {
-      return expenses.where((e) => e.status != ExpenseStatus.paid).toList();
-    }
-    return expenses;
-  }
-
   @override
   Widget build(BuildContext context) {
     final proportionalSizes = ProportionalSizes(context: context);
@@ -96,26 +85,15 @@ class _IndFriendExpenseScreenState extends State<IndFriendExpenseScreen> {
               horizontal: proportionalSizes.scaleWidth(20),
               vertical: proportionalSizes.scaleHeight(0),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                ExpensesScreenSegmentControl(
-                  selectedSegment: selectedSegment,
-                  onSegmentChanged:
-                      (segment) => setState(() => selectedSegment = segment),
-                ),
-                SizedBox(height: proportionalSizes.scaleHeight(20)),
-                ExpenseListView(
-                  expenses: filteredExpenses, // filtered by segment here
-                  onExpenseTap: (expense) {
-                    Navigator.pushNamed(
-                      context,
-                      '/see_expense',
-                      arguments: {'expenseId': expense.expenseId},
-                    );
-                  },
-                ),
-              ],
+            child: ExpenseListView(
+              expenses: expenses, // Pass full list; filtering is now internal
+              onExpenseTap: (expense) {
+                Navigator.pushNamed(
+                  context,
+                  '/see_expense',
+                  arguments: {'expenseId': expense.expenseId},
+                );
+              },
             ),
           ),
         ),

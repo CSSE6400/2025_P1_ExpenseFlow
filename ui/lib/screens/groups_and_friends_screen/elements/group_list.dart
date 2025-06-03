@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/types.dart' show Group;
+import 'package:flutter_frontend/models/group.dart' show GroupRead;
 import 'package:google_fonts/google_fonts.dart';
 import '../../../common/proportional_sizes.dart';
 import '../../../common/color_palette.dart';
 
 class GroupsListView extends StatelessWidget {
-  final List<Group> groups;
+  final List<GroupRead> groups;
 
   const GroupsListView({super.key, required this.groups});
 
   @override
   Widget build(BuildContext context) {
     final proportionalSizes = ProportionalSizes(context: context);
+    final textColor = ColorPalette.primaryText;
 
     if (groups.isEmpty) {
       return Center(
@@ -41,10 +42,7 @@ class GroupsListView extends StatelessWidget {
                   Navigator.pushNamed(
                     context,
                     '/group_expense',
-                    arguments: {
-                      'groupName': group.name,
-                      'groupUUID': group.groupId,
-                    },
+                    arguments: {'groupId': group.groupId},
                   );
                 },
                 child: Row(
@@ -53,37 +51,15 @@ class GroupsListView extends StatelessWidget {
                     Expanded(
                       child: Text(
                         group.name,
-                        maxLines: 1,
                         overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
                         style: GoogleFonts.roboto(
                           fontSize: proportionalSizes.scaleText(18),
-                          fontWeight: FontWeight.bold,
-                          color: ColorPalette.primaryText,
-                          decoration: TextDecoration.underline,
+                          color: textColor,
                         ),
                       ),
                     ),
                     SizedBox(width: proportionalSizes.scaleWidth(12)),
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                        vertical: proportionalSizes.scaleHeight(4),
-                        horizontal: proportionalSizes.scaleWidth(8),
-                      ),
-                      decoration: BoxDecoration(
-                        color: ColorPalette.accent.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(
-                          proportionalSizes.scaleWidth(6),
-                        ),
-                      ),
-                      child: Text(
-                        'Active',
-                        style: GoogleFonts.roboto(
-                          color: ColorPalette.accent,
-                          fontWeight: FontWeight.bold,
-                          fontSize: proportionalSizes.scaleText(14),
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ),
