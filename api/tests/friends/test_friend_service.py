@@ -64,10 +64,6 @@ async def test_accepted_request(
                                                       sender,
                                                       receiver)
     
-    accepted_friend_model = await create_accept_friend_request(session,
-                                                               receiver,
-                                                               sender)
-
     requests = await get_sent_friend_requests(session, sender)
     assert len(requests) == 1
     assert requests[0].user_id == receiver.user_id
@@ -79,20 +75,35 @@ async def test_accepted_request(
     assert recv_requests[0].user_id == sender.user_id
     empty_recv_requests = await get_received_friend_requests(session, sender)
     assert len(empty_recv_requests) == 0
-    
-    friend_model = await create_accept_friend_request(session,
-                                                      sender,
-                                                      receiver)
-    
+
+    accepted_friend_model = await create_accept_friend_request(session,
+                                                               receiver,
+                                                               sender)
+
     requests = await get_sent_friend_requests(session, sender)
-    assert len(requests) == 1
-    assert requests[0].user_id == receiver.user_id
+    assert len(requests) == 0
     empty_requests = await get_sent_friend_requests(session, receiver)
     assert len(empty_requests) == 0
 
     recv_requests = await get_received_friend_requests(session, receiver)
-    assert len(recv_requests) == 1
-    assert recv_requests[0].user_id == sender.user_id
+    assert len(recv_requests) == 0
+    empty_recv_requests = await get_received_friend_requests(session, sender)
+    assert len(empty_recv_requests) == 0
+    
+    friend_model = await create_accept_friend_request(session,
+                                                      sender,
+                                                      receiver)
+    friend_model = await create_accept_friend_request(session,
+                                                      receiver,
+                                                      sender)
+    
+    requests = await get_sent_friend_requests(session, sender)
+    assert len(requests) == 0
+    empty_requests = await get_sent_friend_requests(session, receiver)
+    assert len(empty_requests) == 0
+
+    recv_requests = await get_received_friend_requests(session, receiver)
+    assert len(recv_requests) == 0
     empty_recv_requests = await get_received_friend_requests(session, sender)
     assert len(empty_recv_requests) == 0
 
