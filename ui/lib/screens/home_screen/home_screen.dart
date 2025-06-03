@@ -41,9 +41,8 @@ class _HomeScreenState extends State<HomeScreen>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    // check auth before loading data
     _checkAuth();
-    _loadRecentExpenses(); // load recent expenses on init
-    _loadOverview();
 
     // get singleton route observer
     _routeObserver = Provider.of<RouteObserver<PageRoute>>(
@@ -156,6 +155,9 @@ class _HomeScreenState extends State<HomeScreen>
       setState(() {
         _checkedUser = true;
       });
+
+      _loadRecentExpenses();
+      _loadOverview();
     } catch (e) {
       _logger.warning(e);
       WidgetsBinding.instance.addPostFrameCallback((_) {
