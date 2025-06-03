@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/common/snack_bar.dart' show showCustomSnackBar;
 import 'package:flutter_frontend/models/expense.dart' show ExpenseRead;
-import 'package:flutter_frontend/screens/see_expense_screen/elements/see_expense_screen_active_status.dart'
-    show SeeExpenseScreenActiveStatus;
 import 'package:flutter_frontend/screens/see_expense_screen/elements/see_expense_screen_fields.dart'
     show SeeExpenseScreenFields;
+import 'package:flutter_frontend/screens/see_expense_screen/elements/see_expense_screen_status.dart'
+    show SeeExpenseScreenActiveStatus;
 import 'package:flutter_frontend/services/api_service.dart' show ApiService;
 import 'package:logging/logging.dart' show Logger;
 import 'package:provider/provider.dart' show Provider;
@@ -105,7 +105,7 @@ class _SeeExpenseScreenState extends State<SeeExpenseScreen> {
 
     return Scaffold(
       backgroundColor: ColorPalette.background,
-      appBar: AppBarWidget(screenName: 'See Expense', showBackButton: true),
+      appBar: AppBarWidget(screenName: 'View Expense', showBackButton: true),
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: SafeArea(
@@ -117,9 +117,7 @@ class _SeeExpenseScreenState extends State<SeeExpenseScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SeeExpenseScreenActiveStatus(
-                  isActive: true, // TODO: fetch actual active status
-                ),
+                SeeExpenseScreenActiveStatus(status: expense!.status),
                 SizedBox(height: proportionalSizes.scaleHeight(20)),
                 SeeExpenseScreenFields(
                   onNameValidityChanged: updateNameValidity,
