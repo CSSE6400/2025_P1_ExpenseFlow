@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/models/user.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:logging/logging.dart' show Logger;
 import '../../../common/color_palette.dart';
 import '../../../common/proportional_sizes.dart';
 import '../../../common/search_bar.dart' as search;
@@ -12,9 +11,8 @@ class ManageFriendsFind extends StatelessWidget {
   final Set<String> sentRequests;
   final void Function(String query) onQueryChanged;
   final void Function(UserReadMinimal user) onAddFriendPressed;
-  final Logger _logger = Logger("ManageFriendsFind");
 
-  ManageFriendsFind({
+  const ManageFriendsFind({
     super.key,
     required this.users,
     required this.sentRequests,

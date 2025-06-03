@@ -63,7 +63,7 @@ class FriendApiClient extends BaseApiClient {
     }
   }
 
-  Future<List<ExpenseRead>> getFriendExpenes(String userId) async {
+  Future<List<ExpenseRead>> getFriendExpenses(String userId) async {
     final response = await client.get(backendUri("/friends/$userId/expenses"));
 
     if (response.statusCode == 200) {
