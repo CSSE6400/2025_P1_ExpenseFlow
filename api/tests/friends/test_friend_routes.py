@@ -141,7 +141,7 @@ async def test_create(session: AsyncSession,
                       default_user):
     
     user = user_model_factory.build()
-    nickname = "test_dummy"
+    nickname = "test_dummy_add"
     user.nickname = nickname
 
     session.add(user)
@@ -176,7 +176,7 @@ async def test_delete(session: AsyncSession,
                       default_user):
     
     user = user_model_factory.build()
-    nickname = "test_dummy"
+    nickname = "test_dummy_del"
     user.nickname = nickname
 
     session.add(user)
