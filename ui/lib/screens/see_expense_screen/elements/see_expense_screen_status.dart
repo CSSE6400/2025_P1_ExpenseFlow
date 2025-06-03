@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/models/enums.dart' show ExpenseStatus;
+import 'package:flutter_frontend/utils/colors.dart';
 import 'package:flutter_frontend/utils/string_utils.dart';
 // Third-party imports
 import 'package:google_fonts/google_fonts.dart';
@@ -12,28 +13,6 @@ class SeeExpenseScreenActiveStatus extends StatelessWidget {
 
   const SeeExpenseScreenActiveStatus({super.key, required this.status});
 
-  Color get backgroundColor {
-    switch (status) {
-      case ExpenseStatus.paid:
-        return Colors.green.withValues(alpha: .2);
-      case ExpenseStatus.accepted:
-        return Colors.yellow.withValues(alpha: .2);
-      case ExpenseStatus.requested:
-        return Colors.grey.withValues(alpha: .2);
-    }
-  }
-
-  Color get iconAndTextColor {
-    switch (status) {
-      case ExpenseStatus.paid:
-        return Colors.green;
-      case ExpenseStatus.accepted:
-        return Colors.yellow;
-      case ExpenseStatus.requested:
-        return Colors.grey;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final proportionalSizes = ProportionalSizes(context: context);
@@ -45,7 +24,7 @@ class SeeExpenseScreenActiveStatus extends StatelessWidget {
         horizontal: proportionalSizes.scaleWidth(12),
       ),
       decoration: BoxDecoration(
-        color: backgroundColor,
+        color: statusBackgroundColor(status),
         borderRadius: BorderRadius.circular(proportionalSizes.scaleWidth(12)),
         boxShadow: [
           BoxShadow(
@@ -60,13 +39,13 @@ class SeeExpenseScreenActiveStatus extends StatelessWidget {
         children: [
           IconMaker(
             assetPath: 'assets/icons/check.png',
-            color: iconAndTextColor,
+            color: statusIconAndTextColor(status),
           ),
           SizedBox(width: proportionalSizes.scaleWidth(8)),
           Text(
             titleCaseString(status.label),
             style: GoogleFonts.roboto(
-              color: iconAndTextColor,
+              color: statusIconAndTextColor(status),
               fontSize: proportionalSizes.scaleText(16),
               fontWeight: FontWeight.bold,
             ),
