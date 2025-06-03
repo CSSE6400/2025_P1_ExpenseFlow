@@ -98,50 +98,44 @@ Future<void> showScanReceiptSourceOptions({
 }) async {
   showModalBottomSheet(
     context: context,
-    backgroundColor: Colors.transparent,
     isScrollControlled: true,
+    backgroundColor: Colors.transparent,
     builder: (BuildContext context) {
       return Theme(
         data: Theme.of(context).copyWith(
-          splashColor: ColorPalette.primaryAction.withValues(alpha: 0.05),
-          highlightColor: ColorPalette.primaryAction.withValues(alpha: 0.1),
+          splashColor: ColorPalette.primaryAction.withOpacity(0.05),
+          highlightColor: ColorPalette.primaryAction.withOpacity(0.1),
         ),
-        child: Container(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom,
-            top: 10,
-          ),
-          child: ClipRRect(
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
-            ),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.4),
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
+        child: FractionallySizedBox(
+          heightFactor: 0.35, // Adjust height as needed
+          child: Align(
+            alignment: Alignment.bottomCenter,
+            child: ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+              ),
+              child: Stack(
+                children: [
+                  // Blurred background just behind modal
+                  BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
+                    child: Container(color: Colors.white.withOpacity(0.3)),
                   ),
-                ),
-                child: SafeArea(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Camera
-                      Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          onTap: () async {
-                            Navigator.pop(context);
-                            final image = await WebImageInfo.pickImage(
-                              ImageSource.camera,
-                            );
-                            onSelected(image);
-                          },
-                          child: ListTile(
+                  // Actual modal content
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.95),
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20),
+                      ),
+                    ),
+                    child: SafeArea(
+                      top: false,
+                      child: Column(
+                        children: [
+                          ListTile(
                             leading: IconMaker(
                               assetPath: 'assets/icons/camera.png',
                             ),
@@ -152,38 +146,16 @@ Future<void> showScanReceiptSourceOptions({
                                 color: ColorPalette.primaryAction,
                               ),
                             ),
+                            onTap: () async {
+                              Navigator.pop(context);
+                              final image = await WebImageInfo.pickImage(
+                                ImageSource.camera,
+                              );
+                              onSelected(image);
+                            },
                           ),
-                        ),
-                      ),
-                      CustomDivider(),
-                      // Gallery
-                      Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          onTap: () async {
-                            Navigator.pop(context);
-                            final image = await WebImageInfo.pickImage(
-                              ImageSource.gallery,
-                            );
-
-                            if (!kIsWeb && image != null) {
-                              final size = image.getFileSizeInMB();
-                              if (size != null && size > 10.0) {
-                                if (context.mounted) {
-                                  showCustomSnackBar(
-                                    context,
-                                    boldText: 'Error:',
-                                    normalText: 'Image exceeds 10MB limit.',
-                                  );
-                                }
-                                onSelected(null);
-                                return;
-                              }
-                            }
-
-                            onSelected(image);
-                          },
-                          child: ListTile(
+                          CustomDivider(),
+                          ListTile(
                             leading: IconMaker(
                               assetPath: 'assets/icons/gallery.png',
                             ),
@@ -194,16 +166,30 @@ Future<void> showScanReceiptSourceOptions({
                                 color: ColorPalette.primaryAction,
                               ),
                             ),
+                            onTap: () async {
+                              Navigator.pop(context);
+                              final image = await WebImageInfo.pickImage(
+                                ImageSource.gallery,
+                              );
+                              if (!kIsWeb && image != null) {
+                                final size = image.getFileSizeInMB();
+                                if (size != null && size > 10.0) {
+                                  if (context.mounted) {
+                                    showCustomSnackBar(
+                                      context,
+                                      boldText: 'Error:',
+                                      normalText: 'Image exceeds 10MB limit.',
+                                    );
+                                  }
+                                  onSelected(null);
+                                  return;
+                                }
+                              }
+                              onSelected(image);
+                            },
                           ),
-                        ),
-                      ),
-                      CustomDivider(),
-                      // Cancel
-                      Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          onTap: () => Navigator.pop(context),
-                          child: ListTile(
+                          CustomDivider(),
+                          ListTile(
                             title: Center(
                               child: Text(
                                 'Cancel',
@@ -213,12 +199,13 @@ Future<void> showScanReceiptSourceOptions({
                                 ),
                               ),
                             ),
+                            onTap: () => Navigator.pop(context),
                           ),
-                        ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
-                ),
+                ],
               ),
             ),
           ),
