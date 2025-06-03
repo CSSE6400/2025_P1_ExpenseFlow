@@ -101,7 +101,9 @@ async def get_sent_friend_requests(
     requests = (
         (
             await session.execute(
-                select(FriendModel).where(FriendModel.sender_id == user.user_id)
+                select(FriendModel)
+                .where(FriendModel.sender_id == user.user_id)
+                .where(FriendModel.status == FriendStatus.requested)
             )
         )
         .scalars()
