@@ -14,8 +14,6 @@ import '../../screens/profile_setup_screen/profile_setup_screen.dart';
 import '../../screens/profile_screen/profile_screen.dart';
 import '../../screens/home_screen/home_screen.dart';
 import '../../screens/add_expense_screen/add_expense_screen.dart';
-import '../../screens/split_with_screen/split_with_screen.dart';
-import '../../screens/add_items_screen/add_items_screen.dart';
 import 'screens/expenses_screen/expenses_screen.dart';
 import 'screens/see_expense_screen/see_expense_screen.dart';
 import '../../screens/groups_and_friends_screen/groups_and_friends_screen.dart';

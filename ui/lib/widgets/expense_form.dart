@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/common/color_palette.dart' show ColorPalette;
 import 'package:flutter_frontend/models/enums.dart' show ExpenseCategory;
 import 'package:flutter_frontend/models/group.dart' show GroupReadWithMembers;
 import 'package:flutter_frontend/models/user.dart' show UserRead;
