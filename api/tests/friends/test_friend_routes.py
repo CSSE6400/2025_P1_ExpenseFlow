@@ -174,6 +174,37 @@ async def test_delete(session: AsyncSession,
                       test_client: AsyncClient,
                       user_model_factory,
                       default_user):
-    user_id = default_user.user_id
+    
+    user = user_model_factory.build()
+    nickname = "test_dummy"
+    user.nickname = nickname
+
+    session.add(user)
+    await session.commit()
+    
+    user = await get_user_by_nickname(session, nickname)
+    user_id = user.user_id
+
+    friend_list = await get_sent_friend_requests(session, default_user)
+    assert len(friend_list) == 0
+
+    response = await test_client.put(url=base_url+f"/{user_id}")
+
+    friend_list = await get_sent_friend_requests(session, default_user)
+    assert len(friend_list) == 1
+
     request = test_client.build_request(method="delete",
                                         url=base_url+f"/{user_id}")
+    bad_uuid = uuid4()
+    bad_request = test_client.build_request(method="delete",
+                                            url=base_url+f"/{bad_uuid}")
+
+    response = await test_client.send(request)
+
+    friend_list = await get_sent_friend_requests(session, default_user)
+    assert len(friend_list) == 0
+    
+    bad_response = await test_client.send(bad_request)
+
+    assert bad_response.json()['detail'] == \
+        f"User under the id '{bad_uuid}' could not be found"
