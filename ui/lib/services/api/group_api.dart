@@ -27,6 +27,23 @@ class GroupApiClient extends BaseApiClient {
     }
   }
 
+  Future<List<GroupReadWithMembers>> getUsersGroupsWithMembers() async {
+    final response = await client.get(backendUri("/groups/with-members"));
+
+    if (response.statusCode == 200) {
+      return safeJsonDecodeList(response.body, GroupReadWithMembers.fromJson);
+    } else {
+      logger.info(
+        "Failed to get user's groups: ${response.statusCode} ${response.body}",
+      );
+      throw ApiException(
+        response.statusCode,
+        "Failed to fetch user's groups",
+        response.body,
+      );
+    }
+  }
+
   Future<GroupRead?> getGroup(String groupId) async {
     final response = await client.get(backendUri("/groups/$groupId"));
 

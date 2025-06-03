@@ -51,7 +51,7 @@ class FriendsListView extends StatelessWidget {
                         ? () {
                           Navigator.pushNamed(
                             context,
-                            '/friend_expense',
+                            '/view_friend',
                             arguments: {'userId': friend.friend.userId},
                           );
                         }
@@ -62,8 +62,8 @@ class FriendsListView extends StatelessWidget {
                     Expanded(
                       child: Text(
                         friend.friend.name,
-                        maxLines: 1,
                         overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
                         style: GoogleFonts.roboto(
                           fontSize: proportionalSizes.scaleText(18),
                           color: textColor,
@@ -77,7 +77,7 @@ class FriendsListView extends StatelessWidget {
                         onPressed: () {
                           Navigator.pushNamed(
                             context,
-                            '/friend_expense',
+                            '/view_friend',
                             arguments: {'userId': friend.friend.userId},
                           );
                         },

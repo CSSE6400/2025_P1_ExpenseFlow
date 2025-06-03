@@ -5,7 +5,7 @@ from uuid import UUID
 
 from expenseflow.enums import GroupRole
 from expenseflow.schemas import ExpenseFlowBase
-from expenseflow.user.schemas import UserRead
+from expenseflow.user.schemas import UserRead, UserReadMinimal
 
 
 class GroupRead(ExpenseFlowBase):
@@ -14,6 +14,15 @@ class GroupRead(ExpenseFlowBase):
     group_id: UUID
     name: str
     description: str
+
+
+class GroupReadWithMembers(ExpenseFlowBase):
+    """Group schema."""
+
+    group_id: UUID
+    name: str
+    description: str
+    members: list[UserReadMinimal]
 
 
 class GroupCreate(ExpenseFlowBase):

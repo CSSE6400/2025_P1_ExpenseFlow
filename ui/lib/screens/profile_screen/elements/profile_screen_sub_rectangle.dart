@@ -104,7 +104,6 @@ class _ProfileScreenSubRectangleState extends State<ProfileScreenSubRectangle> {
   Widget build(BuildContext context) {
     final proportionalSizes = ProportionalSizes(context: context);
     final backgroundColor = ColorPalette.buttonText;
-    final textColor = ColorPalette.primaryText;
     final buttonBackgroundColor = ColorPalette.background;
 
     if (user == null) {

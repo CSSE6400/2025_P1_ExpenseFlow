@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/common/color_palette.dart';
-import 'package:flutter_frontend/common/bottom_nav_bar.dart';
+import 'package:provider/provider.dart';
+import 'package:logging/logging.dart';
+
 import 'package:flutter_frontend/common/app_bar.dart';
+import 'package:flutter_frontend/common/bottom_nav_bar.dart';
+import 'package:flutter_frontend/common/color_palette.dart';
+import 'package:flutter_frontend/common/custom_button.dart';
 import 'package:flutter_frontend/common/proportional_sizes.dart';
 import 'package:flutter_frontend/common/snack_bar.dart';
+
 import 'package:flutter_frontend/models/enums.dart';
 import 'package:flutter_frontend/models/group.dart' show GroupCreate;
 import 'package:flutter_frontend/screens/add_friends_to_group_screen/add_friends_to_group_screen.dart';
 import 'package:flutter_frontend/screens/create_group_screen/elements/add_group_fields.dart';
-import 'package:flutter_frontend/services/api_service.dart' show ApiService;
+import 'package:flutter_frontend/services/api_service.dart';
 import 'package:flutter_frontend/types.dart' show Friend;
-import 'package:logging/logging.dart' show Logger;
-import 'package:provider/provider.dart' show Provider;
-import '../../common/custom_button.dart';
 
 class CreateGroupScreen extends StatefulWidget {
   const CreateGroupScreen({super.key});
@@ -22,23 +24,28 @@ class CreateGroupScreen extends StatefulWidget {
 }
 
 class _CreateGroupScreenState extends State<CreateGroupScreen> {
-  bool isFormValid = false;
-  GroupCreate? _currentGroup;
-  final List<String> _selectedUserIds = [];
-  List<Friend> _selectedFriends = [];
   final Logger _logger = Logger("CreateGroupScreen");
 
-  void updateFormValid(bool isValidFields) {
-    final isFormValidWithFriends = isValidFields && _selectedUserIds.isNotEmpty;
-    setState(() => isFormValid = isFormValidWithFriends);
+  final List<String> _selectedUserIds = [];
+  List<Friend> _selectedFriends = [];
+  GroupCreate? _currentGroup;
+  bool _isFormValid = false;
+
+  void _updateFormValid(bool isFieldsValid) {
+    setState(() {
+      _isFormValid = isFieldsValid && _selectedUserIds.isNotEmpty;
+    });
+  }
+
+  void _updateGroup(GroupCreate group) {
+    _currentGroup = group;
   }
 
   Future<void> _selectFriends() async {
     final selectedFriends = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder:
-            (context) => AddFriendsScreen(existingFriends: _selectedFriends),
+        builder: (_) => AddFriendsScreen(existingFriends: _selectedFriends),
       ),
     );
 
@@ -51,22 +58,19 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
           ..clear()
           ..addAll(_selectedFriends.map((f) => f.userId));
       });
-      updateFormValid(isFormValid);
+      _updateFormValid(_isFormValid);
     }
   }
 
-  void updateGroup(GroupCreate group) {
-    _currentGroup = group;
-  }
-
-  Future<void> onCreateGroup() async {
+  Future<void> _onCreateGroup() async {
     final apiService = Provider.of<ApiService>(context, listen: false);
 
     if (_currentGroup == null) {
       showCustomSnackBar(context, normalText: "Please fill in all fields");
       return;
     }
-    _logger.info("fields valid");
+
+    _logger.info("Creating group...");
 
     try {
       final createdGroup = await apiService.groupApi.createGroup(
@@ -97,47 +101,42 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final backgroundColor = ColorPalette.background;
-    final proportionalSizes = ProportionalSizes(context: context);
+    final sizes = ProportionalSizes(context: context);
 
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: ColorPalette.background,
       appBar: AppBarWidget(screenName: 'Create Group', showBackButton: true),
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: SafeArea(
           child: SingleChildScrollView(
             padding: EdgeInsets.symmetric(
-              horizontal: proportionalSizes.scaleWidth(20),
-              vertical: proportionalSizes.scaleHeight(20),
+              horizontal: sizes.scaleWidth(20),
+              vertical: sizes.scaleHeight(20),
             ),
             child: Column(
               children: [
                 AddGroupScreenFields(
-                  onValidityChanged: updateFormValid,
-                  onGroupChanged: updateGroup,
+                  onValidityChanged: _updateFormValid,
+                  onGroupChanged: _updateGroup,
                   onSelectFriends: _selectFriends,
                   selectedFriendCount: _selectedUserIds.length,
                   selectedFriends: _selectedFriends,
                 ),
                 CustomButton(
                   label: 'Create Group',
-                  onPressed: () {
-                    if (isFormValid) {
-                      onCreateGroup();
-                    }
-                  },
+                  onPressed: _isFormValid ? () => _onCreateGroup() : () {},
                   sizeType: ButtonSizeType.full,
                   state:
-                      isFormValid ? ButtonState.enabled : ButtonState.disabled,
+                      _isFormValid ? ButtonState.enabled : ButtonState.disabled,
                 ),
-                SizedBox(height: proportionalSizes.scaleHeight(96)),
+                SizedBox(height: sizes.scaleHeight(96)),
               ],
             ),
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavBar(
+      bottomNavigationBar: const BottomNavBar(
         currentScreen: 'CreateGroup',
         inactive: false,
       ),

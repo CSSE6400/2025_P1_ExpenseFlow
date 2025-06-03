@@ -18,6 +18,27 @@ Map<String, dynamic> _$GroupReadToJson(GroupRead instance) => <String, dynamic>{
   'description': instance.description,
 };
 
+GroupReadWithMembers _$GroupReadWithMembersFromJson(
+  Map<String, dynamic> json,
+) => GroupReadWithMembers(
+  groupId: json['group_id'] as String,
+  name: json['name'] as String,
+  description: json['description'] as String,
+  members:
+      (json['members'] as List<dynamic>)
+          .map((e) => UserReadMinimal.fromJson(e as Map<String, dynamic>))
+          .toList(),
+);
+
+Map<String, dynamic> _$GroupReadWithMembersToJson(
+  GroupReadWithMembers instance,
+) => <String, dynamic>{
+  'group_id': instance.groupId,
+  'name': instance.name,
+  'description': instance.description,
+  'members': instance.members,
+};
+
 GroupCreate _$GroupCreateFromJson(Map<String, dynamic> json) => GroupCreate(
   name: json['name'] as String,
   description: json['description'] as String,

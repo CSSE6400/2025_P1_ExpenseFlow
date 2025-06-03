@@ -92,6 +92,19 @@ async def update_expense(
     expense.category = expense_in.category
     expense.expense_date = expense_in.expense_date
 
+    # reset all splits to requested
+    update_stmt = (
+        update(ExpenseItemSplitModel)
+        .where(
+            ExpenseItemSplitModel.expense_item_id == ExpenseItemModel.expense_item_id
+        )
+        .where(ExpenseItemModel.expense_id == ExpenseModel.expense_id)
+        .where(ExpenseModel.expense_id == expense.expense_id)
+        .values(status=ExpenseStatus.requested)
+    )
+
+    await session.execute(update_stmt)
+
     # remove existing items
     await session.execute(
         delete(ExpenseItemModel).where(
@@ -280,6 +293,9 @@ async def get_user_split_status(
     statuses = (await session.execute(stmt)).scalars().all()
 
     if len(statuses) == 0:
+        if expense.uploader_id == user.user_id or expense.parent_id == user.entity_id:
+            return ExpenseStatus.paid
+
         msg = f"User '{user.user_id}' is not have any splits in this expense."
         raise ExpenseFlowError(msg)
 

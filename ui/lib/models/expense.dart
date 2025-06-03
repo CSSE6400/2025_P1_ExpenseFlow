@@ -4,6 +4,7 @@ import 'package:flutter_frontend/models/enums.dart'
         ExpenseCategoryConverter,
         ExpenseStatus,
         ExpenseStatusConverter;
+import 'package:flutter_frontend/models/user.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'expense.g.dart';
@@ -32,11 +33,17 @@ class ExpenseRead {
   final String expenseId;
   final String name;
   final String description;
-  final DateTime expenseDate;
-  final double expenseTotal;
 
   @ExpenseCategoryConverter()
   final ExpenseCategory category;
+
+  final DateTime expenseDate;
+
+  final UserRead uploader;
+
+  final List<ExpenseItemRead> items;
+
+  final double expenseTotal;
 
   @ExpenseStatusConverter()
   final ExpenseStatus status;
@@ -44,9 +51,13 @@ class ExpenseRead {
   ExpenseRead({
     required this.expenseId,
     required this.name,
-    required this.expenseDate,
     required this.description,
     required this.category,
+    required this.expenseDate,
+
+    required this.uploader,
+
+    required this.items,
     required this.expenseTotal,
     required this.status,
   });
@@ -75,28 +86,35 @@ class ExpenseCreate {
     required this.items,
   });
 
+  factory ExpenseCreate.fromExpenseRead(ExpenseRead expense) {
+    return ExpenseCreate(
+      name: expense.name,
+      description: expense.description,
+      expenseDate: expense.expenseDate,
+      category: expense.category,
+      items:
+          expense.items
+              .map(
+                (item) => ExpenseItemCreate(
+                  name: item.name,
+                  quantity: item.quantity,
+                  price: item.price,
+                  splits:
+                      item.splits.map((e) {
+                        return ExpenseItemSplitCreate(
+                          userId: e.userId,
+                          proportion: e.proportion,
+                        );
+                      }).toList(),
+                ),
+              )
+              .toList(),
+    );
+  }
+
   factory ExpenseCreate.fromJson(Map<String, dynamic> json) =>
       _$ExpenseCreateFromJson(json);
   Map<String, dynamic> toJson() => _$ExpenseCreateToJson(this);
-}
-
-@JsonSerializable(fieldRename: FieldRename.snake)
-class ExpenseItemCreate {
-  final String name;
-  final int quantity;
-  final double price;
-  final List<ExpenseItemCreate>? items;
-
-  ExpenseItemCreate({
-    required this.name,
-    required this.quantity,
-    required this.price,
-    this.items,
-  });
-
-  factory ExpenseItemCreate.fromJson(Map<String, dynamic> json) =>
-      _$ExpenseItemCreateFromJson(json);
-  Map<String, dynamic> toJson() => _$ExpenseItemCreateToJson(this);
 }
 
 @JsonSerializable(fieldRename: FieldRename.snake)
@@ -105,19 +123,38 @@ class ExpenseItemRead {
   final String name;
   final int quantity;
   final double price;
-  final List<ExpenseItemCreate> items;
+  final List<ExpenseItemSplitRead> splits;
 
   ExpenseItemRead({
     required this.expenseItemId,
     required this.name,
     required this.quantity,
     required this.price,
-    required this.items,
+    required this.splits,
   });
 
   factory ExpenseItemRead.fromJson(Map<String, dynamic> json) =>
       _$ExpenseItemReadFromJson(json);
   Map<String, dynamic> toJson() => _$ExpenseItemReadToJson(this);
+}
+
+@JsonSerializable(fieldRename: FieldRename.snake)
+class ExpenseItemCreate {
+  final String name;
+  final int quantity;
+  final double price;
+  final List<ExpenseItemSplitCreate>? splits;
+
+  ExpenseItemCreate({
+    required this.name,
+    required this.quantity,
+    required this.price,
+    this.splits,
+  });
+
+  factory ExpenseItemCreate.fromJson(Map<String, dynamic> json) =>
+      _$ExpenseItemCreateFromJson(json);
+  Map<String, dynamic> toJson() => _$ExpenseItemCreateToJson(this);
 }
 
 @JsonSerializable(fieldRename: FieldRename.snake)
@@ -138,10 +175,14 @@ class ExpenseItemSplitRead {
   final double proportion;
   final String userFullname;
 
+  @ExpenseStatusConverter()
+  final ExpenseStatus status;
+
   ExpenseItemSplitRead({
     required this.userId,
     required this.proportion,
     required this.userFullname,
+    required this.status,
   });
 
   factory ExpenseItemSplitRead.fromJson(Map<String, dynamic> json) =>

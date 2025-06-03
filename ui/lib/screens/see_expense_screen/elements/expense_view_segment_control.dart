@@ -1,22 +1,21 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_frontend/common/color_palette.dart';
-import 'package:flutter_frontend/utils/string_utils.dart' show titleCaseString;
+import 'package:flutter_frontend/utils/string_utils.dart';
 import 'package:google_fonts/google_fonts.dart';
-// Common
-import '../../../common/proportional_sizes.dart';
+import '../../../../../common/proportional_sizes.dart';
 
-enum SplitWithSegment {
-  friend,
-  group;
+enum ExpenseViewSegment {
+  information,
+  approvals;
 
   String get label => titleCaseString(name);
 }
 
-class SplitWithScreenSegmentControl extends StatelessWidget {
-  final SplitWithSegment selectedSegment;
-  final void Function(SplitWithSegment) onSegmentChanged;
+class ExpenseViewSegmentControl extends StatelessWidget {
+  final ExpenseViewSegment selectedSegment;
+  final void Function(ExpenseViewSegment) onSegmentChanged;
 
-  const SplitWithScreenSegmentControl({
+  const ExpenseViewSegmentControl({
     super.key,
     required this.selectedSegment,
     required this.onSegmentChanged,
@@ -50,25 +49,25 @@ class SplitWithScreenSegmentControl extends StatelessWidget {
             backgroundColor: backgroundColor,
             padding: const EdgeInsets.all(4),
             children: {
-              'Friend': Center(
+              'Information': Center(
                 child: Text(
-                  'Friend',
+                  'Information',
                   style: GoogleFonts.roboto(
                     fontWeight: FontWeight.w600,
                     color:
-                        selectedSegment == SplitWithSegment.friend
+                        selectedSegment == ExpenseViewSegment.information
                             ? selectedTextColor
                             : unselectedTextColor,
                   ),
                 ),
               ),
-              'Group': Center(
+              'Approvals': Center(
                 child: Text(
-                  'Group',
+                  'Approvals',
                   style: GoogleFonts.roboto(
                     fontWeight: FontWeight.w600,
                     color:
-                        selectedSegment == SplitWithSegment.group
+                        selectedSegment == ExpenseViewSegment.information
                             ? selectedTextColor
                             : unselectedTextColor,
                   ),
@@ -77,11 +76,11 @@ class SplitWithScreenSegmentControl extends StatelessWidget {
             },
             onValueChanged: (String? value) {
               // convert string value back to ExpenseListSegment
-              SplitWithSegment? valueSegment;
-              if (value == 'Friend') {
-                valueSegment = SplitWithSegment.friend;
-              } else if (value == 'All') {
-                valueSegment = SplitWithSegment.group;
+              ExpenseViewSegment? valueSegment;
+              if (value == 'Information') {
+                valueSegment = ExpenseViewSegment.information;
+              } else if (value == 'Approvals') {
+                valueSegment = ExpenseViewSegment.approvals;
               }
 
               if (valueSegment != null) {

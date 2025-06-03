@@ -1,25 +1,26 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_frontend/common/color_palette.dart';
+import 'package:flutter_frontend/utils/string_utils.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../common/proportional_sizes.dart';
 
-class ExpensesScreenSegmentControl extends StatefulWidget {
-  final String selectedSegment;
-  final void Function(String) onSegmentChanged;
+enum ExpenseListSegment {
+  unpaid,
+  all;
 
-  const ExpensesScreenSegmentControl({
+  String get label => titleCaseString(name);
+}
+
+class ExpenseListSegmentControl extends StatelessWidget {
+  final ExpenseListSegment selectedSegment;
+  final void Function(ExpenseListSegment) onSegmentChanged;
+
+  const ExpenseListSegmentControl({
     super.key,
     required this.selectedSegment,
     required this.onSegmentChanged,
   });
 
-  @override
-  State<ExpensesScreenSegmentControl> createState() =>
-      _ExpensesScreenSegmentControlState();
-}
-
-class _ExpensesScreenSegmentControlState
-    extends State<ExpensesScreenSegmentControl> {
   @override
   Widget build(BuildContext context) {
     final proportionalSizes = ProportionalSizes(context: context);
@@ -43,19 +44,20 @@ class _ExpensesScreenSegmentControlState
             ),
           ),
           child: CupertinoSlidingSegmentedControl<String>(
-            groupValue: widget.selectedSegment,
+            groupValue: selectedSegment.label,
             thumbColor: selectedColor,
             backgroundColor: backgroundColor,
             padding: const EdgeInsets.all(4),
             children: {
-              'Active': Center(
+              'Unpaid': Center(
                 child: Text(
-                  'Active',
+                  'Unpaid',
                   style: GoogleFonts.roboto(
                     fontWeight: FontWeight.w600,
-                    color: widget.selectedSegment == 'Active'
-                        ? selectedTextColor
-                        : unselectedTextColor,
+                    color:
+                        selectedSegment == ExpenseListSegment.unpaid
+                            ? selectedTextColor
+                            : unselectedTextColor,
                   ),
                 ),
               ),
@@ -64,16 +66,25 @@ class _ExpensesScreenSegmentControlState
                   'All',
                   style: GoogleFonts.roboto(
                     fontWeight: FontWeight.w600,
-                    color: widget.selectedSegment == 'All'
-                        ? selectedTextColor
-                        : unselectedTextColor,
+                    color:
+                        selectedSegment == ExpenseListSegment.all
+                            ? selectedTextColor
+                            : unselectedTextColor,
                   ),
                 ),
               ),
             },
             onValueChanged: (String? value) {
-              if (value != null) {
-                widget.onSegmentChanged(value);
+              // convert string value back to ExpenseListSegment
+              ExpenseListSegment? valueSegment;
+              if (value == 'Unpaid') {
+                valueSegment = ExpenseListSegment.unpaid;
+              } else if (value == 'All') {
+                valueSegment = ExpenseListSegment.all;
+              }
+
+              if (valueSegment != null) {
+                onSegmentChanged(valueSegment);
               }
             },
           ),
