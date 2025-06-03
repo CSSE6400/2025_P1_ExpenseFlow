@@ -71,18 +71,17 @@ async def update(
         )
     try:
         return await update_expense(db, user, expense, expense_in)
-    except ExpenseFlowError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="The total proportion of an expense item does not add to 1.",
-        ) from e
     except NotFoundError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
         ) from e
     except RoleError as e:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e)) from e
-
+    except ExpenseFlowError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="The total proportion of an expense item does not add to 1.",
+        ) from e
 
 @r.get("", response_model=list[ExpenseRead])
 async def get_uploaded_by_me(db: DbSession, user: CurrentUser) -> list[ExpenseModel]:
