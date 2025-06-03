@@ -176,30 +176,34 @@ class _SeeExpenseScreenState extends State<SeeExpenseScreen> {
                 },
               ),
 
-              if (selectedSegment == ExpenseViewSegment.information) ...[
-                SeeExpenseView(
-                  expense: expense!,
-                  currentExpense: _currentExpense,
-                  isEditMode: isEditMode,
-                  isEditable: isEditable(),
-                  isItemsAndSplitsEditable: isItemsAndSplitsEditable(),
-                  isFormValid: isFormValid,
-                  onValidityChanged: updateFormValid,
-                  onExpenseChanged: updateExpense,
-                  onSave: saveExpense,
-                  onEdit: () => setState(() => isEditMode = true),
-                  onCancel:
-                      () => setState(() {
-                        isEditMode = false;
-                        _currentExpense = null;
-                      }),
-                ),
-              ] else ...[
-                SeeExpenseApprovals(
-                  expense: expense!,
-                  splitStatuses: splitStatuses,
-                ),
-              ],
+              Expanded(
+                child:
+                    selectedSegment == ExpenseViewSegment.information
+                        ? SeeExpenseView(
+                          expense: expense!,
+                          currentExpense: _currentExpense,
+                          isEditMode: isEditMode,
+                          isEditable: isEditable(),
+                          isItemsAndSplitsEditable: isItemsAndSplitsEditable(),
+                          isFormValid: isFormValid,
+                          onValidityChanged: updateFormValid,
+                          onExpenseChanged: updateExpense,
+                          onSave: saveExpense,
+                          onEdit: () => setState(() => isEditMode = true),
+                          onCancel: () {
+                            setState(() {
+                              isEditMode = false;
+                              _currentExpense = null;
+                            });
+                          },
+                        )
+                        : SeeExpenseApprovals(
+                          expense: expense!,
+                          splitStatuses: splitStatuses,
+                          currentUser: me!,
+                          onApprovePressed: () => {},
+                        ),
+              ),
             ],
           ),
         ),

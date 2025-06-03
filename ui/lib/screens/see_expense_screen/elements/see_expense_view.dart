@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/models/expense.dart';
 import 'package:flutter_frontend/widgets/expense_form.dart';
+import 'package:google_fonts/google_fonts.dart' show GoogleFonts;
 import '../../../common/custom_button.dart';
 import '../../../common/proportional_sizes.dart';
-import '../elements/see_expense_screen_status.dart';
 
 class SeeExpenseView extends StatelessWidget {
   final ExpenseRead expense;
@@ -43,8 +43,17 @@ class SeeExpenseView extends StatelessWidget {
         vertical: proportionalSizes.scaleHeight(20),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Text(
+            "Expense Details",
+            style: GoogleFonts.roboto(
+              fontSize: proportionalSizes.scaleText(18),
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: proportionalSizes.scaleHeight(10)),
+
           ExpenseForm(
             initialExpense: currentExpense,
             canEdit: isEditable,
