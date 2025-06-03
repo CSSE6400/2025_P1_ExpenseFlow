@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/types.dart' show Friend;
 import 'package:google_fonts/google_fonts.dart';
 import '../../../common/color_palette.dart';
 import '../../../common/proportional_sizes.dart';
@@ -7,12 +8,6 @@ import 'package:flutter_frontend/services/api_service.dart';
 import 'package:provider/provider.dart' show Provider;
 import 'package:flutter_frontend/common/snack_bar.dart';
 import 'package:logging/logging.dart';
-
-class Friend {
-  final String name;
-
-  Friend({required this.name});
-}
 
 class ManageFriendsList extends StatefulWidget {
   const ManageFriendsList({super.key});
@@ -45,10 +40,13 @@ class _ManageFriendsListState extends State<ManageFriendsList> {
 
   void _filterFriends(String query) {
     setState(() {
-      filteredFriends = allFriends
-          .where((friend) =>
-              friend.name.toLowerCase().contains(query.toLowerCase()))
-          .toList();
+      filteredFriends =
+          allFriends
+              .where(
+                (friend) =>
+                    friend.name.toLowerCase().contains(query.toLowerCase()),
+              )
+              .toList();
     });
   }
 
@@ -58,27 +56,22 @@ class _ManageFriendsListState extends State<ManageFriendsList> {
       final userReads = await apiService.friendApi.getFriends();
 
       setState(() {
-        allFriends = userReads
-            .map((user) => Friend(
-                  name: '@${user.nickname}',
-                ))
-            .toList();
+        allFriends =
+            userReads
+                .map(
+                  (user) =>
+                      Friend(name: '@${user.nickname}', userId: user.userId),
+                )
+                .toList();
         filteredFriends = allFriends;
       });
       _logger.info(allFriends);
-
     } on ApiException catch (e) {
       _logger.warning("API exception while fetching friends: ${e.message}");
-      showCustomSnackBar(
-        context,
-        normalText: "Failed to load friends",
-      );
+      showCustomSnackBar(context, normalText: "Failed to load friends");
     } catch (e) {
       _logger.severe("Unexpected error: $e");
-      showCustomSnackBar(
-        context,
-        normalText: "Something went wrong",
-      );
+      showCustomSnackBar(context, normalText: "Something went wrong");
     }
     filteredFriends = allFriends;
   }
@@ -91,10 +84,7 @@ class _ManageFriendsListState extends State<ManageFriendsList> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        search.SearchBar(
-          hintText: 'Search friends',
-          onChanged: _filterFriends,
-        ),
+        search.SearchBar(hintText: 'Search friends', onChanged: _filterFriends),
         const SizedBox(height: 16),
         if (allFriends.isEmpty)
           Padding(
@@ -111,7 +101,8 @@ class _ManageFriendsListState extends State<ManageFriendsList> {
             ),
           )
         else
-        ...filteredFriends.map((friend) => Padding(
+          ...filteredFriends.map(
+            (friend) => Padding(
               padding: EdgeInsets.symmetric(
                 vertical: proportionalSizes.scaleHeight(8),
               ),
@@ -143,7 +134,8 @@ class _ManageFriendsListState extends State<ManageFriendsList> {
                   ],
                 ),
               ),
-            )),
+            ),
+          ),
       ],
     );
   }

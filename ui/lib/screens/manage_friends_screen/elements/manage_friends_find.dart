@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/types.dart' show Friend;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:logging/logging.dart';
 import '../../../common/color_palette.dart';
@@ -9,13 +10,6 @@ import '../../../common/dialogs/app_dialog_box.dart';
 import 'package:flutter_frontend/services/api_service.dart';
 import 'package:provider/provider.dart' show Provider;
 import 'package:flutter_frontend/common/snack_bar.dart';
-
-class Friend {
-  final String name;
-  final String userId;
-
-  Friend({required this.name, required this.userId});
-}
 
 class ManageFriendsFind extends StatefulWidget {
   const ManageFriendsFind({super.key});

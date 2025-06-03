@@ -7,6 +7,7 @@ import 'package:flutter_frontend/screens/groups_and_friends_screen/elements/grou
 import 'package:flutter_frontend/screens/groups_and_friends_screen/elements/groups_and_friends_segment_control.dart'
     show GroupsAndFriendsSegmentControl;
 import 'package:flutter_frontend/services/api_service.dart' show ApiService;
+import 'package:flutter_frontend/types.dart' show Friend;
 import 'package:logging/logging.dart' show Logger;
 import 'package:provider/provider.dart' show Provider;
 import 'package:flutter/material.dart';
@@ -16,13 +17,6 @@ import 'package:flutter_frontend/services/api_service.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_frontend/common/snack_bar.dart';
 import 'package:logging/logging.dart';
-
-class Friend {
-  final String name;
-  final String uuid;
-
-  Friend({required this.name, required this.uuid});
-}
 
 class Group {
   final String name;
@@ -69,7 +63,7 @@ class _GroupsAndFriendsScreenState extends State<GroupsAndFriendsScreen> {
                 .map(
                   (f) => Friend(
                     name: "${f.firstName} ${f.lastName}",
-                    uuid: f.userId,
+                    userId: f.userId,
                   ),
                 )
                 .toList();
@@ -136,9 +130,9 @@ class _GroupsAndFriendsScreenState extends State<GroupsAndFriendsScreen> {
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
                     child: CustomButton(
-                      label: 'Manage Groups',
+                      label: 'Create Group',
                       onPressed:
-                          () => Navigator.pushNamed(context, '/manage_groups'),
+                          () => Navigator.pushNamed(context, '/create_group'),
                       state: ButtonState.enabled,
                       sizeType: ButtonSizeType.full,
                     ),

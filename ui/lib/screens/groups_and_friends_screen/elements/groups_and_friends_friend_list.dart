@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/screens/groups_and_friends_screen/groups_and_friends_screen.dart'
-    show Friend;
+import 'package:flutter_frontend/types.dart' show Friend;
 import 'package:google_fonts/google_fonts.dart';
 import '../../../common/color_palette.dart';
 import '../../../common/proportional_sizes.dart';
@@ -44,7 +43,7 @@ class FriendsListView extends StatelessWidget {
                     '/friend_expense',
                     arguments: {
                       'friendName': friend.name,
-                      'friendUUID': friend.uuid,
+                      'friendUUID': friend.userId,
                     },
                   );
                 },

@@ -4,6 +4,7 @@ import '../../common/color_palette.dart';
 import '../../common/app_bar.dart';
 import '../../common/bottom_nav_bar.dart';
 import '../../common/custom_button.dart';
+import '../../types.dart' show Friend;
 import 'elements/add_friends_to_group_friends.dart';
 import 'package:flutter_frontend/services/api_service.dart';
 import 'package:provider/provider.dart' show Provider;
@@ -48,13 +49,14 @@ class _AddFriendsScreenState extends State<AddFriendsScreen> {
       final existingIds = widget.existingFriends.map((f) => f.userId).toSet();
 
       setState(() {
-        allFriends = userReads.map((user) {
-          return Friend(
-            userId: user.userId,
-            name: user.nickname,
-            isSelected: existingIds.contains(user.userId),
-          );
-        }).toList();
+        allFriends =
+            userReads.map((user) {
+              return Friend(
+                userId: user.userId,
+                name: user.nickname,
+                isSelected: existingIds.contains(user.userId),
+              );
+            }).toList();
       });
       _logger.info("Friends is $allFriends");
     } catch (e) {
@@ -74,7 +76,6 @@ class _AddFriendsScreenState extends State<AddFriendsScreen> {
     _logger.info("selectedFriends length is ${selectedFriends.length}");
     Navigator.pop(context, selectedFriends);
   }
-
 
   @override
   Widget build(BuildContext context) {

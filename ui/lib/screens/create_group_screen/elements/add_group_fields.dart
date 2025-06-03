@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/types.dart' show Friend;
 // Common imports
 import '../../../common/fields/general_field.dart';
 import '../../../common/custom_divider.dart';
 import '../../../models/group.dart';
 import '../../../common/fields/custom_icon_field.dart';
-import '../../add_friends_to_group_screen/elements/add_friends_to_group_friends.dart';
 
 class AddGroupScreenFields extends StatefulWidget {
   final void Function(bool isValid) onValidityChanged;
@@ -19,7 +19,7 @@ class AddGroupScreenFields extends StatefulWidget {
     required this.onGroupChanged,
     required this.onSelectFriends,
     required this.selectedFriendCount,
-    required this.selectedFriends
+    required this.selectedFriends,
   });
 
   @override
@@ -84,10 +84,10 @@ class _AddGroupScreenFieldsState extends State<AddGroupScreenFields> {
 
         CustomIconField(
           label: 'Add Friends',
-          value:'${widget.selectedFriendCount} selected',
+          value: '${widget.selectedFriendCount} selected',
           hintText: 'Select friends to add',
           trailingIconPath: 'assets/icons/search.png',
-          onTap: widget.onSelectFriends, 
+          onTap: widget.onSelectFriends,
         ),
         if (widget.selectedFriends.isNotEmpty)
           Padding(
@@ -97,15 +97,16 @@ class _AddGroupScreenFieldsState extends State<AddGroupScreenFields> {
               child: Wrap(
                 spacing: 8,
                 runSpacing: 8,
-                children: widget.selectedFriends.map((friend) {
-                  return Chip(
-                    label: Text(friend.name),
-                    backgroundColor: Colors.grey.shade200,
-                    labelStyle: TextStyle(
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
-                  );
-                }).toList(),
+                children:
+                    widget.selectedFriends.map((friend) {
+                      return Chip(
+                        label: Text(friend.name),
+                        backgroundColor: Colors.grey.shade200,
+                        labelStyle: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      );
+                    }).toList(),
               ),
             ),
           ),

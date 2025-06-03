@@ -247,7 +247,7 @@ class _ProfileScreenSubRectangleState extends State<ProfileScreenSubRectangle> {
                   ),
                 ),
                 onTap: () {
-                  Navigator.pushNamed(context, '/manage_groups');
+                  Navigator.pushNamed(context, '/create_group');
                 },
               ),
             ),

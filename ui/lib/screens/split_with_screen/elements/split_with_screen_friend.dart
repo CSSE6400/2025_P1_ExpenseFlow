@@ -10,7 +10,7 @@ import '../../../common/icon_maker.dart';
 import 'package:flutter_frontend/services/api_service.dart';
 import 'package:provider/provider.dart' show Provider;
 
-class Friend {
+class FriendSplit {
   String name;
   String percentage;
   bool checked;
@@ -18,7 +18,7 @@ class Friend {
   String userId;
   final TextEditingController controller;
 
-  Friend({
+  FriendSplit({
     required this.name,
     required this.percentage,
     required this.checked,
@@ -44,9 +44,15 @@ class SplitWithScreenFriend extends StatefulWidget {
 }
 
 class SplitWithScreenFriendState extends State<SplitWithScreenFriend> {
-  late Friend you = Friend( name: 'Loading', userId: '1', percentage: '100', checked: true, disabled: false);
-  List<Friend> otherFriends = [];
-  List<Friend> filteredFriends = [];
+  late FriendSplit you = FriendSplit(
+    name: 'Loading',
+    userId: '1',
+    percentage: '100',
+    checked: true,
+    disabled: false,
+  );
+  List<FriendSplit> otherFriends = [];
+  List<FriendSplit> filteredFriends = [];
   final Logger _logger = Logger("SplitWithFriendScreen");
 
   @override
@@ -73,13 +79,13 @@ class SplitWithScreenFriendState extends State<SplitWithScreenFriend> {
       Navigator.pushNamed(context, "/");
     } else {
       setState(() {
-            you = Friend(
-            name: 'You',
-            userId: fetchedUser.userId,
-            percentage: '100',
-            checked: true,
-            disabled: false,
-            );
+        you = FriendSplit(
+          name: 'You',
+          userId: fetchedUser.userId,
+          percentage: '100',
+          checked: true,
+          disabled: false,
+        );
       });
     }
   }
@@ -90,15 +96,18 @@ class SplitWithScreenFriendState extends State<SplitWithScreenFriend> {
       final userReads = await apiService.friendApi.getFriends();
 
       setState(() {
-        otherFriends = userReads
-            .map((user) => Friend(
-                  name: '@${user.nickname}',
-                  userId: user.userId,
-                  percentage: '',
-                  checked: false,
-                  disabled: false,
-                ))
-            .toList();
+        otherFriends =
+            userReads
+                .map(
+                  (user) => FriendSplit(
+                    name: '@${user.nickname}',
+                    userId: user.userId,
+                    percentage: '',
+                    checked: false,
+                    disabled: false,
+                  ),
+                )
+                .toList();
       });
 
       setState(() {
@@ -106,31 +115,26 @@ class SplitWithScreenFriendState extends State<SplitWithScreenFriend> {
       });
     } on ApiException catch (e) {
       _logger.warning("API exception while fetching friends: ${e.message}");
-      showCustomSnackBar(
-        context,
-        normalText: "Failed to load friends",
-      );
+      showCustomSnackBar(context, normalText: "Failed to load friends");
     } catch (e) {
       _logger.severe("Unexpected error: $e");
-      showCustomSnackBar(
-        context,
-        normalText: "Something went wrong",
-      );
+      showCustomSnackBar(context, normalText: "Something went wrong");
     }
   }
 
   // based on search query
   void _filterFriends(String query) {
-    final results = otherFriends.where((friend) {
-      return friend.name.toLowerCase().contains(query.toLowerCase());
-    }).toList();
+    final results =
+        otherFriends.where((friend) {
+          return friend.name.toLowerCase().contains(query.toLowerCase());
+        }).toList();
 
     setState(() {
       filteredFriends = results;
     });
   }
 
-  void _toggleFriendSelection(Friend friend) {
+  void _toggleFriendSelection(FriendSplit friend) {
     if (widget.isReadOnly || friend.disabled || friend.name == 'You') return;
 
     setState(() {
@@ -146,7 +150,7 @@ class SplitWithScreenFriendState extends State<SplitWithScreenFriend> {
         friend.controller.text = '';
         friend.percentage = '';
       }
-      
+
       filteredFriends.sort((a, b) {
         if (a.checked == b.checked) return 0;
         return a.checked ? -1 : 1;
@@ -188,20 +192,20 @@ class SplitWithScreenFriendState extends State<SplitWithScreenFriend> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Username', 
+                  'Username',
                   style: GoogleFonts.roboto(
                     fontWeight: FontWeight.bold,
                     fontSize: proportionalSizes.scaleHeight(18),
                     color: textColor,
-                  )
+                  ),
                 ),
                 Text(
-                  'Percentage', 
+                  'Percentage',
                   style: GoogleFonts.roboto(
                     fontWeight: FontWeight.bold,
                     fontSize: proportionalSizes.scaleHeight(18),
                     color: textColor,
-                  )
+                  ),
                 ),
               ],
             ),
@@ -222,7 +226,7 @@ class SplitWithScreenFriendState extends State<SplitWithScreenFriend> {
 
   Widget _buildFriendRow(
     BuildContext context,
-    Friend friend,
+    FriendSplit friend,
     ProportionalSizes proportionalSizes, {
     bool isYou = false,
   }) {
@@ -232,7 +236,9 @@ class SplitWithScreenFriendState extends State<SplitWithScreenFriend> {
     return GestureDetector(
       onTap: () => _toggleFriendSelection(friend),
       child: Padding(
-        padding: EdgeInsets.symmetric(vertical: proportionalSizes.scaleHeight(6)),
+        padding: EdgeInsets.symmetric(
+          vertical: proportionalSizes.scaleHeight(6),
+        ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -240,9 +246,10 @@ class SplitWithScreenFriendState extends State<SplitWithScreenFriend> {
             Text(
               friend.name,
               style: GoogleFonts.roboto(
-                color: isYou
-                    ? textColor
-                    : friend.disabled
+                color:
+                    isYou
+                        ? textColor
+                        : friend.disabled
                         ? unselectedTextColor
                         : (friend.checked ? textColor : unselectedTextColor),
                 fontSize: proportionalSizes.scaleHeight(18),
@@ -254,7 +261,9 @@ class SplitWithScreenFriendState extends State<SplitWithScreenFriend> {
               children: [
                 if (friend.checked)
                   Padding(
-                    padding: EdgeInsets.only(right: proportionalSizes.scaleWidth(6)),
+                    padding: EdgeInsets.only(
+                      right: proportionalSizes.scaleWidth(6),
+                    ),
                     child: IconMaker(
                       assetPath: 'assets/icons/check_nofilled.png',
                     ),
@@ -266,23 +275,32 @@ class SplitWithScreenFriendState extends State<SplitWithScreenFriend> {
                     vertical: proportionalSizes.scaleHeight(4),
                   ),
                   decoration: BoxDecoration(
-                    color: friend.checked ? unselectedTextColor.withValues(alpha: 0.5) : textColor.withValues(alpha: 0.1),
+                    color:
+                        friend.checked
+                            ? unselectedTextColor.withValues(alpha: 0.5)
+                            : textColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(
                       proportionalSizes.scaleWidth(6),
                     ),
                   ),
                   child: TextField(
                     controller: friend.controller,
-                    enabled: !widget.isReadOnly && friend.checked && !friend.disabled,
+                    enabled:
+                        !widget.isReadOnly &&
+                        friend.checked &&
+                        !friend.disabled,
                     keyboardType: TextInputType.number,
-                    onChanged: widget.isReadOnly
-                      ? null
-                      : (value) {
-                          setState(() {
-                            friend.percentage = value;
-                            widget.onValidityChanged?.call(isTotalPercentageValid());
-                          });
-                        },
+                    onChanged:
+                        widget.isReadOnly
+                            ? null
+                            : (value) {
+                              setState(() {
+                                friend.percentage = value;
+                                widget.onValidityChanged?.call(
+                                  isTotalPercentageValid(),
+                                );
+                              });
+                            },
                     textAlign: TextAlign.center,
                     style: GoogleFonts.roboto(
                       fontWeight: FontWeight.bold,

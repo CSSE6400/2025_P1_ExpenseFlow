@@ -35,3 +35,11 @@ class RecentExpense {
     required this.expenseId,
   });
 }
+
+class Friend {
+  final String userId;
+  final String name;
+  bool isSelected = false;
+
+  Friend({required this.userId, required this.name, this.isSelected = false});
+}
