@@ -23,3 +23,15 @@ List<CategoryData> assignRandomColors(
     );
   }).toList();
 }
+
+class RecentExpense {
+  final String name;
+  final String price;
+  final String expenseId;
+
+  RecentExpense({
+    required this.name,
+    required this.price,
+    required this.expenseId,
+  });
+}

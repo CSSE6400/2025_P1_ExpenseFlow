@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/screens/home_screen/home_screen.dart'
-    show RecentExpense;
+import 'package:flutter_frontend/types.dart' show RecentExpense;
 import 'package:google_fonts/google_fonts.dart';
 import '../../../common/color_palette.dart';
 import '../../../common/proportional_sizes.dart';

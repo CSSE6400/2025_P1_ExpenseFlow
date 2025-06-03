@@ -3,7 +3,7 @@ import 'package:flutter_frontend/common/snack_bar.dart' show showCustomSnackBar;
 import 'package:flutter_frontend/models/expense.dart' show ExpenseOverview;
 import 'package:flutter_frontend/models/user.dart' show UserRead;
 import 'package:flutter_frontend/types.dart'
-    show CategoryData, assignRandomColors;
+    show CategoryData, RecentExpense, assignRandomColors;
 import 'package:logging/logging.dart' show Logger;
 // Common imports
 import '../../common/color_palette.dart';
@@ -252,16 +252,4 @@ class _HomeScreenState extends State<HomeScreen>
       bottomNavigationBar: BottomNavBar(currentScreen: 'Home', inactive: false),
     );
   }
-}
-
-class RecentExpense {
-  final String name;
-  final String price;
-  final String expenseId;
-
-  RecentExpense({
-    required this.name,
-    required this.price,
-    required this.expenseId,
-  });
 }
