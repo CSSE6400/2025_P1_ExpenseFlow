@@ -3,13 +3,13 @@ import 'package:flutter_frontend/common/snack_bar.dart';
 import 'package:flutter_frontend/models/enums.dart';
 import 'package:flutter_frontend/models/group.dart' show GroupCreate;
 import 'package:flutter_frontend/screens/add_friends_to_group_screen/add_friends_to_group_screen.dart';
-import 'package:flutter_frontend/screens/manage_groups_screen/elements/add_group_fields.dart';
+import 'package:flutter_frontend/screens/create_group_screen/elements/add_group_fields.dart';
 import 'package:flutter_frontend/services/api_service.dart' show ApiService;
+import 'package:flutter_frontend/types.dart' show Friend;
 import 'package:logging/logging.dart' show Logger;
 import 'package:provider/provider.dart' show Provider;
 import '../../../common/proportional_sizes.dart';
 import '../../../common/custom_button.dart';
-import '../../add_friends_to_group_screen/elements/add_friends_to_group_friends.dart';
 
 class AddGroupScreenMainBody extends StatefulWidget {
   const AddGroupScreenMainBody({super.key});

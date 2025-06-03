@@ -20,7 +20,6 @@ from expenseflow.expense.schemas import (
 from expenseflow.expense.service import (
     create_expense,
     get_expense,
-    get_expense_status,
     get_expense_status_map,
     get_expenses_overview,
     get_uploaded_expenses,
@@ -121,20 +120,6 @@ async def get_my_status(
             detail=f"Expense under the id '{expense_id}' could not be found",
         )
     return await get_user_split_status(db, expense, user)
-
-
-@r.get("/{expense_id}/overall-status", response_model=ExpenseStatus)
-async def get_overall_status(
-    db: DbSession, user: CurrentUser, expense_id: UUID
-) -> ExpenseStatus:
-    """Get status of an expense."""
-    expense = await get_expense(db, user, expense_id)
-    if expense is None:
-        raise HTTPException(
-            status.HTTP_404_NOT_FOUND,
-            detail=f"Expense under the id '{expense_id}' could not be found",
-        )
-    return await get_expense_status(db, expense)
 
 
 @r.get("/{expense_id}/all-status", response_model=list[SplitStatusInfo])

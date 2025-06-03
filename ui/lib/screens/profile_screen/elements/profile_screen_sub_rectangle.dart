@@ -129,7 +129,7 @@ class _ProfileScreenSubRectangleState extends State<ProfileScreenSubRectangle> {
             Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                'Account',
+                'My Profile',
                 style: GoogleFonts.roboto(
                   fontSize: proportionalSizes.scaleText(22),
                   fontWeight: FontWeight.bold,
@@ -205,50 +205,6 @@ class _ProfileScreenSubRectangleState extends State<ProfileScreenSubRectangle> {
                   fontWeight: FontWeight.bold,
                   color: ColorPalette.primaryText,
                 ),
-              ),
-            ),
-            SizedBox(height: proportionalSizes.scaleHeight(12)),
-            Container(
-              decoration: BoxDecoration(
-                color: buttonBackgroundColor,
-                borderRadius: BorderRadius.circular(
-                  proportionalSizes.scaleWidth(12),
-                ),
-              ),
-              child: ListTile(
-                leading: IconMaker(assetPath: 'assets/icons/user.png'),
-                title: Text(
-                  'Manage Friends',
-                  style: GoogleFonts.roboto(
-                    fontSize: proportionalSizes.scaleText(18),
-                    color: textColor,
-                  ),
-                ),
-                onTap: () {
-                  Navigator.pushNamed(context, '/manage_friends');
-                },
-              ),
-            ),
-            SizedBox(height: proportionalSizes.scaleHeight(8)),
-            Container(
-              decoration: BoxDecoration(
-                color: buttonBackgroundColor,
-                borderRadius: BorderRadius.circular(
-                  proportionalSizes.scaleWidth(12),
-                ),
-              ),
-              child: ListTile(
-                leading: IconMaker(assetPath: 'assets/icons/group.png'),
-                title: Text(
-                  'Manage Groups',
-                  style: GoogleFonts.roboto(
-                    fontSize: proportionalSizes.scaleText(18),
-                    color: textColor,
-                  ),
-                ),
-                onTap: () {
-                  Navigator.pushNamed(context, '/manage_groups');
-                },
               ),
             ),
             SizedBox(height: proportionalSizes.scaleHeight(8)),

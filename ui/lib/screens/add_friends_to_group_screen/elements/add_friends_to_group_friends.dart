@@ -1,15 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/types.dart' show Friend;
 import '../../../common/proportional_sizes.dart';
 import '../../../common/search_bar.dart' as search;
-
-class Friend {
-  final String userId;
-  final String name;
-  bool isSelected;
-
-  Friend({required this.userId, required this.name, this.isSelected = false});
-}
-
 
 class AddFriendsScreenItem extends StatefulWidget {
   final List<Friend> items;
@@ -50,7 +42,6 @@ class _AddFriendsScreenItemState extends State<AddFriendsScreenItem> {
     }
   }
 
-
   void _toggleSelection(Friend friend, bool? selected) {
     setState(() {
       friend.isSelected = selected ?? false;
@@ -61,9 +52,10 @@ class _AddFriendsScreenItemState extends State<AddFriendsScreenItem> {
 
   void _filterFriends(String query) {
     setState(() {
-      filteredFriends = allFriends.where((friend) {
-        return friend.name.toLowerCase().contains(query.toLowerCase());
-      }).toList();
+      filteredFriends =
+          allFriends.where((friend) {
+            return friend.nickname.toLowerCase().contains(query.toLowerCase());
+          }).toList();
     });
   }
 
@@ -78,17 +70,20 @@ class _AddFriendsScreenItemState extends State<AddFriendsScreenItem> {
         const SizedBox(height: 20),
         Expanded(
           child: ListView(
-            children: filteredFriends.map((friend) {
-              return ListTile(
-                leading: Checkbox(
-                  value: friend.isSelected,
-                  onChanged: widget.isReadOnly
-                      ? null
-                      : (selected) => _toggleSelection(friend, selected),
-                ),
-                title: Text(friend.name),
-              );
-            }).toList(),
+            children:
+                filteredFriends.map((friend) {
+                  return ListTile(
+                    leading: Checkbox(
+                      value: friend.isSelected,
+                      onChanged:
+                          widget.isReadOnly
+                              ? null
+                              : (selected) =>
+                                  _toggleSelection(friend, selected),
+                    ),
+                    title: Text(friend.name),
+                  );
+                }).toList(),
           ),
         ),
         if (filteredFriends.isEmpty)

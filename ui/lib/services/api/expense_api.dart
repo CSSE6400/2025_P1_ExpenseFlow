@@ -131,28 +131,6 @@ class ExpenseApiClient extends BaseApiClient {
     }
   }
 
-  Future<ExpenseStatus?> getOverallExpenseStatus(String expenseId) async {
-    final response = await client.get(
-      backendUri("/expenses/$expenseId/overall-status"),
-    );
-
-    if (response.statusCode == 200) {
-      final statusString = safeJsonDecode(response.body);
-      return ExpenseStatusConverter().fromJson(statusString);
-    } else if (response.statusCode == 404) {
-      return null;
-    } else {
-      logger.info(
-        "Failed to get expense status: ${response.statusCode} ${response.body}",
-      );
-      throw ApiException(
-        response.statusCode,
-        'Failed to get expense status',
-        response.body,
-      );
-    }
-  }
-
   Future<List<SplitStatusInfo>> getAllExpenseStatuses(String expenseId) async {
     // Get a list of the statuses for each user in an expense
     final response = await client.get(

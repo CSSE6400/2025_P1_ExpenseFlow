@@ -1,7 +1,7 @@
 // Flutter imports
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/screens/add_friends_to_group_screen/add_friends_to_group_screen.dart';
-import 'package:flutter_frontend/screens/manage_groups_screen/manage_groups_screen.dart';
+import 'package:flutter_frontend/screens/create_group_screen/create_group_screen.dart';
 import 'package:flutter_frontend/services/api_service.dart' show ApiService;
 import 'package:flutter_frontend/services/auth_service.dart' show AuthService;
 import 'package:flutter_frontend/screens/overview_screen/overview_screen.dart';
@@ -112,10 +112,8 @@ class MyApp extends StatelessWidget {
             return MaterialPageRoute(
               builder: (_) => const ManageFriendsScreen(),
             );
-          case '/manage_groups':
-            return MaterialPageRoute(
-              builder: (_) => const ManageGroupsScreen(),
-            );
+          case '/create_group':
+            return MaterialPageRoute(builder: (_) => const CreateGroupScreen());
           case '/select_friends':
             return MaterialPageRoute(builder: (_) => const AddFriendsScreen());
           case '/split_with':
@@ -164,9 +162,9 @@ class MyApp extends StatelessWidget {
             );
           case '/friend_expense':
             final args = settings.arguments as Map<String, dynamic>?;
-            final username = args?['username'] as String?;
+            final userId = args?['userId'] as String?;
 
-            if (username == null) {
+            if (userId == null) {
               return MaterialPageRoute(
                 builder:
                     (_) => const Scaffold(
@@ -176,7 +174,7 @@ class MyApp extends StatelessWidget {
             }
 
             return MaterialPageRoute(
-              builder: (_) => IndFriendExpenseScreen(username: username),
+              builder: (_) => IndFriendExpenseScreen(userId: userId),
             );
           case '/group_expense':
             final args = settings.arguments as Map<String, dynamic>?;

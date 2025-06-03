@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/screens/home_screen/home_screen.dart'
-    show RecentExpense;
+import 'package:flutter_frontend/types.dart' show Expense;
 import 'package:google_fonts/google_fonts.dart';
 import '../../../common/color_palette.dart';
 import '../../../common/proportional_sizes.dart';
 
 class HomeScreenRecentExpenses extends StatelessWidget {
-  final List<RecentExpense> recentExpenses;
+  final List<Expense> recentExpenses;
   final bool isLoading;
   final VoidCallback? onTap;
 
@@ -57,6 +56,21 @@ class HomeScreenRecentExpenses extends StatelessWidget {
                 child: Center(
                   child: CircularProgressIndicator(
                     color: ColorPalette.primaryAction,
+                  ),
+                ),
+              )
+            else if (recentExpenses.isEmpty)
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  vertical: proportionalSizes.scaleHeight(20),
+                ),
+                child: Center(
+                  child: Text(
+                    "You've got no recent expenses",
+                    style: TextStyle(
+                      fontSize: proportionalSizes.scaleText(16),
+                      color: ColorPalette.primaryText.withOpacity(0.7),
+                    ),
                   ),
                 ),
               )

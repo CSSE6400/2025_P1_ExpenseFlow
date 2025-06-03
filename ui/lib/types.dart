@@ -23,3 +23,47 @@ List<CategoryData> assignRandomColors(
     );
   }).toList();
 }
+
+class Expense {
+  final String name;
+  final String price;
+  final String expenseId;
+
+  Expense({required this.name, required this.price, required this.expenseId});
+}
+
+class Friend {
+  final String userId;
+  final String firstName;
+  final String lastName;
+  final String nickname;
+  bool isSelected = false;
+
+  Friend({
+    required this.userId,
+    required this.firstName,
+    required this.lastName,
+    required this.nickname,
+
+    this.isSelected = false,
+  });
+
+  String get name => '$firstName $lastName';
+}
+
+class Group {
+  final String groupId;
+  final String name;
+  final String description;
+
+  Group({required this.groupId, required this.name, required this.description});
+}
+
+enum FriendRequestViewStatus { friend, sent, incoming }
+
+class FriendRequest {
+  final Friend friend;
+  final FriendRequestViewStatus status;
+
+  FriendRequest({required this.friend, required this.status});
+}

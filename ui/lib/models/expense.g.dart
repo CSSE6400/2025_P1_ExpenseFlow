@@ -29,6 +29,7 @@ ExpenseRead _$ExpenseReadFromJson(Map<String, dynamic> json) => ExpenseRead(
     json['category'] as String,
   ),
   expenseTotal: (json['expense_total'] as num).toDouble(),
+  status: const ExpenseStatusConverter().fromJson(json['status'] as String),
 );
 
 Map<String, dynamic> _$ExpenseReadToJson(ExpenseRead instance) =>
@@ -39,6 +40,7 @@ Map<String, dynamic> _$ExpenseReadToJson(ExpenseRead instance) =>
       'expense_date': instance.expenseDate.toIso8601String(),
       'expense_total': instance.expenseTotal,
       'category': const ExpenseCategoryConverter().toJson(instance.category),
+      'status': const ExpenseStatusConverter().toJson(instance.status),
     };
 
 ExpenseCreate _$ExpenseCreateFromJson(Map<String, dynamic> json) =>

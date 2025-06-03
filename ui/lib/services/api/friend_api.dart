@@ -1,3 +1,4 @@
+import 'package:flutter_frontend/models/expense.dart' show ExpenseRead;
 import 'package:flutter_frontend/models/friend.dart' show FriendRead;
 import 'package:flutter_frontend/models/user.dart' show UserRead;
 import 'package:flutter_frontend/services/api/common.dart';
@@ -38,6 +39,42 @@ class FriendApiClient extends BaseApiClient {
       throw ApiException(
         response.statusCode,
         'Failed to fetch friends',
+        response.body,
+      );
+    }
+  }
+
+  Future<UserRead?> getFriend(String userId) async {
+    final response = await client.get(backendUri("/friends/$userId"));
+
+    if (response.statusCode == 200) {
+      return UserRead.fromJson(safeJsonDecode((response.body)));
+    } else if (response.statusCode == 404) {
+      return null;
+    } else {
+      logger.info(
+        "Failed to fetch friend: ${response.statusCode} ${response.body}",
+      );
+      throw ApiException(
+        response.statusCode,
+        'Failed to fetch friend',
+        response.body,
+      );
+    }
+  }
+
+  Future<List<ExpenseRead>> getFriendExpenses(String userId) async {
+    final response = await client.get(backendUri("/friends/$userId/expenses"));
+
+    if (response.statusCode == 200) {
+      return safeJsonDecodeList(response.body, ExpenseRead.fromJson);
+    } else {
+      logger.info(
+        "Failed to fetch friend expenses: ${response.statusCode} ${response.body}",
+      );
+      throw ApiException(
+        response.statusCode,
+        'Failed to fetch friend expenses',
         response.body,
       );
     }

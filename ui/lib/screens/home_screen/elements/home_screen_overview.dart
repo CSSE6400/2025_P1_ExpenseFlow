@@ -22,14 +22,33 @@ class HomeScreenOverview extends StatelessWidget {
   double get remaining => monthlyBudget - spent;
 
   List<PieChartSectionData> _buildPieSections(double chartSize) {
-    return categories.map((category) {
-      return PieChartSectionData(
-        color: category.color!,
-        value: category.amount,
-        title: '',
-        radius: chartSize * 0.2,
+    final List<PieChartSectionData> sections =
+        categories.map((category) {
+          return PieChartSectionData(
+            color: category.color!,
+            value: category.amount,
+            title: '',
+            radius: chartSize * 0.2,
+          );
+        }).toList();
+
+    final totalSpent = categories.fold(0.0, (sum, cat) => sum + cat.amount);
+
+    // Show remaining slice if spent < budget
+    if (monthlyBudget > totalSpent) {
+      sections.add(
+        PieChartSectionData(
+          color: ColorPalette.background.withOpacity(
+            0.2,
+          ), // or any neutral color
+          value: monthlyBudget - totalSpent,
+          title: '',
+          radius: chartSize * 0.2,
+        ),
       );
-    }).toList();
+    }
+
+    return sections;
   }
 
   List<Widget> _buildTopCategories(ProportionalSizes proportionalSizes) {
