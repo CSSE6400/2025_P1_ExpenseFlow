@@ -7,7 +7,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from expenseflow.enums import GroupRole
-from expenseflow.errors import ExistsError, RoleError
+from expenseflow.errors import ExistsError, ExpenseFlowError, RoleError
 from expenseflow.group.models import GroupModel, GroupUserModel
 from expenseflow.group.schemas import GroupCreate, GroupUpdate
 from expenseflow.user.models import UserModel
@@ -152,6 +152,10 @@ async def delete_user_from_group(
     Returns:
         GroupUserModel: _description_
     """
+    if actor.user_id == user_to_delete.user_id:
+        msg = "You cannot delete yourself from the group."
+        raise ExpenseFlowError(msg)
+
     # Get adding user's role
     actor_membership = await get_group_user(session, actor, group)
     if actor_membership is None:
