@@ -40,20 +40,20 @@ class BottomNavBar extends StatelessWidget {
         },
       },
       {
-        'screen': 'Groups',
-        'icon': 'assets/icons/group.png',
-        'onTap': () {
-          if (!inactive && currentScreen != 'Groups') {
-            Navigator.pushNamed(context, '/groups_and_friends');
-          }
-        },
-      },
-      {
         'screen': 'Add',
         'icon': 'assets/icons/add.png',
         'onTap': () {
           if (!inactive && currentScreen != 'Add') {
             Navigator.pushNamed(context, '/add_expense');
+          }
+        },
+      },
+      {
+        'screen': 'Groups',
+        'icon': 'assets/icons/group.png',
+        'onTap': () {
+          if (!inactive && currentScreen != 'Groups') {
+            Navigator.pushNamed(context, '/groups_and_friends');
           }
         },
       },
