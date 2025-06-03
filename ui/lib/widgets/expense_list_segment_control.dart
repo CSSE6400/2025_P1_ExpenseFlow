@@ -4,18 +4,18 @@ import 'package:flutter_frontend/utils/string_utils.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../common/proportional_sizes.dart';
 
-enum ExpenseSegment {
+enum ExpenseListSegment {
   unpaid,
   all;
 
   String get label => titleCaseString(name);
 }
 
-class ExpenseSegmentControl extends StatelessWidget {
-  final ExpenseSegment selectedSegment;
-  final void Function(ExpenseSegment) onSegmentChanged;
+class ExpenseListSegmentControl extends StatelessWidget {
+  final ExpenseListSegment selectedSegment;
+  final void Function(ExpenseListSegment) onSegmentChanged;
 
-  const ExpenseSegmentControl({
+  const ExpenseListSegmentControl({
     super.key,
     required this.selectedSegment,
     required this.onSegmentChanged,
@@ -55,7 +55,7 @@ class ExpenseSegmentControl extends StatelessWidget {
                   style: GoogleFonts.roboto(
                     fontWeight: FontWeight.w600,
                     color:
-                        selectedSegment == ExpenseSegment.unpaid
+                        selectedSegment == ExpenseListSegment.unpaid
                             ? selectedTextColor
                             : unselectedTextColor,
                   ),
@@ -67,7 +67,7 @@ class ExpenseSegmentControl extends StatelessWidget {
                   style: GoogleFonts.roboto(
                     fontWeight: FontWeight.w600,
                     color:
-                        selectedSegment == ExpenseSegment.all
+                        selectedSegment == ExpenseListSegment.all
                             ? selectedTextColor
                             : unselectedTextColor,
                   ),
@@ -75,12 +75,12 @@ class ExpenseSegmentControl extends StatelessWidget {
               ),
             },
             onValueChanged: (String? value) {
-              // convert string value back to ExpenseSegment
-              ExpenseSegment? valueSegment;
+              // convert string value back to ExpenseListSegment
+              ExpenseListSegment? valueSegment;
               if (value == 'Unpaid') {
-                valueSegment = ExpenseSegment.unpaid;
+                valueSegment = ExpenseListSegment.unpaid;
               } else if (value == 'All') {
-                valueSegment = ExpenseSegment.all;
+                valueSegment = ExpenseListSegment.all;
               }
 
               if (valueSegment != null) {

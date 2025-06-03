@@ -5,17 +5,15 @@ import 'package:flutter_frontend/models/enums.dart';
 import 'package:flutter_frontend/models/expense.dart'
     show ExpenseCreate, ExpenseRead, SplitStatusInfo;
 import 'package:flutter_frontend/models/user.dart';
-import 'package:flutter_frontend/screens/see_expense_screen/elements/see_expense_screen_status.dart'
-    show SeeExpenseScreenActiveStatus;
+import 'package:flutter_frontend/screens/see_expense_screen/elements/see_expense_approvals.dart';
+import 'package:flutter_frontend/screens/see_expense_screen/elements/see_expense_view.dart';
 import 'package:flutter_frontend/services/api_service.dart' show ApiService;
-import 'package:flutter_frontend/widgets/expense_form.dart';
+import 'package:flutter_frontend/screens/see_expense_screen/elements/expense_view_segment_control.dart';
 import 'package:logging/logging.dart' show Logger;
 import 'package:provider/provider.dart' show Provider;
 import '../../common/color_palette.dart';
 import '../../common/bottom_nav_bar.dart';
 import '../../common/app_bar.dart';
-import '../../../common/proportional_sizes.dart';
-import '../../../common/custom_button.dart';
 
 class SeeExpenseScreen extends StatefulWidget {
   final String expenseId;
@@ -31,6 +29,7 @@ class _SeeExpenseScreenState extends State<SeeExpenseScreen> {
   ExpenseRead? expense;
   UserRead? me;
   List<SplitStatusInfo> splitStatuses = [];
+  ExpenseViewSegment selectedSegment = ExpenseViewSegment.information;
 
   bool isLoading = true;
 
@@ -162,68 +161,46 @@ class _SeeExpenseScreenState extends State<SeeExpenseScreen> {
       return const Scaffold(body: Center(child: Text("Expense not found")));
     }
 
-    final proportionalSizes = ProportionalSizes(context: context);
-
     return Scaffold(
       backgroundColor: ColorPalette.background,
       appBar: AppBarWidget(screenName: 'View Expense', showBackButton: true),
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: SafeArea(
-          child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(
-              horizontal: proportionalSizes.scaleWidth(20),
-              vertical: proportionalSizes.scaleHeight(20),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SeeExpenseScreenActiveStatus(status: expense!.status),
-                SizedBox(height: proportionalSizes.scaleHeight(20)),
-                ExpenseForm(
-                  initialExpense: _currentExpense,
-                  canEdit: isEditable(),
+          child: Column(
+            children: [
+              ExpenseViewSegmentControl(
+                selectedSegment: selectedSegment,
+                onSegmentChanged: (segment) {
+                  setState(() => selectedSegment = segment);
+                },
+              ),
+
+              if (selectedSegment == ExpenseViewSegment.information) ...[
+                SeeExpenseView(
+                  expense: expense!,
+                  currentExpense: _currentExpense,
+                  isEditMode: isEditMode,
+                  isEditable: isEditable(),
+                  isItemsAndSplitsEditable: isItemsAndSplitsEditable(),
+                  isFormValid: isFormValid,
                   onValidityChanged: updateFormValid,
                   onExpenseChanged: updateExpense,
-                  canEditItems: isItemsAndSplitsEditable(),
-                  canEditSplits: isItemsAndSplitsEditable(),
+                  onSave: saveExpense,
+                  onEdit: () => setState(() => isEditMode = true),
+                  onCancel:
+                      () => setState(() {
+                        isEditMode = false;
+                        _currentExpense = null;
+                      }),
                 ),
-                SizedBox(height: proportionalSizes.scaleHeight(24)),
-                CustomButton(
-                  label: isEditMode ? 'Save' : 'Edit',
-                  onPressed:
-                      isEditMode
-                          ? (isFormValid ? saveExpense : () {})
-                          : () {
-                            setState(() {
-                              isEditMode = true;
-                            });
-                          },
-                  sizeType: ButtonSizeType.full,
-                  state:
-                      isEditMode
-                          ? (isFormValid
-                              ? ButtonState.enabled
-                              : ButtonState.disabled)
-                          : ButtonState.enabled,
+              ] else ...[
+                SeeExpenseApprovals(
+                  expense: expense!,
+                  splitStatuses: splitStatuses,
                 ),
-                SizedBox(height: proportionalSizes.scaleHeight(16)),
-                isEditMode
-                    ? CustomButton(
-                      label: 'Cancel',
-                      onPressed: () {
-                        setState(() {
-                          isEditMode = false;
-                          _currentExpense = null; // Reset the current expense
-                        });
-                      },
-                      sizeType: ButtonSizeType.full,
-                      state: ButtonState.enabled,
-                    )
-                    : const SizedBox.shrink(),
-                SizedBox(height: proportionalSizes.scaleHeight(96)),
               ],
-            ),
+            ],
           ),
         ),
       ),
