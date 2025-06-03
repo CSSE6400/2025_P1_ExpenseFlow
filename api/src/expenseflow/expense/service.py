@@ -120,7 +120,7 @@ async def create_expense_items(
         expense_items_in (list[ExpenseItemCreate]): list of expense items
 
     Raises:
-        ValueError: Raised if splits don't add up to 100%
+        ExpenseFlowError: Raised if splits don't add up to 100%
         ExistsError: Raised if invalid user is specified in the split
 
     Returns:
