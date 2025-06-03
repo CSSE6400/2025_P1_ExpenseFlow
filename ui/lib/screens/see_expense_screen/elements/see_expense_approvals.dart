@@ -101,10 +101,12 @@ class SeeExpenseApprovals extends StatelessWidget {
                   ),
                   child: Row(
                     children: [
-                      IconMaker(
-                        assetPath: 'assets/icons/check.png',
-                        color: statusColor,
-                      ),
+                      split.status == ExpenseStatus.paid
+                          ? IconMaker(
+                            assetPath: 'assets/icons/check.png',
+                            color: statusColor,
+                          )
+                          : SizedBox.shrink(),
                       SizedBox(width: proportionalSizes.scaleWidth(8)),
                       Expanded(
                         child: Text(
