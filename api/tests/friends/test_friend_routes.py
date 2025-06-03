@@ -4,6 +4,8 @@ import pytest  # noqa: F401
 
 from fastapi import APIRouter, HTTPException, status
 
+from uuid import uuid4
+
 from expenseflow.enums import FriendStatus
 from expenseflow.friend.models import UserModel, FriendModel
 from expenseflow.friend.schemas import FriendRead, UserRead
@@ -13,6 +15,9 @@ from expenseflow.friend.service import create_accept_friend_request, \
 from sqlalchemy.ext.asyncio import AsyncSession
 from httpx import AsyncClient
 from expenseflow.errors import ExpenseFlowError
+
+# remove later
+from expenseflow.user.service import get_user_by_id, get_user_by_nickname, get_all_users
 
 base_url = "/friends"
 
@@ -24,9 +29,7 @@ async def test_get_friends(session: AsyncSession,
     sender = default_user
     receiver = user_model_factory.build()
     
-    request = test_client.build_request(method="get", url=base_url, 
-                                        params={"db": session,
-                                                "user": sender})
+    request = test_client.build_request(method="get", url=base_url)
     
     response = await test_client.send(request)
     assert response.json() == []
@@ -44,9 +47,11 @@ async def test_get_friends(session: AsyncSession,
     assert response.status_code == 200
     assert len(response.json()) == 1
 
+    
+
 @pytest.mark.asyncio
 async def test_get_requests(session: AsyncSession,
-                            test_client: AsyncClient, 
+                            test_client: AsyncClient,
                             user_model_factory,
                             default_user):
     default = default_user
@@ -54,15 +59,11 @@ async def test_get_requests(session: AsyncSession,
     sender = user_model_factory.build()
     sent_request = test_client.build_request(method="get",
                                              url=base_url+"/requests",
-                                             params={"db": session,
-                                                     "user": default,
-                                                     "sent": True})
+                                             params={"sent": True})
     
     recv_request = test_client.build_request(method="get",
                                              url=base_url+"/requests",
-                                             params={"db": session,
-                                                     "user": default,
-                                                     "sent": False})
+                                             params={"sent": False})
     
     sent_response = await test_client.send(sent_request)
     recv_response = await test_client.send(recv_request)
@@ -96,25 +97,17 @@ async def test_create_by_nickname(session: AsyncSession,
                                   user_model_factory,
                                   default_user):
     lucas_request = test_client.build_request(method="put",
-                                        url=base_url,
-                                        params={"db": session,
-                                                "user": default_user,
-                                                "nickname": "lucashicks1"})
+                                              url=base_url,
+                                              params={"nickname": "lucashicks1"})
     david_request = test_client.build_request(method="put",
-                                        url=base_url,
-                                        params={"db": session,
-                                                "user": default_user,
-                                                "nickname": "daqoblade"})
+                                              url=base_url,
+                                              params={"nickname": "daqoblade"})
     tom_request = test_client.build_request(method="put",
-                                        url=base_url,
-                                        params={"db": session,
-                                                "user": default_user,
-                                                "nickname": "superstrooper"})
+                                            url=base_url,
+                                            params={"nickname": "superstrooper"})
     bad_request = test_client.build_request(method="put",
-                                        url=base_url,
-                                        params={"db": session,
-                                                "user": default_user,
-                                                "nickname": "faker"})
+                                            url=base_url,
+                                            params={"nickname": "faker"})
     lucas = user_model_factory.build()
     david = user_model_factory.build()
     tom = user_model_factory.build()
@@ -140,14 +133,47 @@ async def test_create_by_nickname(session: AsyncSession,
     assert bad_response.json()['detail'] == \
         "User under the nickname 'faker' could not be found"
     
-    
 
 @pytest.mark.asyncio
-async def test_create(test_client: AsyncClient, user_model_factory):
+async def test_create(session: AsyncSession,
+                      test_client: AsyncClient,
+                      user_model_factory,
+                      default_user):
+    
+    user = user_model_factory.build()
+    nickname = "test_dummy"
+    user.nickname = nickname
+
+    session.add(user)
+    await session.commit()
+    
+    user = await get_user_by_nickname(session, nickname)
+    user_id = user.user_id
+
+    friend_list = await get_sent_friend_requests(session, default_user)
+    assert len(friend_list) == 0
+
     request = test_client.build_request(method="put",
                                         url=base_url+f"/{user_id}")
+    bad_uuid = uuid4()
+    bad_request = test_client.build_request(method="put",
+                                            url=base_url+f"/{bad_uuid}")
+
+    response = await test_client.send(request)
+
+    friend_list = await get_sent_friend_requests(session, default_user)
+    assert len(friend_list) == 1
+    
+    bad_response = await test_client.send(bad_request)
+
+    assert bad_response.json()['detail'] == \
+        f"User under the id '{bad_uuid}' could not be found"
 
 @pytest.mark.asyncio
-async def test_delete(test_client: AsyncClient, user_model_factory):
+async def test_delete(session: AsyncSession,
+                      test_client: AsyncClient,
+                      user_model_factory,
+                      default_user):
+    user_id = default_user.user_id
     request = test_client.build_request(method="delete",
                                         url=base_url+f"/{user_id}")
