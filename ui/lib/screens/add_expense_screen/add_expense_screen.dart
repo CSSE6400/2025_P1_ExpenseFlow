@@ -81,6 +81,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                 ExpenseForm(
                   onValidityChanged: updateFormValid,
                   onExpenseChanged: updateExpense,
+                  canEdit: true,
                   canEditItems: true,
                   canEditSplits: true,
                 ),

@@ -17,6 +17,8 @@ class ExpenseForm extends StatefulWidget {
 
   final void Function(bool isValid) onValidityChanged;
   final void Function(ExpenseCreate expense)? onExpenseChanged;
+
+  final bool canEdit;
   final bool canEditItems;
   final bool canEditSplits;
 
@@ -25,6 +27,7 @@ class ExpenseForm extends StatefulWidget {
     this.initialExpense,
     required this.onValidityChanged,
     required this.onExpenseChanged,
+    required this.canEdit,
     required this.canEditItems,
     required this.canEditSplits,
   });
@@ -137,8 +140,8 @@ class _ExpenseFormState extends State<ExpenseForm> {
         GeneralField(
           label: 'Name*',
           initialValue: _name,
-          isEditable: true,
-          showStatusIcon: true,
+          isEditable: widget.canEdit,
+          showStatusIcon: widget.canEdit,
           validationRule: (value) => value.trim().isNotEmpty,
           onValidityChanged: (isValid) {
             setState(() {
@@ -147,14 +150,15 @@ class _ExpenseFormState extends State<ExpenseForm> {
             _updateFormValidity();
           },
           maxLength: 50,
+
           onChanged: (value) => _updateField(() => _name = value),
         ),
         CustomDivider(),
         GeneralField(
           label: 'Description*',
           initialValue: _description,
-          isEditable: true,
-          showStatusIcon: true,
+          isEditable: widget.canEdit,
+          showStatusIcon: widget.canEdit,
           validationRule: (value) => value.trim().isNotEmpty,
           onValidityChanged: (isValid) {
             setState(() {
@@ -183,6 +187,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
         CustomDivider(),
         CustomIconField(
           label: 'Items',
+          isEnabled: widget.canEditItems && widget.canEdit,
           value: formattedItemsString,
           hintText: 'No items',
           trailingIconPath: 'assets/icons/add.png',
@@ -195,6 +200,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
               ExpenseCategory.values
                   .map((e) => capitalizeString(e.label))
                   .toList(),
+          isEditable: widget.canEdit,
           placeholder: 'Select Category',
           addDialogHeading: 'New Category',
           addDialogHintText: 'Enter category name',
@@ -213,6 +219,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
         CustomIconField(
           label: 'Split With',
           value: '',
+          isEnabled: widget.canEditSplits && widget.canEdit,
           hintText: 'Select Group or Friends',
           trailingIconPath: 'assets/icons/search.png',
           inactive: _expenseItems.isEmpty,
@@ -231,6 +238,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
         CustomIconField(
           label: 'Receipt',
           value: '',
+          isEnabled: widget.canEdit,
           hintText: 'Save your Receipt here',
           trailingIconPath: 'assets/icons/clip.png',
           onTap: () {

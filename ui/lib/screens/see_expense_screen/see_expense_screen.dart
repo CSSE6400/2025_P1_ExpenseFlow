@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/common/snack_bar.dart' show showCustomSnackBar;
-import 'package:flutter_frontend/models/expense.dart' show ExpenseRead;
-import 'package:flutter_frontend/screens/see_expense_screen/elements/see_expense_screen_fields.dart'
-    show SeeExpenseScreenFields;
+import 'package:flutter_frontend/common/snack_bar.dart'
+    show SnackBarType, showCustomSnackBar;
+import 'package:flutter_frontend/models/enums.dart';
+import 'package:flutter_frontend/models/expense.dart'
+    show ExpenseCreate, ExpenseRead;
 import 'package:flutter_frontend/screens/see_expense_screen/elements/see_expense_screen_status.dart'
     show SeeExpenseScreenActiveStatus;
 import 'package:flutter_frontend/services/api_service.dart' show ApiService;
+import 'package:flutter_frontend/widgets/expense_form.dart';
 import 'package:logging/logging.dart' show Logger;
 import 'package:provider/provider.dart' show Provider;
 import '../../common/color_palette.dart';
@@ -29,12 +31,49 @@ class _SeeExpenseScreenState extends State<SeeExpenseScreen> {
 
   bool isLoading = true;
 
-  // Validation and editing state variables
-  bool isNameValid = true;
-  bool isAmountValid = true;
   bool isEditMode = false;
 
-  bool get isFormValid => isNameValid && isAmountValid;
+  bool isFormValid = true;
+  void updateFormValid(bool isValid) {
+    setState(() => isFormValid = isValid);
+  }
+
+  ExpenseCreate? _currentExpense;
+  void updateExpense(ExpenseCreate expense) {
+    _currentExpense = expense;
+  }
+
+  Future<void> saveExpense() async {
+    final apiService = Provider.of<ApiService>(context, listen: false);
+
+    if (_currentExpense == null) {
+      showCustomSnackBar(context, normalText: "Please fill in all fields");
+      return;
+    }
+
+    try {
+      final newExpense = await apiService.expenseApi.updateExpense(
+        expense!.expenseId,
+        _currentExpense!,
+      );
+
+      setState(() {
+        isEditMode = false;
+        expense = newExpense;
+        _currentExpense = ExpenseCreate.fromExpenseRead(newExpense);
+      });
+      if (!mounted) return;
+      showCustomSnackBar(
+        context,
+        type: SnackBarType.success,
+        normalText: "Successfully updated expense",
+      );
+    } catch (e) {
+      _logger.severe("Failed to update expense", e);
+      if (!mounted) return;
+      showCustomSnackBar(context, normalText: "Failed to update expense");
+    }
+  }
 
   @override
   void initState() {
@@ -62,6 +101,7 @@ class _SeeExpenseScreenState extends State<SeeExpenseScreen> {
 
       setState(() {
         expense = fetchedExpense;
+        _currentExpense = ExpenseCreate.fromExpenseRead(expense!);
         isLoading = false;
       });
     } catch (e) {
@@ -70,24 +110,6 @@ class _SeeExpenseScreenState extends State<SeeExpenseScreen> {
       showCustomSnackBar(context, normalText: 'Failed to fetch expense');
       setState(() => isLoading = false);
     }
-  }
-
-  void updateNameValidity(bool isValid) {
-    setState(() => isNameValid = isValid);
-  }
-
-  void updateAmountValidity(bool isValid) {
-    setState(() => isAmountValid = isValid);
-  }
-
-  Future<void> _onSave() async {
-    // TODO: Save updated fields to backend using expense.expenseId
-
-    setState(() => isEditMode = false);
-  }
-
-  void _onEdit() {
-    setState(() => isEditMode = true);
   }
 
   @override
@@ -119,18 +141,25 @@ class _SeeExpenseScreenState extends State<SeeExpenseScreen> {
               children: [
                 SeeExpenseScreenActiveStatus(status: expense!.status),
                 SizedBox(height: proportionalSizes.scaleHeight(20)),
-                SeeExpenseScreenFields(
-                  onNameValidityChanged: updateNameValidity,
-                  onAmountValidityChanged: updateAmountValidity,
-                  isAmountValid: isAmountValid,
-                  isReadOnly: !isEditMode,
-                  transactionId: expense!.expenseId,
+                ExpenseForm(
+                  initialExpense: _currentExpense,
+                  canEdit: isEditMode,
+                  onValidityChanged: updateFormValid,
+                  onExpenseChanged: updateExpense,
+                  canEditItems: expense?.status == ExpenseStatus.requested,
+                  canEditSplits: expense?.status == ExpenseStatus.requested,
                 ),
                 SizedBox(height: proportionalSizes.scaleHeight(24)),
                 CustomButton(
                   label: isEditMode ? 'Save' : 'Edit',
                   onPressed:
-                      isEditMode ? (isFormValid ? _onSave : () {}) : _onEdit,
+                      isEditMode
+                          ? (isFormValid ? saveExpense : () {})
+                          : () {
+                            setState(() {
+                              isEditMode = true;
+                            });
+                          },
                   sizeType: ButtonSizeType.full,
                   state:
                       isEditMode
@@ -139,6 +168,20 @@ class _SeeExpenseScreenState extends State<SeeExpenseScreen> {
                               : ButtonState.disabled)
                           : ButtonState.enabled,
                 ),
+                SizedBox(height: proportionalSizes.scaleHeight(16)),
+                isEditMode
+                    ? CustomButton(
+                      label: 'Cancel',
+                      onPressed: () {
+                        setState(() {
+                          isEditMode = false;
+                          _currentExpense = null; // Reset the current expense
+                        });
+                      },
+                      sizeType: ButtonSizeType.full,
+                      state: ButtonState.enabled,
+                    )
+                    : const SizedBox.shrink(),
                 SizedBox(height: proportionalSizes.scaleHeight(96)),
               ],
             ),
