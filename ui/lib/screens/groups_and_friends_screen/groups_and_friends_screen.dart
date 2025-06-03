@@ -1,8 +1,8 @@
 import 'package:flutter_frontend/common/app_bar.dart' show AppBarWidget;
 import 'package:flutter_frontend/common/color_palette.dart' show ColorPalette;
-import 'package:flutter_frontend/screens/groups_and_friends_screen/elements/groups_and_friends_friend_list.dart'
+import 'package:flutter_frontend/screens/groups_and_friends_screen/elements/friend_list.dart'
     show FriendsListView;
-import 'package:flutter_frontend/screens/groups_and_friends_screen/elements/groups_and_friends_group_list.dart'
+import 'package:flutter_frontend/screens/groups_and_friends_screen/elements/group_list.dart'
     show GroupsListView;
 import 'package:flutter_frontend/screens/groups_and_friends_screen/elements/groups_and_friends_segment_control.dart'
     show GroupsAndFriendsSegmentControl;
