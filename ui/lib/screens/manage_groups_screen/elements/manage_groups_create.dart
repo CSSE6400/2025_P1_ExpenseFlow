@@ -11,7 +11,6 @@ import '../../../common/proportional_sizes.dart';
 import '../../../common/custom_button.dart';
 import '../../add_friends_to_group_screen/elements/add_friends_to_group_friends.dart';
 
-
 class AddGroupScreenMainBody extends StatefulWidget {
   const AddGroupScreenMainBody({super.key});
 
@@ -38,9 +37,8 @@ class _AddGroupScreenMainBodyState extends State<AddGroupScreenMainBody> {
     final selectedFriends = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => AddFriendsScreen(
-        existingFriends: _selectedFriends,
-      ),
+        builder:
+            (context) => AddFriendsScreen(existingFriends: _selectedFriends),
       ),
     );
 
@@ -74,7 +72,9 @@ class _AddGroupScreenMainBodyState extends State<AddGroupScreenMainBody> {
     _logger.info("feilds valid");
 
     try {
-      final createdGroup = await apiService.groupApi.createGroup(_currentGroup!);
+      final createdGroup = await apiService.groupApi.createGroup(
+        _currentGroup!,
+      );
 
       // // add user that created the group. Seems that I do not need this?
       // final currentUser = await apiService.userApi.getCurrentUser();
@@ -101,7 +101,7 @@ class _AddGroupScreenMainBodyState extends State<AddGroupScreenMainBody> {
       showCustomSnackBar(
         context,
         normalText: "Group created successfully",
-        backgroundColor: Colors.green,
+        type: SnackBarType.success,
       );
       Navigator.pushNamed(context, '/');
     } catch (e) {
@@ -140,8 +140,7 @@ class _AddGroupScreenMainBodyState extends State<AddGroupScreenMainBody> {
                   }
                 },
                 sizeType: ButtonSizeType.full,
-                state:
-                    isFormValid ? ButtonState.enabled : ButtonState.disabled,
+                state: isFormValid ? ButtonState.enabled : ButtonState.disabled,
               ),
               SizedBox(height: proportionalSizes.scaleHeight(96)),
             ],

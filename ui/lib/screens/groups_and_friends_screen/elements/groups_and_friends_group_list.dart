@@ -25,8 +25,7 @@ class GroupsAndFriendsGroupList extends StatefulWidget {
       _GroupsAndFriendsGroupListState();
 }
 
-class _GroupsAndFriendsGroupListState
-    extends State<GroupsAndFriendsGroupList> {
+class _GroupsAndFriendsGroupListState extends State<GroupsAndFriendsGroupList> {
   late List<Group> allGroups;
   List<Group>? filteredGroups;
   final Logger _logger = Logger("GroupsAndFriendsGroupsListLogger");
@@ -56,24 +55,27 @@ class _GroupsAndFriendsGroupListState
       final userReads = await apiService.groupApi.getUserGroups();
 
       // Convert UserRead to Friend
-      allGroups = userReads
-          .map((group) => Group(
-                name: '@${group.name}',
-                isActive: true, 
-                uuid: group.groupId,
-              ))
-          .toList();
+      allGroups =
+          userReads
+              .map(
+                (group) => Group(
+                  name: '@${group.name}',
+                  isActive: true,
+                  uuid: group.groupId,
+                ),
+              )
+              .toList();
 
-      if (allGroups.isEmpty) { 
-        _logger.info("User has no groups"); 
-      // allGroups = [
-      //   Group(name: 'Trip', isActive: true),
+      if (allGroups.isEmpty) {
+        _logger.info("User has no groups");
+        // allGroups = [
+        //   Group(name: 'Trip', isActive: true),
         // Group(name: 'Flatmates', isActive: false),
         // Group(name: 'Cricket Club', isActive: true),
         // Group(name: 'Project Team X', isActive: false),
         // Group(name: 'Birthday', isActive: true),
         // Group(name: 'Group ABC', isActive: false),
-      // ];
+        // ];
       }
 
       setState(() {
@@ -82,26 +84,23 @@ class _GroupsAndFriendsGroupListState
       });
     } on ApiException catch (e) {
       _logger.warning("API exception while fetching friends: ${e.message}");
-      showCustomSnackBar(
-        context,
-        normalText: "Failed to load friends",
-      );
+      showCustomSnackBar(context, normalText: "Failed to load friends");
     } catch (e) {
       _logger.severe("Unexpected error: $e");
-      showCustomSnackBar(
-        context,
-        normalText: "Something went wrong",
-      );
+      showCustomSnackBar(context, normalText: "Something went wrong");
     }
   }
 
   void _filterGroups(String query) {
     setState(() {
-      filteredGroups = allGroups
-          .where((group) =>
-              group.name.toLowerCase().contains(query.toLowerCase()))
-          .toList()
-        ..sort((a, b) => b.isActive ? 1 : -1); // active groups first
+      filteredGroups =
+          allGroups
+              .where(
+                (group) =>
+                    group.name.toLowerCase().contains(query.toLowerCase()),
+              )
+              .toList()
+            ..sort((a, b) => b.isActive ? 1 : -1); // active groups first
     });
   }
 
@@ -116,22 +115,19 @@ class _GroupsAndFriendsGroupListState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        search.SearchBar(
-          hintText: 'Search groups',
-          onChanged: _filterGroups,
-        ),
+        search.SearchBar(hintText: 'Search groups', onChanged: _filterGroups),
         const SizedBox(height: 16),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  child: CustomButton(
-                    label: 'Manage Groups',
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/manage_groups');
-                    },
-                    state: ButtonState.enabled,
-                    sizeType: ButtonSizeType.full,
-                  ),
-                ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16.0),
+          child: CustomButton(
+            label: 'Manage Groups',
+            onPressed: () {
+              Navigator.pushNamed(context, '/manage_groups');
+            },
+            state: ButtonState.enabled,
+            sizeType: ButtonSizeType.full,
+          ),
+        ),
         const SizedBox(height: 16),
         if (allGroups.isEmpty)
           Padding(
@@ -148,7 +144,8 @@ class _GroupsAndFriendsGroupListState
             ),
           )
         else
-        ...filteredGroups!.map((group) => Padding(
+          ...filteredGroups!.map(
+            (group) => Padding(
               padding: EdgeInsets.symmetric(
                 vertical: proportionalSizes.scaleHeight(8),
               ),
@@ -157,7 +154,10 @@ class _GroupsAndFriendsGroupListState
                   Navigator.pushNamed(
                     context,
                     '/group_expense',
-                    arguments: {'groupName': group.name, 'groupUUID': group.uuid,},
+                    arguments: {
+                      'groupName': group.name,
+                      'groupUUID': group.uuid,
+                    },
                   );
                 },
                 child: Row(
@@ -204,7 +204,8 @@ class _GroupsAndFriendsGroupListState
                   ],
                 ),
               ),
-            )),
+            ),
+          ),
       ],
     );
   }

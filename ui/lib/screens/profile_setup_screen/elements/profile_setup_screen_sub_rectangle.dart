@@ -27,12 +27,14 @@ class _ProfileSetupScreenSubRectangleState
   final Logger _logger = Logger("ProfileSetupScreenSubRectangle");
   bool isFirstNameValid = false;
   bool isLastNameValid = false;
+  bool isBudgetValid = false;
 
-  String _firstName = "";
-  String _lastName = "";
-  String _nickname = "";
+  String _firstName = "John";
+  String _lastName = "Doe";
+  String _nickname = "johnny_doe";
+  int _budget = 0;
 
-  bool get isFormValid => isFirstNameValid && isLastNameValid;
+  bool get isFormValid => isFirstNameValid && isLastNameValid && isBudgetValid;
 
   void updateFirstNameValidity(bool isValid) {
     setState(() => isFirstNameValid = isValid);
@@ -40,6 +42,10 @@ class _ProfileSetupScreenSubRectangleState
 
   void updateLastNameValidity(bool isValid) {
     setState(() => isLastNameValid = isValid);
+  }
+
+  void updateBudgetValidity(bool isValid) {
+    setState(() => isBudgetValid = isValid);
   }
 
   Future<void> onSetup() async {
@@ -73,6 +79,7 @@ class _ProfileSetupScreenSubRectangleState
           nickname: _nickname,
           firstName: _firstName,
           lastName: _lastName,
+          budget: _budget,
         ),
       );
       if (!mounted) return;
@@ -120,13 +127,14 @@ class _ProfileSetupScreenSubRectangleState
             // First Name field
             GeneralField(
               label: 'First Name',
-              initialValue: 'John',
+              initialValue: _firstName,
               isEditable: true,
               showStatusIcon: true,
               inputRules: [InputRuleType.lettersOnly],
               validationRule: (value) {
                 final nameRegex = RegExp(r"^[A-Za-z ]+$");
-                return nameRegex.hasMatch(value.trim());
+                final trimmed = value.trim();
+                return nameRegex.hasMatch(trimmed) && trimmed.isNotEmpty;
               },
               onValidityChanged: updateFirstNameValidity,
               maxLength: 50,
@@ -139,13 +147,14 @@ class _ProfileSetupScreenSubRectangleState
             // Last Name field
             GeneralField(
               label: 'Last Name',
-              initialValue: 'Doe',
+              initialValue: _lastName,
               isEditable: true,
               showStatusIcon: true,
               inputRules: [InputRuleType.lettersOnly],
               validationRule: (value) {
                 final nameRegex = RegExp(r"^[A-Za-z ]+$");
-                return nameRegex.hasMatch(value.trim());
+                final trimmed = value.trim();
+                return nameRegex.hasMatch(trimmed) && trimmed.isNotEmpty;
               },
               onValidityChanged: updateLastNameValidity,
               maxLength: 50,
@@ -158,7 +167,7 @@ class _ProfileSetupScreenSubRectangleState
             // Nickname field
             GeneralField(
               label: 'Nickname',
-              initialValue: 'Johnny',
+              initialValue: _nickname,
               isEditable: true,
               showStatusIcon: true,
               inputRules: [
@@ -170,6 +179,29 @@ class _ProfileSetupScreenSubRectangleState
               },
             ),
             CustomDivider(),
+
+            // Budget field
+            GeneralField(
+              label: 'Monthly Budget (\$)*',
+              initialValue: _budget.toString(),
+              isEditable: true,
+              showStatusIcon: true,
+              inputRules: [
+                InputRuleType.numericOnly, // prevent accidental space
+              ],
+              validationRule: (value) {
+                final number = double.tryParse(value.trim());
+                return number != null && number > 0;
+              },
+              onValidityChanged: updateBudgetValidity,
+              onChanged: (value) {
+                final num = int.tryParse(value.trim());
+                if (num != null) {
+                  _budget = num;
+                }
+              },
+            ),
+            SizedBox(height: proportionalSizes.scaleHeight(24)),
 
             SizedBox(height: proportionalSizes.scaleHeight(24)),
 

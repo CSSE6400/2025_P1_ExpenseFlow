@@ -11,12 +11,18 @@ from expenseflow.entity.service import get_entity
 from expenseflow.enums import ExpenseStatus
 from expenseflow.errors import NotFoundError, RoleError
 from expenseflow.expense.models import ExpenseModel
-from expenseflow.expense.schemas import ExpenseCreate, ExpenseRead, SplitStatusInfo
+from expenseflow.expense.schemas import (
+    ExpenseCreate,
+    ExpenseOverview,
+    ExpenseRead,
+    SplitStatusInfo,
+)
 from expenseflow.expense.service import (
     create_expense,
     get_expense,
     get_expense_status,
     get_expense_status_map,
+    get_expenses_overview,
     get_uploaded_expenses,
     get_user_split_status,
     update_expense,
@@ -79,6 +85,18 @@ async def update(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e)) from e
 
 
+@r.get("", response_model=list[ExpenseRead])
+async def get_uploaded_by_me(db: DbSession, user: CurrentUser) -> list[ExpenseModel]:
+    """Get expenses uploaded by me."""
+    return await get_uploaded_expenses(db, user)
+
+
+@r.get("/overview", response_model=ExpenseOverview)
+async def get_overview(db: DbSession, user: CurrentUser) -> ExpenseOverview:
+    """Get an overview of a user's expenses."""
+    return await get_expenses_overview(db, user)
+
+
 @r.get("/{expense_id}", response_model=ExpenseRead)
 async def get(db: DbSession, user: CurrentUser, expense_id: UUID) -> ExpenseModel:
     """Get expense."""
@@ -89,12 +107,6 @@ async def get(db: DbSession, user: CurrentUser, expense_id: UUID) -> ExpenseMode
             detail=f"Expense under the id '{expense_id}' could not be found",
         )
     return expense
-
-
-@r.get("", response_model=list[ExpenseRead])
-async def get_uploaded_by_me(db: DbSession, user: CurrentUser) -> list[ExpenseModel]:
-    """Get expenses uploaded by me."""
-    return await get_uploaded_expenses(db, user)
 
 
 @r.get("/{expense_id}/my-status", response_model=ExpenseStatus)

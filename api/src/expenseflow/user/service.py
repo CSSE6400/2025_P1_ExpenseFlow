@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from expenseflow.errors import ExistsError
 from expenseflow.user.models import UserModel
-from expenseflow.user.schemas import UserCreateInternal
+from expenseflow.user.schemas import UserCreateInternal, UserUpdate
 
 
 async def get_user_by_id(session: AsyncSession, user_id: UUID) -> UserModel | None:
@@ -54,8 +54,15 @@ async def create_user(session: AsyncSession, user_in: UserCreateInternal) -> Use
         first_name=user_in.first_name,
         last_name=user_in.last_name,
         token_id=user_in.token_id,
+        budget=user_in.budget,
     )
 
     session.add(new_user)
     await session.commit()
     return new_user
+
+
+async def update_user(user: UserModel, user_in: UserUpdate) -> UserModel:
+    """Update a user."""
+    user.budget = user_in.budget
+    return user

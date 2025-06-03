@@ -34,7 +34,7 @@ class _ManageFriendsFindState extends State<ManageFriendsFind> {
   void initState() {
     super.initState();
     _fetchAllUsers();
-    
+
     // allUsers = [
     //   Friend(name: '@abc123'),
     //   Friend(name: '@xyz987'),
@@ -52,42 +52,40 @@ class _ManageFriendsFindState extends State<ManageFriendsFind> {
     try {
       final allUserReads = await apiService.userApi.getAllUsers();
       final currentUser = await apiService.userApi.getCurrentUser();
-      final sentRequestsUsers = await apiService.friendApi.getSentFriendRequests();
+      final sentRequestsUsers =
+          await apiService.friendApi.getSentFriendRequests();
       final currentFriends = await apiService.friendApi.getFriends();
       final currentUserId = currentUser?.userId;
-      final sentRequestIds = sentRequestsUsers.map((user) => user.userId).toSet();
-      final currentFriendsIds = currentFriends.map((user) => user.userId).toSet();
+      final sentRequestIds =
+          sentRequestsUsers.map((user) => user.userId).toSet();
+      final currentFriendsIds =
+          currentFriends.map((user) => user.userId).toSet();
 
-      final filtered = allUserReads.where((user) {
-        return user.userId != currentUserId 
-            && !sentRequestIds.contains(user.userId) 
-            && !currentFriendsIds.contains(user.userId);
-      }).toList();
+      final filtered =
+          allUserReads.where((user) {
+            return user.userId != currentUserId &&
+                !sentRequestIds.contains(user.userId) &&
+                !currentFriendsIds.contains(user.userId);
+          }).toList();
 
       setState(() {
-        allUsers = filtered
-            .map((user) => Friend(
-                  name: '@${user.nickname}',
-                  userId: user.userId,
-                ))
-            .toList();
+        allUsers =
+            filtered
+                .map(
+                  (user) =>
+                      Friend(name: '@${user.nickname}', userId: user.userId),
+                )
+                .toList();
         filteredUsers = allUsers;
       });
     } on ApiException catch (e) {
       _logger.warning("API exception while fetching friends: ${e.message}");
-      showCustomSnackBar(
-        context,
-        normalText: "Failed to load friends",
-      );
+      showCustomSnackBar(context, normalText: "Failed to load friends");
     } catch (e) {
       _logger.severe("Unexpected error: $e");
-      showCustomSnackBar(
-        context,
-        normalText: "Something went wrong",
-      );
+      showCustomSnackBar(context, normalText: "Something went wrong");
     }
     filteredUsers = allUsers;
-
   }
 
   void _filterUsers(String query) {
@@ -95,10 +93,13 @@ class _ManageFriendsFindState extends State<ManageFriendsFind> {
       if (query.isEmpty) {
         filteredUsers = [];
       } else {
-        filteredUsers = allUsers
-            .where((user) =>
-                user.name.toLowerCase().contains(query.toLowerCase()))
-            .toList();
+        filteredUsers =
+            allUsers
+                .where(
+                  (user) =>
+                      user.name.toLowerCase().contains(query.toLowerCase()),
+                )
+                .toList();
       }
     });
   }
@@ -117,18 +118,28 @@ class _ManageFriendsFindState extends State<ManageFriendsFind> {
         final nickname = username.replaceFirst('@', '');
 
         try {
-          final result = await apiService.friendApi.sendAcceptFriendRequestNickname(nickname);
+          final result = await apiService.friendApi
+              .sendAcceptFriendRequestNickname(nickname);
           if (result != null) {
             setState(() {
               sentRequests.add(username);
             });
-            showCustomSnackBar(context, normalText: 'Friend request sent to $username');
+            showCustomSnackBar(
+              context,
+              normalText: 'Friend request sent to $username',
+              type: SnackBarType.success,
+            );
           } else {
             showCustomSnackBar(context, normalText: 'User not found.');
           }
         } on ApiException catch (e) {
-          _logger.warning("API exception sending request to $username: ${e.message}");
-          showCustomSnackBar(context, normalText: 'Failed to send friend request');
+          _logger.warning(
+            "API exception sending request to $username: ${e.message}",
+          );
+          showCustomSnackBar(
+            context,
+            normalText: 'Failed to send friend request',
+          );
         } catch (e) {
           _logger.severe("Unexpected error: $e");
           showCustomSnackBar(context, normalText: 'Something went wrong');
@@ -156,9 +167,7 @@ class _ManageFriendsFindState extends State<ManageFriendsFind> {
 
         if (filteredUsers.isEmpty)
           Padding(
-            padding: EdgeInsets.only(
-              top: proportionalSizes.scaleHeight(20),
-            ),
+            padding: EdgeInsets.only(top: proportionalSizes.scaleHeight(20)),
             child: Center(
               child: Text(
                 'No users found',
@@ -170,37 +179,40 @@ class _ManageFriendsFindState extends State<ManageFriendsFind> {
             ),
           )
         else
-          ...filteredUsers.map((user) => Padding(
-                padding: EdgeInsets.symmetric(
-                  vertical: proportionalSizes.scaleHeight(8),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    // Username text
-                    Expanded(
-                      child: Text(
-                        user.name,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.roboto(
-                          fontSize: proportionalSizes.scaleText(18),
-                          color: textColor,
-                        ),
+          ...filteredUsers.map(
+            (user) => Padding(
+              padding: EdgeInsets.symmetric(
+                vertical: proportionalSizes.scaleHeight(8),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Username text
+                  Expanded(
+                    child: Text(
+                      user.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.roboto(
+                        fontSize: proportionalSizes.scaleText(18),
+                        color: textColor,
                       ),
                     ),
+                  ),
 
-                    // Add button
-                    CustomButton(
-                      label: sentRequests.contains(user.name) ? 'Sent' : 'Add',
-                      onPressed: sentRequests.contains(user.name)
-                          ? () {}
-                          : () => _onAddFriendPressed(context, user.name),
-                      sizeType: ButtonSizeType.quarter,
-                    ),
-                  ],
-                ),
-              )),
+                  // Add button
+                  CustomButton(
+                    label: sentRequests.contains(user.name) ? 'Sent' : 'Add',
+                    onPressed:
+                        sentRequests.contains(user.name)
+                            ? () {}
+                            : () => _onAddFriendPressed(context, user.name),
+                    sizeType: ButtonSizeType.quarter,
+                  ),
+                ],
+              ),
+            ),
+          ),
       ],
     );
   }

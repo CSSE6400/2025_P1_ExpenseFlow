@@ -30,7 +30,6 @@ class _GroupsAndFriendsFriendListState
   List<Friend>? filteredFriends;
   final Logger _logger = Logger("GroupandFriendsFriendListLogger");
 
-
   @override
   void initState() {
     _fetchFriends();
@@ -43,12 +42,12 @@ class _GroupsAndFriendsFriendListState
       final userReads = await apiService.friendApi.getFriends();
 
       setState(() {
-        allFriends = userReads
-            .map((user) => Friend(
-                  name: '@${user.nickname}',
-                  isActive: true,
-                ))
-            .toList();
+        allFriends =
+            userReads
+                .map(
+                  (user) => Friend(name: '@${user.nickname}', isActive: true),
+                )
+                .toList();
       });
 
       setState(() {
@@ -57,26 +56,23 @@ class _GroupsAndFriendsFriendListState
       });
     } on ApiException catch (e) {
       _logger.warning("API exception while fetching friends: ${e.message}");
-      showCustomSnackBar(
-        context,
-        normalText: "Failed to load friends",
-      );
+      showCustomSnackBar(context, normalText: "Failed to load friends");
     } catch (e) {
       _logger.severe("Unexpected error: $e");
-      showCustomSnackBar(
-        context,
-        normalText: "Something went wrong",
-      );
+      showCustomSnackBar(context, normalText: "Something went wrong");
     }
   }
 
   void _filterFriends(String query) {
     setState(() {
-      filteredFriends = allFriends
-          .where((friend) =>
-              friend.name.toLowerCase().contains(query.toLowerCase()))
-          .toList()
-        ..sort((a, b) => b.isActive ? 1 : -1); // active friends first
+      filteredFriends =
+          allFriends
+              .where(
+                (friend) =>
+                    friend.name.toLowerCase().contains(query.toLowerCase()),
+              )
+              .toList()
+            ..sort((a, b) => b.isActive ? 1 : -1); // active friends first
     });
   }
 
@@ -92,22 +88,19 @@ class _GroupsAndFriendsFriendListState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        search.SearchBar(
-          hintText: 'Search friends',
-          onChanged: _filterFriends,
-        ),
+        search.SearchBar(hintText: 'Search friends', onChanged: _filterFriends),
         const SizedBox(height: 16),
         Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  child: CustomButton(
-                    label: 'Manage Friends',
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/manage_friends');
-                    },
-                    state: ButtonState.enabled,
-                    sizeType: ButtonSizeType.full,
-                  ),
-                ),
+          padding: const EdgeInsets.symmetric(vertical: 16.0),
+          child: CustomButton(
+            label: 'Manage Friends',
+            onPressed: () {
+              Navigator.pushNamed(context, '/manage_friends');
+            },
+            state: ButtonState.enabled,
+            sizeType: ButtonSizeType.full,
+          ),
+        ),
         const SizedBox(height: 16),
         if (allFriends.isEmpty)
           Padding(
@@ -124,7 +117,8 @@ class _GroupsAndFriendsFriendListState
             ),
           )
         else
-        ...filteredFriends!.map((friend) => Padding(
+          ...filteredFriends!.map(
+            (friend) => Padding(
               padding: EdgeInsets.symmetric(
                 vertical: proportionalSizes.scaleHeight(8),
               ),
@@ -179,7 +173,8 @@ class _GroupsAndFriendsFriendListState
                   ],
                 ),
               ),
-            )),
+            ),
+          ),
       ],
     );
   }

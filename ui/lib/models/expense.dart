@@ -33,6 +33,7 @@ class ExpenseRead {
   final String name;
   final String description;
   final DateTime expenseDate;
+  final double expenseTotal;
 
   @ExpenseCategoryConverter()
   final ExpenseCategory category;
@@ -43,6 +44,7 @@ class ExpenseRead {
     required this.expenseDate,
     required this.description,
     required this.category,
+    required this.expenseTotal,
   });
 
   factory ExpenseRead.fromJson(Map<String, dynamic> json) =>
@@ -141,4 +143,30 @@ class ExpenseItemSplitRead {
   factory ExpenseItemSplitRead.fromJson(Map<String, dynamic> json) =>
       _$ExpenseItemSplitReadFromJson(json);
   Map<String, dynamic> toJson() => _$ExpenseItemSplitReadToJson(this);
+}
+
+@JsonSerializable(fieldRename: FieldRename.snake)
+class ExpenseOverviewCategory {
+  @ExpenseCategoryConverter()
+  final ExpenseCategory category;
+  final double total;
+
+  ExpenseOverviewCategory({required this.total, required this.category});
+
+  factory ExpenseOverviewCategory.fromJson(Map<String, dynamic> json) =>
+      _$ExpenseOverviewCategoryFromJson(json);
+  Map<String, dynamic> toJson() => _$ExpenseOverviewCategoryToJson(this);
+}
+
+@JsonSerializable(fieldRename: FieldRename.snake)
+class ExpenseOverview {
+  final double total;
+
+  final List<ExpenseOverviewCategory> categories;
+
+  ExpenseOverview({required this.total, required this.categories});
+
+  factory ExpenseOverview.fromJson(Map<String, dynamic> json) =>
+      _$ExpenseOverviewFromJson(json);
+  Map<String, dynamic> toJson() => _$ExpenseOverviewToJson(this);
 }

@@ -43,8 +43,8 @@ class _AddExpenseScreenMainBodyState extends State<AddExpenseScreenMainBody> {
       if (!mounted) return;
       showCustomSnackBar(
         context,
+        type: SnackBarType.success,
         normalText: "Successfully added expense",
-        backgroundColor: Colors.green,
       );
       Navigator.pushNamed(context, '/');
     } catch (e) {
@@ -75,7 +75,7 @@ class _AddExpenseScreenMainBodyState extends State<AddExpenseScreenMainBody> {
               // pass validity up from fields
               AddExpenseScreenFields(
                 onValidityChanged: updateFormValid,
-                onExpenseChanged: updateExpense, 
+                onExpenseChanged: updateExpense,
               ),
               SizedBox(height: proportionalSizes.scaleHeight(24)),
 

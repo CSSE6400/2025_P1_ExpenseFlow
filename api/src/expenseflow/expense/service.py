@@ -3,7 +3,7 @@
 from uuid import UUID
 
 from loguru import logger
-from sqlalchemy import delete, or_, select, update
+from sqlalchemy import delete, func, or_, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from expenseflow.entity.models import EntityModel
@@ -19,7 +19,12 @@ from expenseflow.expense.models import (
     ExpenseItemSplitModel,
     ExpenseModel,
 )
-from expenseflow.expense.schemas import ExpenseCreate, ExpenseItemCreate
+from expenseflow.expense.schemas import (
+    ExpenseCreate,
+    ExpenseItemCreate,
+    ExpenseOverview,
+    ExpenseOverviewCategory,
+)
 from expenseflow.user.models import UserModel
 
 
@@ -410,3 +415,38 @@ async def get_expense(
     )
 
     return (await session.execute(stmt)).scalar_one_or_none()
+
+
+async def get_expenses_overview(
+    session: AsyncSession, user: UserModel
+) -> ExpenseOverview:
+    """Get an overview of a user's expenses."""
+    categories_query = (
+        select(
+            ExpenseModel.category,
+            func.sum(
+                ExpenseItemModel.price
+                * ExpenseItemModel.quantity
+                * ExpenseItemSplitModel.proportion
+            ).label("category_total"),
+        )
+        .select_from(ExpenseItemSplitModel)
+        .join(
+            ExpenseItemModel,
+            ExpenseItemModel.expense_item_id == ExpenseItemSplitModel.expense_item_id,
+        )
+        .join(ExpenseModel, ExpenseModel.expense_id == ExpenseItemModel.expense_id)
+        .where(ExpenseItemSplitModel.user_id == user.user_id)
+        .group_by(ExpenseModel.category)
+    )
+
+    rows = (await session.execute(categories_query)).all()
+
+    categories = [
+        ExpenseOverviewCategory(category=category, total=round(total, 2))
+        for category, total in rows
+    ]
+
+    overall_total = round(sum(cat.total for cat in categories), 2)
+
+    return ExpenseOverview(total=overall_total, categories=categories)

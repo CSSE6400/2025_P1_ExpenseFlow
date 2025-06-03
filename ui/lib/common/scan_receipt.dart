@@ -65,9 +65,7 @@ class WebImageInfo {
 }
 
 /// Call this from any screen
-Future<void> handleScanReceiptUpload({
-  required BuildContext context,
-}) async {
+Future<void> handleScanReceiptUpload({required BuildContext context}) async {
   await showScanReceiptSourceOptions(
     context: context,
     onSelected: (image) async {
@@ -85,8 +83,8 @@ Future<void> handleScanReceiptUpload({
       } else {
         showCustomSnackBar(
           context,
-          boldText: 'Error:',
           normalText: 'Something went wrong while uploading.',
+          boldText: 'Error:',
         );
       }
     },
@@ -138,7 +136,9 @@ Future<void> showScanReceiptSourceOptions({
                         child: InkWell(
                           onTap: () async {
                             Navigator.pop(context);
-                            final image = await WebImageInfo.pickImage(ImageSource.camera);
+                            final image = await WebImageInfo.pickImage(
+                              ImageSource.camera,
+                            );
                             onSelected(image);
                           },
                           child: ListTile(
@@ -162,7 +162,9 @@ Future<void> showScanReceiptSourceOptions({
                         child: InkWell(
                           onTap: () async {
                             Navigator.pop(context);
-                            final image = await WebImageInfo.pickImage(ImageSource.gallery);
+                            final image = await WebImageInfo.pickImage(
+                              ImageSource.gallery,
+                            );
 
                             if (!kIsWeb && image != null) {
                               final size = image.getFileSizeInMB();

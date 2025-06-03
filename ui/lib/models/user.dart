@@ -22,12 +22,14 @@ class UserRead {
   final String nickname;
   final String firstName;
   final String lastName;
+  final int budget;
 
   UserRead({
     required this.userId,
     required this.nickname,
     required this.firstName,
     required this.lastName,
+    required this.budget,
   });
 
   factory UserRead.fromJson(Map<String, dynamic> json) =>
@@ -40,16 +42,29 @@ class UserCreate {
   final String nickname;
   final String firstName;
   final String lastName;
+  final int budget;
 
   UserCreate({
     required this.nickname,
     required this.firstName,
     required this.lastName,
+    required this.budget,
   });
 
   factory UserCreate.fromJson(Map<String, dynamic> json) =>
       _$UserCreateFromJson(json);
   Map<String, dynamic> toJson() => _$UserCreateToJson(this);
+}
+
+@JsonSerializable(fieldRename: FieldRename.snake)
+class UserUpdate {
+  final int budget;
+
+  UserUpdate({required this.budget});
+
+  factory UserUpdate.fromJson(Map<String, dynamic> json) =>
+      _$UserUpdateFromJson(json);
+  Map<String, dynamic> toJson() => _$UserUpdateToJson(this);
 }
 
 @JsonSerializable(fieldRename: FieldRename.snake)

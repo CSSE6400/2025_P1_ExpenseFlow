@@ -1,5 +1,7 @@
 // Flutter imports
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/common/custom_button.dart'
+    show ButtonSizeType, ButtonState, CustomButton;
 import 'package:flutter_frontend/common/snack_bar.dart';
 import 'package:flutter_frontend/models/user.dart';
 import 'package:flutter_frontend/services/api_service.dart';
@@ -28,10 +30,15 @@ class _ProfileScreenSubRectangleState extends State<ProfileScreenSubRectangle> {
   UserRead? user;
   final Logger _logger = Logger("ProfileScreenLogger");
 
+  bool isEditingBudget = false;
+  late TextEditingController _budgetController;
+  String? _editedBudget;
+
   @override
   void initState() {
-    _fetchUser();
     super.initState();
+    _fetchUser();
+    _budgetController = TextEditingController();
   }
 
   Future<void> _fetchUser() async {
@@ -48,6 +55,47 @@ class _ProfileScreenSubRectangleState extends State<ProfileScreenSubRectangle> {
     } else {
       setState(() {
         user = fetchedUser;
+        _budgetController.text = user?.budget.toString() ?? "";
+        _editedBudget = user?.budget.toString();
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _budgetController.dispose();
+    super.dispose();
+  }
+
+  void _toggleEditBudget() async {
+    if (isEditingBudget) {
+      if (_editedBudget != user?.budget.toString()) {
+        final number = int.parse(_editedBudget!);
+        final apiService = Provider.of<ApiService>(context, listen: false);
+
+        try {
+          await apiService.userApi.updateUser(UserUpdate(budget: number));
+          if (!mounted) return;
+          showCustomSnackBar(
+            context,
+            normalText: "Successfully updated budget",
+            type: SnackBarType.success,
+          );
+        } catch (e) {
+          _logger.info(e);
+          if (!mounted) return;
+          showCustomSnackBar(
+            context,
+            normalText: "Unable to update user budget.",
+          );
+        }
+      }
+    }
+
+    // Now update the state after the async work is done
+    if (mounted) {
+      setState(() {
+        isEditingBudget = !isEditingBudget;
       });
     }
   }
@@ -62,7 +110,6 @@ class _ProfileScreenSubRectangleState extends State<ProfileScreenSubRectangle> {
     if (user == null) {
       return const Center(child: CircularProgressIndicator());
     }
-
 
     return Container(
       width: double.infinity,
@@ -108,13 +155,46 @@ class _ProfileScreenSubRectangleState extends State<ProfileScreenSubRectangle> {
               showStatusIcon: false,
             ),
             CustomDivider(),
-            // Budget field
-            GeneralField(
-              label: 'Monthly Budget (\$):',
-              initialValue: '5000', //TODO: Add actual budget
-              isEditable: false,
-              showStatusIcon: false,
+
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                GeneralField(
+                  label: 'Monthly Budget (\$):',
+                  controller: _budgetController,
+                  isEditable: isEditingBudget,
+                  showStatusIcon: isEditingBudget,
+                  inputRules: [InputRuleType.numericOnly],
+                  validationRule: (value) {
+                    final number = double.tryParse(value.trim());
+                    return number != null && number > 0;
+                  },
+                  onChanged: (value) {
+                    final num = int.tryParse(value.trim());
+                    if (num != null) {
+                      setState(() {
+                        _editedBudget = num.toString();
+                      });
+                    }
+                  },
+                ),
+                SizedBox(height: proportionalSizes.scaleHeight(8)),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: CustomButton(
+                    label: isEditingBudget ? "Save New Budget" : "Edit Budget",
+                    onPressed: _toggleEditBudget,
+                    sizeType: ButtonSizeType.full,
+                    state:
+                        !isEditingBudget ||
+                                _editedBudget != user?.budget.toString()
+                            ? ButtonState.enabled
+                            : ButtonState.disabled,
+                  ),
+                ),
+              ],
             ),
+
             SizedBox(height: proportionalSizes.scaleHeight(30)),
             Align(
               alignment: Alignment.centerLeft,
@@ -167,35 +247,7 @@ class _ProfileScreenSubRectangleState extends State<ProfileScreenSubRectangle> {
                   ),
                 ),
                 onTap: () {
-                  Navigator.pushNamed(
-                    context,
-                    '/manage_groups',
-                  );
-                },
-              ),
-            ),
-            SizedBox(height: proportionalSizes.scaleHeight(8)),
-            Container(
-              decoration: BoxDecoration(
-                color: buttonBackgroundColor,
-                borderRadius: BorderRadius.circular(
-                  proportionalSizes.scaleWidth(12),
-                ),
-              ),
-              child: ListTile(
-                leading: IconMaker(assetPath: 'assets/icons/expenses.png'),
-                title: Text(
-                  'Manage Budget',
-                  style: GoogleFonts.roboto(
-                    fontSize: proportionalSizes.scaleText(18),
-                    color: textColor,
-                  ),
-                ),
-                onTap: () {
-                  Navigator.pushNamed(
-                    context,
-                    '/home',
-                  ); // TODO Change to budget page
+                  Navigator.pushNamed(context, '/manage_groups');
                 },
               ),
             ),

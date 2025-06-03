@@ -23,8 +23,6 @@ from expenseflow.plugin import Plugin, PluginSettings, plugin_registry
 class ReportGenSettings(PluginSettings):
     """ReportGen config."""
 
-    budget: int
-
 
 @plugin_registry.register("report_gen")
 class ReportGenPlugin(Plugin[ReportGenSettings]):
@@ -98,9 +96,9 @@ class ReportGenPlugin(Plugin[ReportGenSettings]):
                         category_distribution[expense.category] = i_total_price
 
         return {
-            "budget": self._config.budget,
+            "budget": user.budget,
             "spent": total_spent,
-            "remaining": self._config.budget - total_spent,
+            "remaining": user.budget - total_spent,
             "category_distribution": category_distribution,
         }
 
