@@ -62,8 +62,8 @@ class FriendsListView extends StatelessWidget {
                     Expanded(
                       child: Text(
                         friend.friend.name,
-                        maxLines: 1,
                         overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
                         style: GoogleFonts.roboto(
                           fontSize: proportionalSizes.scaleText(18),
                           color: textColor,
