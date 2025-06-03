@@ -107,7 +107,7 @@ register_fixture(UserModelFactory)
 register_fixture(GroupUserModelFactory)
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def default_user() -> UserModel:
     """Default user fixture."""
     return UserModelFactory.build()
