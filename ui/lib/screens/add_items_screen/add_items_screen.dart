@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../common/color_palette.dart';
 import '../../common/app_bar.dart';
-import '../../common/bottom_nav_bar.dart';
 import '../../common/custom_button.dart';
 import '../../models/expense.dart';
 import 'elements/add_items_screen_items.dart';
@@ -13,7 +12,7 @@ class AddItemsScreen extends StatefulWidget {
   final List<ExpenseItemCreate> existingItems;
 
   const AddItemsScreen({
-    super.key, 
+    super.key,
     this.existingItems = const [],
     this.transactionId,
     this.isReadOnly = false,
@@ -81,10 +80,6 @@ class _AddItemsScreenState extends State<AddItemsScreen> {
             ],
           ),
         ),
-      ),
-      bottomNavigationBar: const BottomNavBar(
-        currentScreen: 'Add',
-        inactive: true,
       ),
     );
   }
