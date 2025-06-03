@@ -15,12 +15,11 @@ class SeeExpenseScreenActiveStatus extends StatelessWidget {
   Color get backgroundColor {
     switch (status) {
       case ExpenseStatus.paid:
-        return Colors.green.withOpacity(0.2);
+        return Colors.green.withValues(alpha: .2);
       case ExpenseStatus.accepted:
-        return Colors.yellow.withOpacity(0.2);
+        return Colors.yellow.withValues(alpha: .2);
       case ExpenseStatus.requested:
-      default:
-        return Colors.grey.withOpacity(0.2);
+        return Colors.grey.withValues(alpha: .2);
     }
   }
 
@@ -29,9 +28,8 @@ class SeeExpenseScreenActiveStatus extends StatelessWidget {
       case ExpenseStatus.paid:
         return Colors.green;
       case ExpenseStatus.accepted:
-        return Colors.yellow[800]!; // Darker yellow for better contrast
+        return Colors.yellow;
       case ExpenseStatus.requested:
-      default:
         return Colors.grey;
     }
   }
@@ -51,7 +49,7 @@ class SeeExpenseScreenActiveStatus extends StatelessWidget {
         borderRadius: BorderRadius.circular(proportionalSizes.scaleWidth(12)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: .05),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),

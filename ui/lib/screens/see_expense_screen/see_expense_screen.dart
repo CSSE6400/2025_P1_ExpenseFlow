@@ -3,7 +3,8 @@ import 'package:flutter_frontend/common/snack_bar.dart'
     show SnackBarType, showCustomSnackBar;
 import 'package:flutter_frontend/models/enums.dart';
 import 'package:flutter_frontend/models/expense.dart'
-    show ExpenseCreate, ExpenseRead;
+    show ExpenseCreate, ExpenseRead, SplitStatusInfo;
+import 'package:flutter_frontend/models/user.dart';
 import 'package:flutter_frontend/screens/see_expense_screen/elements/see_expense_screen_status.dart'
     show SeeExpenseScreenActiveStatus;
 import 'package:flutter_frontend/services/api_service.dart' show ApiService;
@@ -28,8 +29,83 @@ class SeeExpenseScreen extends StatefulWidget {
 class _SeeExpenseScreenState extends State<SeeExpenseScreen> {
   final Logger _logger = Logger("SeeExpenseScreen");
   ExpenseRead? expense;
+  UserRead? me;
+  List<SplitStatusInfo> splitStatuses = [];
 
   bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  bool isEditable() {
+    if (expense == null || me == null) return false;
+
+    return expense!.uploader.userId == me!.userId && isEditMode;
+  }
+
+  bool isItemsAndSplitsEditable() {
+    return isEditable() &&
+        (expense!.status == ExpenseStatus.requested ||
+            (splitStatuses.length == 1 &&
+                splitStatuses[0].userId == me!.userId));
+  }
+
+  Future<void> _loadData() async {
+    setState(() => isLoading = true);
+    final apiService = Provider.of<ApiService>(context, listen: false);
+
+    try {
+      me = await apiService.userApi.mustGetCurrentUser();
+      if (me == null) {
+        _logger.warning('Current user not found');
+        if (!mounted) return;
+
+        showCustomSnackBar(context, normalText: 'Unable to find current user');
+        setState(() => isLoading = false);
+
+        Navigator.of(context).pushNamed('/');
+        return;
+      }
+      setState(() {
+        me = me;
+      });
+      final fetchedExpense = await apiService.expenseApi.getExpense(
+        widget.expenseId,
+      );
+
+      if (fetchedExpense == null) {
+        _logger.warning('Expense with ID ${widget.expenseId} not found');
+        if (!mounted) return;
+
+        showCustomSnackBar(context, normalText: 'Unable to find expense');
+        setState(() => isLoading = false);
+        Navigator.of(context).pop();
+        return;
+      }
+
+      setState(() {
+        expense = fetchedExpense;
+        _currentExpense = ExpenseCreate.fromExpenseRead(expense!);
+        isLoading = false;
+      });
+
+      _logger.info('Expense fetched successfully: ${expense!.expenseId}');
+
+      final fetchedStatuses = await apiService.expenseApi.getAllExpenseStatuses(
+        widget.expenseId,
+      );
+
+      setState(() => splitStatuses = fetchedStatuses);
+    } catch (e) {
+      if (!mounted) return;
+      _logger.severe('Error fetching expense: $e');
+      showCustomSnackBar(context, normalText: 'Failed to fetch expense');
+      setState(() => isLoading = false);
+    }
+  }
 
   bool isEditMode = false;
 
@@ -76,43 +152,6 @@ class _SeeExpenseScreenState extends State<SeeExpenseScreen> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    _loadData();
-  }
-
-  Future<void> _loadData() async {
-    setState(() => isLoading = true);
-    final apiService = Provider.of<ApiService>(context, listen: false);
-
-    try {
-      final fetchedExpense = await apiService.expenseApi.getExpense(
-        widget.expenseId,
-      );
-
-      if (fetchedExpense == null) {
-        _logger.warning('Expense with ID ${widget.expenseId} not found');
-        if (!mounted) return;
-
-        showCustomSnackBar(context, normalText: 'Unable to find expense');
-        setState(() => isLoading = false);
-        return;
-      }
-
-      setState(() {
-        expense = fetchedExpense;
-        _currentExpense = ExpenseCreate.fromExpenseRead(expense!);
-        isLoading = false;
-      });
-    } catch (e) {
-      if (!mounted) return;
-      _logger.severe('Error fetching expense: $e');
-      showCustomSnackBar(context, normalText: 'Failed to fetch expense');
-      setState(() => isLoading = false);
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
     if (isLoading) {
       return const Center(child: CircularProgressIndicator());
@@ -143,11 +182,11 @@ class _SeeExpenseScreenState extends State<SeeExpenseScreen> {
                 SizedBox(height: proportionalSizes.scaleHeight(20)),
                 ExpenseForm(
                   initialExpense: _currentExpense,
-                  canEdit: isEditMode,
+                  canEdit: isEditable(),
                   onValidityChanged: updateFormValid,
                   onExpenseChanged: updateExpense,
-                  canEditItems: expense?.status == ExpenseStatus.requested,
-                  canEditSplits: expense?.status == ExpenseStatus.requested,
+                  canEditItems: isItemsAndSplitsEditable(),
+                  canEditSplits: isItemsAndSplitsEditable(),
                 ),
                 SizedBox(height: proportionalSizes.scaleHeight(24)),
                 CustomButton(

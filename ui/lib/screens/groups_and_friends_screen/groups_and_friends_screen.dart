@@ -1,4 +1,5 @@
 import 'package:flutter_frontend/common/app_bar.dart' show AppBarWidget;
+import 'package:flutter_frontend/common/bottom_nav_bar.dart' show BottomNavBar;
 import 'package:flutter_frontend/common/color_palette.dart' show ColorPalette;
 import 'package:flutter_frontend/common/dialogs/app_dialog_box.dart'
     show AppDialogBox;
@@ -262,6 +263,10 @@ class _GroupsAndFriendsScreenState extends State<GroupsAndFriendsScreen> {
                 ],
               ],
             ),
+          ),
+          bottomNavigationBar: const BottomNavBar(
+            currentScreen: 'GroupsAndFriends',
+            inactive: false,
           ),
         );
   }
