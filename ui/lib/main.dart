@@ -20,7 +20,7 @@ import 'screens/expenses_screen/expenses_screen.dart';
 import 'screens/see_expense_screen/see_expense_screen.dart';
 import '../../screens/groups_and_friends_screen/groups_and_friends_screen.dart';
 import '../../screens/ind_friend_expense_screen/ind_friend_expense_screen.dart';
-import '../../screens/ind_group_expense_screen/ind_group_expense_screen.dart';
+import 'screens/view_group_screen/view_group_screen.dart';
 import '../../screens/manage_friends_screen/manage_friends_screen.dart';
 
 void main() async {
@@ -174,7 +174,7 @@ class MyApp extends StatelessWidget {
             return MaterialPageRoute(
               builder: (_) => IndFriendExpenseScreen(userId: userId),
             );
-          case '/group_expense':
+          case '/view_group':
             final args = settings.arguments as Map<String, dynamic>?;
             final groupId = args?['groupId'] as String?;
 

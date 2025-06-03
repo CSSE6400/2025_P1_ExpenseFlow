@@ -41,7 +41,7 @@ class GroupsListView extends StatelessWidget {
                 onTap: () {
                   Navigator.pushNamed(
                     context,
-                    '/group_expense',
+                    '/view_group',
                     arguments: {'groupId': group.groupId},
                   );
                 },
