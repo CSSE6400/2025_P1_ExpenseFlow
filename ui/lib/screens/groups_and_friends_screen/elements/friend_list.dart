@@ -73,7 +73,7 @@ class FriendsListView extends StatelessWidget {
                     // Button
                     if (friend.status == FriendRequestViewStatus.friend)
                       CustomButton(
-                        label: 'Expenses',
+                        label: 'View',
                         onPressed: () {
                           Navigator.pushNamed(
                             context,
@@ -98,15 +98,6 @@ class FriendsListView extends StatelessWidget {
                       ),
                   ],
                 ),
-
-                // child: Text(
-                //   friend.friend.name,
-                //   style: GoogleFonts.roboto(
-                //     fontSize: proportionalSizes.scaleText(18),
-                //     fontWeight: FontWeight.bold,
-                //     color: ColorPalette.primaryText,
-                //   ),
-                // ),
               ),
             );
           }).toList(),
