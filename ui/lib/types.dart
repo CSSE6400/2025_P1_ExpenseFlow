@@ -24,16 +24,12 @@ List<CategoryData> assignRandomColors(
   }).toList();
 }
 
-class RecentExpense {
+class Expense {
   final String name;
   final String price;
   final String expenseId;
 
-  RecentExpense({
-    required this.name,
-    required this.price,
-    required this.expenseId,
-  });
+  Expense({required this.name, required this.price, required this.expenseId});
 }
 
 class Friend {

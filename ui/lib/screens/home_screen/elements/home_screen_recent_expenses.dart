@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/types.dart' show RecentExpense;
+import 'package:flutter_frontend/types.dart' show Expense;
 import 'package:google_fonts/google_fonts.dart';
 import '../../../common/color_palette.dart';
 import '../../../common/proportional_sizes.dart';
 
 class HomeScreenRecentExpenses extends StatelessWidget {
-  final List<RecentExpense> recentExpenses;
+  final List<Expense> recentExpenses;
   final bool isLoading;
   final VoidCallback? onTap;
 
