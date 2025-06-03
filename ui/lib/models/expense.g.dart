@@ -62,6 +62,12 @@ ExpenseCreate _$ExpenseCreateFromJson(Map<String, dynamic> json) =>
           (json['items'] as List<dynamic>)
               .map((e) => ExpenseItemCreate.fromJson(e as Map<String, dynamic>))
               .toList(),
+      splits:
+          (json['splits'] as List<dynamic>?)
+              ?.map(
+                (e) => ExpenseItemSplitRead.fromJson(e as Map<String, dynamic>),
+              )
+              .toList(),
     );
 
 Map<String, dynamic> _$ExpenseCreateToJson(ExpenseCreate instance) =>
@@ -70,6 +76,7 @@ Map<String, dynamic> _$ExpenseCreateToJson(ExpenseCreate instance) =>
       'description': instance.description,
       'expense_date': instance.expenseDate.toIso8601String(),
       'items': instance.items,
+      'splits': instance.splits,
       'category': const ExpenseCategoryConverter().toJson(instance.category),
     };
 
@@ -82,7 +89,8 @@ ExpenseItemRead _$ExpenseItemReadFromJson(Map<String, dynamic> json) =>
       splits:
           (json['splits'] as List<dynamic>)
               .map(
-                (e) => ExpenseItemSplitRead.fromJson(e as Map<String, dynamic>),
+                (e) =>
+                    ExpenseItemSplitCreate.fromJson(e as Map<String, dynamic>),
               )
               .toList(),
     );
@@ -101,13 +109,6 @@ ExpenseItemCreate _$ExpenseItemCreateFromJson(Map<String, dynamic> json) =>
       name: json['name'] as String,
       quantity: (json['quantity'] as num).toInt(),
       price: (json['price'] as num).toDouble(),
-      splits:
-          (json['splits'] as List<dynamic>?)
-              ?.map(
-                (e) =>
-                    ExpenseItemSplitCreate.fromJson(e as Map<String, dynamic>),
-              )
-              .toList(),
     );
 
 Map<String, dynamic> _$ExpenseItemCreateToJson(ExpenseItemCreate instance) =>
@@ -115,7 +116,6 @@ Map<String, dynamic> _$ExpenseItemCreateToJson(ExpenseItemCreate instance) =>
       'name': instance.name,
       'quantity': instance.quantity,
       'price': instance.price,
-      'splits': instance.splits,
     };
 
 ExpenseItemSplitCreate _$ExpenseItemSplitCreateFromJson(

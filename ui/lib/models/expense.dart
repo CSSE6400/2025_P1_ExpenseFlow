@@ -75,6 +75,8 @@ class ExpenseCreate {
 
   final List<ExpenseItemCreate> items;
 
+  final List<ExpenseItemSplitRead>? splits;
+
   @ExpenseCategoryConverter()
   final ExpenseCategory category;
 
@@ -84,6 +86,7 @@ class ExpenseCreate {
     required this.expenseDate,
     required this.category,
     required this.items,
+    required this.splits,
   });
 
   factory ExpenseCreate.fromExpenseRead(ExpenseRead expense) {
@@ -92,6 +95,7 @@ class ExpenseCreate {
       description: expense.description,
       expenseDate: expense.expenseDate,
       category: expense.category,
+      splits: [], // TODO,
       items:
           expense.items
               .map(
@@ -99,13 +103,6 @@ class ExpenseCreate {
                   name: item.name,
                   quantity: item.quantity,
                   price: item.price,
-                  splits:
-                      item.splits.map((e) {
-                        return ExpenseItemSplitCreate(
-                          userId: e.userId,
-                          proportion: e.proportion,
-                        );
-                      }).toList(),
                 ),
               )
               .toList(),
@@ -123,7 +120,7 @@ class ExpenseItemRead {
   final String name;
   final int quantity;
   final double price;
-  final List<ExpenseItemSplitRead> splits;
+  final List<ExpenseItemSplitCreate> splits;
 
   ExpenseItemRead({
     required this.expenseItemId,
@@ -143,13 +140,11 @@ class ExpenseItemCreate {
   final String name;
   final int quantity;
   final double price;
-  final List<ExpenseItemSplitCreate>? splits;
 
   ExpenseItemCreate({
     required this.name,
     required this.quantity,
     required this.price,
-    this.splits,
   });
 
   factory ExpenseItemCreate.fromJson(Map<String, dynamic> json) =>
