@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/types.dart' show Friend;
+import 'package:flutter_frontend/models/user.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:logging/logging.dart' show Logger;
 import '../../../common/color_palette.dart';
 import '../../../common/proportional_sizes.dart';
 import '../../../common/search_bar.dart' as search;
 import '../../../common/custom_button.dart';
 
 class ManageFriendsFind extends StatelessWidget {
-  final List<Friend> filteredUsers;
+  final List<UserReadMinimal> users;
   final Set<String> sentRequests;
   final void Function(String query) onQueryChanged;
-  final void Function(String username) onAddFriendPressed;
+  final void Function(UserReadMinimal user) onAddFriendPressed;
+  final Logger _logger = Logger("ManageFriendsFind");
 
-  const ManageFriendsFind({
+  ManageFriendsFind({
     super.key,
-    required this.filteredUsers,
+    required this.users,
     required this.sentRequests,
     required this.onQueryChanged,
     required this.onAddFriendPressed,
@@ -33,7 +35,7 @@ class ManageFriendsFind extends StatelessWidget {
           onChanged: onQueryChanged,
         ),
         const SizedBox(height: 16),
-        if (filteredUsers.isEmpty)
+        if (users.isEmpty)
           Padding(
             padding: EdgeInsets.only(top: proportionalSizes.scaleHeight(20)),
             child: Center(
@@ -47,7 +49,7 @@ class ManageFriendsFind extends StatelessWidget {
             ),
           )
         else
-          ...filteredUsers.map(
+          ...users.map(
             (user) => Padding(
               padding: EdgeInsets.symmetric(
                 vertical: proportionalSizes.scaleHeight(8),
@@ -57,7 +59,7 @@ class ManageFriendsFind extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      user.name,
+                      user.nickname,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.roboto(
@@ -67,12 +69,9 @@ class ManageFriendsFind extends StatelessWidget {
                     ),
                   ),
                   CustomButton(
-                    label: sentRequests.contains(user.name) ? 'Sent' : 'Add',
-                    onPressed:
-                        () =>
-                            sentRequests.contains(user.name)
-                                ? null
-                                : () => onAddFriendPressed(user.name),
+                    label:
+                        sentRequests.contains(user.nickname) ? 'Sent' : 'Add',
+                    onPressed: () => onAddFriendPressed(user),
                     sizeType: ButtonSizeType.quarter,
                   ),
                 ],

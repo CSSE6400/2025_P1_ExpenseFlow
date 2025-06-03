@@ -48,6 +48,7 @@ class Friend {
     required this.firstName,
     required this.lastName,
     required this.nickname,
+
     this.isSelected = false,
   });
 
@@ -60,4 +61,13 @@ class Group {
   final String description;
 
   Group({required this.groupId, required this.name, required this.description});
+}
+
+enum FriendRequestViewStatus { friend, sent, incoming }
+
+class FriendRequest {
+  final Friend friend;
+  final FriendRequestViewStatus status;
+
+  FriendRequest({required this.friend, required this.status});
 }

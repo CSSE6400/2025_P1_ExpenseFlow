@@ -3,10 +3,10 @@ import 'package:flutter_frontend/common/dialogs/app_dialog_box.dart'
     show AppDialogBox;
 import 'package:flutter_frontend/common/snack_bar.dart'
     show SnackBarType, showCustomSnackBar;
-import 'package:flutter_frontend/screens/manage_friends_screen/elements/manage_friends_find.dart'
+import 'package:flutter_frontend/models/user.dart';
+import 'package:flutter_frontend/screens/manage_friends_screen/elements/find_friends.dart'
     show ManageFriendsFind;
 import 'package:flutter_frontend/services/api_service.dart' show ApiService;
-import 'package:flutter_frontend/types.dart' show Friend;
 import 'package:logging/logging.dart' show Logger;
 import 'package:provider/provider.dart' show Provider;
 
@@ -25,8 +25,8 @@ class ManageFriendsScreen extends StatefulWidget {
 class _ManageFriendsScreenState extends State<ManageFriendsScreen> {
   final Logger _logger = Logger("ManageFriendsFind");
 
-  List<Friend> allUsers = [];
-  List<Friend> filteredUsers = [];
+  List<UserReadMinimal> allUsers = [];
+  List<UserReadMinimal> filteredUsers = [];
   Set<String> sentRequests = {};
 
   @override
@@ -39,7 +39,7 @@ class _ManageFriendsScreenState extends State<ManageFriendsScreen> {
     final apiService = Provider.of<ApiService>(context, listen: false);
     try {
       final allUserReads = await apiService.userApi.getAllUsers();
-      final currentUser = await apiService.userApi.getCurrentUser();
+
       final sentRequestsUsers =
           await apiService.friendApi.getSentFriendRequests();
       final currentFriends = await apiService.friendApi.getFriends();
@@ -50,14 +50,11 @@ class _ManageFriendsScreenState extends State<ManageFriendsScreen> {
       final filtered =
           allUserReads
               .where((user) {
-                return user.userId != currentUser?.userId &&
-                    !sentRequestIds.contains(user.userId) &&
+                return !sentRequestIds.contains(user.userId) &&
                     !currentFriendsIds.contains(user.userId);
               })
               .map(
-                (user) => Friend(
-                  firstName: '',
-                  lastName: '',
+                (user) => UserReadMinimal(
                   nickname: user.nickname,
                   userId: user.userId,
                 ),
@@ -84,42 +81,49 @@ class _ManageFriendsScreenState extends State<ManageFriendsScreen> {
         filteredUsers =
             allUsers
                 .where(
-                  (u) => u.name.toLowerCase().contains(query.toLowerCase()),
+                  (u) => u.nickname.toLowerCase().contains(query.toLowerCase()),
                 )
                 .toList();
       }
     });
   }
 
-  void _onAddFriendPressed(String username) async {
+  void _onAddFriendPressed(UserReadMinimal user) async {
+    if (sentRequests.contains(user.nickname)) {
+      return;
+    }
+    _logger.info("Adding friend: ${user.nickname}");
     await AppDialogBox.show(
       context,
       heading: 'Send Friend Request',
-      description: 'Do you want to send a friend request to $username?',
+      description: 'Do you want to send a friend request to ${user.nickname}?',
       buttonCount: 2,
       button2Text: 'Yes',
       onButton2Pressed: () async {
         Navigator.of(context).pop();
         final apiService = Provider.of<ApiService>(context, listen: false);
-        final nickname = username.replaceFirst('@', '');
-
         try {
           final result = await apiService.friendApi
-              .sendAcceptFriendRequestNickname(nickname);
+              .sendAcceptFriendRequestNickname(user.nickname);
+
           if (result != null) {
             setState(() {
-              sentRequests.add(username);
+              sentRequests.add(user.nickname);
             });
+
+            if (!mounted) return;
             showCustomSnackBar(
               context,
-              normalText: 'Friend request sent to $username',
+              normalText: 'Friend request sent to ${user.nickname}',
               type: SnackBarType.success,
             );
           } else {
+            if (!mounted) return;
             showCustomSnackBar(context, normalText: 'User not found.');
           }
         } catch (e) {
-          _logger.warning("Failed to send request to $username: $e");
+          _logger.warning("Failed to send request to ${user.nickname}: $e");
+          if (!mounted) return;
           showCustomSnackBar(
             context,
             normalText: 'Failed to send friend request',
@@ -152,8 +156,8 @@ class _ManageFriendsScreenState extends State<ManageFriendsScreen> {
               children: [
                 const SizedBox(height: 12),
                 ManageFriendsFind(
-                  filteredUsers: filteredUsers,
                   sentRequests: sentRequests,
+                  users: filteredUsers,
                   onQueryChanged: _filterUsers,
                   onAddFriendPressed: _onAddFriendPressed,
                 ),

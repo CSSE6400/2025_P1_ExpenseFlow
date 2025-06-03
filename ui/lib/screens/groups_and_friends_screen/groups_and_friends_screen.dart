@@ -1,5 +1,7 @@
 import 'package:flutter_frontend/common/app_bar.dart' show AppBarWidget;
 import 'package:flutter_frontend/common/color_palette.dart' show ColorPalette;
+import 'package:flutter_frontend/common/dialogs/app_dialog_box.dart'
+    show AppDialogBox;
 import 'package:flutter_frontend/screens/groups_and_friends_screen/elements/friend_list.dart'
     show FriendsListView;
 import 'package:flutter_frontend/screens/groups_and_friends_screen/elements/group_list.dart'
@@ -7,7 +9,8 @@ import 'package:flutter_frontend/screens/groups_and_friends_screen/elements/grou
 import 'package:flutter_frontend/screens/groups_and_friends_screen/elements/groups_and_friends_segment_control.dart'
     show GroupsAndFriendsSegmentControl;
 import 'package:flutter_frontend/services/api_service.dart' show ApiService;
-import 'package:flutter_frontend/types.dart' show Friend, Group;
+import 'package:flutter_frontend/types.dart'
+    show Friend, FriendRequest, FriendRequestViewStatus, Group;
 import 'package:logging/logging.dart' show Logger;
 import 'package:provider/provider.dart' show Provider;
 import 'package:flutter/material.dart';
@@ -30,7 +33,7 @@ class _GroupsAndFriendsScreenState extends State<GroupsAndFriendsScreen> {
   String _selected = 'Groups';
   String _searchQuery = '';
   List<Group> _groups = [];
-  List<Friend> _friends = [];
+  List<FriendRequest> _friends = [];
 
   bool _loading = true;
 
@@ -44,7 +47,6 @@ class _GroupsAndFriendsScreenState extends State<GroupsAndFriendsScreen> {
     final apiService = Provider.of<ApiService>(context, listen: false);
     try {
       final userGroups = await apiService.groupApi.getUserGroups();
-      final userFriends = await apiService.friendApi.getFriends();
 
       setState(() {
         _groups =
@@ -57,17 +59,51 @@ class _GroupsAndFriendsScreenState extends State<GroupsAndFriendsScreen> {
                   ),
                 )
                 .toList();
-        _friends =
-            userFriends
-                .map(
-                  (f) => Friend(
-                    firstName: f.firstName,
-                    lastName: f.lastName,
-                    nickname: f.nickname,
-                    userId: f.userId,
-                  ),
-                )
-                .toList();
+      });
+
+      final userFriends = await apiService.friendApi.getFriends();
+      final userReadsSent = await apiService.friendApi.getSentFriendRequests();
+      final userReadsIncoming =
+          await apiService.friendApi.getReceivedFriendRequests();
+
+      final allFriends = [
+        ...userFriends.map(
+          (f) => FriendRequest(
+            friend: Friend(
+              firstName: f.firstName,
+              lastName: f.lastName,
+              nickname: f.nickname,
+              userId: f.userId,
+            ),
+            status: FriendRequestViewStatus.friend,
+          ),
+        ),
+        ...userReadsSent.map(
+          (f) => FriendRequest(
+            friend: Friend(
+              firstName: f.firstName,
+              lastName: f.lastName,
+              nickname: f.nickname,
+              userId: f.userId,
+            ),
+            status: FriendRequestViewStatus.sent,
+          ),
+        ),
+        ...userReadsIncoming.map(
+          (f) => FriendRequest(
+            friend: Friend(
+              firstName: f.firstName,
+              lastName: f.lastName,
+              nickname: f.nickname,
+              userId: f.userId,
+            ),
+            status: FriendRequestViewStatus.incoming,
+          ),
+        ),
+      ];
+
+      setState(() {
+        _friends = allFriends;
         _loading = false;
       });
     } catch (e) {
@@ -79,6 +115,71 @@ class _GroupsAndFriendsScreenState extends State<GroupsAndFriendsScreen> {
       );
       setState(() => _loading = false);
     }
+  }
+
+  void _onAccepted(FriendRequest request) async {
+    if (request.status == FriendRequestViewStatus.sent ||
+        request.status == FriendRequestViewStatus.friend) {
+      _logger.info(
+        "Friend request already sent or user is already a friend: ${request.friend.nickname}",
+      );
+      return;
+    }
+    await AppDialogBox.show(
+      context,
+      heading: 'Accept Friend Request',
+      description:
+          'Do you want to accept a friend request from ${request.friend.nickname}?',
+      buttonCount: 2,
+      button2Text: 'Yes',
+      onButton2Pressed: () async {
+        Navigator.of(context).pop();
+        final apiService = Provider.of<ApiService>(context, listen: false);
+        try {
+          final result = await apiService.friendApi
+              .sendAcceptFriendRequestNickname(request.friend.nickname);
+
+          if (result != null) {
+            setState(() {
+              _friends.removeWhere(
+                (f) =>
+                    f.friend.userId == request.friend.userId &&
+                    f.status == FriendRequestViewStatus.incoming,
+              );
+            });
+
+            setState(() {
+              _friends.add(
+                FriendRequest(
+                  friend: request.friend,
+                  status: FriendRequestViewStatus.friend,
+                ),
+              );
+            });
+
+            if (!mounted) return;
+            showCustomSnackBar(
+              context,
+              normalText:
+                  'Friend request accepted from ${request.friend.nickname}',
+              type: SnackBarType.success,
+            );
+          }
+        } catch (e) {
+          _logger.warning(
+            "Failed to accept request from ${request.friend.nickname}: $e",
+          );
+          if (!mounted) return;
+          showCustomSnackBar(
+            context,
+            normalText: 'Failed to accept friend request',
+          );
+        }
+      },
+      button1Text: 'Cancel',
+      button1Color: ColorPalette.error,
+      onButton1Pressed: () => Navigator.of(context).pop(),
+    );
   }
 
   void _onSearchChanged(String value) {
@@ -99,7 +200,9 @@ class _GroupsAndFriendsScreenState extends State<GroupsAndFriendsScreen> {
     final filteredFriends =
         _friends
             .where(
-              (f) => f.name.toLowerCase().contains(_searchQuery.toLowerCase()),
+              (f) => f.friend.nickname.toLowerCase().contains(
+                _searchQuery.toLowerCase(),
+              ),
             )
             .toList();
 
@@ -151,7 +254,10 @@ class _GroupsAndFriendsScreenState extends State<GroupsAndFriendsScreen> {
                       sizeType: ButtonSizeType.full,
                     ),
                   ),
-                  FriendsListView(friends: filteredFriends),
+                  FriendsListView(
+                    friends: filteredFriends,
+                    onAccepted: _onAccepted,
+                  ),
                 ],
               ],
             ),
