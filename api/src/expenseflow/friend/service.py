@@ -5,6 +5,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from expenseflow.enums import FriendStatus
 from expenseflow.errors import ExpenseFlowError
+from expenseflow.expense.models import (
+    ExpenseItemModel,
+    ExpenseItemSplitModel,
+    ExpenseModel,
+)
 from expenseflow.friend.models import FriendModel
 from expenseflow.user.models import UserModel
 
@@ -32,6 +37,45 @@ async def get_friends(session: AsyncSession, user: UserModel) -> list[UserModel]
         friend.receiver if friend.sender_id == user.user_id else friend.sender
         for friend in models
     ]
+
+
+async def get_friend_expenses(
+    session: AsyncSession, user: UserModel, friend: UserModel
+) -> list[ExpenseModel]:
+    """Get a user's expenses with a friend."""
+    u_id = user.user_id
+    f_id = friend.user_id
+
+    stmt = (
+        select(ExpenseModel)
+        .join(ExpenseItemModel, ExpenseItemModel.expense_id == ExpenseModel.expense_id)
+        .join(
+            ExpenseItemSplitModel,
+            ExpenseItemSplitModel.expense_item_id == ExpenseItemModel.expense_item_id,
+        )
+        .where(
+            or_(
+                and_(
+                    or_(
+                        ExpenseModel.uploader_id == u_id,
+                        ExpenseModel.parent_id == user.entity_id,
+                    ),
+                    ExpenseItemSplitModel.user_id == f_id,  # friend is in the split
+                ),
+                and_(
+                    or_(
+                        ExpenseModel.uploader_id == f_id,
+                        ExpenseModel.parent_id == friend.entity_id,
+                    ),
+                    ExpenseItemSplitModel.user_id == u_id,  # user is in the split
+                ),
+            )
+        )
+        .distinct()
+    )
+
+    result = await session.execute(stmt)
+    return list(result.scalars().all())
 
 
 async def get_received_friend_requests(
