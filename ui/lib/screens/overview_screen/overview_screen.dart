@@ -1,5 +1,3 @@
-import 'dart:math' show Random;
-
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/common/time_period_dropdown.dart';
 import 'package:flutter_frontend/screens/overview_screen/elements/overview_screen_report_widget.dart';
@@ -9,6 +7,8 @@ import 'package:flutter_frontend/services/api_service.dart';
 import 'package:flutter_frontend/models/expense.dart';
 import 'package:flutter_frontend/models/user.dart';
 import 'package:flutter_frontend/common/snack_bar.dart';
+import 'package:flutter_frontend/types.dart'
+    show CategoryData, assignRandomColors;
 import 'package:provider/provider.dart';
 
 import '../../common/color_palette.dart';
@@ -155,26 +155,4 @@ class _OverviewScreenState extends State<OverviewScreen> {
       ),
     );
   }
-}
-
-class CategoryData {
-  final String name;
-  final double amount;
-  Color? color;
-
-  CategoryData({required this.name, required this.amount, this.color});
-}
-
-List<CategoryData> assignRandomColors(
-  List<CategoryData> categories,
-  List<Color> colors,
-) {
-  final random = Random();
-  return categories.map((category) {
-    return CategoryData(
-      name: category.name,
-      amount: category.amount,
-      color: colors[random.nextInt(colors.length)],
-    );
-  }).toList();
 }

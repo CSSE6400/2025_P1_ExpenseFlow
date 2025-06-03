@@ -1,72 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/screens/home_screen/home_screen.dart'
+    show RecentExpense;
 import 'package:google_fonts/google_fonts.dart';
-import 'package:logging/logging.dart';
 import '../../../common/color_palette.dart';
 import '../../../common/proportional_sizes.dart';
-import 'package:flutter_frontend/services/api_service.dart';
-import 'package:provider/provider.dart' show Provider;
 
-class RecentExpense {
-  final String name;
-  final String price;
-  final String expenseId;
+class HomeScreenRecentExpenses extends StatelessWidget {
+  final List<RecentExpense> recentExpenses;
+  final bool isLoading;
+  final VoidCallback? onTap;
 
-  RecentExpense({
-    required this.name,
-    required this.price,
-    required this.expenseId,
+  const HomeScreenRecentExpenses({
+    super.key,
+    required this.recentExpenses,
+    required this.isLoading,
+    this.onTap,
   });
-}
-
-class HomeScreenRecentExpenses extends StatefulWidget {
-  const HomeScreenRecentExpenses({super.key});
-
-  @override
-  State<HomeScreenRecentExpenses> createState() => _HomeScreenRecentExpensesState();
-}
-
-class _HomeScreenRecentExpensesState extends State<HomeScreenRecentExpenses> {
-  List<RecentExpense> recentExpenses = [];
-  bool isLoading = true;
-  final Logger _logger = Logger("HomeRecentExpensesScreen");
-
-  @override
-  void initState() {
-    super.initState();
-    _loadRecentExpenses();
-  }
-
-  Future<void> _loadRecentExpenses() async {
-  await _fetchUserExpenses(); // ✅ Wait for this
-  //await Future.delayed(const Duration(milliseconds: 800));
-
-  if (mounted) {
-    setState(() {
-      isLoading = false; // ✅ Mark loading as done
-    });
-  }
-}
-
-
-  Future<void> _fetchUserExpenses() async {
-    final apiService = Provider.of<ApiService>(context, listen: false);
-    try {
-      final userReads = await apiService.expenseApi.getExpensesUploadedByMe(); //TODO: this should be all expenses the user is apart of
-
-      setState(() {
-        recentExpenses = userReads.map((expense) {
-          return RecentExpense(
-            name:expense.name,
-            price: "100000", // TODO: change to better fitting end point with a price.
-            expenseId: expense.expenseId,
-          );
-        }).toList();
-      });
-      _logger.info("number of recent expenses: ${recentExpenses.length}");
-    } catch (e) {
-      _logger.warning("Failed to get recent expenses: $e");
-    }
-  }
 
   String formatPrice(String price) {
     return '\$${double.parse(price).toStringAsFixed(2)}';
@@ -78,16 +27,12 @@ class _HomeScreenRecentExpensesState extends State<HomeScreenRecentExpenses> {
     final backgroundColor = ColorPalette.buttonText;
 
     return GestureDetector(
-      onTap: () {
-        Navigator.pushNamed(context, '/expenses');
-      },
+      onTap: onTap,
       child: Container(
         width: double.infinity,
         decoration: BoxDecoration(
           color: backgroundColor,
-          borderRadius: BorderRadius.circular(
-            proportionalSizes.scaleWidth(10),
-          ),
+          borderRadius: BorderRadius.circular(proportionalSizes.scaleWidth(10)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -104,7 +49,6 @@ class _HomeScreenRecentExpensesState extends State<HomeScreenRecentExpenses> {
               ),
             ),
 
-            // loading state
             if (isLoading)
               Padding(
                 padding: EdgeInsets.symmetric(

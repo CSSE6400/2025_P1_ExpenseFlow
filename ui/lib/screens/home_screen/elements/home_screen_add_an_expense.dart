@@ -5,14 +5,9 @@ import '../../../common/proportional_sizes.dart';
 import '../../../common/icon_maker.dart';
 import '../../../common/scan_receipt.dart';
 
-class HomeScreenAddAnExpense extends StatefulWidget {
+class HomeScreenAddAnExpense extends StatelessWidget {
   const HomeScreenAddAnExpense({super.key});
 
-  @override
-  State<HomeScreenAddAnExpense> createState() => _HomeScreenAddAnExpenseState();
-}
-
-class _HomeScreenAddAnExpenseState extends State<HomeScreenAddAnExpense> {
   @override
   Widget build(BuildContext context) {
     final proportionalSizes = ProportionalSizes(context: context);
@@ -28,9 +23,7 @@ class _HomeScreenAddAnExpenseState extends State<HomeScreenAddAnExpense> {
       padding: EdgeInsets.all(proportionalSizes.scaleWidth(16)),
       decoration: BoxDecoration(
         color: outerBackgroundColor,
-        borderRadius: BorderRadius.circular(
-          proportionalSizes.scaleWidth(16),
-        ),
+        borderRadius: BorderRadius.circular(proportionalSizes.scaleWidth(16)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -52,9 +45,7 @@ class _HomeScreenAddAnExpenseState extends State<HomeScreenAddAnExpense> {
               ),
             ),
             child: ListTile(
-              leading: IconMaker(
-                assetPath: 'assets/icons/manual_entry.png',
-              ),
+              leading: IconMaker(assetPath: 'assets/icons/manual_entry.png'),
               title: Text(
                 'Manual Entry',
                 style: GoogleFonts.roboto(
@@ -76,9 +67,7 @@ class _HomeScreenAddAnExpenseState extends State<HomeScreenAddAnExpense> {
               ),
             ),
             child: ListTile(
-              leading: IconMaker(
-                assetPath: 'assets/icons/scan.png',
-              ),
+              leading: IconMaker(assetPath: 'assets/icons/scan.png'),
               title: Text(
                 'Camera Scan',
                 style: GoogleFonts.roboto(
@@ -87,9 +76,7 @@ class _HomeScreenAddAnExpenseState extends State<HomeScreenAddAnExpense> {
                 ),
               ),
               onTap: () {
-                handleScanReceiptUpload(
-                  context: context,
-                );
+                handleScanReceiptUpload(context: context);
               },
             ),
           ),
