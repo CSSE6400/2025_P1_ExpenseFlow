@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_frontend/common/search_bar.dart' as search;
 import 'package:flutter_frontend/models/enums.dart' show ExpenseStatus;
 import 'package:flutter_frontend/models/expense.dart';
-import 'package:flutter_frontend/screens/expenses_screen/elements/expenses_screen_segment_control.dart'
-    show ExpensesScreenSegmentControl;
+import 'package:flutter_frontend/widgets/expense_segment_control.dart';
 import 'package:flutter_frontend/widgets/expense_view.dart';
 import 'package:flutter_frontend/common/time_period_dropdown.dart';
 import 'package:flutter_frontend/common/proportional_sizes.dart';
@@ -76,7 +75,7 @@ class _ExpenseListViewState extends State<ExpenseListView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        ExpensesScreenSegmentControl(
+        ExpenseSegmentControl(
           selectedSegment: selectedSegment,
           onSegmentChanged: (segment) {
             setState(() => selectedSegment = segment);

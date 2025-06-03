@@ -51,7 +51,7 @@ class FriendsListView extends StatelessWidget {
                         ? () {
                           Navigator.pushNamed(
                             context,
-                            '/friend_expense',
+                            '/view_friend',
                             arguments: {'userId': friend.friend.userId},
                           );
                         }
@@ -77,7 +77,7 @@ class FriendsListView extends StatelessWidget {
                         onPressed: () {
                           Navigator.pushNamed(
                             context,
-                            '/friend_expense',
+                            '/view_friend',
                             arguments: {'userId': friend.friend.userId},
                           );
                         },

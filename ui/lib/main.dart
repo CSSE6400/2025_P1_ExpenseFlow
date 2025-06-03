@@ -19,7 +19,7 @@ import '../../screens/add_items_screen/add_items_screen.dart';
 import 'screens/expenses_screen/expenses_screen.dart';
 import 'screens/see_expense_screen/see_expense_screen.dart';
 import '../../screens/groups_and_friends_screen/groups_and_friends_screen.dart';
-import '../../screens/ind_friend_expense_screen/ind_friend_expense_screen.dart';
+import 'screens/view_friend_screen/view_friend_screen.dart';
 import 'screens/view_group_screen/view_group_screen.dart';
 import '../../screens/manage_friends_screen/manage_friends_screen.dart';
 
@@ -158,7 +158,7 @@ class MyApp extends StatelessWidget {
             return MaterialPageRoute(
               builder: (_) => SeeExpenseScreen(expenseId: expenseId),
             );
-          case '/friend_expense':
+          case '/view_friend':
             final args = settings.arguments as Map<String, dynamic>?;
             final userId = args?['userId'] as String?;
 
@@ -172,7 +172,7 @@ class MyApp extends StatelessWidget {
             }
 
             return MaterialPageRoute(
-              builder: (_) => IndFriendExpenseScreen(userId: userId),
+              builder: (_) => ViewFriendScreen(userId: userId),
             );
           case '/view_group':
             final args = settings.arguments as Map<String, dynamic>?;
@@ -188,7 +188,7 @@ class MyApp extends StatelessWidget {
             }
 
             return MaterialPageRoute(
-              builder: (_) => IndGroupExpenseScreen(groupId: groupId),
+              builder: (_) => ViewGroupScreen(groupId: groupId),
             );
           default:
             final logger = Logger("MyApp");

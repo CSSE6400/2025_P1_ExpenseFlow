@@ -11,16 +11,16 @@ import 'package:provider/provider.dart';
 import 'package:logging/logging.dart';
 import '../../../common/proportional_sizes.dart';
 
-class IndFriendExpenseScreen extends StatefulWidget {
+class ViewFriendScreen extends StatefulWidget {
   final String userId;
 
-  const IndFriendExpenseScreen({super.key, required this.userId});
+  const ViewFriendScreen({super.key, required this.userId});
 
   @override
-  State<IndFriendExpenseScreen> createState() => _IndFriendExpenseScreenState();
+  State<ViewFriendScreen> createState() => _ViewFriendScreenState();
 }
 
-class _IndFriendExpenseScreenState extends State<IndFriendExpenseScreen> {
+class _ViewFriendScreenState extends State<ViewFriendScreen> {
   final Logger _logger = Logger("IndFriendExpenseScreen");
   UserRead? friend;
   List<ExpenseRead> expenses = [];

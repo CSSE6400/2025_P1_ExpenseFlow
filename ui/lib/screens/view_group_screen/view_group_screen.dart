@@ -14,16 +14,16 @@ import '../../common/color_palette.dart';
 import '../../common/app_bar.dart';
 import '../../common/bottom_nav_bar.dart';
 
-class IndGroupExpenseScreen extends StatefulWidget {
+class ViewGroupScreen extends StatefulWidget {
   final String groupId;
 
-  const IndGroupExpenseScreen({super.key, required this.groupId});
+  const ViewGroupScreen({super.key, required this.groupId});
 
   @override
-  State<IndGroupExpenseScreen> createState() => _IndGroupExpenseScreenState();
+  State<ViewGroupScreen> createState() => _ViewGroupScreenState();
 }
 
-class _IndGroupExpenseScreenState extends State<IndGroupExpenseScreen> {
+class _ViewGroupScreenState extends State<ViewGroupScreen> {
   GroupRead? group;
   bool isLoading = true;
   List<ExpenseRead> expenses = [];
