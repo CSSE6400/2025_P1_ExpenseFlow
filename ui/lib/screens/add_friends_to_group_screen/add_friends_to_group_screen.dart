@@ -53,7 +53,9 @@ class _AddFriendsScreenState extends State<AddFriendsScreen> {
             userReads.map((user) {
               return Friend(
                 userId: user.userId,
-                name: user.nickname,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                nickname: user.nickname,
                 isSelected: existingIds.contains(user.userId),
               );
             }).toList();

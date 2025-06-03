@@ -162,9 +162,9 @@ class MyApp extends StatelessWidget {
             );
           case '/friend_expense':
             final args = settings.arguments as Map<String, dynamic>?;
-            final username = args?['username'] as String?;
+            final userId = args?['userId'] as String?;
 
-            if (username == null) {
+            if (userId == null) {
               return MaterialPageRoute(
                 builder:
                     (_) => const Scaffold(
@@ -174,7 +174,7 @@ class MyApp extends StatelessWidget {
             }
 
             return MaterialPageRoute(
-              builder: (_) => IndFriendExpenseScreen(username: username),
+              builder: (_) => IndFriendExpenseScreen(userId: userId),
             );
           case '/group_expense':
             final args = settings.arguments as Map<String, dynamic>?;

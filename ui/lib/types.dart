@@ -38,10 +38,20 @@ class RecentExpense {
 
 class Friend {
   final String userId;
-  final String name;
+  final String firstName;
+  final String lastName;
+  final String nickname;
   bool isSelected = false;
 
-  Friend({required this.userId, required this.name, this.isSelected = false});
+  Friend({
+    required this.userId,
+    required this.firstName,
+    required this.lastName,
+    required this.nickname,
+    this.isSelected = false,
+  });
+
+  String get name => '$firstName $lastName';
 }
 
 class Group {

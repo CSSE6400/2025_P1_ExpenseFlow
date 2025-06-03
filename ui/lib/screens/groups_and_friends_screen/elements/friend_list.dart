@@ -41,14 +41,11 @@ class FriendsListView extends StatelessWidget {
                   Navigator.pushNamed(
                     context,
                     '/friend_expense',
-                    arguments: {
-                      'friendName': friend.name,
-                      'friendUUID': friend.userId,
-                    },
+                    arguments: {'userId': friend.userId},
                   );
                 },
                 child: Text(
-                  friend.name,
+                  "${friend.firstName} ${friend.lastName} - ${friend.nickname}",
                   style: GoogleFonts.roboto(
                     fontSize: proportionalSizes.scaleText(18),
                     fontWeight: FontWeight.bold,

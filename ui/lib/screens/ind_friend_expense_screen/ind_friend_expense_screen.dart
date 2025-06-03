@@ -6,12 +6,9 @@ import '../../common/bottom_nav_bar.dart';
 import '../ind_friend_expense_screen/elements/ind_friend_expense_screen_main_body.dart';
 
 class IndFriendExpenseScreen extends StatefulWidget {
-  final String username;
+  final String userId;
 
-  const IndFriendExpenseScreen({
-    super.key,
-    required this.username,
-  });
+  const IndFriendExpenseScreen({super.key, required this.userId});
 
   @override
   State<IndFriendExpenseScreen> createState() => _IndFriendExpenseScreenState();
@@ -24,14 +21,9 @@ class _IndFriendExpenseScreenState extends State<IndFriendExpenseScreen> {
 
     return Scaffold(
       backgroundColor: backgroundColor,
-      appBar: AppBarWidget(
-        screenName: widget.username,
-        showBackButton: true,
-      ),
+      appBar: AppBarWidget(screenName: widget.userId, showBackButton: true),
 
-      body: IndFriendExpenseScreenMainBody(
-        username: widget.username,
-      ),
+      body: IndFriendExpenseScreenMainBody(username: widget.userId),
 
       bottomNavigationBar: BottomNavBar(
         currentScreen: 'Individual Friend',

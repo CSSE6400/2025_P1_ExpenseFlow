@@ -61,7 +61,9 @@ class _GroupsAndFriendsScreenState extends State<GroupsAndFriendsScreen> {
             userFriends
                 .map(
                   (f) => Friend(
-                    name: "${f.firstName} ${f.lastName}",
+                    firstName: f.firstName,
+                    lastName: f.lastName,
+                    nickname: f.nickname,
                     userId: f.userId,
                   ),
                 )
@@ -141,7 +143,7 @@ class _GroupsAndFriendsScreenState extends State<GroupsAndFriendsScreen> {
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
                     child: CustomButton(
-                      label: 'Manage Friends',
+                      label: 'Find Friends',
                       onPressed: () {
                         Navigator.pushNamed(context, '/manage_friends');
                       },

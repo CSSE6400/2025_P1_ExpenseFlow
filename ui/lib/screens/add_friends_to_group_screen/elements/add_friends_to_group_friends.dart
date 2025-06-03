@@ -54,7 +54,7 @@ class _AddFriendsScreenItemState extends State<AddFriendsScreenItem> {
     setState(() {
       filteredFriends =
           allFriends.where((friend) {
-            return friend.name.toLowerCase().contains(query.toLowerCase());
+            return friend.nickname.toLowerCase().contains(query.toLowerCase());
           }).toList();
     });
   }
