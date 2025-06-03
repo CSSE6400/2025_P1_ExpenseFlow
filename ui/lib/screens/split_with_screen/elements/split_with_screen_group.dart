@@ -3,13 +3,16 @@ import 'package:flutter_frontend/common/color_palette.dart';
 import 'package:flutter_frontend/common/custom_divider.dart';
 import 'package:flutter_frontend/common/icon_maker.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:logging/logging.dart';
 import '../../../common/proportional_sizes.dart';
 import '../../../common/search_bar.dart' as search;
+import 'package:flutter_frontend/services/api_service.dart';
+import 'package:provider/provider.dart' show Provider;
+import 'package:flutter_frontend/common/snack_bar.dart';
 
-// Group Member class
-// TODO: Consider adding userId, transactionId or unique identifier for backend syncing
 class GroupMember {
   String name;
+  String uuid;
   String percentage;
   bool checked;
   bool disabled;
@@ -17,21 +20,22 @@ class GroupMember {
 
   GroupMember({
     required this.name,
+    required this.uuid,
     required this.percentage,
     required this.checked,
     required this.disabled,
   }) : controller = TextEditingController(text: percentage);
 }
 
-// Group class
-// TODO: Consider adding groupId, transactionId or unique identifier for backend syncing
 class Group {
   String name;
   List<GroupMember> members;
   bool isSelected;
   bool isExpanded;
+  String uuid;
 
   Group({
+    required this.uuid,
     required this.name,
     required this.members,
     this.isSelected = false,
@@ -58,43 +62,106 @@ class SplitWithScreenGroup extends StatefulWidget {
 class SplitWithScreenGroupState extends State<SplitWithScreenGroup> {
   List<Group> allGroups = [];
   List<Group> filteredGroups = [];
+  final Logger _logger = Logger("SplitWithGroup");
 
-  // Initialize groups and their members
   @override
   void initState() {
     super.initState();
+    _fetchGroups();
 
-    // Initialize groups
-    // TODO: Replace with actual data from the backend and add lazy loading if groups are numerous.
-    allGroups = [
-      Group(name: 'Flatmates', members: _generateMembers()),
-      Group(name: 'Project Team', members: _generateMembers()),
-      Group(name: 'Family', members: _generateMembers()),
-    ];
-
-    filteredGroups = List.from(allGroups);
-
-    // Default: first group selected & expanded
-    allGroups[0].isSelected = true;
-    allGroups[0].isExpanded = true;
+    if (allGroups.isNotEmpty) { // dont think this works anymore but ehh
+      allGroups[0].isSelected = true;
+      allGroups[0].isExpanded = true;
+    }
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       widget.onValidityChanged?.call(isTotalPercentageValid());
     });
   }
 
-  // Generate dummy members for each group
-  // TODO: Replace with actual data from the backend and add lazy loading if group members are numerous.
-  static List<GroupMember> _generateMembers() {
-    return [
-      GroupMember(name: 'You', percentage: '100', checked: true, disabled: false),
-      GroupMember(name: '@abc', percentage: '', checked: false, disabled: false),
-      GroupMember(name: '@xyz', percentage: '', checked: false, disabled: false),
-      GroupMember(name: '@def', percentage: '', checked: false, disabled: false),
-    ];
+  Future<void> _fetchGroups() async {
+    final apiService = Provider.of<ApiService>(context, listen: false);
+    try {
+      final userReads = await apiService.groupApi.getUserGroups();
+      allGroups = [];
+
+      for (final group in userReads) {
+      final members = await _generateMembers(group.groupId);
+      allGroups.add(Group(
+        name: '@${group.name}',
+        members: members,
+        uuid: group.groupId,
+      ));
+      }
+
+      if (allGroups.isEmpty) { 
+        _logger.info("User has no groups"); 
+      }
+
+      setState(() {
+        filteredGroups = List.from(allGroups);
+      });
+    } on ApiException catch (e) {
+      _logger.warning("API exception while fetching friends: ${e.message}");
+      showCustomSnackBar(
+        context,
+        normalText: "Failed to load friends",
+      );
+    } catch (e) {
+      _logger.severe("Unexpected error: $e");
+      showCustomSnackBar(
+        context,
+        normalText: "Something went wrong",
+      );
+    }
   }
 
-  // Select a group and update its state
+  Future<List<GroupMember>> _generateMembers(String groupId) async {
+    final apiService = Provider.of<ApiService>(context, listen: false);
+    try {
+      _logger.info("Calling the API");
+      final fetchedUser = await apiService.userApi.getCurrentUser();
+      if (fetchedUser == null) {
+        showCustomSnackBar(
+          context,
+          normalText: "Unable to get current user",
+        );
+        Navigator.pushNamed(context, "/");
+        return []; 
+      }
+
+      final userReads = await apiService.groupApi.getGroupUsers(groupId);
+      final members = userReads
+          .where((user) => user.userId != fetchedUser.userId)
+          .map((user) {
+            return GroupMember(
+              name: '@${user.nickname}',
+              uuid: user.userId,
+              percentage: '',
+              checked: false,
+              disabled: false,
+            );
+          }).toList();
+
+      members.insert(
+        0,
+        GroupMember(
+          name: 'You',
+          uuid: fetchedUser.userId,
+          percentage: '100',
+          checked: true,
+          disabled: false,
+        ),
+      );
+
+      return members;
+    } catch (e) {
+      _logger.warning("Failed to fetch group members: $e");
+      showCustomSnackBar(context, normalText: "Failed to load group members");
+      return [];
+    }
+  }
+
   void _selectGroup(int index) {
     if (widget.isReadOnly) return;
 
@@ -118,12 +185,10 @@ class SplitWithScreenGroupState extends State<SplitWithScreenGroup> {
           }
         }
       }
-
       widget.onValidityChanged?.call(isTotalPercentageValid());
     });
   }
 
-  // Check if the total percentage of selected members is valid (100%)
   bool isTotalPercentageValid() {
     final expandedGroup =
         allGroups.firstWhere((g) => g.isExpanded, orElse: () => allGroups[0]);
@@ -135,13 +200,11 @@ class SplitWithScreenGroupState extends State<SplitWithScreenGroup> {
     return total == 100;
   }
 
-  // Save group and member splits, then exit
   void saveAndExit(BuildContext context) {
-    // TODO: Save group + member splits
+    // TODO: Save group + member splits (and laod them in if needed)
     Navigator.pop(context);
   }
 
-  // Toggle member selection and update percentage
   void _toggleMemberSelection(Group group, GroupMember member) {
     if (widget.isReadOnly || member.disabled || member.name == 'You') return;
 
@@ -162,7 +225,6 @@ class SplitWithScreenGroupState extends State<SplitWithScreenGroup> {
     });
   }
 
-  // Filter groups based on search query
   void _filterGroups(String query) {
     setState(() {
       filteredGroups = allGroups
@@ -226,7 +288,7 @@ class SplitWithScreenGroupState extends State<SplitWithScreenGroup> {
                   CustomDivider(),
 
                   ...[
-                    // sort group members: 'You' → selected → unselected
+                    // sort group members so it is you then selected thenunselected
                     ...[
                       group.members.firstWhere((m) => m.name == 'You'),
                       ...group.members
@@ -245,7 +307,6 @@ class SplitWithScreenGroupState extends State<SplitWithScreenGroup> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              // Username
                               Text(
                                 member.name,
                                 style: GoogleFonts.roboto(
@@ -257,8 +318,6 @@ class SplitWithScreenGroupState extends State<SplitWithScreenGroup> {
                                           : ColorPalette.secondaryText,
                                 ),
                               ),
-
-                              // Checkbox + percentage field
                               Row(
                                 children: [
                                   if (member.checked || member.name == 'You')

@@ -223,7 +223,7 @@ class _IndFriendExpenseScreenListState extends State<IndFriendExpenseScreenList>
                             context,
                             '/see_expenses',
                             arguments: {
-                              'transactionId': expense.name, // TODO: Update with actual transaction ID
+                              'transactionId': expense.transactionId // TODO: Update with actual transaction ID
                             },
                           );
                         },

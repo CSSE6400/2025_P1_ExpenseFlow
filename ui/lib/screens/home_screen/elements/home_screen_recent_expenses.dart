@@ -1,17 +1,20 @@
-// Flutter imports
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-// Common imports
+import 'package:logging/logging.dart';
 import '../../../common/color_palette.dart';
 import '../../../common/proportional_sizes.dart';
+import 'package:flutter_frontend/services/api_service.dart';
+import 'package:provider/provider.dart' show Provider;
 
-class RecentExpenseItem {
+class RecentExpense {
   final String name;
   final String price;
+  final String expenseId;
 
-  RecentExpenseItem({
+  RecentExpense({
     required this.name,
     required this.price,
+    required this.expenseId,
   });
 }
 
@@ -23,8 +26,9 @@ class HomeScreenRecentExpenses extends StatefulWidget {
 }
 
 class _HomeScreenRecentExpensesState extends State<HomeScreenRecentExpenses> {
-  List<RecentExpenseItem> recentExpenses = [];
+  List<RecentExpense> recentExpenses = [];
   bool isLoading = true;
+  final Logger _logger = Logger("HomeRecentExpensesScreen");
 
   @override
   void initState() {
@@ -32,25 +36,35 @@ class _HomeScreenRecentExpensesState extends State<HomeScreenRecentExpenses> {
     _loadRecentExpenses();
   }
 
-  // Simulated backend call
   Future<void> _loadRecentExpenses() async {
-    await Future.delayed(const Duration(milliseconds: 800)); // Simulate network latency
+  await _fetchUserExpenses(); // ✅ Wait for this
+  //await Future.delayed(const Duration(milliseconds: 800));
 
-    // TODO: Replace with actual data from your database. Fetch 6 most recent expenses.
-    final mockExpenses = [
-      RecentExpenseItem(name: 'Shopping at Coles', price: '78.9'),
-      RecentExpenseItem(name: 'Uber Ride', price: '25.5'),
-      RecentExpenseItem(name: 'Dinner at Sushi Train', price: '60.2'),
-      RecentExpenseItem(name: 'Movie Tickets', price: '34'),
-      RecentExpenseItem(name: 'Fuel BP Station', price: '89.9'),
-      RecentExpenseItem(name: 'Haircut', price: '45'),
-    ];
+  if (mounted) {
+    setState(() {
+      isLoading = false; // ✅ Mark loading as done
+    });
+  }
+}
 
-    if (mounted) {
+
+  Future<void> _fetchUserExpenses() async {
+    final apiService = Provider.of<ApiService>(context, listen: false);
+    try {
+      final userReads = await apiService.expenseApi.getExpensesUploadedByMe(); //TODO: this should be all expenses the user is apart of
+
       setState(() {
-        recentExpenses = mockExpenses;
-        isLoading = false;
+        recentExpenses = userReads.map((expense) {
+          return RecentExpense(
+            name:expense.name,
+            price: "100000", // TODO: change to better fitting end point with a price.
+            expenseId: expense.expenseId,
+          );
+        }).toList();
       });
+      _logger.info("number of recent expenses: ${recentExpenses.length}");
+    } catch (e) {
+      _logger.warning("Failed to get recent expenses: $e");
     }
   }
 
@@ -78,7 +92,6 @@ class _HomeScreenRecentExpensesState extends State<HomeScreenRecentExpenses> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Heading
             Padding(
               padding: EdgeInsets.all(proportionalSizes.scaleWidth(16)),
               child: Text(
@@ -91,7 +104,7 @@ class _HomeScreenRecentExpensesState extends State<HomeScreenRecentExpenses> {
               ),
             ),
 
-            // Loading state
+            // loading state
             if (isLoading)
               Padding(
                 padding: EdgeInsets.symmetric(
