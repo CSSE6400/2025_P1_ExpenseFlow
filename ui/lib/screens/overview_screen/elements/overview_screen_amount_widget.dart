@@ -1,68 +1,21 @@
 // Flutter imports
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/common/snack_bar.dart';
-import 'package:flutter_frontend/models/expense.dart';
-import 'package:flutter_frontend/models/user.dart';
-import 'package:flutter_frontend/services/api_service.dart' show ApiService;
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart' show Provider;
 // Common imports
 import '../../../common/color_palette.dart';
 import '../../../common/proportional_sizes.dart';
 
-class OverviewScreenAmountWidget extends StatefulWidget {
-  const OverviewScreenAmountWidget({super.key});
+class OverviewScreenAmountWidget extends StatelessWidget {
+  final double monthlyBudget;
+  final double spent;
+  final bool isLoading;
 
-  @override
-  State<OverviewScreenAmountWidget> createState() =>
-      _OverviewScreenAmountWidgetState();
-}
-
-class _OverviewScreenAmountWidgetState
-    extends State<OverviewScreenAmountWidget> {
-  double monthlyBudget = 0.0;
-  double spent = 0.0;
-  double remaining = 0.0;
-  bool isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadAccountOverview();
-  }
-
-  Future<void> _loadAccountOverview() async {
-    final apiService = Provider.of<ApiService>(context, listen: false);
-    UserRead userResult;
-    ExpenseOverview overview;
-    try {
-      userResult = await apiService.userApi.mustGetCurrentUser();
-      overview = await apiService.expenseApi.getOverview();
-    } catch (e) {
-      if (!mounted) return;
-      showCustomSnackBar(
-        context,
-        normalText: "Unable to retrieve user overview",
-      );
-      setState(() {
-        isLoading = false;
-      });
-      return;
-    }
-
-    double fetchedBudget = userResult.budget.toDouble();
-    double fetchedSpent = overview.total;
-    final double fetchedRemaining = fetchedBudget - fetchedSpent;
-
-    if (mounted) {
-      setState(() {
-        monthlyBudget = fetchedBudget;
-        spent = fetchedSpent;
-        remaining = fetchedRemaining;
-        isLoading = false;
-      });
-    }
-  }
+  const OverviewScreenAmountWidget({
+    super.key,
+    required this.monthlyBudget,
+    required this.spent,
+    this.isLoading = false,
+  });
 
   String formatAmount(double value) {
     return '\$${value.toStringAsFixed(2)}';
@@ -105,7 +58,11 @@ class _OverviewScreenAmountWidgetState
                   SizedBox(height: proportionalSizes.scaleHeight(8)),
                   _buildRow('Spent', spent, proportionalSizes),
                   SizedBox(height: proportionalSizes.scaleHeight(8)),
-                  _buildRow('Remaining', remaining, proportionalSizes),
+                  _buildRow(
+                    'Remaining',
+                    monthlyBudget - spent,
+                    proportionalSizes,
+                  ),
                 ],
               ),
             ),
