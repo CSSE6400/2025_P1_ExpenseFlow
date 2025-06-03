@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/common/time_period_dropdown.dart';
+import 'package:flutter_frontend/models/user.dart' show UserRead;
 import 'package:logging/logging.dart';
 import '../../../common/proportional_sizes.dart';
 import '../../expenses_screen/elements/expenses_screen_segment_control.dart';
@@ -26,9 +27,9 @@ class ExpenseItem {
 }
 
 class IndFriendExpenseScreenMainBody extends StatefulWidget {
-  final String username;
+  final UserRead user;
 
-  const IndFriendExpenseScreenMainBody({super.key, required this.username});
+  const IndFriendExpenseScreenMainBody({super.key, required this.user});
 
   @override
   State<IndFriendExpenseScreenMainBody> createState() =>
@@ -74,17 +75,22 @@ class _IndFriendExpenseScreenMainBodyState
   Future<List<void>> _fetchFriendExpenses() async {
     final apiService = Provider.of<ApiService>(context, listen: false);
     try {
-      final userReads = await apiService.expenseApi.getExpensesUploadedByMe(); //TODO: make appropriate end point
+      final userReads =
+          await apiService.expenseApi
+              .getExpensesUploadedByMe(); //TODO: make appropriate end point
 
-      final rawFriendExpenses = userReads.map((expense) {
-        return ExpenseItem(
-          name:expense.name,
-          transactionId: expense.expenseId,
-          price: '\$100', // TODO: change to better fitting end point with a price expense.amount
-          date: expense.expenseDate.toIso8601String(),
-          active: true, //expense.status != ExpenseStatus.paid // TODO: true if status is not is paid 
-        );
-      }).toList();
+      final rawFriendExpenses =
+          userReads.map((expense) {
+            return ExpenseItem(
+              name: expense.name,
+              transactionId: expense.expenseId,
+              price:
+                  '\$100', // TODO: change to better fitting end point with a price expense.amount
+              date: expense.expenseDate.toIso8601String(),
+              active:
+                  true, //expense.status != ExpenseStatus.paid // TODO: true if status is not is paid
+            );
+          }).toList();
 
       setState(() {
         allExpenses = List.from(rawFriendExpenses);
@@ -120,13 +126,14 @@ class _IndFriendExpenseScreenMainBodyState
       if (match != null) {
         final int days = int.parse(match.group(1)!);
         final DateTime cutoff = DateTime.now().subtract(Duration(days: days));
-        result = result.where((e) {
-          try {
-            return DateTime.parse(e.date).isAfter(cutoff);
-          } catch (_) {
-            return false;
-          }
-        }).toList();
+        result =
+            result.where((e) {
+              try {
+                return DateTime.parse(e.date).isAfter(cutoff);
+              } catch (_) {
+                return false;
+              }
+            }).toList();
       }
     }
 

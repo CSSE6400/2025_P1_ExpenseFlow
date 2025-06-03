@@ -38,6 +38,9 @@ class ExpenseRead {
   @ExpenseCategoryConverter()
   final ExpenseCategory category;
 
+  @ExpenseStatusConverter()
+  final ExpenseStatus status;
+
   ExpenseRead({
     required this.expenseId,
     required this.name,
@@ -45,6 +48,7 @@ class ExpenseRead {
     required this.description,
     required this.category,
     required this.expenseTotal,
+    required this.status,
   });
 
   factory ExpenseRead.fromJson(Map<String, dynamic> json) =>

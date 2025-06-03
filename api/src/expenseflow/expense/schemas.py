@@ -35,6 +35,21 @@ class ExpenseRead(ExpenseFlowBase):
         """Total cost of the expense."""
         return sum(item.quantity * item.price for item in self.items)
 
+    @computed_field
+    def status(self) -> ExpenseStatus:
+        """Status of the expense."""
+        statuses = [split.status for item in self.items for split in item.splits]
+
+        if all(s == ExpenseStatus.paid for s in statuses):
+            return ExpenseStatus.paid
+
+        if not any(s == ExpenseStatus.requested for s in statuses) or all(
+            s == ExpenseStatus.accepted for s in statuses
+        ):
+            return ExpenseStatus.accepted
+
+        return ExpenseStatus.requested
+
 
 class ExpenseCreate(ExpenseFlowBase):
     """Expense create schema."""
@@ -78,6 +93,7 @@ class ExpenseItemSplitRead(ExpenseFlowBase):
     user_id: UUID
     proportion: float
     user_fullname: str
+    status: ExpenseStatus
 
 
 class ExpenseOverviewCategory(ExpenseFlowBase):

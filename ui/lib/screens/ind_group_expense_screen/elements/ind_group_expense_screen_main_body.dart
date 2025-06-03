@@ -181,15 +181,12 @@ class _IndGroupExpenseScreenMainBodyState
 
       final parsedExpenses = await Future.wait(
         expensesFromApi.map<Future<ExpenseItem>>((expense) async {
-          final status = await apiService.expenseApi.getOverallExpenseStatus(
-            expense.expenseId,
-          );
           return ExpenseItem(
             name: expense.name,
             transactionId: expense.expenseId,
             price: '100', // TODO:, replace with total amount of expense
             date: expense.expenseDate.toIso8601String(),
-            active: status != ExpenseStatus.paid,
+            active: expense.status != ExpenseStatus.paid,
             members: [], // TODO: replace with actual group members
             //expense.members.map<GroupMember>((m) {
             // return GroupMember(
