@@ -14,14 +14,14 @@ class SeeExpenseApprovals extends StatelessWidget {
   final UserRead currentUser;
   final List<SplitStatusInfo> splitStatuses;
   final ExpenseStatus? myStatus;
-  final VoidCallback? onApprovePressed;
+  final Function(ExpenseStatus, ExpenseRead) onApprovePressed;
 
   SeeExpenseApprovals({
     super.key,
     required this.expense,
     required this.currentUser,
     required this.splitStatuses,
-    this.onApprovePressed,
+    required this.onApprovePressed,
   }) : myStatus = _getMyStatus(currentUser.userId, splitStatuses);
 
   static ExpenseStatus? _getMyStatus(
@@ -140,7 +140,7 @@ class SeeExpenseApprovals extends StatelessWidget {
               ? Padding(
                 padding: EdgeInsets.all(proportionalSizes.scaleHeight(12)),
                 child: ElevatedButton(
-                  onPressed: onApprovePressed ?? () {},
+                  onPressed: () => onApprovePressed(buttonStatus, expense),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: buttonBgColor,
                     minimumSize: Size(

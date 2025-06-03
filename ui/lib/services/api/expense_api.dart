@@ -156,7 +156,7 @@ class ExpenseApiClient extends BaseApiClient {
     ExpenseStatus status,
   ) async {
     final response = await client.put(
-      backendUri("/expenses/$expenseId/status?status=$status"),
+      backendUri("/expenses/$expenseId/status?status=${status.label}"),
     );
 
     if (response.statusCode == 200) {

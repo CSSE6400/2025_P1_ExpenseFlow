@@ -150,6 +150,45 @@ class _SeeExpenseScreenState extends State<SeeExpenseScreen> {
     }
   }
 
+  Future<void> changeExpenseState(
+    ExpenseStatus status,
+    ExpenseRead expense,
+  ) async {
+    final apiService = Provider.of<ApiService>(context, listen: false);
+
+    try {
+      final updatedExpense = await apiService.expenseApi.changeExpenseStatus(
+        expense.expenseId,
+        status,
+      );
+      if (updatedExpense == null) {
+        _logger.warning("Updated expense is null");
+        if (!mounted) return;
+        showCustomSnackBar(
+          context,
+          normalText: "Failed to change expense status",
+        );
+        return;
+      }
+
+      setState(() {
+        this.expense = updatedExpense;
+        _currentExpense = ExpenseCreate.fromExpenseRead(updatedExpense);
+      });
+
+      if (!mounted) return;
+      showCustomSnackBar(
+        context,
+        type: SnackBarType.success,
+        normalText: "Successfully changed expense state",
+      );
+    } catch (e) {
+      _logger.severe("Failed to change expense state", e);
+      if (!mounted) return;
+      showCustomSnackBar(context, normalText: "Failed to change expense state");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
@@ -201,7 +240,7 @@ class _SeeExpenseScreenState extends State<SeeExpenseScreen> {
                           expense: expense!,
                           splitStatuses: splitStatuses,
                           currentUser: me!,
-                          onApprovePressed: () => {},
+                          onApprovePressed: changeExpenseState,
                         ),
               ),
             ],
