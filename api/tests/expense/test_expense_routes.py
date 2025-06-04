@@ -8,6 +8,7 @@ from expenseflow.enums import ExpenseStatus
 from expenseflow.user.models import UserModel
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi.exceptions import ResponseValidationError
 
 from tests.factories import (
     ExpenseCreateFactory,
@@ -120,13 +121,14 @@ async def test_bad_expense_create(
         method="post", url=base_url, json=expense.model_dump(mode="json")
     )
 
-    bad_expense_response = await test_client.send(bad_expense_request)
+    with pytest.raises(ResponseValidationError):
+        bad_expense_response = await test_client.send(bad_expense_request)
+        assert bad_expense_response.status_code == 400
+        assert (
+            bad_expense_response.json()["detail"]
+            == "The total proportion of an expense item does not add to 1."
+        )
 
-    assert bad_expense_response.status_code == 400
-    assert (
-        bad_expense_response.json()["detail"]
-        == "The total proportion of an expense item does not add to 1."
-    )
 
 
 @pytest.mark.asyncio
