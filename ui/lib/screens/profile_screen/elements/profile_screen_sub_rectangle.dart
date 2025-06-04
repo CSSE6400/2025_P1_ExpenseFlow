@@ -179,7 +179,7 @@ class _ProfileScreenSubRectangleState extends State<ProfileScreenSubRectangle> {
                 ),
                 SizedBox(height: proportionalSizes.scaleHeight(8)),
                 Align(
-                  alignment: Alignment.centerRight,
+                  alignment: Alignment.center,
                   child: CustomButton(
                     label: isEditingBudget ? "Save New Budget" : "Edit Budget",
                     onPressed: _toggleEditBudget,

@@ -233,27 +233,33 @@ class _GroupsAndFriendsScreenState extends State<GroupsAndFriendsScreen> {
                 ),
                 const SizedBox(height: 16),
                 if (_selected == 'Groups') ...[
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 16.0),
-                    child: CustomButton(
-                      label: 'Create Group',
-                      onPressed:
-                          () => Navigator.pushNamed(context, '/create_group'),
-                      state: ButtonState.enabled,
-                      sizeType: ButtonSizeType.full,
+                  Align(
+                    alignment: Alignment.center,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: CustomButton(
+                        label: 'Create Group',
+                        onPressed:
+                            () => Navigator.pushNamed(context, '/create_group'),
+                        state: ButtonState.enabled,
+                        sizeType: ButtonSizeType.full,
+                      ),
                     ),
                   ),
                   GroupsListView(groups: filteredGroups),
                 ] else ...[
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 16.0),
-                    child: CustomButton(
-                      label: 'Find Friends',
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/manage_friends');
-                      },
-                      state: ButtonState.enabled,
-                      sizeType: ButtonSizeType.full,
+                  Align(
+                    alignment: Alignment.center,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: CustomButton(
+                        label: 'Find Friends',
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/manage_friends');
+                        },
+                        state: ButtonState.enabled,
+                        sizeType: ButtonSizeType.full,
+                      ),
                     ),
                   ),
                   FriendsListView(
