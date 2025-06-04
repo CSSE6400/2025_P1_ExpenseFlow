@@ -297,7 +297,7 @@ async def get_user_split_status(
         if expense.uploader_id == user.user_id or expense.parent_id == user.entity_id:
             return ExpenseStatus.paid
 
-        msg = f"User '{user.user_id}' is not have any splits in this expense."
+        msg = f"User '{user.user_id}' does not have any splits in this expense."
         raise ExpenseFlowError(msg)
 
     uniques = set(statuses)
