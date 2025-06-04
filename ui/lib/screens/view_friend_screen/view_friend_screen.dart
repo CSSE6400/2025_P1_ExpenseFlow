@@ -99,10 +99,7 @@ class _ViewFriendScreenState extends State<ViewFriendScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: const BottomNavBar(
-        currentScreen: 'Individual Friend',
-        inactive: false,
-      ),
+      bottomNavigationBar: const BottomNavBar(inactive: false),
     );
   }
 }

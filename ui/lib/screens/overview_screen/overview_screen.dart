@@ -149,10 +149,7 @@ class _OverviewScreenState extends State<OverviewScreen> {
                   ),
         ),
       ),
-      bottomNavigationBar: BottomNavBar(
-        currentScreen: 'Overview',
-        inactive: false,
-      ),
+      bottomNavigationBar: BottomNavBar(inactive: false),
     );
   }
 }

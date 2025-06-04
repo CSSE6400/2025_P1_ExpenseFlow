@@ -68,7 +68,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
       backgroundColor: backgroundColor,
       appBar: AppBarWidget(
         screenName: "View My Personal Expenses",
-        showBackButton: true,
+        showBackButton: false,
       ),
 
       body: (GestureDetector(
@@ -90,7 +90,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
       )),
 
       bottomNavigationBar: BottomNavBar(
-        currentScreen: 'Individual Group',
+        currentScreen: BottomNavBarScreen.expenses,
         inactive: false,
       ),
     );

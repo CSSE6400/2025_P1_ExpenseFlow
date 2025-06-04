@@ -73,7 +73,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
 
     return Scaffold(
       backgroundColor: backgroundColor,
-      appBar: AppBarWidget(screenName: 'Add Expense', showBackButton: true),
+      appBar: AppBarWidget(screenName: 'Add Expense', showBackButton: false),
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: SafeArea(
@@ -110,7 +110,10 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavBar(currentScreen: 'Add', inactive: false),
+      bottomNavigationBar: BottomNavBar(
+        currentScreen: BottomNavBarScreen.add,
+        inactive: false,
+      ),
     );
   }
 }

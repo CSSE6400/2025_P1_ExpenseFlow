@@ -53,10 +53,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
       )),
-      bottomNavigationBar: BottomNavBar(
-        currentScreen: 'Profile',
-        inactive: true,
-      ),
+      bottomNavigationBar: BottomNavBar(inactive: true),
     );
   }
 }

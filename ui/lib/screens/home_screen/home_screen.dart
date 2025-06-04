@@ -205,7 +205,10 @@ class _HomeScreenState extends State<HomeScreen>
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavBar(currentScreen: 'Home', inactive: false),
+      bottomNavigationBar: BottomNavBar(
+        currentScreen: BottomNavBarScreen.home,
+        inactive: false,
+      ),
     );
   }
 }

@@ -1,22 +1,16 @@
-// Flutter imports
 import 'package:flutter/material.dart';
-// Common imports
 import 'color_palette.dart';
 import 'proportional_sizes.dart';
 
-/// A custom bottom navigation bar widget for navigating between Groups, Add, and Expenses.
+enum BottomNavBarScreen { home, add, groupsAndFriends, expenses }
+
 class BottomNavBar extends StatelessWidget {
   /// The name of the currently active screen.
-  final String currentScreen;
+  final BottomNavBarScreen? currentScreen; // screen name
 
-  /// If `true`, disables navigation and turns all icons grey.
   final bool inactive;
 
-  const BottomNavBar({
-    super.key,
-    required this.currentScreen,
-    this.inactive = false,
-  });
+  const BottomNavBar({super.key, this.currentScreen, this.inactive = false});
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +28,7 @@ class BottomNavBar extends StatelessWidget {
         'screen': 'Home',
         'icon': 'assets/icons/home.png',
         'onTap': () {
-          if (!inactive && currentScreen != 'Home') {
+          if (!inactive && currentScreen != BottomNavBarScreen.home) {
             Navigator.pushNamed(context, '/');
           }
         },
@@ -43,7 +37,7 @@ class BottomNavBar extends StatelessWidget {
         'screen': 'Add',
         'icon': 'assets/icons/add.png',
         'onTap': () {
-          if (!inactive && currentScreen != 'Add') {
+          if (!inactive && currentScreen != BottomNavBarScreen.add) {
             Navigator.pushNamed(context, '/add_expense');
           }
         },
@@ -52,7 +46,8 @@ class BottomNavBar extends StatelessWidget {
         'screen': 'Groups',
         'icon': 'assets/icons/group.png',
         'onTap': () {
-          if (!inactive && currentScreen != 'Groups') {
+          if (!inactive &&
+              currentScreen != BottomNavBarScreen.groupsAndFriends) {
             Navigator.pushNamed(context, '/groups_and_friends');
           }
         },
@@ -61,7 +56,7 @@ class BottomNavBar extends StatelessWidget {
         'screen': 'Expenses',
         'icon': 'assets/icons/expenses.png',
         'onTap': () {
-          if (!inactive && currentScreen != 'Expenses') {
+          if (!inactive && currentScreen != BottomNavBarScreen.expenses) {
             Navigator.pushNamed(context, '/expenses');
           }
         },

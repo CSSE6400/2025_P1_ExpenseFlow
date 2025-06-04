@@ -249,10 +249,7 @@ class _SeeExpenseScreenState extends State<SeeExpenseScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: const BottomNavBar(
-        currentScreen: 'See',
-        inactive: false,
-      ),
+      bottomNavigationBar: const BottomNavBar(inactive: false),
     );
   }
 }
