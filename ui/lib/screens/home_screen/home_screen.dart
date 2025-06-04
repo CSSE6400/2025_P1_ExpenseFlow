@@ -4,7 +4,7 @@ import 'package:flutter_frontend/models/expense.dart'
     show ExpenseOverview, ExpenseRead;
 import 'package:flutter_frontend/models/user.dart' show UserRead;
 import 'package:flutter_frontend/types.dart'
-    show CategoryData, Expense, assignRandomColors;
+    show CategoryData, assignRandomColors;
 import 'package:logging/logging.dart' show Logger;
 // Common imports
 import '../../common/color_palette.dart';
@@ -29,7 +29,6 @@ class _HomeScreenState extends State<HomeScreen>
     with RouteAware, WidgetsBindingObserver {
   final Logger _logger = Logger("Home_Screen");
   RouteObserver<PageRoute>? _routeObserver;
-  bool _checkedUser = false;
 
   bool isOverviewLoading = true;
   ExpenseOverview? overview;
@@ -42,8 +41,7 @@ class _HomeScreenState extends State<HomeScreen>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    // check auth before loading data
-    _checkAuth();
+    _loadOverview();
 
     // get singleton route observer
     _routeObserver = Provider.of<RouteObserver<PageRoute>>(
@@ -79,6 +77,7 @@ class _HomeScreenState extends State<HomeScreen>
 
   void _refreshOverview() {
     _loadOverview();
+    _loadRecentExpenses();
   }
 
   Future<void> _loadOverview() async {
@@ -114,6 +113,7 @@ class _HomeScreenState extends State<HomeScreen>
       final loadedExpenses =
           await apiService.expenseApi.getExpensesUploadedByMe();
 
+      _logger.info("Done fetching recent expenses");
       setState(() {
         expenses = loadedExpenses;
         isRecentExpensesLoading = false;
@@ -145,9 +145,6 @@ class _HomeScreenState extends State<HomeScreen>
         });
         return;
       }
-      setState(() {
-        _checkedUser = true;
-      });
 
       _loadRecentExpenses();
       _loadOverview();
@@ -186,13 +183,6 @@ class _HomeScreenState extends State<HomeScreen>
       Color(0xFFF9F871),
       Color(0xFFE0A9F5),
     ];
-
-    if (!_checkedUser) {
-      return Scaffold(
-        backgroundColor: backgroundColor,
-        body: const Center(child: CircularProgressIndicator()),
-      );
-    }
 
     return Scaffold(
       backgroundColor: backgroundColor,
