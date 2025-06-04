@@ -204,3 +204,51 @@ async def test_delete(session: AsyncSession,
     assert bad_response.status_code == 404
     assert bad_response.json()['detail'] == \
         f"User under the id '{bad_uuid}' could not be found"
+
+@pytest.mark.asyncio
+async def test_get_friend_by_id(session: AsyncSession,
+                                test_client: AsyncClient,
+                                user_model_factory,
+                                default_user):
+    request = test_client.build_request(method="put",
+                                              url=base_url,
+                                              params={"nickname": "gigachad"})
+    user = user_model_factory.build()
+    notfriend = user_model_factory.build()
+
+    user.nickname = "gigachad"
+    
+    session.add(user)
+    session.add(notfriend)
+    await session.commit()
+
+    user_id = user.user_id
+    notfriend_id = notfriend.user_id
+    bad_id = uuid4()
+
+    response = await test_client.send(request)
+    
+    _ = await create_accept_friend_request(session,
+                                           user,
+                                           default_user)
+
+    request = test_client.build_request(method="get",
+                                        url=base_url+f"/{user_id}")
+    notfriend_request = test_client.build_request(method="get",
+                                              url=base_url+f"/{notfriend_id}")
+    bad_request = test_client.build_request(method="get",
+                                              url=base_url+f"/{bad_id}")
+    
+    response = await test_client.send(request)
+    notfriend_response = await test_client.send(notfriend_request)
+    bad_response = await test_client.send(bad_request)
+
+    assert response.status_code == 200
+    print(response.json())
+    assert response.json()['nickname'] == "gigachad"
+    assert notfriend_response.status_code == 404
+    assert notfriend_response.json()['detail'] == \
+        f"User under the id '{notfriend_id}' could not be found"
+    assert bad_response.status_code == 404
+    assert bad_response.json()['detail'] == \
+        f"User under the id '{bad_id}' could not be found"
