@@ -46,6 +46,11 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
       return;
     }
 
+    _logger.info("Adding expense: ${_currentExpense?.toJson()}");
+    _logger.info(
+      "Splits are ${_currentExpense?.splits?.map((e) => e.toJson()).toList()}",
+    );
+
     try {
       await apiService.expenseApi.createExpense(_currentExpense!);
       if (!mounted) return;

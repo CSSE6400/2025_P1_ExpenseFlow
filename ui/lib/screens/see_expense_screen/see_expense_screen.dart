@@ -120,6 +120,7 @@ class _SeeExpenseScreenState extends State<SeeExpenseScreen> {
 
   Future<void> saveExpense() async {
     final apiService = Provider.of<ApiService>(context, listen: false);
+    _logger.info("Expense to save: ${_currentExpense?.toJson()}");
 
     if (_currentExpense == null) {
       showCustomSnackBar(context, normalText: "Please fill in all fields");

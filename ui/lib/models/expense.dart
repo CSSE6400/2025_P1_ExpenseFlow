@@ -75,7 +75,7 @@ class ExpenseCreate {
 
   final List<ExpenseItemCreate> items;
 
-  final List<ExpenseItemSplitRead>? splits;
+  final List<ExpenseItemSplitCreate>? splits;
 
   @ExpenseCategoryConverter()
   final ExpenseCategory category;
@@ -90,12 +90,29 @@ class ExpenseCreate {
   });
 
   factory ExpenseCreate.fromExpenseRead(ExpenseRead expense) {
+    var splits =
+        expense.items
+            .expand((item) => item.splits)
+            .map(
+              (split) => ExpenseItemSplitCreate(
+                userId: split.userId,
+                proportion: split.proportion,
+              ),
+            )
+            .toList();
+
+    var uniqueSplits = <String, ExpenseItemSplitCreate>{};
+    for (var split in splits) {
+      uniqueSplits[split.userId] = split;
+    }
+    splits = uniqueSplits.values.toList();
+
     return ExpenseCreate(
       name: expense.name,
       description: expense.description,
       expenseDate: expense.expenseDate,
       category: expense.category,
-      splits: [], // TODO,
+      splits: splits,
       items:
           expense.items
               .map(

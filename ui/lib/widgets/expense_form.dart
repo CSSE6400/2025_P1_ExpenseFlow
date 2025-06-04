@@ -51,6 +51,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
   late DateTime _selectedDate;
   late ExpenseCategory _selectedCategory;
   late List<ExpenseItemCreate> _expenseItems;
+  List<ExpenseItemSplitCreate> _expenseSplits = [];
 
   UserRead? me;
   List<UserRead> friends = [];
@@ -73,6 +74,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
     _selectedCategory =
         widget.initialExpense?.category ?? ExpenseCategory.other;
     _expenseItems = widget.initialExpense?.items ?? [];
+    _expenseSplits = widget.initialExpense?.splits ?? [];
 
     _amountController = TextEditingController(text: '0.00');
 
@@ -196,7 +198,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
       MaterialPageRoute(
         builder:
             (context) => SplitWithScreen(
-              items: _expenseItems,
+              splits: _expenseSplits,
               isReadOnly: isReadyOnly,
               groups: groups,
               friends: friends,
@@ -206,9 +208,9 @@ class _ExpenseFormState extends State<ExpenseForm> {
     );
 
     if (result != null) {
-      final List<ExpenseItemCreate> updatedItems = result;
+      final List<ExpenseItemSplitCreate> updatedItems = result;
       setState(() {
-        _expenseItems = updatedItems;
+        _expenseSplits = updatedItems;
         _updateCalculatedAmount();
       });
       _notifyExpenseChanged();
@@ -357,6 +359,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
       category: _selectedCategory,
       items: _expenseItems,
       expenseDate: _selectedDate,
+      splits: _expenseSplits,
     );
   }
 }

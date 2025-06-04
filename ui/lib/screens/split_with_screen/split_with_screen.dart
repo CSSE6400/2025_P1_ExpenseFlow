@@ -11,13 +11,14 @@ import 'package:flutter_frontend/screens/split_with_screen/elements/split_with_s
     show SplitWithScreenFriend;
 import 'package:flutter_frontend/screens/split_with_screen/elements/split_with_screen_segment_control.dart'
     show SplitWithScreenSegmentControl, SplitWithSegment;
+import 'package:logging/logging.dart';
 // Common imports
 import '../../common/color_palette.dart';
 import '../../common/app_bar.dart';
 // Elements
 
 class SplitWithScreen extends StatefulWidget {
-  final List<ExpenseItemCreate> items;
+  final List<ExpenseItemSplitCreate> splits;
   final List<GroupReadWithMembers> groups;
   final List<UserRead> friends;
   final UserRead currentUser;
@@ -32,7 +33,7 @@ class SplitWithScreen extends StatefulWidget {
     required this.isReadOnly,
     required this.groups,
     required this.friends,
-    required this.items,
+    required this.splits,
     required this.currentUser,
     this.strictSegment,
   });
@@ -43,6 +44,8 @@ class SplitWithScreen extends StatefulWidget {
 
 class _SplitWithScreenState extends State<SplitWithScreen> {
   late SplitWithSegment _segment;
+  List<ExpenseItemSplitCreate> _splits = [];
+  final Logger _logger = Logger("SplitWithScreen");
 
   bool isFriendValid = false;
   bool isGroupValid = false;
@@ -53,29 +56,17 @@ class _SplitWithScreenState extends State<SplitWithScreen> {
     });
   }
 
-  List<ExpenseItemCreate> _items = [];
-
   @override
   void initState() {
     super.initState();
     _segment = widget.strictSegment ?? SplitWithSegment.friend;
-    _items = List.from(widget.items);
+    _splits = widget.splits;
   }
 
   // callback to update item splits
   void _updateItemSplits(List<ExpenseItemSplitCreate> newSplits) {
     setState(() {
-      _items =
-          widget.items
-              .map(
-                (item) => ExpenseItemCreate(
-                  name: item.name,
-                  quantity: item.quantity,
-                  price: item.price,
-                  splits: newSplits,
-                ),
-              )
-              .toList();
+      _splits = newSplits;
     });
   }
 
@@ -109,7 +100,7 @@ class _SplitWithScreenState extends State<SplitWithScreen> {
                 if (_segment == SplitWithSegment.friend)
                   SplitWithScreenFriend(
                     friends: widget.friends,
-                    items: _items,
+                    splits: _splits,
                     currentUser: widget.currentUser,
                     onValidityChanged: (valid) {
                       setState(() {
@@ -156,6 +147,7 @@ class _SplitWithScreenState extends State<SplitWithScreen> {
 
   // return items to calling screen
   void _saveAndReturn() {
-    Navigator.pop(context, _items);
+    _logger.info('Saving splits: ${_splits.map((e) => e.toJson())}');
+    Navigator.pop(context, _splits);
   }
 }

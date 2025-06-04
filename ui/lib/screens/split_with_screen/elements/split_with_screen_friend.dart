@@ -25,7 +25,7 @@ class FriendSplit {
 
 class SplitWithScreenFriend extends StatefulWidget {
   final List<UserRead> friends;
-  final List<ExpenseItemCreate> items;
+  final List<ExpenseItemSplitCreate> splits;
   final UserRead currentUser;
 
   final void Function(bool isValid) onValidityChanged;
@@ -35,7 +35,7 @@ class SplitWithScreenFriend extends StatefulWidget {
   const SplitWithScreenFriend({
     super.key,
     required this.friends,
-    required this.items,
+    required this.splits,
     required this.currentUser,
     required this.onValidityChanged,
     required this.onSplitsUpdated,
@@ -51,12 +51,10 @@ class SplitWithScreenFriendState extends State<SplitWithScreenFriend> {
   final Logger _logger = Logger("SplitWithFriends");
   String currentUserId = '';
 
-  double? getUserProption(String userId, List<ExpenseItemCreate> items) {
-    for (var item in items) {
-      for (var split in item.splits ?? []) {
-        if (split.userId == userId) {
-          return split.proportion;
-        }
+  double? getUserProption(String userId, List<ExpenseItemSplitCreate> splits) {
+    for (var split in splits) {
+      if (split.userId == userId) {
+        return split.proportion;
       }
     }
     return null;
@@ -71,10 +69,8 @@ class SplitWithScreenFriendState extends State<SplitWithScreenFriend> {
     });
 
     final Set<String> uniqueUserIds = {};
-    for (var item in widget.items) {
-      for (var split in item.splits ?? []) {
-        uniqueUserIds.add(split.userId);
-      }
+    for (var split in widget.splits) {
+      uniqueUserIds.add(split.userId);
     }
 
     friendSplits =
@@ -83,8 +79,8 @@ class SplitWithScreenFriendState extends State<SplitWithScreenFriend> {
             name: friend.nickname,
             userId: friend.userId,
             percentage:
-                getUserProption(friend.userId, widget.items) != null
-                    ? (getUserProption(friend.userId, widget.items)! * 100)
+                getUserProption(friend.userId, widget.splits) != null
+                    ? (getUserProption(friend.userId, widget.splits)! * 100)
                         .toStringAsFixed(0)
                     : '',
             checked: uniqueUserIds.contains(friend.userId),
@@ -97,8 +93,8 @@ class SplitWithScreenFriendState extends State<SplitWithScreenFriend> {
         name: "You",
         userId: widget.currentUser.userId,
         percentage:
-            getUserProption(widget.currentUser.userId, widget.items) != null
-                ? (getUserProption(widget.currentUser.userId, widget.items)! *
+            getUserProption(widget.currentUser.userId, widget.splits) != null
+                ? (getUserProption(widget.currentUser.userId, widget.splits)! *
                         100)
                     .toStringAsFixed(0)
                 : (uniqueUserIds.isEmpty ? '100' : ''),
@@ -144,11 +140,12 @@ class SplitWithScreenFriendState extends State<SplitWithScreenFriend> {
 
   void _updateSplits() {
     _logger.info('Updating splits with current selections');
-    _logger.info('Current splits: ${widget.items.map((e) => e.splits)}');
+    _logger.info("Current splits: ${widget.splits}");
     final splits = <ExpenseItemSplitCreate>[];
 
     for (var friend in friendSplits) {
-      if (friend.checked) {
+      // Include if checked OR if it's the current user ("You")
+      if (friend.checked || friend.userId == widget.currentUser.userId) {
         final percentage = double.tryParse(friend.percentage) ?? 0.0;
         if (percentage < 0) {}
         splits.add(
@@ -160,13 +157,14 @@ class SplitWithScreenFriendState extends State<SplitWithScreenFriend> {
       }
     }
 
+    _logger.info("Updated splits: $splits");
     widget.onSplitsUpdated(splits);
   }
 
   void saveAndExit(BuildContext context) {
     _logger.info('Saving splits and exiting');
     _updateSplits();
-    Navigator.pop(context, widget.items);
+    Navigator.pop(context, widget.splits);
   }
 
   @override
