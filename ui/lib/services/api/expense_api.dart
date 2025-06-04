@@ -179,7 +179,6 @@ class ExpenseApiClient extends BaseApiClient {
     WebImageInfo image,
     String? parentId,
   ) async {
-    // NOTE: THIS HAS NOT BEEN TESTED
     final uri = backendUri("/expenses/auto");
     final request = http.MultipartRequest('POST', uri);
 
