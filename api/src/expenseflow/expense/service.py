@@ -129,7 +129,21 @@ async def create_expense_items(
     expense_items_in: list[ExpenseItemCreate],
     splits_in: list[ExpenseItemSplitCreate] | None,
 ) -> list[ExpenseItemModel]:
-    """Creates expense items."""
+    """Creates expense items.
+
+    Args:
+        session (AsyncSession): db session
+        creator (UserModel): creator of the expense
+        expense_items_in (list[ExpenseItemCreate]): list of expense items
+        splits_in (list[ExpenseItemSplitCreate] | None): splits for the expense items
+
+    Raises:
+        ExpenseFlowError: Raised if splits don't add up to 100%
+        NotFoundError: Raised if invalid user is specified in the split
+
+    Returns:
+        list[ExpenseItemModel]: newly created expense items
+    """
     return [
         ExpenseItemModel(
             name=item_in.name,
@@ -195,7 +209,6 @@ async def update_split_status(
 ) -> None:
     """Update a user's split status of an expense."""
     usr_split_status = await get_user_split_status(session, expense, user)
-
     cur_expense_status = await get_expense_status(session, expense)
 
     # Check whether usr has had the expense split with them
@@ -288,7 +301,7 @@ async def get_user_split_status(
         if expense.uploader_id == user.user_id or expense.parent_id == user.entity_id:
             return ExpenseStatus.paid
 
-        msg = f"User '{user.user_id}' is not have any splits in this expense."
+        msg = f"User '{user.user_id}' does not have any splits in this expense."
         raise ExpenseFlowError(msg)
 
     uniques = set(statuses)
