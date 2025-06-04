@@ -80,7 +80,7 @@ class SplitWithScreenSegmentControl extends StatelessWidget {
               SplitWithSegment? valueSegment;
               if (value == 'Friend') {
                 valueSegment = SplitWithSegment.friend;
-              } else if (value == 'All') {
+              } else if (value == 'Group') {
                 valueSegment = SplitWithSegment.group;
               }
 

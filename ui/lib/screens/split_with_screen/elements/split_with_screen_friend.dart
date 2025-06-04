@@ -4,24 +4,11 @@ import 'package:flutter_frontend/common/custom_divider.dart';
 import 'package:flutter_frontend/common/icon_maker.dart';
 import 'package:flutter_frontend/models/expense.dart';
 import 'package:flutter_frontend/models/user.dart';
+import 'package:flutter_frontend/screens/split_with_screen/split_with_screen.dart'
+    show UserSplit;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:logging/logging.dart';
 import '../../../common/proportional_sizes.dart';
-
-class FriendSplit {
-  String name;
-  String userId;
-  String percentage;
-  bool checked;
-  final TextEditingController controller;
-
-  FriendSplit({
-    required this.name,
-    required this.userId,
-    required this.percentage,
-    required this.checked,
-  }) : controller = TextEditingController(text: percentage);
-}
 
 class SplitWithScreenFriend extends StatefulWidget {
   final List<UserRead> friends;
@@ -47,7 +34,7 @@ class SplitWithScreenFriend extends StatefulWidget {
 }
 
 class SplitWithScreenFriendState extends State<SplitWithScreenFriend> {
-  List<FriendSplit> friendSplits = [];
+  List<UserSplit> friendSplits = [];
   final Logger _logger = Logger("SplitWithFriends");
   String currentUserId = '';
 
@@ -75,7 +62,7 @@ class SplitWithScreenFriendState extends State<SplitWithScreenFriend> {
 
     friendSplits =
         widget.friends.map((friend) {
-          return FriendSplit(
+          return UserSplit(
             name: friend.nickname,
             userId: friend.userId,
             percentage:
@@ -89,7 +76,7 @@ class SplitWithScreenFriendState extends State<SplitWithScreenFriend> {
 
     // add the current user as a special case
     friendSplits.add(
-      FriendSplit(
+      UserSplit(
         name: "You",
         userId: widget.currentUser.userId,
         percentage:
@@ -105,7 +92,7 @@ class SplitWithScreenFriendState extends State<SplitWithScreenFriend> {
     );
   }
 
-  void _toggleFriendSelection(FriendSplit friend) {
+  void _toggleFriendSelection(UserSplit friend) {
     _logger.info(
       'Toggling selection for ${friend.name} (checked: ${friend.checked})',
     );
@@ -128,9 +115,7 @@ class SplitWithScreenFriendState extends State<SplitWithScreenFriend> {
   }
 
   bool isTotalPercentageValid() {
-    final selectedFriends = friendSplits.where(
-      (f) => f.checked || f.name == 'You',
-    );
+    final selectedFriends = friendSplits.where((f) => f.checked);
     final total = selectedFriends.fold<double>(
       0,
       (sum, f) => sum + (double.tryParse(f.percentage) ?? 0),
@@ -144,16 +129,18 @@ class SplitWithScreenFriendState extends State<SplitWithScreenFriend> {
     final splits = <ExpenseItemSplitCreate>[];
 
     for (var friend in friendSplits) {
-      // Include if checked OR if it's the current user ("You")
+      // include if checked OR if it's the current user
+
       if (friend.checked || friend.userId == widget.currentUser.userId) {
         final percentage = double.tryParse(friend.percentage) ?? 0.0;
-        if (percentage < 0) {}
-        splits.add(
-          ExpenseItemSplitCreate(
-            userId: friend.userId,
-            proportion: percentage / 100.0,
-          ),
-        );
+        if (percentage > 0) {
+          splits.add(
+            ExpenseItemSplitCreate(
+              userId: friend.userId,
+              proportion: percentage / 100.0,
+            ),
+          );
+        }
       }
     }
 

@@ -9,6 +9,8 @@ import 'package:flutter_frontend/models/group.dart' show GroupReadWithMembers;
 import 'package:flutter_frontend/models/user.dart';
 import 'package:flutter_frontend/screens/split_with_screen/elements/split_with_screen_friend.dart'
     show SplitWithScreenFriend;
+import 'package:flutter_frontend/screens/split_with_screen/elements/split_with_screen_group.dart'
+    show SplitWithScreenGroup;
 import 'package:flutter_frontend/screens/split_with_screen/elements/split_with_screen_segment_control.dart'
     show SplitWithScreenSegmentControl, SplitWithSegment;
 import 'package:logging/logging.dart';
@@ -16,6 +18,21 @@ import 'package:logging/logging.dart';
 import '../../common/color_palette.dart';
 import '../../common/app_bar.dart';
 // Elements
+
+class UserSplit {
+  String name;
+  String userId;
+  String percentage;
+  bool checked;
+  final TextEditingController controller;
+
+  UserSplit({
+    required this.name,
+    required this.userId,
+    required this.percentage,
+    required this.checked,
+  }) : controller = TextEditingController(text: percentage);
+}
 
 class SplitWithScreen extends StatefulWidget {
   final List<ExpenseItemSplitCreate> splits;
@@ -97,33 +114,31 @@ class _SplitWithScreenState extends State<SplitWithScreen> {
                 SizedBox(height: proportionalSizes.scaleHeight(10)),
 
                 // Friend or Group view
-                if (_segment == SplitWithSegment.friend)
-                  SplitWithScreenFriend(
-                    friends: widget.friends,
-                    splits: _splits,
-                    currentUser: widget.currentUser,
-                    onValidityChanged: (valid) {
-                      setState(() {
-                        isFriendValid = valid;
-                      });
-                    },
-                    onSplitsUpdated: _updateItemSplits,
-                    isReadOnly: widget.isReadOnly,
-                  )
-                else
-                  Text("Groups are not implemented yet"),
-
-                // SplitWithScreenGroup(
-                //   key: groupKey,
-                //   isReadOnly: widget.isReadOnly,
-                //   items: _items,
-                //   onValidityChanged: (valid) {
-                //     setState(() {
-                //       isGroupValid = valid;
-                //     });
-                //   },
-                //   onSplitsUpdated: _updateItemSplits,
-                // ),
+                _segment == SplitWithSegment.friend
+                    ? SplitWithScreenFriend(
+                      friends: widget.friends,
+                      splits: _splits,
+                      currentUser: widget.currentUser,
+                      onValidityChanged: (valid) {
+                        setState(() {
+                          isFriendValid = valid;
+                        });
+                      },
+                      onSplitsUpdated: _updateItemSplits,
+                      isReadOnly: widget.isReadOnly,
+                    )
+                    : SplitWithScreenGroup(
+                      groups: widget.groups,
+                      splits: _splits,
+                      currentUser: widget.currentUser,
+                      onValidityChanged: (valid) {
+                        setState(() {
+                          isGroupValid = valid;
+                        });
+                      },
+                      onSplitsUpdated: _updateItemSplits,
+                      isReadOnly: widget.isReadOnly,
+                    ),
                 if (!widget.isReadOnly)
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
