@@ -22,22 +22,35 @@ class AuthGuardProvider extends ChangeNotifier {
 
   Timer? _refreshTimer;
 
+  DateTime? _lastRefresh;
+
+  late final _AppLifecycleObserver _lifecycleObserver;
+
   AuthGuardProvider(this._authService, this._apiService) {
+    _lifecycleObserver = _AppLifecycleObserver(
+      onResume: () {
+        final now = DateTime.now();
+        const minRefreshInterval = Duration(minutes: 15);
+
+        if (_lastRefresh == null ||
+            now.difference(_lastRefresh!) > minRefreshInterval) {
+          _logger.info("App resumed, refreshing user.");
+          refreshUser(force: true);
+        } else {
+          _logger.info(
+            "App resumed, skipping refresh (last refresh was too recent).",
+          );
+        }
+      },
+    );
+    WidgetsBinding.instance.addObserver(_lifecycleObserver);
+
     _init();
   }
 
   Future<void> _init() async {
     _loading = true;
     notifyListeners();
-
-    WidgetsBinding.instance.addObserver(
-      _AppLifecycleObserver(
-        onResume: () {
-          _logger.info("App resumed, refreshing user.");
-          refreshUser(force: true);
-        },
-      ),
-    );
 
     await _checkAuthAndLoadUser();
 
@@ -100,6 +113,7 @@ class AuthGuardProvider extends ChangeNotifier {
     } finally {
       Future.microtask(() {
         _loading = false;
+        _lastRefresh = DateTime.now();
         notifyListeners();
       });
     }
@@ -140,9 +154,7 @@ class AuthGuardProvider extends ChangeNotifier {
   @override
   void dispose() {
     _refreshTimer?.cancel();
-    WidgetsBinding.instance.removeObserver(
-      _AppLifecycleObserver(onResume: () {}),
-    );
+    WidgetsBinding.instance.removeObserver(_lifecycleObserver);
     super.dispose();
   }
 }
