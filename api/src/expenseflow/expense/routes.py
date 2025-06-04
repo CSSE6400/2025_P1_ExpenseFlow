@@ -142,7 +142,7 @@ async def get_expense_user_status(
 
 
 @r.put("/{expense_id}/status", response_model=ExpenseRead)
-async def update_stautus(
+async def update_status(
     db: DbSession,
     user: CurrentUser,
     expense_id: UUID,
