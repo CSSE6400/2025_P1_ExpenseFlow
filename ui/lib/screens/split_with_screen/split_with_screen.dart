@@ -10,7 +10,7 @@ import 'package:flutter_frontend/models/user.dart';
 import 'package:flutter_frontend/screens/split_with_screen/elements/split_with_screen_friend.dart'
     show SplitWithScreenFriend;
 import 'package:flutter_frontend/screens/split_with_screen/elements/split_with_screen_group.dart'
-    show SplitWithScreenGroup;
+    show SplitWithScreenGroup, SplitWithScreenGroupState;
 import 'package:flutter_frontend/screens/split_with_screen/elements/split_with_screen_segment_control.dart'
     show SplitWithScreenSegmentControl, SplitWithSegment;
 import 'package:logging/logging.dart';
@@ -39,6 +39,7 @@ class SplitWithScreen extends StatefulWidget {
   final List<GroupReadWithMembers> groups;
   final List<UserRead> friends;
   final UserRead currentUser;
+  final String? selectedGroupId;
 
   final bool isReadOnly;
 
@@ -53,6 +54,7 @@ class SplitWithScreen extends StatefulWidget {
     required this.splits,
     required this.currentUser,
     this.strictSegment,
+    this.selectedGroupId,
   });
 
   @override
@@ -63,6 +65,8 @@ class _SplitWithScreenState extends State<SplitWithScreen> {
   late SplitWithSegment _segment;
   List<ExpenseItemSplitCreate> _splits = [];
   final Logger _logger = Logger("SplitWithScreen");
+  final GlobalKey<SplitWithScreenGroupState> groupKey = GlobalKey();
+  late String? _selectedGroupId;
 
   bool isFriendValid = false;
   bool isGroupValid = false;
@@ -76,7 +80,12 @@ class _SplitWithScreenState extends State<SplitWithScreen> {
   @override
   void initState() {
     super.initState();
-    _segment = widget.strictSegment ?? SplitWithSegment.friend;
+    _selectedGroupId = widget.selectedGroupId;
+    _segment =
+        widget.strictSegment ??
+        (_selectedGroupId == null
+            ? SplitWithSegment.friend
+            : SplitWithSegment.group);
     _splits = widget.splits;
   }
 
@@ -128,6 +137,7 @@ class _SplitWithScreenState extends State<SplitWithScreen> {
                       isReadOnly: widget.isReadOnly,
                     )
                     : SplitWithScreenGroup(
+                      key: groupKey,
                       groups: widget.groups,
                       splits: _splits,
                       currentUser: widget.currentUser,
@@ -138,6 +148,7 @@ class _SplitWithScreenState extends State<SplitWithScreen> {
                       },
                       onSplitsUpdated: _updateItemSplits,
                       isReadOnly: widget.isReadOnly,
+                      selectedGroupId: _selectedGroupId,
                     ),
                 if (!widget.isReadOnly)
                   Padding(
@@ -163,6 +174,15 @@ class _SplitWithScreenState extends State<SplitWithScreen> {
   // return items to calling screen
   void _saveAndReturn() {
     _logger.info('Saving splits: ${_splits.map((e) => e.toJson())}');
-    Navigator.pop(context, _splits);
+
+    if (_segment == SplitWithSegment.group) {
+      final selectedGroup = groupKey.currentState?.getSelectedGroup();
+
+      _selectedGroupId = selectedGroup?.uuid;
+
+      Navigator.pop(context, {'splits': _splits, 'groupId': _selectedGroupId});
+    } else {
+      Navigator.pop(context, {'splits': _splits});
+    }
   }
 }

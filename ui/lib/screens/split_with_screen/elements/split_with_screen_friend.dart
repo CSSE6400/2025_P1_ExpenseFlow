@@ -173,9 +173,13 @@ class SplitWithScreenFriendState extends State<SplitWithScreenFriend> {
               isReadOnly: widget.isReadOnly,
               onTap: () => _toggleFriendSelection(friend),
               onChanged: (value) {
-                if (widget.isReadOnly) return;
                 setState(() {
                   friend.percentage = value;
+
+                  final shouldBeChecked =
+                      value.trim().isNotEmpty && value.trim() != '0';
+                  friend.checked = shouldBeChecked;
+
                   widget.onValidityChanged.call(isTotalPercentageValid());
                   _updateSplits();
                 });

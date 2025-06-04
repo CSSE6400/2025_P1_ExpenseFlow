@@ -12,9 +12,13 @@ import 'package:http/http.dart' as http;
 class ExpenseApiClient extends BaseApiClient {
   ExpenseApiClient(super.client, super.baseUrl, super.logger);
 
-  Future<ExpenseRead> createExpense(ExpenseCreate body) async {
+  Future<ExpenseRead> createExpense(
+    ExpenseCreate body,
+    String? parentId,
+  ) async {
+    final suffix = parentId != null ? "?parent_id=$parentId" : "";
     final response = await client.post(
-      backendUri("/expenses"),
+      backendUri("/expenses$suffix"),
       body: jsonEncode(body),
     );
 

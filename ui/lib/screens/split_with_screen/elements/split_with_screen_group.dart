@@ -36,6 +36,7 @@ class SplitWithScreenGroup extends StatefulWidget {
   final void Function(bool isValid) onValidityChanged;
   final Function(List<ExpenseItemSplitCreate> splits) onSplitsUpdated;
   final bool isReadOnly;
+  final String? selectedGroupId;
 
   const SplitWithScreenGroup({
     super.key,
@@ -45,6 +46,7 @@ class SplitWithScreenGroup extends StatefulWidget {
     required this.onValidityChanged,
     required this.onSplitsUpdated,
     required this.isReadOnly,
+    required this.selectedGroupId,
   });
 
   @override
@@ -54,6 +56,8 @@ class SplitWithScreenGroup extends StatefulWidget {
 class SplitWithScreenGroupState extends State<SplitWithScreenGroup> {
   List<GroupDetailed> allGroups = [];
   GroupDetailed? selectedGroup;
+
+  GroupDetailed? getSelectedGroup() => selectedGroup;
 
   double? getUserProption(String userId, List<ExpenseItemSplitCreate> splits) {
     for (var split in splits) {
@@ -98,6 +102,7 @@ class SplitWithScreenGroupState extends State<SplitWithScreenGroup> {
             uuid: group.groupId,
             name: group.name,
             members: members,
+            isSelected: selectedGroup?.uuid == group.groupId,
           );
         }).toList();
   }
@@ -244,6 +249,11 @@ class SplitWithScreenGroupState extends State<SplitWithScreenGroup> {
                       onChanged: (value) {
                         setState(() {
                           member.percentage = value;
+
+                          final shouldBeChecked =
+                              value.trim().isNotEmpty && value.trim() != '0';
+                          member.checked = shouldBeChecked;
+
                           widget.onValidityChanged.call(
                             isTotalPercentageValid(),
                           );

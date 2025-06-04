@@ -106,7 +106,7 @@ class _SeeExpenseScreenState extends State<SeeExpenseScreen> {
   }
 
   ExpenseCreate? _currentExpense;
-  void updateExpense(ExpenseCreate expense) {
+  void updateExpense(ExpenseCreate expense, String? _) {
     _currentExpense = expense;
   }
 

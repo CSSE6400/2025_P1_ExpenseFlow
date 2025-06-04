@@ -22,6 +22,7 @@ class AddExpenseScreen extends StatefulWidget {
 class _AddExpenseScreenState extends State<AddExpenseScreen> {
   bool isFormValid = false;
   ExpenseCreate? _currentExpense;
+  String? _parentId;
   final Logger _logger = Logger("AddExpenseScreen");
 
   @override
@@ -33,8 +34,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     setState(() => isFormValid = isValid);
   }
 
-  void updateExpense(ExpenseCreate expense) {
+  void updateExpense(ExpenseCreate expense, String? parentId) {
     _currentExpense = expense;
+    _parentId = parentId;
   }
 
   Future<void> onAdd() async {
@@ -51,7 +53,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     );
 
     try {
-      await apiService.expenseApi.createExpense(_currentExpense!);
+      await apiService.expenseApi.createExpense(_currentExpense!, _parentId);
       if (!mounted) return;
       showCustomSnackBar(
         context,

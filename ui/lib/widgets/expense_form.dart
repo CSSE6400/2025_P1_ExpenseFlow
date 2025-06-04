@@ -24,7 +24,8 @@ class ExpenseForm extends StatefulWidget {
   final ExpenseCreate? initialExpense; // optional for editing
 
   final void Function(bool isValid) onValidityChanged;
-  final void Function(ExpenseCreate expense)? onExpenseChanged;
+  final void Function(ExpenseCreate expense, String? parentId)?
+  onExpenseChanged;
 
   final bool canEdit;
   final bool canEditItems;
@@ -54,6 +55,8 @@ class _ExpenseFormState extends State<ExpenseForm> {
   late ExpenseCategory _selectedCategory;
   late List<ExpenseItemCreate> _expenseItems;
   List<ExpenseItemSplitCreate> _expenseSplits = [];
+
+  String? _selectedGroupId;
 
   UserRead? user;
   List<UserRead> friends = [];
@@ -137,7 +140,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
 
   void _notifyExpenseChanged() {
     final expense = getExpenseData();
-    widget.onExpenseChanged?.call(expense);
+    widget.onExpenseChanged?.call(expense, _selectedGroupId);
   }
 
   void updateNameValidity(bool isValid) {
@@ -194,14 +197,18 @@ class _ExpenseFormState extends State<ExpenseForm> {
               groups: groups,
               friends: friends,
               currentUser: user!,
+              selectedGroupId: _selectedGroupId,
             ),
       ),
     );
 
-    if (result != null) {
-      final List<ExpenseItemSplitCreate> updatedItems = result;
+    if (result != null && result is Map<String, dynamic>) {
+      final updatedItems = result['splits'] as List<ExpenseItemSplitCreate>;
+      final groupId = result['groupId'] as String?;
+
       setState(() {
         _expenseSplits = updatedItems;
+        _selectedGroupId = groupId;
         _updateCalculatedAmount();
       });
       _notifyExpenseChanged();
