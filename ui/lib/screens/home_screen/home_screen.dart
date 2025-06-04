@@ -5,8 +5,7 @@ import 'package:flutter_frontend/models/expense.dart'
 import 'package:flutter_frontend/models/user.dart' show UserRead;
 import 'package:flutter_frontend/services/auth_guard_provider.dart'
     show AuthGuardProvider;
-import 'package:flutter_frontend/types.dart'
-    show CategoryData, assignRandomColors;
+import 'package:flutter_frontend/types.dart' show CategoryData;
 import 'package:logging/logging.dart' show Logger;
 import '../../common/color_palette.dart';
 import '../../common/bottom_nav_bar.dart';
@@ -17,6 +16,16 @@ import '../home_screen/elements/home_screen_add_an_expense.dart';
 import '../home_screen/elements/home_screen_recent_expenses.dart';
 import '../home_screen/elements/home_screen_app_bar.dart';
 import '../../../common/proportional_sizes.dart';
+
+List<CategoryData> assignColorsInOrder(
+  List<CategoryData> categories,
+  List<Color> colors,
+) {
+  for (int i = 0; i < categories.length; i++) {
+    categories[i].color = colors[i % colors.length];
+  }
+  return categories;
+}
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -151,7 +160,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   HomeScreenOverview(
                     isLoading: false,
                     monthlyBudget: user?.budget.toDouble() ?? 0.0,
-                    categories: assignRandomColors(
+                    categories: assignColorsInOrder(
                       overview!.categories
                           .map(
                             (c) => CategoryData(

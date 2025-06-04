@@ -9,14 +9,23 @@ import 'package:flutter_frontend/models/user.dart';
 import 'package:flutter_frontend/common/snack_bar.dart';
 import 'package:flutter_frontend/services/auth_guard_provider.dart'
     show AuthGuardProvider;
-import 'package:flutter_frontend/types.dart'
-    show CategoryData, assignRandomColors;
+import 'package:flutter_frontend/types.dart' show CategoryData;
 import 'package:provider/provider.dart';
 
 import '../../common/color_palette.dart';
 import '../../common/bottom_nav_bar.dart';
 import '../../common/app_bar.dart';
 import '../../common/proportional_sizes.dart';
+
+List<CategoryData> assignColorsInOrder(
+  List<CategoryData> categories,
+  List<Color> colors,
+) {
+  for (int i = 0; i < categories.length; i++) {
+    categories[i].color = colors[i % colors.length];
+  }
+  return categories;
+}
 
 class OverviewScreen extends StatefulWidget {
   const OverviewScreen({super.key});
@@ -124,7 +133,7 @@ class _OverviewScreenState extends State<OverviewScreen> {
                         SizedBox(height: proportionalSizes.scaleHeight(20)),
 
                         OverviewScreenStatWidget(
-                          categories: assignRandomColors(
+                          categories: assignColorsInOrder(
                             overview!.categories
                                 .map(
                                   (c) => CategoryData(
