@@ -166,29 +166,45 @@ async def test_update(
 ):
     expense1 = expense_create_factory.build()
     expense1.name = "Test1"
-
-    item1 = expense_item_create_factory.build()
     expense1.splits = None
-    expense1.items = [item1]
 
-    _ = test_client.build_request(
-        method="post", url=base_url, json=expense1.model_dump(mode="json")
-    )
+    request = test_client.build_request(method="post",
+                                        url=base_url,
+                                        json=expense1.model_dump(mode="json")
+                                        )
+    
+    response = await test_client.send(request)
 
-    get_request = test_client.build_request(method="get", url=base_url)
+    uuid = response.json()['expense_id']
+    expense2 = expense_create_factory.build()
+    expense2.splits = None
+    
+    put_request = test_client.build_request(method="put",
+                                        url=base_url+f"/{uuid}",
+                                        json=expense2.model_dump(mode="json")
+                                        )
+    
+    response = await test_client.send(put_request)
+    print(response.json())
+
+    get_request = test_client.build_request(method="get",
+                                            url=base_url
+                                            )
     get_response = await test_client.send(get_request)
     get_response_json = get_response.json()
     assert len(get_response_json) == 1
-
     get_item = get_response_json[0]
-
-    assert get_item["name"] == expense1.name
-    assert get_item["description"] == expense1.description
-
-    assert_time(get_item["expense_date"], expense1.expense_date)
-
-    assert get_item["category"] == expense1.category
-    assert get_item["items"][0]["name"] == expense1.items[0].name
+    assert get_item['name'] == expense2.name
+    assert get_item['description'] == expense2.description
+    assert datetime.strptime(
+        get_item['expense_date'], "%Y-%m-%dT%H:%M:%SZ") == \
+        (datetime.strptime(
+            datetime.strftime(expense2.expense_date, "%Y-%m-%dT%H:%M:%SZ"),
+            "%Y-%m-%dT%H:%M:%SZ"
+            # SQL timezone stuff
+            ) + timedelta(hours=10))
+    assert get_item['category'] == expense2.category
+    assert get_item['items'][0]['name'] == expense2.items[0].name
 
 
 @pytest.mark.asyncio
