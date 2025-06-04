@@ -18,15 +18,14 @@ import '../../../common/custom_divider.dart';
 import '../../../common/icon_maker.dart';
 // import '../../../common/custom_button.dart';
 
-class ProfileScreenSubRectangle extends StatefulWidget {
-  const ProfileScreenSubRectangle({super.key});
+class ProfileScreenForm extends StatefulWidget {
+  const ProfileScreenForm({super.key});
 
   @override
-  State<ProfileScreenSubRectangle> createState() =>
-      _ProfileScreenSubRectangleState();
+  State<ProfileScreenForm> createState() => _ProfileScreenFormState();
 }
 
-class _ProfileScreenSubRectangleState extends State<ProfileScreenSubRectangle> {
+class _ProfileScreenFormState extends State<ProfileScreenForm> {
   UserRead? user;
   final Logger _logger = Logger("ProfileScreenLogger");
 
