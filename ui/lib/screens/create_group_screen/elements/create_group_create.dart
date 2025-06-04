@@ -76,16 +76,6 @@ class _AddGroupScreenMainBodyState extends State<AddGroupScreenMainBody> {
         _currentGroup!,
       );
 
-      // // add user that created the group. Seems that I do not need this?
-      // final currentUser = await apiService.userApi.getCurrentUser();
-      // if (currentUser != null) {
-      //   await apiService.groupApi.createUpdateGroupUser(
-      //     createdGroup.groupId,
-      //     currentUser.userId,
-      //     GroupRole.admin,
-      //   );
-      // }
-
       // add other group members
       _logger.info("_selectedUserIds count is ${_selectedUserIds.length}");
       for (final userId in _selectedUserIds) {

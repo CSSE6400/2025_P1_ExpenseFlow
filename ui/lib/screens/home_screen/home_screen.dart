@@ -3,6 +3,8 @@ import 'package:flutter_frontend/common/snack_bar.dart' show showCustomSnackBar;
 import 'package:flutter_frontend/models/expense.dart'
     show ExpenseOverview, ExpenseRead;
 import 'package:flutter_frontend/models/user.dart' show UserRead;
+import 'package:flutter_frontend/services/auth_guard_provider.dart'
+    show AuthGuardProvider;
 import 'package:flutter_frontend/types.dart'
     show CategoryData, assignRandomColors;
 import 'package:logging/logging.dart' show Logger;
@@ -37,6 +39,9 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   void initState() {
+    final authGuard = Provider.of<AuthGuardProvider>(context, listen: false);
+    user = authGuard.mustGetUser(context);
+
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _loadRecentExpenses();
@@ -87,11 +92,10 @@ class _HomeScreenState extends State<HomeScreen>
     final apiService = Provider.of<ApiService>(context, listen: false);
 
     try {
-      final fetchedUser = await apiService.userApi.mustGetCurrentUser();
       final fetchedOverview = await apiService.expenseApi.getOverview();
       if (!mounted) return;
+
       setState(() {
-        user = fetchedUser;
         overview = fetchedOverview;
         isOverviewLoading = false;
       });
@@ -103,6 +107,7 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Future<void> _loadRecentExpenses() async {
+    if (!mounted) return;
     setState(() {
       isRecentExpensesLoading = true;
     });
@@ -112,7 +117,8 @@ class _HomeScreenState extends State<HomeScreen>
       final loadedExpenses =
           await apiService.expenseApi.getExpensesUploadedByMe();
 
-      _logger.info("Done fetching recent expenses");
+      if (!mounted) return;
+
       setState(() {
         expenses = loadedExpenses;
         isRecentExpensesLoading = false;
@@ -120,6 +126,7 @@ class _HomeScreenState extends State<HomeScreen>
 
       _logger.info("number of expenses: ${expenses.length}");
     } catch (e) {
+      if (!mounted) return;
       _logger.warning("Failed to get recent expenses: $e");
       setState(() {
         isRecentExpensesLoading = false;

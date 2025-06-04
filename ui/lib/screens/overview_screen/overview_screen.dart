@@ -7,6 +7,8 @@ import 'package:flutter_frontend/services/api_service.dart';
 import 'package:flutter_frontend/models/expense.dart';
 import 'package:flutter_frontend/models/user.dart';
 import 'package:flutter_frontend/common/snack_bar.dart';
+import 'package:flutter_frontend/services/auth_guard_provider.dart'
+    show AuthGuardProvider;
 import 'package:flutter_frontend/types.dart'
     show CategoryData, assignRandomColors;
 import 'package:provider/provider.dart';
@@ -32,6 +34,10 @@ class _OverviewScreenState extends State<OverviewScreen> {
   @override
   void initState() {
     super.initState();
+
+    final authGuard = Provider.of<AuthGuardProvider>(context, listen: false);
+    user = authGuard.mustGetUser(context);
+
     _loadData();
   }
 
@@ -41,12 +47,10 @@ class _OverviewScreenState extends State<OverviewScreen> {
     final apiService = Provider.of<ApiService>(context, listen: false);
 
     try {
-      final fetchedUser = await apiService.userApi.mustGetCurrentUser();
       final fetchedOverview = await apiService.expenseApi.getOverview();
       if (!mounted) return;
 
       setState(() {
-        user = fetchedUser;
         overview = fetchedOverview;
         isLoading = false;
       });

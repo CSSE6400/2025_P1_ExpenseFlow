@@ -5,6 +5,8 @@ import 'package:flutter_frontend/common/custom_button.dart'
 import 'package:flutter_frontend/common/snack_bar.dart';
 import 'package:flutter_frontend/models/user.dart';
 import 'package:flutter_frontend/services/api_service.dart';
+import 'package:flutter_frontend/services/auth_guard_provider.dart'
+    show AuthGuardProvider;
 import 'package:flutter_frontend/services/auth_service.dart' show AuthService;
 // Third-party imports
 import 'package:google_fonts/google_fonts.dart';
@@ -30,34 +32,22 @@ class _ProfileScreenFormState extends State<ProfileScreenForm> {
   final Logger _logger = Logger("ProfileScreenLogger");
 
   bool isEditingBudget = false;
-  late TextEditingController _budgetController;
+  final TextEditingController _budgetController = TextEditingController();
   String? _editedBudget;
 
   @override
   void initState() {
     super.initState();
-    _fetchUser();
-    _budgetController = TextEditingController();
-  }
 
-  Future<void> _fetchUser() async {
-    _logger.info("Calling the API");
-    final apiService = Provider.of<ApiService>(context, listen: false);
-    final fetchedUser = await apiService.userApi.getCurrentUser();
-    if (!mounted) return;
-    if (fetchedUser == null) {
-      showCustomSnackBar(
-        context,
-        normalText: "Unable to view profile information",
-      );
-      Navigator.pushNamed(context, "/");
-    } else {
-      setState(() {
-        user = fetchedUser;
-        _budgetController.text = user?.budget.toString() ?? "";
-        _editedBudget = user?.budget.toString();
-      });
-    }
+    final authGuard = Provider.of<AuthGuardProvider>(context, listen: false);
+
+    final me = authGuard.mustGetUser(context);
+
+    setState(() {
+      user = me;
+      _budgetController.text = me.budget.toString();
+      _editedBudget = me.budget.toString();
+    });
   }
 
   @override
@@ -67,13 +57,26 @@ class _ProfileScreenFormState extends State<ProfileScreenForm> {
   }
 
   void _toggleEditBudget() async {
+    final apiService = Provider.of<ApiService>(context, listen: false);
+    final authGuard = Provider.of<AuthGuardProvider>(context, listen: false);
+
     if (isEditingBudget) {
       if (_editedBudget != user?.budget.toString()) {
         final number = int.parse(_editedBudget!);
-        final apiService = Provider.of<ApiService>(context, listen: false);
 
         try {
-          await apiService.userApi.updateUser(UserUpdate(budget: number));
+          final newUser = await apiService.userApi.updateUser(
+            UserUpdate(budget: number),
+          );
+
+          authGuard.replaceUser(newUser);
+
+          setState(() {
+            user = newUser;
+            _budgetController.text = newUser.budget.toString();
+            _editedBudget = newUser.budget.toString();
+          });
+
           if (!mounted) return;
           showCustomSnackBar(
             context,

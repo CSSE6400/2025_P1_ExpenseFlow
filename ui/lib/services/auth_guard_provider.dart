@@ -1,5 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart' show SchedulerBinding;
+import 'package:flutter_frontend/common/snack_bar.dart';
+import 'package:flutter_frontend/screens/initial_startup_screen/initial_startup_screen.dart'
+    show InitialStartupScreen;
 import 'package:flutter_frontend/services/api_service.dart';
 import 'package:flutter_frontend/services/auth_service.dart';
 import 'package:flutter_frontend/models/user.dart' show UserRead;
@@ -110,6 +114,27 @@ class AuthGuardProvider extends ChangeNotifier {
 
   Future<void> logoutAndRedirect() async {
     await _authService.logout();
+  }
+
+  UserRead mustGetUser(BuildContext context) {
+    if (_user == null) {
+      showCustomSnackBar(context, normalText: "Please login again");
+
+      Future.delayed(const Duration(milliseconds: 500), () {
+        SchedulerBinding.instance.addPostFrameCallback((_) {
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (_) => const InitialStartupScreen()),
+            (route) => false,
+          );
+        });
+      });
+    }
+    return _user!;
+  }
+
+  void replaceUser(UserRead newUser) {
+    _user = newUser;
+    notifyListeners();
   }
 
   @override

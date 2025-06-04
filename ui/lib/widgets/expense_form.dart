@@ -6,6 +6,8 @@ import 'package:flutter_frontend/screens/add_items_screen/add_items_screen.dart'
     show AddItemsScreen;
 import 'package:flutter_frontend/screens/split_with_screen/split_with_screen.dart';
 import 'package:flutter_frontend/services/api_service.dart' show ApiService;
+import 'package:flutter_frontend/services/auth_guard_provider.dart'
+    show AuthGuardProvider;
 import 'package:flutter_frontend/utils/string_utils.dart';
 import 'package:logging/logging.dart' show Logger;
 import 'package:provider/provider.dart' show Provider;
@@ -53,7 +55,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
   late List<ExpenseItemCreate> _expenseItems;
   List<ExpenseItemSplitCreate> _expenseSplits = [];
 
-  UserRead? me;
+  UserRead? user;
   List<UserRead> friends = [];
   List<GroupReadWithMembers> groups = [];
   bool isLoading = true;
@@ -65,6 +67,10 @@ class _ExpenseFormState extends State<ExpenseForm> {
   @override
   void initState() {
     super.initState();
+
+    final authGuard = Provider.of<AuthGuardProvider>(context, listen: false);
+    user = authGuard.mustGetUser(context);
+
     _loadData();
 
     // populate fields
@@ -97,21 +103,6 @@ class _ExpenseFormState extends State<ExpenseForm> {
     final apiService = Provider.of<ApiService>(context, listen: false);
 
     try {
-      me = await apiService.userApi.mustGetCurrentUser();
-      if (me == null) {
-        _logger.warning('Current user not found');
-        if (!mounted) return;
-
-        showCustomSnackBar(context, normalText: 'Unable to find current user');
-        setState(() => isLoading = false);
-
-        Navigator.of(context).pushNamed('/');
-        return;
-      }
-      setState(() {
-        me = me;
-      });
-
       final fetchedFriends = await apiService.friendApi.getFriends();
 
       setState(() {
@@ -202,7 +193,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
               isReadOnly: isReadyOnly,
               groups: groups,
               friends: friends,
-              currentUser: me!,
+              currentUser: user!,
             ),
       ),
     );
@@ -222,7 +213,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
   Widget build(BuildContext context) {
     final proportionalSizes = ProportionalSizes(context: context);
 
-    if (isLoading || me == null) {
+    if (isLoading || user == null) {
       return Center(child: CircularProgressIndicator());
     }
 
