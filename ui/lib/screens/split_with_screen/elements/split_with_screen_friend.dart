@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/common/color_palette.dart';
 import 'package:flutter_frontend/common/custom_divider.dart';
-import 'package:flutter_frontend/common/icon_maker.dart';
 import 'package:flutter_frontend/models/expense.dart';
 import 'package:flutter_frontend/models/user.dart';
 import 'package:flutter_frontend/screens/split_with_screen/split_with_screen.dart'
     show UserSplit;
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_frontend/widgets/user_split_view.dart'
+    show UserSplitWidget;
 import 'package:logging/logging.dart';
-import '../../../common/proportional_sizes.dart';
 
 class SplitWithScreenFriend extends StatefulWidget {
   final List<UserRead> friends;
@@ -36,7 +34,6 @@ class SplitWithScreenFriend extends StatefulWidget {
 class SplitWithScreenFriendState extends State<SplitWithScreenFriend> {
   List<UserSplit> friendSplits = [];
   final Logger _logger = Logger("SplitWithFriends");
-  String currentUserId = '';
 
   double? getUserProption(String userId, List<ExpenseItemSplitCreate> splits) {
     for (var split in splits) {
@@ -51,10 +48,6 @@ class SplitWithScreenFriendState extends State<SplitWithScreenFriend> {
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      widget.onValidityChanged.call(isTotalPercentageValid());
-    });
-
     final Set<String> uniqueUserIds = {};
     for (var split in widget.splits) {
       uniqueUserIds.add(split.userId);
@@ -62,34 +55,48 @@ class SplitWithScreenFriendState extends State<SplitWithScreenFriend> {
 
     friendSplits =
         widget.friends.map((friend) {
-          return UserSplit(
+          final perc = getUserProption(friend.userId, widget.splits);
+          final percText = perc != null ? (perc * 100).toStringAsFixed(0) : '';
+          final userSplit = UserSplit(
             name: friend.nickname,
             userId: friend.userId,
-            percentage:
-                getUserProption(friend.userId, widget.splits) != null
-                    ? (getUserProption(friend.userId, widget.splits)! * 100)
-                        .toStringAsFixed(0)
-                    : '',
+            percentage: percText,
             checked: uniqueUserIds.contains(friend.userId),
           );
+          userSplit.controller.text = percText;
+          return userSplit;
         }).toList();
 
-    // add the current user as a special case
-    friendSplits.add(
-      UserSplit(
-        name: "You",
-        userId: widget.currentUser.userId,
-        percentage:
-            getUserProption(widget.currentUser.userId, widget.splits) != null
-                ? (getUserProption(widget.currentUser.userId, widget.splits)! *
-                        100)
-                    .toStringAsFixed(0)
-                : (uniqueUserIds.isEmpty ? '100' : ''),
-        checked:
-            uniqueUserIds.contains(widget.currentUser.userId) ||
-            uniqueUserIds.isEmpty,
-      ),
+    final currentUserPerc = getUserProption(
+      widget.currentUser.userId,
+      widget.splits,
     );
+    final currentUserPercText =
+        currentUserPerc != null
+            ? (currentUserPerc * 100).toStringAsFixed(0)
+            : (uniqueUserIds.isEmpty ? '100' : '');
+    final currentUserSplit = UserSplit(
+      name: "You",
+      userId: widget.currentUser.userId,
+      percentage: currentUserPercText,
+      checked:
+          uniqueUserIds.contains(widget.currentUser.userId) ||
+          uniqueUserIds.isEmpty,
+    );
+    currentUserSplit.controller.text = currentUserPercText;
+    friendSplits.add(currentUserSplit);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.onValidityChanged.call(isTotalPercentageValid());
+    });
+  }
+
+  @override
+  void dispose() {
+    for (var friend in friendSplits) {
+      friend.controller.dispose();
+    }
+    super.dispose();
   }
 
   void _toggleFriendSelection(UserSplit friend) {
@@ -125,13 +132,10 @@ class SplitWithScreenFriendState extends State<SplitWithScreenFriend> {
 
   void _updateSplits() {
     _logger.info('Updating splits with current selections');
-    _logger.info("Current splits: ${widget.splits}");
     final splits = <ExpenseItemSplitCreate>[];
 
     for (var friend in friendSplits) {
-      // include if checked OR if it's the current user
-
-      if (friend.checked || friend.userId == widget.currentUser.userId) {
+      if (friend.checked || friend.name == 'You') {
         final percentage = double.tryParse(friend.percentage) ?? 0.0;
         if (percentage > 0) {
           splits.add(
@@ -156,9 +160,6 @@ class SplitWithScreenFriendState extends State<SplitWithScreenFriend> {
 
   @override
   Widget build(BuildContext context) {
-    final proportionalSizes = ProportionalSizes(context: context);
-    final textColor = ColorPalette.primaryText;
-
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Column(
@@ -167,91 +168,18 @@ class SplitWithScreenFriendState extends State<SplitWithScreenFriend> {
           CustomDivider(),
 
           ...friendSplits.map((friend) {
-            return GestureDetector(
+            return UserSplitWidget(
+              user: friend,
+              isReadOnly: widget.isReadOnly,
               onTap: () => _toggleFriendSelection(friend),
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  vertical: proportionalSizes.scaleHeight(8),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      friend.name,
-                      style: GoogleFonts.roboto(
-                        fontSize: proportionalSizes.scaleHeight(16),
-                        color:
-                            friend.checked
-                                ? textColor
-                                : ColorPalette.secondaryText,
-                      ),
-                    ),
-                    Row(
-                      children: [
-                        if (friend.checked || friend.name == 'You')
-                          Padding(
-                            padding: EdgeInsets.only(
-                              right: proportionalSizes.scaleWidth(6),
-                            ),
-                            child: IconMaker(
-                              assetPath: 'assets/icons/check_nofilled.png',
-                            ),
-                          ),
-                        Container(
-                          width: proportionalSizes.scaleWidth(70),
-                          padding: EdgeInsets.symmetric(
-                            horizontal: proportionalSizes.scaleWidth(8),
-                            vertical: proportionalSizes.scaleHeight(4),
-                          ),
-                          decoration: BoxDecoration(
-                            color:
-                                (friend.checked || friend.name == 'You')
-                                    ? ColorPalette.secondaryText.withAlpha(100)
-                                    : textColor.withAlpha(25),
-                            borderRadius: BorderRadius.circular(
-                              proportionalSizes.scaleWidth(6),
-                            ),
-                          ),
-                          child: TextField(
-                            controller: friend.controller,
-                            enabled:
-                                !widget.isReadOnly &&
-                                (friend.checked || friend.name == 'You'),
-                            keyboardType: TextInputType.number,
-                            onChanged:
-                                widget.isReadOnly
-                                    ? null
-                                    : (value) {
-                                      setState(() {
-                                        friend.percentage = value;
-                                        widget.onValidityChanged.call(
-                                          isTotalPercentageValid(),
-                                        );
-                                        _updateSplits();
-                                      });
-                                    },
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.roboto(
-                              fontWeight: FontWeight.bold,
-                              fontSize: proportionalSizes.scaleHeight(14),
-                              color:
-                                  (friend.checked || friend.name == 'You')
-                                      ? textColor
-                                      : ColorPalette.secondaryText,
-                            ),
-                            decoration: const InputDecoration(
-                              isCollapsed: true,
-                              border: InputBorder.none,
-                              suffixText: '%',
-                              suffixStyle: TextStyle(color: Color(0xFF0F2F63)),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
+              onChanged: (value) {
+                if (widget.isReadOnly) return;
+                setState(() {
+                  friend.percentage = value;
+                  widget.onValidityChanged.call(isTotalPercentageValid());
+                  _updateSplits();
+                });
+              },
             );
           }),
 
