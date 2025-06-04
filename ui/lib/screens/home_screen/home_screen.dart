@@ -25,10 +25,8 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen>
-    with RouteAware, WidgetsBindingObserver {
+class _HomeScreenState extends State<HomeScreen> {
   final Logger _logger = Logger("Home_Screen");
-  RouteObserver<PageRoute>? _routeObserver;
 
   bool isOverviewLoading = true;
   ExpenseOverview? overview;
@@ -43,43 +41,11 @@ class _HomeScreenState extends State<HomeScreen>
     user = authGuard.mustGetUser(context);
 
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
     _loadRecentExpenses();
     _loadOverview();
-
-    // get singleton route observer
-    _routeObserver = Provider.of<RouteObserver<PageRoute>>(
-      context,
-      listen: false,
-    );
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _routeObserver?.subscribe(this, ModalRoute.of(context) as PageRoute);
-  }
-
-  @override
-  void dispose() {
-    _routeObserver?.unsubscribe(this);
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
-  }
-
-  @override
-  void didPush() => _refreshData();
-  @override
-  void didPopNext() => _refreshData();
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      _refreshData();
-    }
-  }
-
-  void _refreshData() {
+  Future<void> _refreshData() async {
     _loadOverview();
     _loadRecentExpenses();
   }
@@ -170,13 +136,14 @@ class _HomeScreenState extends State<HomeScreen>
           FocusScope.of(context).unfocus();
         },
         child: SafeArea(
-          child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(
-              horizontal: proportionalSizes.scaleWidth(20),
-              vertical: proportionalSizes.scaleHeight(20),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          child: RefreshIndicator(
+            onRefresh: _refreshData,
+            child: ListView(
+              padding: EdgeInsets.symmetric(
+                horizontal: proportionalSizes.scaleWidth(20),
+                vertical: proportionalSizes.scaleHeight(20),
+              ),
+              physics: const AlwaysScrollableScrollPhysics(),
               children: [
                 if (!isOverviewLoading &&
                     overview != null &&
