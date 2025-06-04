@@ -2,22 +2,15 @@
 
 import pytest  # noqa: F401
 
-from fastapi import APIRouter, HTTPException, status
-
 from uuid import uuid4
 
-from expenseflow.enums import FriendStatus
-from expenseflow.friend.models import UserModel, FriendModel
-from expenseflow.friend.schemas import FriendRead, UserRead
 from expenseflow.friend.service import create_accept_friend_request, \
-    get_sent_friend_requests, get_received_friend_requests, get_friends, \
-    remove_friend
+    get_sent_friend_requests
 from sqlalchemy.ext.asyncio import AsyncSession
 from httpx import AsyncClient
-from expenseflow.errors import ExpenseFlowError
 
 # remove later
-from expenseflow.user.service import get_user_by_id, get_user_by_nickname, get_all_users
+from expenseflow.user.service import get_user_by_nickname
 
 base_url = "/friends"
 
@@ -130,6 +123,7 @@ async def test_create_by_nickname(session: AsyncSession,
 
     bad_response = await test_client.send(bad_request)
 
+    assert bad_response.status_code == 404
     assert bad_response.json()['detail'] == \
         "User under the nickname 'faker' could not be found"
     
@@ -166,6 +160,7 @@ async def test_create(session: AsyncSession,
     
     bad_response = await test_client.send(bad_request)
 
+    assert bad_response.status_code == 404
     assert bad_response.json()['detail'] == \
         f"User under the id '{bad_uuid}' could not be found"
 
@@ -206,5 +201,130 @@ async def test_delete(session: AsyncSession,
     
     bad_response = await test_client.send(bad_request)
 
+    assert bad_response.status_code == 404
     assert bad_response.json()['detail'] == \
         f"User under the id '{bad_uuid}' could not be found"
+
+@pytest.mark.asyncio
+async def test_get_friend_by_id(session: AsyncSession,
+                                test_client: AsyncClient,
+                                user_model_factory,
+                                default_user):
+    request = test_client.build_request(method="put",
+                                              url=base_url,
+                                              params={"nickname": "gigachad"})
+    user = user_model_factory.build()
+    notfriend = user_model_factory.build()
+
+    user.nickname = "gigachad"
+    
+    session.add(user)
+    session.add(notfriend)
+    await session.commit()
+
+    user_id = user.user_id
+    notfriend_id = notfriend.user_id
+    bad_id = uuid4()
+
+    response = await test_client.send(request)
+    
+    _ = await create_accept_friend_request(session,
+                                           user,
+                                           default_user)
+
+    request = test_client.build_request(method="get",
+                                        url=base_url+f"/{user_id}")
+    notfriend_request = test_client.build_request(method="get",
+                                              url=base_url+f"/{notfriend_id}")
+    bad_request = test_client.build_request(method="get",
+                                              url=base_url+f"/{bad_id}")
+    
+    response = await test_client.send(request)
+    notfriend_response = await test_client.send(notfriend_request)
+    bad_response = await test_client.send(bad_request)
+
+    assert response.status_code == 200
+    assert response.json()['nickname'] == "gigachad"
+    assert notfriend_response.status_code == 404
+    assert notfriend_response.json()['detail'] == \
+        f"User under the id '{notfriend_id}' could not be found"
+    assert bad_response.status_code == 404
+    assert bad_response.json()['detail'] == \
+        f"User under the id '{bad_id}' could not be found"
+
+@pytest.mark.asyncio
+async def test_get_friend_by_id(session: AsyncSession,
+                                test_client: AsyncClient,
+                                user_model_factory,
+                                default_user,
+                                expense_create_factory,
+                                expense_item_create_factory):
+    request = test_client.build_request(method="put",
+                                              url=base_url,
+                                              params={"nickname": "gigachad"})
+    user = user_model_factory.build()
+    notfriend = user_model_factory.build()
+
+    user.nickname = "gigachad"
+    
+    session.add(default_user)
+    session.add(user)
+    session.add(notfriend)
+    await session.commit()
+
+    user_id = user.user_id
+    notfriend_id = notfriend.user_id
+    bad_id = uuid4()
+
+    response = await test_client.send(request)
+    
+    _ = await create_accept_friend_request(session,
+                                           user,
+                                           default_user)
+
+    request = test_client.build_request(
+        method="get",
+        url=base_url+f"/{user_id}/expenses"
+        )
+    notfriend_request = test_client.build_request(
+        method="get",
+        url=base_url+f"/{notfriend_id}/expenses"
+        )
+    bad_request = test_client.build_request(
+        method="get",
+        url=base_url+f"/{bad_id}/expenses"
+        )
+    
+    response = await test_client.send(request)
+    notfriend_response = await test_client.send(notfriend_request)
+    bad_response = await test_client.send(bad_request)
+
+    assert response.status_code == 200
+    assert response.json() == []
+    assert notfriend_response.status_code == 404
+    assert notfriend_response.json()['detail'] == \
+        f"User under the id '{notfriend_id}' could not be found"
+    assert bad_response.status_code == 404
+    assert bad_response.json()['detail'] == \
+        f"User under the id '{bad_id}' could not be found"
+    
+    expense1 = expense_create_factory.build()
+    item1 = expense_item_create_factory.build()
+
+    item1.splits[0].user_id = default_user.user_id
+    item1.splits[1].user_id = user_id
+
+    expense1.items = [item1]
+
+    add_request = test_client.build_request(
+        method="post",
+        url="/expenses",
+        json=expense1.model_dump(mode="json")
+        )
+    
+    add_response = await test_client.send(add_request)
+    expense_id = add_response.json()['expense_id']
+
+    response = await test_client.send(request)
+    assert response.status_code == 200
+    assert response.json()[0]['expense_id'] == expense_id

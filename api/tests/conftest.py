@@ -38,6 +38,8 @@ from sqlalchemy_utils import create_database, database_exists, drop_database
 
 from tests.factories import (
     ExpenseCreateFactory,
+    ExpenseItemCreateFactory,
+    ExpenseItemSplitCreateFactory,
     ExpenseItemModelFactory,
     ExpenseItemSplitModelFactory,
     ExpenseModelFactory,
@@ -116,6 +118,9 @@ async def session(db) -> AsyncGenerator[AsyncSession]:  # noqa: ANN001
 register_fixture(UserModelFactory)
 register_fixture(GroupModelFactory)
 register_fixture(GroupUserModelFactory)
+register_fixture(ExpenseCreateFactory)
+register_fixture(ExpenseItemCreateFactory)
+register_fixture(ExpenseItemSplitCreateFactory)
 register_fixture(ExpenseModelFactory)
 register_fixture(ExpenseItemModelFactory)
 register_fixture(ExpenseItemSplitModelFactory)

@@ -9,7 +9,7 @@ from expenseflow.auth.deps import CurrentUser
 from expenseflow.database.deps import DbSession
 from expenseflow.entity.service import get_entity
 from expenseflow.enums import ExpenseStatus
-from expenseflow.errors import NotFoundError, RoleError
+from expenseflow.errors import NotFoundError, RoleError, ExpenseFlowError
 from expenseflow.expense.models import ExpenseModel
 from expenseflow.expense.schemas import (
     ExpenseCreate,
@@ -47,15 +47,21 @@ async def create(
         )
     try:
         return await create_expense(db, user, expense_in, parent)
-    except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="The total proportion of an expense item does not add to 1.",
-        ) from e
     except NotFoundError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
         ) from e
+    except ExpenseFlowError as e:
+        if "does not add to 1" in e.message:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="The total proportion of an expense item does not add to 1.",
+            ) from e
+        elif "A user_id is duplicated" in e.message:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="A user_id is duplicated in splits for an item.",
+            ) from e
 
 
 @r.put("/{expense_id}", response_model=ExpenseRead)
@@ -71,18 +77,17 @@ async def update(
         )
     try:
         return await update_expense(db, user, expense, expense_in)
-    except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="The total proportion of an expense item does not add to 1.",
-        ) from e
     except NotFoundError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
         ) from e
     except RoleError as e:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e)) from e
-
+    except ExpenseFlowError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="The total proportion of an expense item does not add to 1.",
+        ) from e
 
 @r.get("", response_model=list[ExpenseRead])
 async def get_uploaded_by_me(db: DbSession, user: CurrentUser) -> list[ExpenseModel]:
@@ -143,7 +148,7 @@ async def get_expense_user_status(
 
 
 @r.put("/{expense_id}/status", response_model=ExpenseRead)
-async def update_stautus(
+async def update_status(
     db: DbSession,
     user: CurrentUser,
     expense_id: UUID,

@@ -133,8 +133,8 @@ async def create_expense_items(
         expense_items_in (list[ExpenseItemCreate]): list of expense items
 
     Raises:
-        ValueError: Raised if splits don't add up to 100%
-        ExistsError: Raised if invalid user is specified in the split
+        ExpenseFlowError: Raised if splits don't add up to 100%
+        NotFoundError: Raised if invalid user is specified in the split
 
     Returns:
         list[ExpenseItemModel]: newly created expense items
@@ -155,6 +155,8 @@ async def create_expense_items(
                 msg = f"The total proportion of the '{item_in.name}' item does not add to 1."
                 raise ExpenseFlowError(msg)
 
+            # This section causes the route to say "doesn't add up to 1"
+            # when user id is duplicate
             user_ids = [split.user_id for split in item_in.splits]
             if len(user_ids) != len(set(user_ids)):
                 msg = f"A user_id is duplicated in splits for item '{item_in.name}'"
@@ -203,7 +205,6 @@ async def update_split_status(
 ) -> None:
     """Update a user's split status of an expense."""
     usr_split_status = await get_user_split_status(session, expense, user)
-
     cur_expense_status = await get_expense_status(session, expense)
 
     # Check whether usr has had the expense split with them
@@ -296,7 +297,7 @@ async def get_user_split_status(
         if expense.uploader_id == user.user_id or expense.parent_id == user.entity_id:
             return ExpenseStatus.paid
 
-        msg = f"User '{user.user_id}' is not have any splits in this expense."
+        msg = f"User '{user.user_id}' does not have any splits in this expense."
         raise ExpenseFlowError(msg)
 
     uniques = set(statuses)
