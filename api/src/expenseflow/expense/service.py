@@ -150,7 +150,6 @@ async def create_splits(
     splits: list[ExpenseItemSplitModel] = []
 
     if splits_in is not None and splits_in != []:
-        splits_in = []
 
         user_ids = [split.user_id for split in splits_in]
         if len(user_ids) != len(set(user_ids)):
@@ -179,6 +178,15 @@ async def create_splits(
                     ),
                 )
             )
+    else:
+        splits = [
+            ExpenseItemSplitModel(
+                user=creator,
+                proportion=1.0,
+                status=ExpenseStatus.paid,  # Creator has paid for it
+            )
+        ]
+
     return splits
 
 
