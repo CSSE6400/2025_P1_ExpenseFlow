@@ -5,85 +5,66 @@ import 'proportional_sizes.dart';
 enum BottomNavBarScreen { home, add, groupsAndFriends, expenses }
 
 class BottomNavBar extends StatelessWidget {
-  /// The name of the currently active screen.
-  final BottomNavBarScreen? currentScreen; // screen name
-
+  final BottomNavBarScreen? currentScreen;
   final bool inactive;
 
   const BottomNavBar({super.key, this.currentScreen, this.inactive = false});
 
   @override
   Widget build(BuildContext context) {
-    final proportionalSizes = ProportionalSizes(context: context);
+    final sizes = ProportionalSizes(context: context);
+    final iconSize = sizes.scaleWidth(36);
     final iconColor =
         inactive
-            ? ColorPalette.primaryAction.withValues(alpha: 0.5)
+            ? ColorPalette.primaryAction.withAlpha(128)
             : ColorPalette.primaryAction;
-    final backgroundColor = ColorPalette.buttonText;
 
-    final double iconSize = proportionalSizes.scaleWidth(36);
-
-    final List<Map<String, dynamic>> navItems = [
-      {
-        'screen': 'Home',
-        'icon': 'assets/icons/home.png',
-        'onTap': () {
-          if (!inactive && currentScreen != BottomNavBarScreen.home) {
-            Navigator.pushNamed(context, '/');
-          }
-        },
-      },
-      {
-        'screen': 'Add',
-        'icon': 'assets/icons/add.png',
-        'onTap': () {
-          if (!inactive && currentScreen != BottomNavBarScreen.add) {
-            Navigator.pushNamed(context, '/add_expense');
-          }
-        },
-      },
-      {
-        'screen': 'Groups',
-        'icon': 'assets/icons/group.png',
-        'onTap': () {
-          if (!inactive &&
-              currentScreen != BottomNavBarScreen.groupsAndFriends) {
-            Navigator.pushNamed(context, '/groups_and_friends');
-          }
-        },
-      },
-      {
-        'screen': 'Expenses',
-        'icon': 'assets/icons/expenses.png',
-        'onTap': () {
-          if (!inactive && currentScreen != BottomNavBarScreen.expenses) {
-            Navigator.pushNamed(context, '/expenses');
-          }
-        },
-      },
+    final navItems = <_NavItem>[
+      _NavItem(
+        screen: BottomNavBarScreen.home,
+        iconPath: 'assets/icons/home.png',
+        route: '/',
+      ),
+      _NavItem(
+        screen: BottomNavBarScreen.add,
+        iconPath: 'assets/icons/add.png',
+        route: '/add_expense',
+      ),
+      _NavItem(
+        screen: BottomNavBarScreen.groupsAndFriends,
+        iconPath: 'assets/icons/group.png',
+        route: '/groups_and_friends',
+      ),
+      _NavItem(
+        screen: BottomNavBarScreen.expenses,
+        iconPath: 'assets/icons/expenses.png',
+        route: '/expenses',
+      ),
     ];
 
     return BottomAppBar(
-      color: backgroundColor,
+      color: ColorPalette.buttonText,
       child: Padding(
-        padding: EdgeInsets.symmetric(
-          vertical: proportionalSizes.scaleHeight(8),
-        ),
+        padding: EdgeInsets.symmetric(vertical: sizes.scaleHeight(8)),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children:
               navItems.map((item) {
-                bool isSelected = item['screen'] == currentScreen;
+                final isSelected = item.screen == currentScreen;
+                final opacity =
+                    inactive
+                        ? (isSelected ? 0.6 : 0.3)
+                        : (isSelected ? 1.0 : 0.25);
 
                 return GestureDetector(
-                  onTap: inactive ? null : item['onTap'],
+                  onTap:
+                      inactive || isSelected
+                          ? null
+                          : () => Navigator.pushNamed(context, item.route),
                   child: Opacity(
-                    opacity:
-                        inactive
-                            ? (isSelected ? 0.6 : 0.3)
-                            : (isSelected ? 1.0 : 0.25),
+                    opacity: opacity,
                     child: Image.asset(
-                      item['icon'],
+                      item.iconPath,
                       width: iconSize,
                       height: iconSize,
                       color: iconColor,
@@ -95,4 +76,16 @@ class BottomNavBar extends StatelessWidget {
       ),
     );
   }
+}
+
+class _NavItem {
+  final BottomNavBarScreen screen;
+  final String iconPath;
+  final String route;
+
+  const _NavItem({
+    required this.screen,
+    required this.iconPath,
+    required this.route,
+  });
 }
