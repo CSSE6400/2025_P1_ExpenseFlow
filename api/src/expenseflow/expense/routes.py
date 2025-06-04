@@ -52,10 +52,16 @@ async def create(
             status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
         ) from e
     except ExpenseFlowError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="The total proportion of an expense item does not add to 1.",
-        ) from e
+        if "does not add to 1" in e.message:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="The total proportion of an expense item does not add to 1.",
+            ) from e
+        elif "A user_id is duplicated" in e.message:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="A user_id is duplicated in splits for an item.",
+            ) from e
 
 
 @r.put("/{expense_id}", response_model=ExpenseRead)
