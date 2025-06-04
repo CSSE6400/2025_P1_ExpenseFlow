@@ -93,7 +93,9 @@ class TextractPlugin(Plugin[TextractPluginSettings]):
         items: list[ExpenseItemCreate] = []
         for field in summary_fields:
             if field["Type"]["Text"] == "VENDOR_NAME":
-                vendor_name = field.get("ValueDetection", "Auto-generated expense")
+                vendor_name = field.get("ValueDetection", {}).get(
+                    "Text", "Auto-generated expense"
+                )
                 break
         for item_list in item_groups:
             for item in item_list.get("LineItems", []):
