@@ -425,6 +425,33 @@ async def test_update_nonexistent_status(session: AsyncSession,
         f"Expense under the id '{uuid}' could not be found"
     
 @pytest.mark.asyncio
+async def test_update_dup_user(session: AsyncSession,
+                          test_client: AsyncClient,
+                          expense_create_factory,
+                          expense_item_create_factory,
+                          default_user):
+    
+    session.add(default_user)
+    await session.commit()
+
+    expense1 = expense_create_factory.build()
+    item1 = expense_item_create_factory.build()
+    for split in item1.splits:
+        split.user_id = default_user.user_id
+    expense1.items = [item1]
+    
+    request = test_client.build_request(
+        method="post",
+        url=base_url,
+        json=expense1.model_dump(mode="json")
+        )
+    
+    make = await test_client.send(request)
+    assert make.status_code == 400
+    assert make.json()['detail'] == \
+        "A user_id is duplicated in splits for an item."
+
+@pytest.mark.asyncio
 async def test_update_status(session: AsyncSession,
                           test_client: AsyncClient,
                           expense_create_factory,
@@ -452,6 +479,7 @@ async def test_update_status(session: AsyncSession,
     
     make = await test_client.send(request)
     
+    # override current user because otherwise the expense is paid
     from expenseflow.auth.deps import get_current_user
     
     test_client._transport.app.dependency_overrides[get_current_user] \
