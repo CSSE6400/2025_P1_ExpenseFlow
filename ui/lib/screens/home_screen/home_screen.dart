@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/common/snack_bar.dart' show showCustomSnackBar;
-import 'package:flutter_frontend/models/expense.dart' show ExpenseOverview;
+import 'package:flutter_frontend/models/expense.dart'
+    show ExpenseOverview, ExpenseRead;
 import 'package:flutter_frontend/models/user.dart' show UserRead;
 import 'package:flutter_frontend/types.dart'
     show CategoryData, Expense, assignRandomColors;
@@ -35,7 +36,7 @@ class _HomeScreenState extends State<HomeScreen>
   UserRead? user;
 
   bool isRecentExpensesLoading = true;
-  List<Expense> recentExpenses = [];
+  List<ExpenseRead> expenses = [];
 
   @override
   void initState() {
@@ -110,23 +111,15 @@ class _HomeScreenState extends State<HomeScreen>
 
     final apiService = Provider.of<ApiService>(context, listen: false);
     try {
-      final userReads = await apiService.expenseApi.getExpensesUploadedByMe();
-
       final loadedExpenses =
-          userReads.map((expense) {
-            return Expense(
-              name: expense.name,
-              price: expense.expenseTotal.toString(),
-              expenseId: expense.expenseId,
-            );
-          }).toList();
+          await apiService.expenseApi.getExpensesUploadedByMe();
 
       setState(() {
-        recentExpenses = loadedExpenses;
+        expenses = loadedExpenses;
         isRecentExpensesLoading = false;
       });
 
-      _logger.info("number of recent expenses: ${recentExpenses.length}");
+      _logger.info("number of expenses: ${expenses.length}");
     } catch (e) {
       _logger.warning("Failed to get recent expenses: $e");
       setState(() {
@@ -242,7 +235,7 @@ class _HomeScreenState extends State<HomeScreen>
                 HomeScreenAddAnExpense(),
                 SizedBox(height: proportionalSizes.scaleHeight(20)),
                 HomeScreenRecentExpenses(
-                  recentExpenses: recentExpenses,
+                  expenses: expenses.take(3).toList(),
                   isLoading: isRecentExpensesLoading,
                   onTap: () => Navigator.pushNamed(context, '/expenses'),
                 ),
