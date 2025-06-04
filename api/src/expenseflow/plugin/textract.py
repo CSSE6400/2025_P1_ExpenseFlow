@@ -116,9 +116,9 @@ class TextractPlugin(Plugin[TextractPluginSettings]):
                     )
                 )
 
-        description = f"Auto-generated expense from receipt from {vendor_name}."
+        description = "Auto-generated expense"
         expense_in = ExpenseCreate(
-            name=vendor_name,
+            name="Auto-generated expense",
             description=description,
             category=ExpenseCategory.auto,
             items=items,
