@@ -155,6 +155,8 @@ async def create_expense_items(
                 msg = f"The total proportion of the '{item_in.name}' item does not add to 1."
                 raise ExpenseFlowError(msg)
 
+            # This section causes the route to say "doesn't add up to 1"
+            # when user id is duplicate
             user_ids = [split.user_id for split in item_in.splits]
             if len(user_ids) != len(set(user_ids)):
                 msg = f"A user_id is duplicated in splits for item '{item_in.name}'"
@@ -203,7 +205,6 @@ async def update_split_status(
 ) -> None:
     """Update a user's split status of an expense."""
     usr_split_status = await get_user_split_status(session, expense, user)
-
     cur_expense_status = await get_expense_status(session, expense)
 
     # Check whether usr has had the expense split with them
