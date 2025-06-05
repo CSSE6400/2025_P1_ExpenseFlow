@@ -69,7 +69,7 @@ class HomeScreenAddAnExpense extends StatelessWidget {
             child: ListTile(
               leading: IconMaker(assetPath: 'assets/icons/scan.png'),
               title: Text(
-                'Camera Scan',
+                'Scan Receipt',
                 style: GoogleFonts.roboto(
                   fontSize: proportionalSizes.scaleText(18),
                   color: textColor,

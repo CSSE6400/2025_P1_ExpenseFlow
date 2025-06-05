@@ -179,7 +179,7 @@ class ExpenseApiClient extends BaseApiClient {
     }
   }
 
-  Future<ExpenseRead> createExpenseFromImage(
+  Future<ExpenseRead?> createExpenseFromImage(
     WebImageInfo image,
     String? parentId,
   ) async {
@@ -213,6 +213,9 @@ class ExpenseApiClient extends BaseApiClient {
 
     if (response.statusCode == 200) {
       return ExpenseRead.fromJson(safeJsonDecode((respStr)));
+    } else if (response.statusCode == 405) {
+      logger.info("Image gen plugin is not loaded");
+      return null;
     } else {
       logger.info(
         "Failed to create expense from image: ${response.statusCode} $respStr",

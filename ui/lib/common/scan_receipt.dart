@@ -88,6 +88,17 @@ Future<void> handleScanReceiptUpload({required BuildContext context}) async {
             image,
             null,
           );
+          if (expense == null) {
+            if (!context.mounted) return;
+
+            Navigator.of(context).pop(); // close loading
+            showCustomSnackBar(
+              context,
+              normalText:
+                  'Scan receipt plugin is not loaded, please try again later.',
+            );
+            return;
+          }
 
           // show success dialog
           if (!context.mounted) return;
