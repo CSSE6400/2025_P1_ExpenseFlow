@@ -30,7 +30,7 @@ env:
 
 jobs:
   terraform_checks:
-    name: Runs a terraform chceks
+    name: Runs a terraform fmt
     runs-on: ubuntu-latest
     if: github.event.inputs.branch == 'main'
     permissions:
@@ -50,10 +50,6 @@ jobs:
         run: terraform fmt -check
         continue-on-error: true
         working-directory: infra
-
-      - name: Terraform Validate
-        id: validate
-        run: terraform validate -no-color
 
   terraform_deploy:
     name: Runs a terraform deployment
@@ -88,11 +84,17 @@ jobs:
         run: terraform init -input=false
         working-directory: infra
 
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate -no-color
+        working-directory: infra
+
       - name: Terraform Plan
         id: plan
         run: |
           terraform plan -out=tfplan.binary
           terraform show -no-color tfplan.binary > tfplan.txt
+        working-directory: infra
 
       - name: Upload Plan Artifact
         uses: actions/upload-artifact@v4
