@@ -17,7 +17,6 @@ import '../../../common/fields/date_field/date_field.dart';
 import '../../../common/fields/dropdown_field.dart';
 import '../../../models/expense.dart';
 import '../../../common/fields/custom_icon_field.dart';
-import '../../../common/proportional_sizes.dart';
 import '../../../common/snack_bar.dart';
 
 class ExpenseForm extends StatefulWidget {
@@ -228,8 +227,6 @@ class _ExpenseFormState extends State<ExpenseForm> {
 
   @override
   Widget build(BuildContext context) {
-    final proportionalSizes = ProportionalSizes(context: context);
-
     if (isLoading || user == null) {
       return Center(child: CircularProgressIndicator());
     }
@@ -349,18 +346,6 @@ class _ExpenseFormState extends State<ExpenseForm> {
           },
         ),
         CustomDivider(),
-        CustomIconField(
-          label: 'Receipt',
-          value: '',
-          isEnabled: widget.canEdit,
-          hintText: 'Save your Receipt here',
-          trailingIconPath: 'assets/icons/clip.png',
-          onTap: () {
-            // TODO: Show receipt or attachment viewer
-          },
-        ),
-        CustomDivider(),
-        SizedBox(height: proportionalSizes.scaleHeight(24)),
       ],
     );
   }

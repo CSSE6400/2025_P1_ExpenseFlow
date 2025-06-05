@@ -45,7 +45,7 @@ class SeeExpenseView extends StatelessWidget {
     return SingleChildScrollView(
       padding: EdgeInsets.symmetric(
         horizontal: proportionalSizes.scaleWidth(20),
-        vertical: proportionalSizes.scaleHeight(20),
+        vertical: proportionalSizes.scaleHeight(10),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -67,7 +67,7 @@ class SeeExpenseView extends StatelessWidget {
             onValidityChanged: onValidityChanged,
             onExpenseChanged: onExpenseChanged,
           ),
-          SizedBox(height: proportionalSizes.scaleHeight(24)),
+          SizedBox(height: proportionalSizes.scaleHeight(12)),
           CustomButton(
             label: isEditMode ? 'Save' : 'Edit',
             onPressed: isEditMode ? (isFormValid ? onSave : () {}) : onEdit,
@@ -77,7 +77,7 @@ class SeeExpenseView extends StatelessWidget {
                     ? (isFormValid ? ButtonState.enabled : ButtonState.disabled)
                     : ButtonState.enabled,
           ),
-          SizedBox(height: proportionalSizes.scaleHeight(16)),
+          SizedBox(height: proportionalSizes.scaleHeight(12)),
           if (isEditMode)
             CustomButton(
               label: 'Cancel',
@@ -85,7 +85,6 @@ class SeeExpenseView extends StatelessWidget {
               sizeType: ButtonSizeType.full,
               state: ButtonState.enabled,
             ),
-          SizedBox(height: proportionalSizes.scaleHeight(96)),
         ],
       ),
     );
