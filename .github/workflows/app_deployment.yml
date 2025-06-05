@@ -55,9 +55,8 @@ jobs:
       - name: Build and push docker image
         run: |
           IMAGE_URI=${{ env.ECR_API_URI }}:latest
-          docker build -t $IMAGE_URI ./ui
+          docker build -t $IMAGE_URI ./api
           docker push $IMAGE_URI
-        working-directory: api
 
       - name: Update ECS task definition
         id: task-def
@@ -111,7 +110,6 @@ jobs:
           IMAGE_URI=${{ env.ECR_UI_URI }}:latest
           docker build -t $IMAGE_URI ./ui
           docker push $IMAGE_URI
-        working-directory: ui
 
       - name: Update ECS task definition
         id: task-def
