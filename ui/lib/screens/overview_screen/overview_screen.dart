@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/widgets/time_period_dropdown.dart';
-import 'package:flutter_frontend/screens/overview_screen/elements/overview_screen_report_widget.dart';
-import 'package:flutter_frontend/screens/overview_screen/elements/overview_screen_stat_widget.dart';
-import 'package:flutter_frontend/screens/overview_screen/elements/overview_screen_amount_widget.dart';
-import 'package:flutter_frontend/services/api_service.dart';
-import 'package:flutter_frontend/models/expense.dart';
-import 'package:flutter_frontend/models/user.dart';
-import 'package:flutter_frontend/common/snack_bar.dart';
-import 'package:flutter_frontend/services/auth_guard_provider.dart'
+import 'package:expenseflow/widgets/time_period_dropdown.dart';
+import 'package:expenseflow/screens/overview_screen/elements/overview_screen_report_widget.dart';
+import 'package:expenseflow/screens/overview_screen/elements/overview_screen_stat_widget.dart';
+import 'package:expenseflow/screens/overview_screen/elements/overview_screen_amount_widget.dart';
+import 'package:expenseflow/services/api_service.dart';
+import 'package:expenseflow/models/expense.dart';
+import 'package:expenseflow/models/user.dart';
+import 'package:expenseflow/common/snack_bar.dart';
+import 'package:expenseflow/services/auth_guard_provider.dart'
     show AuthGuardProvider;
-import 'package:flutter_frontend/types.dart' show CategoryData;
+import 'package:expenseflow/types.dart' show CategoryData;
 import 'package:provider/provider.dart';
 
 import '../../common/color_palette.dart';

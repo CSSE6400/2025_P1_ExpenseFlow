@@ -1,11 +1,11 @@
 import 'dart:convert';
 
-import 'package:flutter_frontend/models/enums.dart' show GroupRole;
-import 'package:flutter_frontend/models/expense.dart';
-import 'package:flutter_frontend/models/group.dart';
-import 'package:flutter_frontend/models/user.dart';
-import 'package:flutter_frontend/services/api/common.dart';
-import 'package:flutter_frontend/services/api_service.dart' show ApiException;
+import 'package:expenseflow/models/enums.dart' show GroupRole;
+import 'package:expenseflow/models/expense.dart';
+import 'package:expenseflow/models/group.dart';
+import 'package:expenseflow/models/user.dart';
+import 'package:expenseflow/services/api/common.dart';
+import 'package:expenseflow/services/api_service.dart' show ApiException;
 
 class GroupApiClient extends BaseApiClient {
   GroupApiClient(super.client, super.baseUrl, super.logger);

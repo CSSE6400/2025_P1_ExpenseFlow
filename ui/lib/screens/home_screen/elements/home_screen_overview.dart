@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/types.dart' show CategoryData;
-import 'package:flutter_frontend/widgets/donut_chart.dart';
+import 'package:expenseflow/types.dart' show CategoryData;
+import 'package:expenseflow/widgets/donut_chart.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../common/color_palette.dart';

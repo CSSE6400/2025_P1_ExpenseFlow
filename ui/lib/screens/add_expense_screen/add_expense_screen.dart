@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/common/snack_bar.dart';
-import 'package:flutter_frontend/common/swipe_detector.dart' show SwipeDetector;
-import 'package:flutter_frontend/models/expense.dart' show ExpenseCreate;
-import 'package:flutter_frontend/services/api_service.dart' show ApiService;
-import 'package:flutter_frontend/widgets/expense_form.dart';
+import 'package:expenseflow/common/snack_bar.dart';
+import 'package:expenseflow/common/swipe_detector.dart' show SwipeDetector;
+import 'package:expenseflow/models/expense.dart' show ExpenseCreate;
+import 'package:expenseflow/services/api_service.dart' show ApiService;
+import 'package:expenseflow/widgets/expense_form.dart';
 import 'package:logging/logging.dart' show Logger;
 import 'package:provider/provider.dart' show Provider;
 import '../../common/color_palette.dart';

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/common/color_palette.dart';
-import 'package:flutter_frontend/common/icon_maker.dart';
-import 'package:flutter_frontend/screens/split_with_screen/split_with_screen.dart';
+import 'package:expenseflow/common/color_palette.dart';
+import 'package:expenseflow/common/icon_maker.dart';
+import 'package:expenseflow/screens/split_with_screen/split_with_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../common/proportional_sizes.dart';

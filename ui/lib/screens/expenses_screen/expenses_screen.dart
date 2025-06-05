@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/common/proportional_sizes.dart'
+import 'package:expenseflow/common/proportional_sizes.dart'
     show ProportionalSizes;
-import 'package:flutter_frontend/common/snack_bar.dart' show showCustomSnackBar;
-import 'package:flutter_frontend/common/swipe_detector.dart' show SwipeDetector;
-import 'package:flutter_frontend/models/expense.dart' show ExpenseRead;
-import 'package:flutter_frontend/services/api_service.dart' show ApiService;
-import 'package:flutter_frontend/widgets/expense_list_view.dart'
+import 'package:expenseflow/common/snack_bar.dart' show showCustomSnackBar;
+import 'package:expenseflow/common/swipe_detector.dart' show SwipeDetector;
+import 'package:expenseflow/models/expense.dart' show ExpenseRead;
+import 'package:expenseflow/services/api_service.dart' show ApiService;
+import 'package:expenseflow/widgets/expense_list_view.dart'
     show ExpenseListView;
 import 'package:provider/provider.dart' show Provider;
 import '../../common/color_palette.dart';

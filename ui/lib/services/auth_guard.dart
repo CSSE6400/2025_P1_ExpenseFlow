@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/models/user.dart' show UserRead;
-import 'package:flutter_frontend/screens/initial_startup_screen/initial_startup_screen.dart'
+import 'package:expenseflow/models/user.dart' show UserRead;
+import 'package:expenseflow/screens/initial_startup_screen/initial_startup_screen.dart'
     show InitialStartupScreen;
-import 'package:flutter_frontend/screens/profile_setup_screen/profile_setup_screen.dart'
+import 'package:expenseflow/screens/profile_setup_screen/profile_setup_screen.dart'
     show ProfileSetupScreen;
-import 'package:flutter_frontend/services/auth_service.dart' show AuthService;
+import 'package:expenseflow/services/auth_service.dart' show AuthService;
 import 'package:provider/provider.dart';
 import 'auth_guard_provider.dart';
 

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/models/enums.dart' show ExpenseCategory;
-import 'package:flutter_frontend/models/group.dart' show GroupReadWithMembers;
-import 'package:flutter_frontend/models/user.dart' show UserRead;
-import 'package:flutter_frontend/screens/add_items_screen/add_items_screen.dart'
+import 'package:expenseflow/models/enums.dart' show ExpenseCategory;
+import 'package:expenseflow/models/group.dart' show GroupReadWithMembers;
+import 'package:expenseflow/models/user.dart' show UserRead;
+import 'package:expenseflow/screens/add_items_screen/add_items_screen.dart'
     show AddItemsScreen;
-import 'package:flutter_frontend/screens/split_with_screen/split_with_screen.dart';
-import 'package:flutter_frontend/services/api_service.dart' show ApiService;
-import 'package:flutter_frontend/services/auth_guard_provider.dart'
+import 'package:expenseflow/screens/split_with_screen/split_with_screen.dart';
+import 'package:expenseflow/services/api_service.dart' show ApiService;
+import 'package:expenseflow/services/auth_guard_provider.dart'
     show AuthGuardProvider;
-import 'package:flutter_frontend/utils/string_utils.dart';
+import 'package:expenseflow/utils/string_utils.dart';
 import 'package:logging/logging.dart' show Logger;
 import 'package:provider/provider.dart' show Provider;
 import '../../../common/fields/general_field.dart';

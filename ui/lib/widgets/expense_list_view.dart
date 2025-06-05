@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/common/null_custom_dropdown.dart'
+import 'package:expenseflow/common/null_custom_dropdown.dart'
     show NullableCustomDropdown;
-import 'package:flutter_frontend/common/search_bar.dart' as search;
-import 'package:flutter_frontend/models/enums.dart'
-    show EntityKind, ExpenseStatus;
-import 'package:flutter_frontend/models/expense.dart';
-import 'package:flutter_frontend/models/user.dart' show UserRead;
-import 'package:flutter_frontend/services/auth_guard_provider.dart'
+import 'package:expenseflow/common/search_bar.dart' as search;
+import 'package:expenseflow/models/enums.dart' show EntityKind, ExpenseStatus;
+import 'package:expenseflow/models/expense.dart';
+import 'package:expenseflow/models/user.dart' show UserRead;
+import 'package:expenseflow/services/auth_guard_provider.dart'
     show AuthGuardProvider;
-import 'package:flutter_frontend/widgets/expense_list_segment_control.dart';
-import 'package:flutter_frontend/widgets/expense_view.dart';
-import 'package:flutter_frontend/widgets/time_period_dropdown.dart';
-import 'package:flutter_frontend/common/proportional_sizes.dart';
+import 'package:expenseflow/widgets/expense_list_segment_control.dart';
+import 'package:expenseflow/widgets/expense_view.dart';
+import 'package:expenseflow/widgets/time_period_dropdown.dart';
+import 'package:expenseflow/common/proportional_sizes.dart';
 import 'package:provider/provider.dart' show Provider;
 
 enum ExpenseViewType { mine, friend, group }

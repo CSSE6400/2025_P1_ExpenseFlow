@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter_frontend/types.dart' show CategoryData;
+import 'package:expenseflow/types.dart' show CategoryData;
 import 'package:google_fonts/google_fonts.dart';
 import '../../../common/proportional_sizes.dart';
 

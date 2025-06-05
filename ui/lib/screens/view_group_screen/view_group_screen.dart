@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/common/proportional_sizes.dart'
+import 'package:expenseflow/common/proportional_sizes.dart'
     show ProportionalSizes;
-import 'package:flutter_frontend/common/snack_bar.dart' show showCustomSnackBar;
-import 'package:flutter_frontend/models/expense.dart';
-import 'package:flutter_frontend/models/group.dart' show GroupCreate, GroupRead;
-import 'package:flutter_frontend/models/user.dart' show UserGroupRead;
-import 'package:flutter_frontend/screens/view_group_screen/elements/view_group_edit.dart';
-import 'package:flutter_frontend/screens/view_group_screen/elements/view_group_members.dart';
-import 'package:flutter_frontend/services/api_service.dart' show ApiService;
-import 'package:flutter_frontend/widgets/expense_list_view.dart';
+import 'package:expenseflow/common/snack_bar.dart' show showCustomSnackBar;
+import 'package:expenseflow/models/expense.dart';
+import 'package:expenseflow/models/group.dart' show GroupCreate, GroupRead;
+import 'package:expenseflow/models/user.dart' show UserGroupRead;
+import 'package:expenseflow/screens/view_group_screen/elements/view_group_edit.dart';
+import 'package:expenseflow/screens/view_group_screen/elements/view_group_members.dart';
+import 'package:expenseflow/services/api_service.dart' show ApiService;
+import 'package:expenseflow/widgets/expense_list_view.dart';
 import 'package:provider/provider.dart' show Provider;
 import '../../common/color_palette.dart';
 import '../../common/app_bar.dart';

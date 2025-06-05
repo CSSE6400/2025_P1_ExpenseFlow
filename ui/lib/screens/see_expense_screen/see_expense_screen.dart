@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/common/custom_button.dart'
+import 'package:expenseflow/common/custom_button.dart'
     show ButtonSizeType, ButtonState, CustomButton;
-import 'package:flutter_frontend/common/scan_receipt.dart';
-import 'package:flutter_frontend/common/snack_bar.dart'
+import 'package:expenseflow/common/scan_receipt.dart';
+import 'package:expenseflow/common/snack_bar.dart'
     show SnackBarType, showCustomSnackBar;
-import 'package:flutter_frontend/models/enums.dart';
-import 'package:flutter_frontend/models/expense.dart'
+import 'package:expenseflow/models/enums.dart';
+import 'package:expenseflow/models/expense.dart'
     show ExpenseCreate, ExpenseRead, SplitStatusInfo;
-import 'package:flutter_frontend/models/user.dart';
-import 'package:flutter_frontend/screens/see_expense_screen/elements/see_expense_approvals.dart';
-import 'package:flutter_frontend/screens/see_expense_screen/elements/see_expense_view.dart';
-import 'package:flutter_frontend/services/api_service.dart' show ApiService;
-import 'package:flutter_frontend/screens/see_expense_screen/elements/expense_view_segment_control.dart';
-import 'package:flutter_frontend/services/auth_guard_provider.dart'
+import 'package:expenseflow/models/user.dart';
+import 'package:expenseflow/screens/see_expense_screen/elements/see_expense_approvals.dart';
+import 'package:expenseflow/screens/see_expense_screen/elements/see_expense_view.dart';
+import 'package:expenseflow/services/api_service.dart' show ApiService;
+import 'package:expenseflow/screens/see_expense_screen/elements/expense_view_segment_control.dart';
+import 'package:expenseflow/services/auth_guard_provider.dart'
     show AuthGuardProvider;
 import 'package:logging/logging.dart' show Logger;
 import 'package:provider/provider.dart' show Provider;

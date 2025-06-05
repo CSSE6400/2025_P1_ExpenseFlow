@@ -1,30 +1,30 @@
-import 'package:flutter_frontend/common/app_bar.dart' show AppBarWidget;
-import 'package:flutter_frontend/common/bottom_nav_bar.dart'
+import 'package:expenseflow/common/app_bar.dart' show AppBarWidget;
+import 'package:expenseflow/common/bottom_nav_bar.dart'
     show BottomNavBar, BottomNavBarScreen;
-import 'package:flutter_frontend/common/color_palette.dart' show ColorPalette;
-import 'package:flutter_frontend/common/dialogs/app_dialog_box.dart'
+import 'package:expenseflow/common/color_palette.dart' show ColorPalette;
+import 'package:expenseflow/common/dialogs/app_dialog_box.dart'
     show AppDialogBox;
-import 'package:flutter_frontend/common/proportional_sizes.dart'
+import 'package:expenseflow/common/proportional_sizes.dart'
     show ProportionalSizes;
-import 'package:flutter_frontend/common/swipe_detector.dart';
-import 'package:flutter_frontend/models/group.dart' show GroupRead;
-import 'package:flutter_frontend/screens/groups_and_friends_screen/elements/friend_list.dart'
+import 'package:expenseflow/common/swipe_detector.dart';
+import 'package:expenseflow/models/group.dart' show GroupRead;
+import 'package:expenseflow/screens/groups_and_friends_screen/elements/friend_list.dart'
     show FriendsListView;
-import 'package:flutter_frontend/screens/groups_and_friends_screen/elements/group_list.dart'
+import 'package:expenseflow/screens/groups_and_friends_screen/elements/group_list.dart'
     show GroupsListView;
-import 'package:flutter_frontend/screens/groups_and_friends_screen/elements/groups_and_friends_segment_control.dart'
+import 'package:expenseflow/screens/groups_and_friends_screen/elements/groups_and_friends_segment_control.dart'
     show GroupsAndFriendsSegmentControl;
-import 'package:flutter_frontend/services/api_service.dart' show ApiService;
-import 'package:flutter_frontend/types.dart'
+import 'package:expenseflow/services/api_service.dart' show ApiService;
+import 'package:expenseflow/types.dart'
     show Friend, FriendRequest, FriendRequestViewStatus;
 import 'package:logging/logging.dart' show Logger;
 import 'package:provider/provider.dart' show Provider;
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/common/custom_button.dart';
+import 'package:expenseflow/common/custom_button.dart';
 import '../../../common/search_bar.dart' as search;
-import 'package:flutter_frontend/services/api_service.dart';
+import 'package:expenseflow/services/api_service.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_frontend/common/snack_bar.dart';
+import 'package:expenseflow/common/snack_bar.dart';
 import 'package:logging/logging.dart';
 
 class GroupsAndFriendsScreen extends StatefulWidget {

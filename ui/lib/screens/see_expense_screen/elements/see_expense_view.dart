@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/models/expense.dart';
-import 'package:flutter_frontend/models/user.dart' show UserRead;
-import 'package:flutter_frontend/widgets/expense_form.dart';
+import 'package:expenseflow/models/expense.dart';
+import 'package:expenseflow/models/user.dart' show UserRead;
+import 'package:expenseflow/widgets/expense_form.dart';
 import 'package:google_fonts/google_fonts.dart' show GoogleFonts;
 import '../../../common/custom_button.dart';
 import '../../../common/proportional_sizes.dart';

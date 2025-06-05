@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/common/custom_button.dart'
+import 'package:expenseflow/common/custom_button.dart'
     show ButtonSizeType, ButtonState, CustomButton;
-import 'package:flutter_frontend/types.dart'
+import 'package:expenseflow/types.dart'
     show FriendRequest, FriendRequestViewStatus;
 import 'package:google_fonts/google_fonts.dart';
 import '../../../common/color_palette.dart';

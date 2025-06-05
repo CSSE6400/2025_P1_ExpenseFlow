@@ -1,8 +1,8 @@
-import 'package:flutter_frontend/models/expense.dart' show ExpenseRead;
-import 'package:flutter_frontend/models/friend.dart' show FriendRead;
-import 'package:flutter_frontend/models/user.dart' show UserRead;
-import 'package:flutter_frontend/services/api/common.dart';
-import 'package:flutter_frontend/services/api_service.dart' show ApiException;
+import 'package:expenseflow/models/expense.dart' show ExpenseRead;
+import 'package:expenseflow/models/friend.dart' show FriendRead;
+import 'package:expenseflow/models/user.dart' show UserRead;
+import 'package:expenseflow/services/api/common.dart';
+import 'package:expenseflow/services/api_service.dart' show ApiException;
 
 class FriendApiClient extends BaseApiClient {
   FriendApiClient(super.client, super.baseUrl, super.logger);

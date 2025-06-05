@@ -1,12 +1,12 @@
 import 'dart:convert';
 
-import 'package:flutter_frontend/common/scan_receipt.dart' show WebImageInfo;
-import 'package:flutter_frontend/models/enums.dart'
+import 'package:expenseflow/common/scan_receipt.dart' show WebImageInfo;
+import 'package:expenseflow/models/enums.dart'
     show ExpenseStatus, ExpenseStatusConverter;
-import 'package:flutter_frontend/models/expense.dart'
+import 'package:expenseflow/models/expense.dart'
     show ExpenseCreate, ExpenseOverview, ExpenseRead, SplitStatusInfo;
-import 'package:flutter_frontend/services/api/common.dart';
-import 'package:flutter_frontend/services/api_service.dart' show ApiException;
+import 'package:expenseflow/services/api/common.dart';
+import 'package:expenseflow/services/api_service.dart' show ApiException;
 import 'package:http/http.dart' as http;
 
 class ExpenseApiClient extends BaseApiClient {

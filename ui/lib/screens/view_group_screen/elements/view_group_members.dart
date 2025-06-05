@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/models/user.dart';
+import 'package:expenseflow/models/user.dart';
 
 class GroupMembersSection extends StatelessWidget {
   final List<UserGroupRead> groupMembers;

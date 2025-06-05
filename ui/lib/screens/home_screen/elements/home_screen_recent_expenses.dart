@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/models/expense.dart' show ExpenseRead;
-import 'package:flutter_frontend/widgets/expense_view_basic.dart';
+import 'package:expenseflow/models/expense.dart' show ExpenseRead;
+import 'package:expenseflow/widgets/expense_view_basic.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../common/color_palette.dart';
 import '../../../common/proportional_sizes.dart';

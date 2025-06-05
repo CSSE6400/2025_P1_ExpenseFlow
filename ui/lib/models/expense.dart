@@ -1,5 +1,5 @@
-import 'package:flutter_frontend/models/entity.dart' show EntityRead;
-import 'package:flutter_frontend/models/enums.dart'
+import 'package:expenseflow/models/entity.dart' show EntityRead;
+import 'package:expenseflow/models/enums.dart'
     show
         EntityKind,
         EntityKindConverter,
@@ -7,7 +7,7 @@ import 'package:flutter_frontend/models/enums.dart'
         ExpenseCategoryConverter,
         ExpenseStatus,
         ExpenseStatusConverter;
-import 'package:flutter_frontend/models/user.dart';
+import 'package:expenseflow/models/user.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'expense.g.dart';

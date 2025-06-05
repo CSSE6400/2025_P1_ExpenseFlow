@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/types.dart' show Friend;
+import 'package:expenseflow/types.dart' show Friend;
 import '../../../common/proportional_sizes.dart';
 import '../../../common/search_bar.dart' as search;
 

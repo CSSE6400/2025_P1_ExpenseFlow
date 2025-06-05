@@ -1,17 +1,17 @@
 // Flutter imports
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/common/custom_button.dart'
+import 'package:expenseflow/common/custom_button.dart'
     show ButtonSizeType, ButtonState, CustomButton;
-import 'package:flutter_frontend/common/proportional_sizes.dart'
+import 'package:expenseflow/common/proportional_sizes.dart'
     show ProportionalSizes;
-import 'package:flutter_frontend/models/expense.dart';
-import 'package:flutter_frontend/models/group.dart' show GroupReadWithMembers;
-import 'package:flutter_frontend/models/user.dart';
-import 'package:flutter_frontend/screens/split_with_screen/elements/split_with_screen_friend.dart'
+import 'package:expenseflow/models/expense.dart';
+import 'package:expenseflow/models/group.dart' show GroupReadWithMembers;
+import 'package:expenseflow/models/user.dart';
+import 'package:expenseflow/screens/split_with_screen/elements/split_with_screen_friend.dart'
     show SplitWithScreenFriend;
-import 'package:flutter_frontend/screens/split_with_screen/elements/split_with_screen_group.dart'
+import 'package:expenseflow/screens/split_with_screen/elements/split_with_screen_group.dart'
     show SplitWithScreenGroup, SplitWithScreenGroupState;
-import 'package:flutter_frontend/screens/split_with_screen/elements/split_with_screen_segment_control.dart'
+import 'package:expenseflow/screens/split_with_screen/elements/split_with_screen_segment_control.dart'
     show SplitWithScreenSegmentControl, SplitWithSegment;
 import 'package:logging/logging.dart';
 // Common imports

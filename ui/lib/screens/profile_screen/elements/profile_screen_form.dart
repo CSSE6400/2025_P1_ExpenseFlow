@@ -1,13 +1,13 @@
 // Flutter imports
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/common/custom_button.dart'
+import 'package:expenseflow/common/custom_button.dart'
     show ButtonSizeType, ButtonState, CustomButton;
-import 'package:flutter_frontend/common/snack_bar.dart';
-import 'package:flutter_frontend/models/user.dart';
-import 'package:flutter_frontend/services/api_service.dart';
-import 'package:flutter_frontend/services/auth_guard_provider.dart'
+import 'package:expenseflow/common/snack_bar.dart';
+import 'package:expenseflow/models/user.dart';
+import 'package:expenseflow/services/api_service.dart';
+import 'package:expenseflow/services/auth_guard_provider.dart'
     show AuthGuardProvider;
-import 'package:flutter_frontend/services/auth_service.dart' show AuthService;
+import 'package:expenseflow/services/auth_service.dart' show AuthService;
 // Third-party imports
 import 'package:google_fonts/google_fonts.dart';
 import 'package:logging/logging.dart';
