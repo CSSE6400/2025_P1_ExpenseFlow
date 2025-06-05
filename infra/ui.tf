@@ -25,7 +25,7 @@ resource "aws_ecs_service" "expenseflow_ui" {
   network_configuration {
     subnets          = data.aws_subnets.private.ids
     security_groups  = [aws_security_group.expenseflow_ui.id]
-    assign_public_ip = false
+    assign_public_ip = true
   }
 
   load_balancer {
