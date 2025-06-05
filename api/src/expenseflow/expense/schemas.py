@@ -47,15 +47,13 @@ class ExpenseRead(ExpenseFlowBase):
         """Status of the expense."""
         statuses = [split.status for item in self.items for split in item.splits]
 
-        if all(s == ExpenseStatus.paid for s in statuses):
-            return ExpenseStatus.paid
+        lowest_status: ExpenseStatus = ExpenseStatus.paid
 
-        if not any(s == ExpenseStatus.requested for s in statuses) or all(
-            s == ExpenseStatus.accepted for s in statuses
-        ):
-            return ExpenseStatus.accepted
+        for status in statuses:
+            if status.ranking() < lowest_status.ranking():
+                lowest_status = status
 
-        return ExpenseStatus.requested
+        return lowest_status
 
 
 class ExpenseCreate(ExpenseFlowBase):
