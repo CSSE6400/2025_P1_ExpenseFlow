@@ -223,6 +223,7 @@ class PluginManager:
             with file_path.open("r") as f:
                 config = yaml.safe_load(f)
         except OSError as e:
+            logger.error(f"Failed to read plugin config file: {e}")
             msg = f"Failed to retrieve plugin config from '{config_file_path}'"
             raise PluginError(msg) from e
         logger.debug(f"Plugin config: {config}")
