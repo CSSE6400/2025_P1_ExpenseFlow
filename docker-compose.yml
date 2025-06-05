@@ -4,7 +4,7 @@ services:
     container_name: database
     restart: always
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U admin -d expense_db"]
+      test: [ "CMD-SHELL", "pg_isready -U admin -d expense_db" ]
       interval: 5s
       retries: 5
       start_period: 20s
@@ -38,6 +38,7 @@ services:
       - AUTH0_DOMAIN=${AUTH0_DOMAIN}
       - JWT_AUDIENCE=${JWT_AUDIENCE}
       - FRONTEND_URL=frontend:3000
+      - PLUGIN_CONFIG_PATH=local_plugin_config.yml
       - SENTRY_DSN=https://f0e2babc247dfbc9bef0b233664acab0@o4509370795032576.ingest.us.sentry.io/4509370811219968
     depends_on:
       database:

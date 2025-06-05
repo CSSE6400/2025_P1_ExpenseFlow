@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/models/enums.dart' show ExpenseStatus;
+import 'package:expenseflow/models/enums.dart' show ExpenseStatus;
 
 Color statusBackgroundColor(ExpenseStatus status) {
   switch (status) {

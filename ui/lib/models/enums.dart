@@ -107,3 +107,26 @@ enum ExpenseStatus {
   final String label;
   const ExpenseStatus(this.label);
 }
+
+class EntityKindConverter implements JsonConverter<EntityKind, String> {
+  const EntityKindConverter();
+
+  @override
+  EntityKind fromJson(String json) {
+    return EntityKind.values.firstWhere(
+      (e) => e.label == json,
+      orElse: () => EntityKind.user,
+    );
+  }
+
+  @override
+  String toJson(EntityKind kind) => kind.label;
+}
+
+enum EntityKind {
+  user('user'),
+  group('group');
+
+  final String label;
+  const EntityKind(this.label);
+}

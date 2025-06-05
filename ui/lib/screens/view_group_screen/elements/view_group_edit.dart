@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/common/fields/general_field.dart'
-    show GeneralField;
-import 'package:flutter_frontend/common/proportional_sizes.dart'
+import 'package:expenseflow/common/fields/general_field.dart' show GeneralField;
+import 'package:expenseflow/common/proportional_sizes.dart'
     show ProportionalSizes;
 import '../../../common/custom_button.dart';
 

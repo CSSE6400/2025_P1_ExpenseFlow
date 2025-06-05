@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/common/custom_divider.dart';
-import 'package:flutter_frontend/models/expense.dart';
-import 'package:flutter_frontend/models/user.dart';
-import 'package:flutter_frontend/screens/split_with_screen/split_with_screen.dart'
+import 'package:expenseflow/common/custom_divider.dart';
+import 'package:expenseflow/models/expense.dart';
+import 'package:expenseflow/models/user.dart';
+import 'package:expenseflow/screens/split_with_screen/split_with_screen.dart'
     show UserSplit;
-import 'package:flutter_frontend/widgets/user_split_view.dart'
-    show UserSplitWidget;
+import 'package:expenseflow/widgets/user_split_view.dart' show UserSplitWidget;
 import 'package:logging/logging.dart';
 
 class SplitWithScreenFriend extends StatefulWidget {

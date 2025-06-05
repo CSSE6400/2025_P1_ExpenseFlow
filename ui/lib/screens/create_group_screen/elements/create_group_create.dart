@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/common/snack_bar.dart';
-import 'package:flutter_frontend/models/enums.dart';
-import 'package:flutter_frontend/models/group.dart' show GroupCreate;
-import 'package:flutter_frontend/screens/add_friends_to_group_screen/add_friends_to_group_screen.dart';
-import 'package:flutter_frontend/screens/create_group_screen/elements/add_group_fields.dart';
-import 'package:flutter_frontend/services/api_service.dart' show ApiService;
-import 'package:flutter_frontend/types.dart' show Friend;
+import 'package:expenseflow/common/snack_bar.dart';
+import 'package:expenseflow/models/enums.dart';
+import 'package:expenseflow/models/group.dart' show GroupCreate;
+import 'package:expenseflow/screens/add_friends_to_group_screen/add_friends_to_group_screen.dart';
+import 'package:expenseflow/screens/create_group_screen/elements/add_group_fields.dart';
+import 'package:expenseflow/services/api_service.dart' show ApiService;
+import 'package:expenseflow/types.dart' show Friend;
 import 'package:logging/logging.dart' show Logger;
 import 'package:provider/provider.dart' show Provider;
 import '../../../common/proportional_sizes.dart';

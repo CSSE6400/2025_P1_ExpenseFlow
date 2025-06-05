@@ -69,6 +69,11 @@ class S3AttachmentPlugin(Plugin[S3AttachmentPluginSettings]):
             self.retrieve,
             methods=["GET"],
         )
+        self._app.add_api_route(
+            "/expenses/{expense_id}/attach/exists",
+            self.attachment_exists,
+            methods=["GET"],
+        )
 
     def _on_call(self) -> None:
         """Do this method on call."""
@@ -90,6 +95,20 @@ class S3AttachmentPlugin(Plugin[S3AttachmentPluginSettings]):
                 status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Creating bucket error: {error_message}",
             ) from e
+
+    async def attachment_exists(
+        self, user: CurrentUser, expense_id: UUID, db: DbSession
+    ) -> bool:
+        """Check if attachment exists for the expense."""
+        expense = await get_expense(db, user, expense_id)
+
+        if expense is None:
+            raise HTTPException(
+                status.HTTP_404_NOT_FOUND,
+                detail=f"Expense under the id '{expense_id}' could not be found",
+            )
+
+        return self.get_objects(expense_id) != []
 
     async def attach(
         self, file: UploadFile, user: CurrentUser, expense_id: UUID, db: DbSession
@@ -118,9 +137,16 @@ class S3AttachmentPlugin(Plugin[S3AttachmentPluginSettings]):
 
     def get_objects(self, expense_id: UUID) -> list[dict]:
         """Get objects."""
-        objects_response = self.s3_client.list_objects(
-            Bucket=self._config.bucket_name, Prefix=str(expense_id)
-        )
+        try:
+            objects_response = self.s3_client.list_objects(
+                Bucket=self._config.bucket_name, Prefix=str(expense_id)
+            )
+        except ClientError as e:
+            error_message = e.response["Error"]["Message"]
+            raise HTTPException(
+                status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Getting objects error: {error_message}",
+            ) from e
         contents = objects_response.get("Contents", [])
         return [
             {

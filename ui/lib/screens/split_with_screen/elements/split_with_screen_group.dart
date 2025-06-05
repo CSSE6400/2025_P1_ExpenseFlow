@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/common/color_palette.dart';
-import 'package:flutter_frontend/common/custom_divider.dart';
-import 'package:flutter_frontend/common/icon_maker.dart';
-import 'package:flutter_frontend/models/expense.dart';
-import 'package:flutter_frontend/models/group.dart';
-import 'package:flutter_frontend/models/user.dart' show UserRead;
-import 'package:flutter_frontend/screens/split_with_screen/split_with_screen.dart'
+import 'package:expenseflow/common/color_palette.dart';
+import 'package:expenseflow/common/custom_divider.dart';
+import 'package:expenseflow/common/icon_maker.dart';
+import 'package:expenseflow/models/expense.dart';
+import 'package:expenseflow/models/group.dart';
+import 'package:expenseflow/models/user.dart' show UserRead;
+import 'package:expenseflow/screens/split_with_screen/split_with_screen.dart'
     show UserSplit;
-import 'package:flutter_frontend/widgets/user_split_view.dart';
+import 'package:expenseflow/widgets/user_split_view.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:logging/logging.dart';
 import '../../../common/proportional_sizes.dart';

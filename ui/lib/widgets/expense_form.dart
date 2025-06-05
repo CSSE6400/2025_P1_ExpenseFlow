@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/models/enums.dart' show ExpenseCategory;
-import 'package:flutter_frontend/models/group.dart' show GroupReadWithMembers;
-import 'package:flutter_frontend/models/user.dart' show UserRead;
-import 'package:flutter_frontend/screens/add_items_screen/add_items_screen.dart'
+import 'package:expenseflow/models/enums.dart' show ExpenseCategory;
+import 'package:expenseflow/models/group.dart' show GroupReadWithMembers;
+import 'package:expenseflow/models/user.dart' show UserRead;
+import 'package:expenseflow/screens/add_items_screen/add_items_screen.dart'
     show AddItemsScreen;
-import 'package:flutter_frontend/screens/split_with_screen/split_with_screen.dart';
-import 'package:flutter_frontend/services/api_service.dart' show ApiService;
-import 'package:flutter_frontend/services/auth_guard_provider.dart'
+import 'package:expenseflow/screens/split_with_screen/split_with_screen.dart';
+import 'package:expenseflow/services/api_service.dart' show ApiService;
+import 'package:expenseflow/services/auth_guard_provider.dart'
     show AuthGuardProvider;
-import 'package:flutter_frontend/utils/string_utils.dart';
+import 'package:expenseflow/utils/string_utils.dart';
 import 'package:logging/logging.dart' show Logger;
 import 'package:provider/provider.dart' show Provider;
 import '../../../common/fields/general_field.dart';
@@ -17,7 +17,6 @@ import '../../../common/fields/date_field/date_field.dart';
 import '../../../common/fields/dropdown_field.dart';
 import '../../../models/expense.dart';
 import '../../../common/fields/custom_icon_field.dart';
-import '../../../common/proportional_sizes.dart';
 import '../../../common/snack_bar.dart';
 
 class ExpenseForm extends StatefulWidget {
@@ -64,6 +63,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
   bool isLoading = true;
 
   late TextEditingController _amountController;
+  late TextEditingController _splitAmountController;
 
   final _logger = Logger('ExpenseForm');
 
@@ -86,6 +86,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
     _expenseSplits = widget.initialExpense?.splits ?? [];
 
     _amountController = TextEditingController(text: '0.00');
+    _splitAmountController = TextEditingController(text: '0.00');
 
     // update total amount
     _updateCalculatedAmount();
@@ -155,6 +156,14 @@ class _ExpenseFormState extends State<ExpenseForm> {
       total += item.price * item.quantity;
     }
     _amountController.text = total.toStringAsFixed(2);
+    _logger.info('Total amount calculated: $total');
+    _logger.info('Total number of splits : ${_expenseSplits.length}');
+    _splitAmountController.text = (total /
+            (_expenseSplits.isNotEmpty ? _expenseSplits.length : 1))
+        .toStringAsFixed(2);
+    _logger.info(
+      'Your split amount calculated: ${_splitAmountController.text}',
+    );
   }
 
   String get formattedItemsString {
@@ -218,8 +227,6 @@ class _ExpenseFormState extends State<ExpenseForm> {
 
   @override
   Widget build(BuildContext context) {
-    final proportionalSizes = ProportionalSizes(context: context);
-
     if (isLoading || user == null) {
       return Center(child: CircularProgressIndicator());
     }
@@ -266,8 +273,16 @@ class _ExpenseFormState extends State<ExpenseForm> {
         ),
         CustomDivider(),
         GeneralField(
-          label: 'Amount (\$)',
+          label: 'Total (\$)',
           controller: _amountController,
+          isEditable: false,
+          showStatusIcon: false,
+          validationRule: (value) => true,
+          maxLength: 10,
+        ),
+        GeneralField(
+          label: 'Your Split (\$)',
+          controller: _splitAmountController,
           isEditable: false,
           showStatusIcon: false,
           validationRule: (value) => true,
@@ -309,7 +324,10 @@ class _ExpenseFormState extends State<ExpenseForm> {
           label: 'Split With',
           value: '',
           isEnabled: true,
-          hintText: 'Select Group or Friends',
+          hintText:
+              _expenseSplits.isEmpty
+                  ? 'Select Group or Friends'
+                  : 'Split between ${_expenseSplits.length} people',
           trailingIconPath: 'assets/icons/search.png',
           inactive: _expenseItems.isEmpty,
           onTap: () {
@@ -328,18 +346,6 @@ class _ExpenseFormState extends State<ExpenseForm> {
           },
         ),
         CustomDivider(),
-        CustomIconField(
-          label: 'Receipt',
-          value: '',
-          isEnabled: widget.canEdit,
-          hintText: 'Save your Receipt here',
-          trailingIconPath: 'assets/icons/clip.png',
-          onTap: () {
-            // TODO: Show receipt or attachment viewer
-          },
-        ),
-        CustomDivider(),
-        SizedBox(height: proportionalSizes.scaleHeight(24)),
       ],
     );
   }

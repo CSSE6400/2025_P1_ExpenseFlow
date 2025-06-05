@@ -1,6 +1,6 @@
-import 'package:flutter_frontend/models/enums.dart'
+import 'package:expenseflow/models/enums.dart'
     show FriendStatus, FriendStatusConverter;
-import 'package:flutter_frontend/models/user.dart' show UserRead;
+import 'package:expenseflow/models/user.dart' show UserRead;
 import 'package:json_annotation/json_annotation.dart';
 
 part 'friend.g.dart';

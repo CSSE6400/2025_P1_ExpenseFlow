@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/common/proportional_sizes.dart'
+import 'package:expenseflow/common/proportional_sizes.dart'
     show ProportionalSizes;
-import 'package:flutter_frontend/screens/profile_screen/elements/profile_screen_avatar_icon.dart'
+import 'package:expenseflow/screens/profile_screen/elements/profile_screen_avatar_icon.dart'
     show ProfileScreenAvatarIcon;
-import 'package:flutter_frontend/screens/profile_screen/elements/profile_screen_form.dart';
+import 'package:expenseflow/screens/profile_screen/elements/profile_screen_form.dart';
 import '../../common/color_palette.dart';
 import '../../common/app_bar.dart';
 import '../../common/bottom_nav_bar.dart';

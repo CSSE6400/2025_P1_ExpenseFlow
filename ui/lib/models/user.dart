@@ -1,4 +1,4 @@
-import 'package:flutter_frontend/models/enums.dart'
+import 'package:expenseflow/models/enums.dart'
     show GroupRole, GroupRoleConverter;
 import 'package:json_annotation/json_annotation.dart';
 

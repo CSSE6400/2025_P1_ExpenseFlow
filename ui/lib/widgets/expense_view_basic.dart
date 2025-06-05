@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/common/color_palette.dart' show ColorPalette;
-import 'package:flutter_frontend/common/proportional_sizes.dart'
+import 'package:expenseflow/common/color_palette.dart' show ColorPalette;
+import 'package:expenseflow/common/proportional_sizes.dart'
     show ProportionalSizes;
-import 'package:flutter_frontend/models/expense.dart' show ExpenseRead;
+import 'package:expenseflow/models/expense.dart' show ExpenseRead;
 
 String formatPrice(String price) {
   return '\$${double.parse(price).toStringAsFixed(2)}';

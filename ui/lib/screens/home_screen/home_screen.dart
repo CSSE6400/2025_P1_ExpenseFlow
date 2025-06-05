@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/common/snack_bar.dart' show showCustomSnackBar;
-import 'package:flutter_frontend/models/expense.dart'
+import 'package:expenseflow/common/snack_bar.dart' show showCustomSnackBar;
+import 'package:expenseflow/models/expense.dart'
     show ExpenseOverview, ExpenseRead;
-import 'package:flutter_frontend/models/user.dart' show UserRead;
-import 'package:flutter_frontend/services/auth_guard_provider.dart'
+import 'package:expenseflow/models/user.dart' show UserRead;
+import 'package:expenseflow/services/auth_guard_provider.dart'
     show AuthGuardProvider;
-import 'package:flutter_frontend/types.dart' show CategoryData;
+import 'package:expenseflow/types.dart' show CategoryData;
 import 'package:logging/logging.dart' show Logger;
 import '../../common/color_palette.dart';
 import '../../common/bottom_nav_bar.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_frontend/services/api_service.dart';
+import 'package:expenseflow/services/api_service.dart';
 import '../home_screen/elements/home_screen_overview.dart';
 import '../home_screen/elements/home_screen_add_an_expense.dart';
 import '../home_screen/elements/home_screen_recent_expenses.dart';

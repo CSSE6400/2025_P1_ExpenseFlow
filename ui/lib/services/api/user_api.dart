@@ -1,9 +1,9 @@
 import 'dart:convert';
 
-import 'package:flutter_frontend/models/user.dart'
+import 'package:expenseflow/models/user.dart'
     show UserCreate, UserRead, UserReadMinimal, UserUpdate;
-import 'package:flutter_frontend/services/api/common.dart';
-import 'package:flutter_frontend/services/api_service.dart' show ApiException;
+import 'package:expenseflow/services/api/common.dart';
+import 'package:expenseflow/services/api_service.dart' show ApiException;
 
 class UserApiClient extends BaseApiClient {
   UserApiClient(super.client, super.baseUrl, super.logger);

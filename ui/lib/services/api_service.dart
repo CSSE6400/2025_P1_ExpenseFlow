@@ -1,8 +1,8 @@
-import 'package:flutter_frontend/services/api/expense_api.dart';
-import 'package:flutter_frontend/services/api/friend_api.dart';
-import 'package:flutter_frontend/services/api/group_api.dart';
-import 'package:flutter_frontend/services/api/user_api.dart';
-import 'package:flutter_frontend/services/auth_service.dart'
+import 'package:expenseflow/services/api/expense_api.dart';
+import 'package:expenseflow/services/api/friend_api.dart';
+import 'package:expenseflow/services/api/group_api.dart';
+import 'package:expenseflow/services/api/user_api.dart';
+import 'package:expenseflow/services/auth_service.dart'
     show AuthenticatedClient;
 import 'package:logging/logging.dart' show Logger;
 

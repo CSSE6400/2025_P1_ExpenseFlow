@@ -1,5 +1,5 @@
-import 'package:flutter_frontend/models/enums.dart';
-import 'package:flutter_frontend/models/user.dart';
+import 'package:expenseflow/models/enums.dart';
+import 'package:expenseflow/models/user.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'group.g.dart';

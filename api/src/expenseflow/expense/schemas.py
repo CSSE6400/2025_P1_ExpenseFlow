@@ -5,7 +5,8 @@ from uuid import UUID
 
 from pydantic import computed_field
 
-from expenseflow.enums import ExpenseCategory, ExpenseStatus
+from expenseflow.entity.schemas import EntityRead
+from expenseflow.enums import EntityKind, ExpenseCategory, ExpenseStatus
 from expenseflow.schemas import ExpenseFlowBase
 from expenseflow.user.schemas import UserRead
 
@@ -27,8 +28,14 @@ class ExpenseRead(ExpenseFlowBase):
     category: ExpenseCategory
     expense_date: dt.datetime
 
+    parent: EntityRead
     uploader: UserRead
     items: list["ExpenseItemRead"]
+
+    @computed_field
+    def parent_kind(self) -> EntityKind:
+        """Return the kind of parent."""
+        return self.parent.kind
 
     @computed_field
     def expense_total(self) -> float:
@@ -40,15 +47,13 @@ class ExpenseRead(ExpenseFlowBase):
         """Status of the expense."""
         statuses = [split.status for item in self.items for split in item.splits]
 
-        if all(s == ExpenseStatus.paid for s in statuses):
-            return ExpenseStatus.paid
+        lowest_status: ExpenseStatus = ExpenseStatus.paid
 
-        if not any(s == ExpenseStatus.requested for s in statuses) or all(
-            s == ExpenseStatus.accepted for s in statuses
-        ):
-            return ExpenseStatus.accepted
+        for status in statuses:
+            if status.ranking() < lowest_status.ranking():
+                lowest_status = status
 
-        return ExpenseStatus.requested
+        return lowest_status
 
 
 class ExpenseCreate(ExpenseFlowBase):

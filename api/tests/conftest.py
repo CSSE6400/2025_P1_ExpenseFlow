@@ -6,6 +6,7 @@ from collections.abc import AsyncGenerator
 
 import pytest
 import pytest_asyncio
+from expenseflow.audit.models import AuditModel
 from expenseflow.database.service import initialise_database
 from expenseflow.expense.models import (
     ExpenseItemModel,
@@ -37,6 +38,7 @@ from sqlalchemy.ext.asyncio import (
 from sqlalchemy_utils import create_database, database_exists, drop_database
 
 from tests.factories import (
+    AuditModelFactory,
     ExpenseCreateFactory,
     ExpenseItemCreateFactory,
     ExpenseItemModelFactory,
@@ -123,6 +125,7 @@ register_fixture(ExpenseItemSplitCreateFactory)
 register_fixture(ExpenseModelFactory)
 register_fixture(ExpenseItemModelFactory)
 register_fixture(ExpenseItemSplitModelFactory)
+register_fixture(AuditModelFactory)
 
 
 @pytest.fixture()
@@ -228,3 +231,11 @@ def expense_item_model() -> ExpenseItemModel:
 @pytest.fixture()
 def expense_item_split_model() -> ExpenseItemSplitModel:
     return ExpenseItemSplitModelFactory.build()
+
+
+# Audit fixtures
+
+
+@pytest.fixture()
+def audit_model() -> AuditModel:
+    return AuditModelFactory.build()
