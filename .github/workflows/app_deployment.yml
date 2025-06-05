@@ -60,18 +60,20 @@ jobs:
 
       - name: Update ECS task definition
         id: task-def
+
         run: |
           aws ecs describe-task-definition \
-            --task-definition ${{ env.ECS_API_NAME}} \
-            > task-def.json
+          --task-definition ${{env.ECS_API_NAME}} \
+          > task-def.json
 
-          jq --arg IMAGE_URI "${{ env.ECR_API_URI }}:latest" \
-            '.taskDefinition.containerDefinitions[0].image = $IMAGE_URI' task-def.json > new-task-def.json
+          jq --arg IMAGE_URI "***:latest" \
+          '.taskDefinition | .containerDefinitions[0].image = $IMAGE_URI' task-def.json > new-task-def.json
 
           aws ecs register-task-definition \
-            --cli-input-json file://new-task-def.json > task-def-register.json
+          --cli-input-json file://new-task-def.json > task-def-register.json
 
           echo "::set-output name=revision_arn::$(jq -r '.taskDefinition.taskDefinitionArn' task-def-register.json)"
+
         shell: bash
 
       - name: Update ECS service with new task definition revision
@@ -113,23 +115,25 @@ jobs:
 
       - name: Update ECS task definition
         id: task-def
+
         run: |
           aws ecs describe-task-definition \
-            --task-definition ${{ env.ECS_UI_NAME}} \
-            > task-def.json
+          --task-definition ${{env.ECS_UI_NAME}} \
+          > task-def.json
 
-          jq --arg IMAGE_URI "${{ env.ECR_UI_URI }}:latest" \
-            '.taskDefinition.containerDefinitions[0].image = $IMAGE_URI' task-def.json > new-task-def.json
+          jq --arg IMAGE_URI "***:latest" \
+          '.taskDefinition | .containerDefinitions[0].image = $IMAGE_URI' task-def.json > new-task-def.json
 
           aws ecs register-task-definition \
-            --cli-input-json file://new-task-def.json > task-def-register.json
+          --cli-input-json file://new-task-def.json > task-def-register.json
 
           echo "::set-output name=revision_arn::$(jq -r '.taskDefinition.taskDefinitionArn' task-def-register.json)"
+
         shell: bash
 
       - name: Update ECS service with new task definition revision
         run: |
           aws ecs update-service \
             --cluster expenseflow \
-            --service ${{env.ECS_UI_NAME}} \
+            --service ${{env.ECS_API_NAME}} \
             --task-definition ${{ steps.task-def.outputs.revision_arn }}
