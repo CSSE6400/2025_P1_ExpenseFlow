@@ -51,11 +51,6 @@ jobs:
         continue-on-error: true
         working-directory: infra
 
-      - name: Terraform Init
-        id: init
-        run: terraform init -input=false
-        working-directory: infra
-
       - name: Terraform Validate
         id: validate
         run: terraform validate -no-color
