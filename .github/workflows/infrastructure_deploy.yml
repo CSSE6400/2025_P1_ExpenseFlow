@@ -45,14 +45,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ github.event.inputs.aws_access_key_id }}
-          aws-secret-access-key: ${{ github.event.inputs.aws_secret_access_key }}
-          aws-session-token: ${{ github.event.inputs.aws_session_token }}
-          aws-region: ${{ github.event.inputs.aws_region }}
-
       - name: Terraform fmt
         id: fmt
         run: terraform fmt -check
@@ -95,6 +87,11 @@ jobs:
           aws-secret-access-key: ${{ github.event.inputs.aws_secret_access_key }}
           aws-session-token: ${{ github.event.inputs.aws_session_token }}
           aws-region: ${{ github.event.inputs.aws_region }}
+
+      - name: Terraform Init
+        id: init
+        run: terraform init -input=false
+        working-directory: infra
 
       - name: Terraform Plan
         id: plan
