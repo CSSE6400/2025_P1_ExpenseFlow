@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_frontend/common/snack_bar.dart';
 import 'package:flutter_frontend/models/user.dart';
 import 'package:flutter_frontend/services/api_service.dart' show ApiService;
+import 'package:flutter_frontend/services/auth_guard_provider.dart'
+    show AuthGuardProvider;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:logging/logging.dart' show Logger;
 import 'package:provider/provider.dart' show Provider;
@@ -45,6 +47,7 @@ class _ProfileSetupScreenSubRectangleState
 
   Future<void> onSetup() async {
     final apiService = Provider.of<ApiService>(context, listen: false);
+    final authGuard = Provider.of<AuthGuardProvider>(context, listen: false);
 
     try {
       final nicknameExists = await apiService.userApi.checkNicknameExists(
@@ -78,6 +81,8 @@ class _ProfileSetupScreenSubRectangleState
           budget: _budget,
         ),
       );
+      await authGuard.refreshUser();
+
       if (!mounted) return;
       Navigator.pushReplacementNamed(context, '/');
     } catch (e) {
@@ -133,7 +138,6 @@ class _ProfileSetupScreenSubRectangleState
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Heading
             Align(
               alignment: Alignment.centerLeft,
               child: Text(

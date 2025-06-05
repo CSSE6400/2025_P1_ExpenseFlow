@@ -85,8 +85,7 @@ class SplitStatusInfoFactory(ModelFactory[SplitStatusInfo]): ...
 class ExpenseItemModelFactory(SQLAlchemyFactory[ExpenseItemModel]): ...
 
 
-class ExpenseItemCreateFactory(ModelFactory[ExpenseItemCreate]):
-    splits = Use(ExpenseItemSplitCreateFactory.generate_splits, n=2)
+class ExpenseItemCreateFactory(ModelFactory[ExpenseItemCreate]): ...
 
 
 # Expenses
@@ -95,3 +94,4 @@ class ExpenseModelFactory(SQLAlchemyFactory[ExpenseModel]): ...
 
 class ExpenseCreateFactory(ModelFactory[ExpenseCreate]):
     items = Use(ExpenseItemCreateFactory.batch, size=3)
+    splits = Use(ExpenseItemSplitCreateFactory.generate_splits, n=2)

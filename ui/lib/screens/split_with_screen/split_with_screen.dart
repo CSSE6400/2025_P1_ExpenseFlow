@@ -9,18 +9,37 @@ import 'package:flutter_frontend/models/group.dart' show GroupReadWithMembers;
 import 'package:flutter_frontend/models/user.dart';
 import 'package:flutter_frontend/screens/split_with_screen/elements/split_with_screen_friend.dart'
     show SplitWithScreenFriend;
+import 'package:flutter_frontend/screens/split_with_screen/elements/split_with_screen_group.dart'
+    show SplitWithScreenGroup, SplitWithScreenGroupState;
 import 'package:flutter_frontend/screens/split_with_screen/elements/split_with_screen_segment_control.dart'
     show SplitWithScreenSegmentControl, SplitWithSegment;
+import 'package:logging/logging.dart';
 // Common imports
 import '../../common/color_palette.dart';
 import '../../common/app_bar.dart';
 // Elements
 
+class UserSplit {
+  String name;
+  String userId;
+  String percentage;
+  bool checked;
+  final TextEditingController controller;
+
+  UserSplit({
+    required this.name,
+    required this.userId,
+    required this.percentage,
+    required this.checked,
+  }) : controller = TextEditingController(text: percentage);
+}
+
 class SplitWithScreen extends StatefulWidget {
-  final List<ExpenseItemCreate> items;
+  final List<ExpenseItemSplitCreate> splits;
   final List<GroupReadWithMembers> groups;
   final List<UserRead> friends;
   final UserRead currentUser;
+  final String? selectedGroupId;
 
   final bool isReadOnly;
 
@@ -32,9 +51,10 @@ class SplitWithScreen extends StatefulWidget {
     required this.isReadOnly,
     required this.groups,
     required this.friends,
-    required this.items,
+    required this.splits,
     required this.currentUser,
     this.strictSegment,
+    this.selectedGroupId,
   });
 
   @override
@@ -43,6 +63,10 @@ class SplitWithScreen extends StatefulWidget {
 
 class _SplitWithScreenState extends State<SplitWithScreen> {
   late SplitWithSegment _segment;
+  List<ExpenseItemSplitCreate> _splits = [];
+  final Logger _logger = Logger("SplitWithScreen");
+  final GlobalKey<SplitWithScreenGroupState> groupKey = GlobalKey();
+  late String? _selectedGroupId;
 
   bool isFriendValid = false;
   bool isGroupValid = false;
@@ -53,29 +77,22 @@ class _SplitWithScreenState extends State<SplitWithScreen> {
     });
   }
 
-  List<ExpenseItemCreate> _items = [];
-
   @override
   void initState() {
     super.initState();
-    _segment = widget.strictSegment ?? SplitWithSegment.friend;
-    _items = List.from(widget.items);
+    _selectedGroupId = widget.selectedGroupId;
+    _segment =
+        widget.strictSegment ??
+        (_selectedGroupId == null
+            ? SplitWithSegment.friend
+            : SplitWithSegment.group);
+    _splits = widget.splits;
   }
 
   // callback to update item splits
   void _updateItemSplits(List<ExpenseItemSplitCreate> newSplits) {
     setState(() {
-      _items =
-          widget.items
-              .map(
-                (item) => ExpenseItemCreate(
-                  name: item.name,
-                  quantity: item.quantity,
-                  price: item.price,
-                  splits: newSplits,
-                ),
-              )
-              .toList();
+      _splits = newSplits;
     });
   }
 
@@ -106,33 +123,33 @@ class _SplitWithScreenState extends State<SplitWithScreen> {
                 SizedBox(height: proportionalSizes.scaleHeight(10)),
 
                 // Friend or Group view
-                if (_segment == SplitWithSegment.friend)
-                  SplitWithScreenFriend(
-                    friends: widget.friends,
-                    items: _items,
-                    currentUser: widget.currentUser,
-                    onValidityChanged: (valid) {
-                      setState(() {
-                        isFriendValid = valid;
-                      });
-                    },
-                    onSplitsUpdated: _updateItemSplits,
-                    isReadOnly: widget.isReadOnly,
-                  )
-                else
-                  Text("Groups are not implemented yet"),
-
-                // SplitWithScreenGroup(
-                //   key: groupKey,
-                //   isReadOnly: widget.isReadOnly,
-                //   items: _items,
-                //   onValidityChanged: (valid) {
-                //     setState(() {
-                //       isGroupValid = valid;
-                //     });
-                //   },
-                //   onSplitsUpdated: _updateItemSplits,
-                // ),
+                _segment == SplitWithSegment.friend
+                    ? SplitWithScreenFriend(
+                      friends: widget.friends,
+                      splits: _splits,
+                      currentUser: widget.currentUser,
+                      onValidityChanged: (valid) {
+                        setState(() {
+                          isFriendValid = valid;
+                        });
+                      },
+                      onSplitsUpdated: _updateItemSplits,
+                      isReadOnly: widget.isReadOnly,
+                    )
+                    : SplitWithScreenGroup(
+                      key: groupKey,
+                      groups: widget.groups,
+                      splits: _splits,
+                      currentUser: widget.currentUser,
+                      onValidityChanged: (valid) {
+                        setState(() {
+                          isGroupValid = valid;
+                        });
+                      },
+                      onSplitsUpdated: _updateItemSplits,
+                      isReadOnly: widget.isReadOnly,
+                      selectedGroupId: _selectedGroupId,
+                    ),
                 if (!widget.isReadOnly)
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -156,6 +173,16 @@ class _SplitWithScreenState extends State<SplitWithScreen> {
 
   // return items to calling screen
   void _saveAndReturn() {
-    Navigator.pop(context, _items);
+    _logger.info('Saving splits: ${_splits.map((e) => e.toJson())}');
+
+    if (_segment == SplitWithSegment.group) {
+      final selectedGroup = groupKey.currentState?.getSelectedGroup();
+
+      _selectedGroupId = selectedGroup?.uuid;
+
+      Navigator.pop(context, {'splits': _splits, 'groupId': _selectedGroupId});
+    } else {
+      Navigator.pop(context, {'splits': _splits});
+    }
   }
 }

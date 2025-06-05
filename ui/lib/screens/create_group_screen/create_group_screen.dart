@@ -136,10 +136,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: const BottomNavBar(
-        currentScreen: 'CreateGroup',
-        inactive: false,
-      ),
+      bottomNavigationBar: const BottomNavBar(inactive: false),
     );
   }
 }

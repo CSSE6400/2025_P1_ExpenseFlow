@@ -59,6 +59,7 @@ class ExpenseCreate(ExpenseFlowBase):
     expense_date: dt.datetime
     category: ExpenseCategory
     items: list["ExpenseItemCreate"]
+    splits: list["ExpenseItemSplitCreate"] | None = None
 
 
 class ExpenseItemRead(ExpenseFlowBase):
@@ -77,7 +78,6 @@ class ExpenseItemCreate(ExpenseFlowBase):
     name: str
     quantity: int
     price: float
-    splits: list["ExpenseItemSplitCreate"] | None = None
 
 
 class ExpenseItemSplitCreate(ExpenseFlowBase):

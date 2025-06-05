@@ -3,8 +3,10 @@ import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/common/color_palette.dart';
+import 'package:flutter_frontend/services/api_service.dart' show ApiService;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart' show Provider;
 import 'dialogs/app_dialog_box.dart';
 import 'snack_bar.dart';
 import 'custom_divider.dart';
@@ -64,27 +66,55 @@ class WebImageInfo {
   }
 }
 
-/// Call this from any screen
 Future<void> handleScanReceiptUpload({required BuildContext context}) async {
+  final apiService = Provider.of<ApiService>(context, listen: false);
+
   await showScanReceiptSourceOptions(
     context: context,
     onSelected: (image) async {
       if (!context.mounted) return;
 
       if (image != null) {
-        await AppDialogBox.show(
-          context,
-          heading: 'Image Captured',
-          description: 'Filename: ${image.filename}',
-          buttonCount: 1,
-          button1Text: 'OK',
-          onButton1Pressed: () => Navigator.of(context).pop(),
-        );
+        try {
+          // show loading
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (_) => const Center(child: CircularProgressIndicator()),
+          );
+
+          // upload image
+          final expense = await apiService.expenseApi.createExpenseFromImage(
+            image,
+            null,
+          );
+
+          // show success dialog
+          if (!context.mounted) return;
+          Navigator.of(context).pop();
+
+          await AppDialogBox.show(
+            context,
+            heading: 'Expense Created',
+            description: 'Expense Total: ${expense.expenseTotal}',
+            buttonCount: 1,
+            button1Text: 'OK',
+            onButton1Pressed: () => Navigator.of(context).pop(),
+          );
+        } catch (e) {
+          if (!context.mounted) return;
+
+          Navigator.of(context).pop();
+
+          showCustomSnackBar(
+            context,
+            normalText: 'Failed to create expense: ${e.toString()}',
+          );
+        }
       } else {
         showCustomSnackBar(
           context,
           normalText: 'Something went wrong while uploading.',
-          boldText: 'Error:',
         );
       }
     },

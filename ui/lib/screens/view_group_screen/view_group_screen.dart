@@ -149,10 +149,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen> {
         ),
       )),
 
-      bottomNavigationBar: BottomNavBar(
-        currentScreen: 'Individual Group',
-        inactive: false,
-      ),
+      bottomNavigationBar: BottomNavBar(inactive: false),
     );
   }
 }

@@ -110,10 +110,7 @@ class _AddFriendsScreenState extends State<AddFriendsScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: const BottomNavBar(
-        currentScreen: 'Add',
-        inactive: true,
-      ),
+      bottomNavigationBar: const BottomNavBar(inactive: true),
     );
   }
 }

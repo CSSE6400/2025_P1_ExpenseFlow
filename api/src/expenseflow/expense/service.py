@@ -22,6 +22,7 @@ from expenseflow.expense.models import (
 from expenseflow.expense.schemas import (
     ExpenseCreate,
     ExpenseItemCreate,
+    ExpenseItemSplitCreate,
     ExpenseOverview,
     ExpenseOverviewCategory,
 )
@@ -36,7 +37,7 @@ async def create_expense(
 ) -> ExpenseModel:
     """Creates an expense."""
     items: list[ExpenseItemModel] = await create_expense_items(
-        session, creator, expense_in.items
+        session, creator, expense_in.items, expense_in.splits
     )
 
     new_expense = ExpenseModel(
@@ -84,7 +85,7 @@ async def update_expense(
         raise ExpenseFlowError(msg)
 
     items: list[ExpenseItemModel] = await create_expense_items(
-        session, modifier, expense_in.items
+        session, modifier, expense_in.items, expense_in.splits
     )
 
     expense.name = expense_in.name
@@ -123,7 +124,10 @@ async def update_expense(
 
 
 async def create_expense_items(
-    session: AsyncSession, creator: UserModel, expense_items_in: list[ExpenseItemCreate]
+    session: AsyncSession,
+    creator: UserModel,
+    expense_items_in: list[ExpenseItemCreate],
+    splits_in: list[ExpenseItemSplitCreate] | None,
 ) -> list[ExpenseItemModel]:
     """Creates expense items.
 
@@ -131,6 +135,7 @@ async def create_expense_items(
         session (AsyncSession): db session
         creator (UserModel): creator of the expense
         expense_items_in (list[ExpenseItemCreate]): list of expense items
+        splits_in (list[ExpenseItemSplitCreate] | None): splits for the expense items
 
     Raises:
         ExpenseFlowError: Raised if splits don't add up to 100%
@@ -139,65 +144,64 @@ async def create_expense_items(
     Returns:
         list[ExpenseItemModel]: newly created expense items
     """
-    result: list[ExpenseItemModel] = []
-    for item_in in expense_items_in:  # Go through each item
-        splits: list[ExpenseItemSplitModel]
-
-        if item_in.splits is not None and item_in.splits != []:
-            splits = []
-
-            # Expense splits must sum to 100%
-            proportion_sum = sum([split.proportion for split in item_in.splits])
-            if proportion_sum != 1:
-                logger.info(
-                    f"Splits for item {item_in.name} do not add up to 1, instead '{proportion_sum}'."
-                )
-                msg = f"The total proportion of the '{item_in.name}' item does not add to 1."
-                raise ExpenseFlowError(msg)
-
-            # This section causes the route to say "doesn't add up to 1"
-            # when user id is duplicate
-            user_ids = [split.user_id for split in item_in.splits]
-            if len(user_ids) != len(set(user_ids)):
-                msg = f"A user_id is duplicated in splits for item '{item_in.name}'"
-                raise ExpenseFlowError(msg)
-
-            for split_create in item_in.splits:
-                split_user = await session.get(UserModel, split_create.user_id)
-                if split_user is None:
-                    raise NotFoundError(split_create.user_id, "user")
-                splits.append(
-                    ExpenseItemSplitModel(
-                        user=split_user,
-                        proportion=split_create.proportion,
-                        # If the creator is splitting, they've already paid for it
-                        status=(
-                            ExpenseStatus.paid
-                            if split_user.user_id == creator.user_id
-                            else ExpenseStatus.requested
-                        ),
-                    )
-                )
-
-        else:  # If no split specified, assume creator owns entire expense
-            splits = [
-                ExpenseItemSplitModel(
-                    user=creator,
-                    proportion=1,
-                    status=ExpenseStatus.paid,
-                )
-            ]
-
-        result.append(
-            ExpenseItemModel(
-                name=item_in.name,
-                quantity=item_in.quantity,
-                price=item_in.price,
-                splits=splits,
-            )
+    return [
+        ExpenseItemModel(
+            name=item_in.name,
+            quantity=item_in.quantity,
+            price=item_in.price,
+            splits=(await create_splits(session, splits_in, creator)),
         )
+        for item_in in expense_items_in
+    ]
 
-    return result
+
+async def create_splits(
+    session: AsyncSession,
+    splits_in: list[ExpenseItemSplitCreate] | None,
+    creator: UserModel,
+) -> list[ExpenseItemSplitModel]:
+    """Create splits from input."""
+    splits: list[ExpenseItemSplitModel] = []
+
+    if splits_in is not None and splits_in != []:
+
+        user_ids = [split.user_id for split in splits_in]
+        if len(user_ids) != len(set(user_ids)):
+            msg = "A user_id is duplicated in splits"
+            raise ExpenseFlowError(msg)
+
+        # Expense splits must sum to 100%
+        proportion_sum = sum([split.proportion for split in splits_in])
+        if proportion_sum != 1:
+            msg = f"Splits do not add up to 1, instead '{proportion_sum}'."
+            logger.info(msg)
+            raise ExpenseFlowError(msg)
+        for split_create in splits_in:
+            split_user = await session.get(UserModel, split_create.user_id)
+            if split_user is None:
+                raise NotFoundError(split_create.user_id, "user")
+            splits.append(
+                ExpenseItemSplitModel(
+                    user=split_user,
+                    proportion=split_create.proportion,
+                    # If the creator is splitting, they've already paid for it
+                    status=(
+                        ExpenseStatus.paid
+                        if split_user.user_id == creator.user_id
+                        else ExpenseStatus.requested
+                    ),
+                )
+            )
+    else:
+        splits = [
+            ExpenseItemSplitModel(
+                user=creator,
+                proportion=1.0,
+                status=ExpenseStatus.paid,  # Creator has paid for it
+            )
+        ]
+
+    return splits
 
 
 async def update_split_status(

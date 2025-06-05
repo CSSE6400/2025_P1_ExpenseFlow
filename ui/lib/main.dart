@@ -1,14 +1,16 @@
-// Flutter imports
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/screens/add_friends_to_group_screen/add_friends_to_group_screen.dart';
 import 'package:flutter_frontend/screens/create_group_screen/create_group_screen.dart';
 import 'package:flutter_frontend/services/api_service.dart' show ApiService;
+import 'package:flutter_frontend/services/auth_guard.dart' show AuthGuardWidget;
+import 'package:flutter_frontend/services/auth_guard_provider.dart'
+    show AuthGuardProvider;
 import 'package:flutter_frontend/services/auth_service.dart' show AuthService;
 import 'package:flutter_frontend/screens/overview_screen/overview_screen.dart';
 import 'package:flutter_frontend/utils/config.dart' show Config;
-import 'package:provider/provider.dart' show MultiProvider, Provider;
+import 'package:provider/provider.dart'
+    show ChangeNotifierProvider, MultiProvider, Provider;
 import 'package:logging/logging.dart' show Level, Logger;
-// Screens
 import '../../screens/initial_startup_screen/initial_startup_screen.dart';
 import '../../screens/profile_setup_screen/profile_setup_screen.dart';
 import '../../screens/profile_screen/profile_screen.dart';
@@ -57,6 +59,9 @@ void main() async {
         Provider<AuthService>.value(value: authService),
         Provider<ApiService>.value(value: apiService),
         Provider<RouteObserver<PageRoute>>.value(value: routeObserver),
+        ChangeNotifierProvider<AuthGuardProvider>(
+          create: (context) => AuthGuardProvider(authService, apiService),
+        ),
       ],
       child: const MyApp(),
     ),
@@ -83,93 +88,91 @@ class MyApp extends StatelessWidget {
 
       initialRoute: auth.isLoggedIn ? '/' : '/initial_startup',
       onGenerateRoute: (RouteSettings settings) {
+        Widget screen;
+
         switch (settings.name) {
-          case '/initial_startup':
-            return MaterialPageRoute(
-              builder: (_) => const InitialStartupScreen(),
-            );
-          case '/profile_setup':
-            return MaterialPageRoute(
-              builder: (_) => const ProfileSetupScreen(),
-            );
-          case '/profile':
-            return MaterialPageRoute(builder: (_) => const ProfileScreen());
           case '/':
-            return MaterialPageRoute(builder: (_) => const HomeScreen());
+            screen = HomeScreen();
+            break;
+          case '/initial_startup':
+            screen = InitialStartupScreen();
+            break;
+          case '/profile_setup':
+            screen = ProfileSetupScreen();
+            break;
+          case '/profile':
+            screen = ProfileScreen();
+            break;
           case '/add_expense':
-            return MaterialPageRoute(builder: (_) => const AddExpenseScreen());
+            screen = AddExpenseScreen();
+            break;
           case '/expenses':
-            return MaterialPageRoute(builder: (_) => const ExpensesScreen());
+            screen = ExpensesScreen();
+            break;
           case '/groups_and_friends':
-            return MaterialPageRoute(
-              builder: (_) => const GroupsAndFriendsScreen(),
-            );
+            screen = GroupsAndFriendsScreen();
+            break;
           case '/overview':
-            return MaterialPageRoute(builder: (_) => const OverviewScreen());
+            screen = OverviewScreen();
+            break;
           case '/manage_friends':
-            return MaterialPageRoute(
-              builder: (_) => const ManageFriendsScreen(),
-            );
+            screen = ManageFriendsScreen();
+            break;
           case '/create_group':
-            return MaterialPageRoute(builder: (_) => const CreateGroupScreen());
+            screen = CreateGroupScreen();
+            break;
           case '/select_friends':
-            return MaterialPageRoute(builder: (_) => const AddFriendsScreen());
+            screen = AddFriendsScreen();
+            break;
           case '/see_expense':
             final args = settings.arguments as Map<String, dynamic>?;
             final expenseId = args?['expenseId'] as String?;
             if (expenseId == null) {
-              return MaterialPageRoute(
-                builder:
-                    (_) => const Scaffold(
-                      body: Center(child: Text('Error: Missing expense ID')),
-                    ),
+              screen = const Scaffold(
+                body: Center(child: Text('Error: Missing expense ID')),
               );
+            } else {
+              screen = SeeExpenseScreen(expenseId: expenseId);
             }
-            return MaterialPageRoute(
-              builder: (_) => SeeExpenseScreen(expenseId: expenseId),
-            );
+            break;
           case '/view_friend':
             final args = settings.arguments as Map<String, dynamic>?;
             final userId = args?['userId'] as String?;
 
             if (userId == null) {
-              return MaterialPageRoute(
-                builder:
-                    (_) => const Scaffold(
-                      body: Center(child: Text('Error: Missing username')),
-                    ),
+              screen = const Scaffold(
+                body: Center(child: Text('Error: Missing user ID')),
               );
+            } else {
+              screen = ViewFriendScreen(userId: userId);
             }
+            break;
 
-            return MaterialPageRoute(
-              builder: (_) => ViewFriendScreen(userId: userId),
-            );
           case '/view_group':
             final args = settings.arguments as Map<String, dynamic>?;
             final groupId = args?['groupId'] as String?;
 
             if (groupId == null) {
-              return MaterialPageRoute(
-                builder:
-                    (_) => const Scaffold(
-                      body: Center(child: Text('Error: Missing group id')),
-                    ),
+              screen = const Scaffold(
+                body: Center(child: Text('Error: Missing group ID')),
               );
+            } else {
+              screen = ViewGroupScreen(groupId: groupId);
             }
-
-            return MaterialPageRoute(
-              builder: (_) => ViewGroupScreen(groupId: groupId),
-            );
+            break;
           default:
             final logger = Logger("MyApp");
             logger.warning("Unknown route: ${settings.name}");
-            return MaterialPageRoute(
-              builder:
-                  (_) => const Scaffold(
-                    body: Center(child: Text('404: Page not found')),
-                  ),
+            screen = const Scaffold(
+              body: Center(child: Text('404: Page not found')),
             );
         }
+
+        return MaterialPageRoute(
+          builder:
+              (context) => AuthGuardWidget(builder: (context, user) => screen),
+          settings: settings,
+        );
       },
     );
   }

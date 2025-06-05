@@ -6,6 +6,8 @@ import 'package:flutter_frontend/screens/add_items_screen/add_items_screen.dart'
     show AddItemsScreen;
 import 'package:flutter_frontend/screens/split_with_screen/split_with_screen.dart';
 import 'package:flutter_frontend/services/api_service.dart' show ApiService;
+import 'package:flutter_frontend/services/auth_guard_provider.dart'
+    show AuthGuardProvider;
 import 'package:flutter_frontend/utils/string_utils.dart';
 import 'package:logging/logging.dart' show Logger;
 import 'package:provider/provider.dart' show Provider;
@@ -22,7 +24,8 @@ class ExpenseForm extends StatefulWidget {
   final ExpenseCreate? initialExpense; // optional for editing
 
   final void Function(bool isValid) onValidityChanged;
-  final void Function(ExpenseCreate expense)? onExpenseChanged;
+  final void Function(ExpenseCreate expense, String? parentId)?
+  onExpenseChanged;
 
   final bool canEdit;
   final bool canEditItems;
@@ -51,8 +54,11 @@ class _ExpenseFormState extends State<ExpenseForm> {
   late DateTime _selectedDate;
   late ExpenseCategory _selectedCategory;
   late List<ExpenseItemCreate> _expenseItems;
+  List<ExpenseItemSplitCreate> _expenseSplits = [];
 
-  UserRead? me;
+  String? _selectedGroupId;
+
+  UserRead? user;
   List<UserRead> friends = [];
   List<GroupReadWithMembers> groups = [];
   bool isLoading = true;
@@ -64,6 +70,10 @@ class _ExpenseFormState extends State<ExpenseForm> {
   @override
   void initState() {
     super.initState();
+
+    final authGuard = Provider.of<AuthGuardProvider>(context, listen: false);
+    user = authGuard.mustGetUser(context);
+
     _loadData();
 
     // populate fields
@@ -73,6 +83,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
     _selectedCategory =
         widget.initialExpense?.category ?? ExpenseCategory.other;
     _expenseItems = widget.initialExpense?.items ?? [];
+    _expenseSplits = widget.initialExpense?.splits ?? [];
 
     _amountController = TextEditingController(text: '0.00');
 
@@ -95,21 +106,6 @@ class _ExpenseFormState extends State<ExpenseForm> {
     final apiService = Provider.of<ApiService>(context, listen: false);
 
     try {
-      me = await apiService.userApi.mustGetCurrentUser();
-      if (me == null) {
-        _logger.warning('Current user not found');
-        if (!mounted) return;
-
-        showCustomSnackBar(context, normalText: 'Unable to find current user');
-        setState(() => isLoading = false);
-
-        Navigator.of(context).pushNamed('/');
-        return;
-      }
-      setState(() {
-        me = me;
-      });
-
       final fetchedFriends = await apiService.friendApi.getFriends();
 
       setState(() {
@@ -144,7 +140,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
 
   void _notifyExpenseChanged() {
     final expense = getExpenseData();
-    widget.onExpenseChanged?.call(expense);
+    widget.onExpenseChanged?.call(expense, _selectedGroupId);
   }
 
   void updateNameValidity(bool isValid) {
@@ -196,19 +192,23 @@ class _ExpenseFormState extends State<ExpenseForm> {
       MaterialPageRoute(
         builder:
             (context) => SplitWithScreen(
-              items: _expenseItems,
+              splits: _expenseSplits,
               isReadOnly: isReadyOnly,
               groups: groups,
               friends: friends,
-              currentUser: me!,
+              currentUser: user!,
+              selectedGroupId: _selectedGroupId,
             ),
       ),
     );
 
-    if (result != null) {
-      final List<ExpenseItemCreate> updatedItems = result;
+    if (result != null && result is Map<String, dynamic>) {
+      final updatedItems = result['splits'] as List<ExpenseItemSplitCreate>;
+      final groupId = result['groupId'] as String?;
+
       setState(() {
-        _expenseItems = updatedItems;
+        _expenseSplits = updatedItems;
+        _selectedGroupId = groupId;
         _updateCalculatedAmount();
       });
       _notifyExpenseChanged();
@@ -220,7 +220,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
   Widget build(BuildContext context) {
     final proportionalSizes = ProportionalSizes(context: context);
 
-    if (isLoading || me == null) {
+    if (isLoading || user == null) {
       return Center(child: CircularProgressIndicator());
     }
 
@@ -357,6 +357,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
       category: _selectedCategory,
       items: _expenseItems,
       expenseDate: _selectedDate,
+      splits: _expenseSplits,
     );
   }
 }

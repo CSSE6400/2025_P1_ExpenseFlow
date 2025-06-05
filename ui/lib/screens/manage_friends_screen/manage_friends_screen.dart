@@ -166,10 +166,7 @@ class _ManageFriendsScreenState extends State<ManageFriendsScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavBar(
-        currentScreen: 'ManageFriends',
-        inactive: false,
-      ),
+      bottomNavigationBar: BottomNavBar(inactive: false),
     );
   }
 }

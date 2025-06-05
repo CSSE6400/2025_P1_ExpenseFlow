@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/types.dart' show Expense;
+import 'package:flutter_frontend/models/expense.dart' show ExpenseRead;
+import 'package:flutter_frontend/widgets/expense_view_basic.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../common/color_palette.dart';
 import '../../../common/proportional_sizes.dart';
 
 class HomeScreenRecentExpenses extends StatelessWidget {
-  final List<Expense> recentExpenses;
+  final List<ExpenseRead> expenses;
   final bool isLoading;
   final VoidCallback? onTap;
 
   const HomeScreenRecentExpenses({
     super.key,
-    required this.recentExpenses,
+    required this.expenses,
     required this.isLoading,
     this.onTap,
   });
@@ -59,7 +60,7 @@ class HomeScreenRecentExpenses extends StatelessWidget {
                   ),
                 ),
               )
-            else if (recentExpenses.isEmpty)
+            else if (expenses.isEmpty)
               Padding(
                 padding: EdgeInsets.symmetric(
                   vertical: proportionalSizes.scaleHeight(20),
@@ -69,37 +70,16 @@ class HomeScreenRecentExpenses extends StatelessWidget {
                     "You've got no recent expenses",
                     style: TextStyle(
                       fontSize: proportionalSizes.scaleText(16),
-                      color: ColorPalette.primaryText.withOpacity(0.7),
+                      color: ColorPalette.primaryText.withValues(alpha: .7),
                     ),
                   ),
                 ),
               )
             else
-              ...recentExpenses.map(
-                (expense) => Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: proportionalSizes.scaleWidth(16),
-                    vertical: proportionalSizes.scaleHeight(8),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        expense.name,
-                        style: TextStyle(
-                          fontSize: proportionalSizes.scaleText(18),
-                          color: ColorPalette.primaryText,
-                        ),
-                      ),
-                      Text(
-                        formatPrice(expense.price),
-                        style: TextStyle(
-                          fontSize: proportionalSizes.scaleText(18),
-                          color: ColorPalette.primaryText,
-                        ),
-                      ),
-                    ],
-                  ),
+              ...expenses.map(
+                (expense) => ExpenseViewBasic(
+                  expense: expense,
+                  proportionalSizes: proportionalSizes,
                 ),
               ),
           ],

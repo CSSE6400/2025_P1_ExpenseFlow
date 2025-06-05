@@ -1,21 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/common/snack_bar.dart' show showCustomSnackBar;
-import 'package:flutter_frontend/models/expense.dart' show ExpenseOverview;
+import 'package:flutter_frontend/models/expense.dart'
+    show ExpenseOverview, ExpenseRead;
 import 'package:flutter_frontend/models/user.dart' show UserRead;
-import 'package:flutter_frontend/types.dart'
-    show CategoryData, Expense, assignRandomColors;
+import 'package:flutter_frontend/services/auth_guard_provider.dart'
+    show AuthGuardProvider;
+import 'package:flutter_frontend/types.dart' show CategoryData;
 import 'package:logging/logging.dart' show Logger;
-// Common imports
 import '../../common/color_palette.dart';
 import '../../common/bottom_nav_bar.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_frontend/services/auth_service.dart';
 import 'package:flutter_frontend/services/api_service.dart';
 import '../home_screen/elements/home_screen_overview.dart';
 import '../home_screen/elements/home_screen_add_an_expense.dart';
 import '../home_screen/elements/home_screen_recent_expenses.dart';
 import '../home_screen/elements/home_screen_app_bar.dart';
 import '../../../common/proportional_sizes.dart';
+
+List<CategoryData> assignColorsInOrder(
+  List<CategoryData> categories,
+  List<Color> colors,
+) {
+  for (int i = 0; i < categories.length; i++) {
+    categories[i].color = colors[i % colors.length];
+  }
+  return categories;
+}
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -24,60 +34,29 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen>
-    with RouteAware, WidgetsBindingObserver {
+class _HomeScreenState extends State<HomeScreen> {
   final Logger _logger = Logger("Home_Screen");
-  RouteObserver<PageRoute>? _routeObserver;
-  bool _checkedUser = false;
 
   bool isOverviewLoading = true;
   ExpenseOverview? overview;
   UserRead? user;
 
   bool isRecentExpensesLoading = true;
-  List<Expense> recentExpenses = [];
+  List<ExpenseRead> expenses = [];
 
   @override
   void initState() {
+    final authGuard = Provider.of<AuthGuardProvider>(context, listen: false);
+    user = authGuard.mustGetUser(context);
+
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
-    // check auth before loading data
-    _checkAuth();
-
-    // get singleton route observer
-    _routeObserver = Provider.of<RouteObserver<PageRoute>>(
-      context,
-      listen: false,
-    );
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _routeObserver?.subscribe(this, ModalRoute.of(context) as PageRoute);
-  }
-
-  @override
-  void dispose() {
-    _routeObserver?.unsubscribe(this);
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
-  }
-
-  @override
-  void didPush() => _refreshOverview();
-  @override
-  void didPopNext() => _refreshOverview();
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      _refreshOverview();
-    }
-  }
-
-  void _refreshOverview() {
+    _loadRecentExpenses();
     _loadOverview();
+  }
+
+  Future<void> _refreshData() async {
+    _loadOverview();
+    _loadRecentExpenses();
   }
 
   Future<void> _loadOverview() async {
@@ -88,11 +67,10 @@ class _HomeScreenState extends State<HomeScreen>
     final apiService = Provider.of<ApiService>(context, listen: false);
 
     try {
-      final fetchedUser = await apiService.userApi.mustGetCurrentUser();
       final fetchedOverview = await apiService.expenseApi.getOverview();
       if (!mounted) return;
+
       setState(() {
-        user = fetchedUser;
         overview = fetchedOverview;
         isOverviewLoading = false;
       });
@@ -104,64 +82,29 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Future<void> _loadRecentExpenses() async {
+    if (!mounted) return;
     setState(() {
       isRecentExpensesLoading = true;
     });
 
     final apiService = Provider.of<ApiService>(context, listen: false);
     try {
-      final userReads = await apiService.expenseApi.getExpensesUploadedByMe();
-
       final loadedExpenses =
-          userReads.map((expense) {
-            return Expense(
-              name: expense.name,
-              price: expense.expenseTotal.toString(),
-              expenseId: expense.expenseId,
-            );
-          }).toList();
+          await apiService.expenseApi.getExpensesUploadedByMe();
+
+      if (!mounted) return;
 
       setState(() {
-        recentExpenses = loadedExpenses;
+        expenses = loadedExpenses;
         isRecentExpensesLoading = false;
       });
 
-      _logger.info("number of recent expenses: ${recentExpenses.length}");
+      _logger.info("number of expenses: ${expenses.length}");
     } catch (e) {
+      if (!mounted) return;
       _logger.warning("Failed to get recent expenses: $e");
       setState(() {
         isRecentExpensesLoading = false;
-      });
-    }
-  }
-
-  Future<void> _checkAuth() async {
-    final authService = Provider.of<AuthService>(context, listen: false);
-    if (!authService.isLoggedIn) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        Navigator.pushReplacementNamed(context, '/initial_startup');
-      });
-      return;
-    }
-    final apiService = Provider.of<ApiService>(context, listen: false);
-    try {
-      final user = await apiService.userApi.getCurrentUser();
-      if (user == null) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          Navigator.pushReplacementNamed(context, '/profile_setup');
-        });
-        return;
-      }
-      setState(() {
-        _checkedUser = true;
-      });
-
-      _loadRecentExpenses();
-      _loadOverview();
-    } catch (e) {
-      _logger.warning(e);
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        Navigator.pushReplacementNamed(context, '/initial_startup');
       });
     }
   }
@@ -194,13 +137,6 @@ class _HomeScreenState extends State<HomeScreen>
       Color(0xFFE0A9F5),
     ];
 
-    if (!_checkedUser) {
-      return Scaffold(
-        backgroundColor: backgroundColor,
-        body: const Center(child: CircularProgressIndicator()),
-      );
-    }
-
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: HomeScreenAppBarWidget(),
@@ -209,13 +145,14 @@ class _HomeScreenState extends State<HomeScreen>
           FocusScope.of(context).unfocus();
         },
         child: SafeArea(
-          child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(
-              horizontal: proportionalSizes.scaleWidth(20),
-              vertical: proportionalSizes.scaleHeight(20),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          child: RefreshIndicator(
+            onRefresh: _refreshData,
+            child: ListView(
+              padding: EdgeInsets.symmetric(
+                horizontal: proportionalSizes.scaleWidth(20),
+                vertical: proportionalSizes.scaleHeight(20),
+              ),
+              physics: const AlwaysScrollableScrollPhysics(),
               children: [
                 if (!isOverviewLoading &&
                     overview != null &&
@@ -223,7 +160,7 @@ class _HomeScreenState extends State<HomeScreen>
                   HomeScreenOverview(
                     isLoading: false,
                     monthlyBudget: user?.budget.toDouble() ?? 0.0,
-                    categories: assignRandomColors(
+                    categories: assignColorsInOrder(
                       overview!.categories
                           .map(
                             (c) => CategoryData(
@@ -242,7 +179,7 @@ class _HomeScreenState extends State<HomeScreen>
                 HomeScreenAddAnExpense(),
                 SizedBox(height: proportionalSizes.scaleHeight(20)),
                 HomeScreenRecentExpenses(
-                  recentExpenses: recentExpenses,
+                  expenses: expenses.take(3).toList(),
                   isLoading: isRecentExpensesLoading,
                   onTap: () => Navigator.pushNamed(context, '/expenses'),
                 ),
@@ -251,7 +188,10 @@ class _HomeScreenState extends State<HomeScreen>
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavBar(currentScreen: 'Home', inactive: false),
+      bottomNavigationBar: BottomNavBar(
+        currentScreen: BottomNavBarScreen.home,
+        inactive: false,
+      ),
     );
   }
 }

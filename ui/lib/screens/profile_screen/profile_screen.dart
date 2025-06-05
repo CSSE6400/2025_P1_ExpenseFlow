@@ -1,11 +1,12 @@
-// Flutter imports
 import 'package:flutter/material.dart';
-// Common imports
+import 'package:flutter_frontend/common/proportional_sizes.dart'
+    show ProportionalSizes;
+import 'package:flutter_frontend/screens/profile_screen/elements/profile_screen_avatar_icon.dart'
+    show ProfileScreenAvatarIcon;
+import 'package:flutter_frontend/screens/profile_screen/elements/profile_screen_form.dart';
 import '../../common/color_palette.dart';
 import '../../common/app_bar.dart';
 import '../../common/bottom_nav_bar.dart';
-// Elements
-import '../profile_screen/elements/profile_screen_main_body.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -18,18 +19,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final backgroundColor = ColorPalette.background;
+    final proportionalSizes = ProportionalSizes(context: context);
 
     return Scaffold(
       backgroundColor: backgroundColor,
 
-      appBar: AppBarWidget(
-        screenName: '',
-        showBackButton: true,
-      ),
+      appBar: AppBarWidget(screenName: 'ProfileScreen', showBackButton: true),
+      body: (GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus(); // Dismiss keyboard
+        },
+        child: SafeArea(
+          child: SingleChildScrollView(
+            // Prevents overflow
+            padding: EdgeInsets.symmetric(
+              horizontal: proportionalSizes.scaleWidth(20),
+              vertical: proportionalSizes.scaleHeight(20),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Avatar Icon
+                Align(
+                  alignment: Alignment.topLeft,
+                  child: ProfileScreenAvatarIcon(),
+                ),
 
-      body: ProfileScreenMainBody(),
+                SizedBox(height: proportionalSizes.scaleHeight(20)),
 
-      bottomNavigationBar: BottomNavBar(currentScreen: 'Profile', inactive: false),
+                ProfileScreenForm(),
+              ],
+            ),
+          ),
+        ),
+      )),
+      bottomNavigationBar: BottomNavBar(inactive: true),
     );
   }
 }

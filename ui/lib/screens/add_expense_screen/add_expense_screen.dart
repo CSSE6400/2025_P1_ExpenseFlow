@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/common/snack_bar.dart';
 import 'package:flutter_frontend/models/expense.dart' show ExpenseCreate;
-import 'package:flutter_frontend/models/user.dart';
 import 'package:flutter_frontend/services/api_service.dart' show ApiService;
 import 'package:flutter_frontend/widgets/expense_form.dart';
 import 'package:logging/logging.dart' show Logger;
@@ -23,6 +22,7 @@ class AddExpenseScreen extends StatefulWidget {
 class _AddExpenseScreenState extends State<AddExpenseScreen> {
   bool isFormValid = false;
   ExpenseCreate? _currentExpense;
+  String? _parentId;
   final Logger _logger = Logger("AddExpenseScreen");
 
   @override
@@ -34,8 +34,10 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     setState(() => isFormValid = isValid);
   }
 
-  void updateExpense(ExpenseCreate expense) {
+  // optional parentId is used when adding a group expense
+  void updateExpense(ExpenseCreate expense, String? parentId) {
     _currentExpense = expense;
+    _parentId = parentId;
   }
 
   Future<void> onAdd() async {
@@ -46,8 +48,13 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
       return;
     }
 
+    _logger.info("Adding expense: ${_currentExpense?.toJson()}");
+    _logger.info(
+      "Splits are ${_currentExpense?.splits?.map((e) => e.toJson()).toList()}",
+    );
+
     try {
-      await apiService.expenseApi.createExpense(_currentExpense!);
+      await apiService.expenseApi.createExpense(_currentExpense!, _parentId);
       if (!mounted) return;
       showCustomSnackBar(
         context,
@@ -69,7 +76,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
 
     return Scaffold(
       backgroundColor: backgroundColor,
-      appBar: AppBarWidget(screenName: 'Add Expense', showBackButton: true),
+      appBar: AppBarWidget(screenName: 'Add Expense', showBackButton: false),
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: SafeArea(
@@ -106,7 +113,10 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavBar(currentScreen: 'Add', inactive: false),
+      bottomNavigationBar: BottomNavBar(
+        currentScreen: BottomNavBarScreen.add,
+        inactive: false,
+      ),
     );
   }
 }

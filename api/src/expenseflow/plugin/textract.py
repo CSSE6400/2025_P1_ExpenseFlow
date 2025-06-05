@@ -90,11 +90,12 @@ class TextractPlugin(Plugin[TextractPluginSettings]):
             ) from e
         summary_fields = response["ExpenseDocuments"][0].get("SummaryFields", [])
         item_groups = response["ExpenseDocuments"][0].get("LineItemGroups", [])
-        vendor_name = ""
         items: list[ExpenseItemCreate] = []
         for field in summary_fields:
             if field["Type"]["Text"] == "VENDOR_NAME":
-                vendor_name = field.get("Value", "")
+                vendor_name = field.get("ValueDetection", {}).get(
+                    "Text", "Auto-generated expense"
+                )
                 break
         for item_list in item_groups:
             for item in item_list.get("LineItems", []):
@@ -116,10 +117,9 @@ class TextractPlugin(Plugin[TextractPluginSettings]):
                     )
                 )
 
-        description = f"Auto-generated expense from receipt from {vendor_name}."
         expense_in = ExpenseCreate(
             name=vendor_name,
-            description=description,
+            description=f"Expense from {vendor_name}",
             category=ExpenseCategory.auto,
             items=items,
             expense_date=dt.datetime.now(tz=dt.UTC),

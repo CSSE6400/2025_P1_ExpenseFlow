@@ -9,6 +9,8 @@ import 'package:flutter_frontend/screens/see_expense_screen/elements/see_expense
 import 'package:flutter_frontend/screens/see_expense_screen/elements/see_expense_view.dart';
 import 'package:flutter_frontend/services/api_service.dart' show ApiService;
 import 'package:flutter_frontend/screens/see_expense_screen/elements/expense_view_segment_control.dart';
+import 'package:flutter_frontend/services/auth_guard_provider.dart'
+    show AuthGuardProvider;
 import 'package:logging/logging.dart' show Logger;
 import 'package:provider/provider.dart' show Provider;
 import '../../common/color_palette.dart';
@@ -27,7 +29,7 @@ class SeeExpenseScreen extends StatefulWidget {
 class _SeeExpenseScreenState extends State<SeeExpenseScreen> {
   final Logger _logger = Logger("SeeExpenseScreen");
   ExpenseRead? expense;
-  UserRead? me;
+  UserRead? user;
   List<SplitStatusInfo> splitStatuses = [];
   ExpenseViewSegment selectedSegment = ExpenseViewSegment.information;
 
@@ -36,20 +38,24 @@ class _SeeExpenseScreenState extends State<SeeExpenseScreen> {
   @override
   void initState() {
     super.initState();
+
+    final authGuard = Provider.of<AuthGuardProvider>(context, listen: false);
+    user = authGuard.mustGetUser(context);
+
     _loadData();
   }
 
   bool isEditable() {
-    if (expense == null || me == null) return false;
+    if (expense == null || user == null) return false;
 
-    return expense!.uploader.userId == me!.userId && isEditMode;
+    return expense!.uploader.userId == user!.userId && isEditMode;
   }
 
   bool isItemsAndSplitsEditable() {
     return isEditable() &&
         (expense!.status == ExpenseStatus.requested ||
             (splitStatuses.length == 1 &&
-                splitStatuses[0].userId == me!.userId));
+                splitStatuses[0].userId == user!.userId));
   }
 
   Future<void> _loadData() async {
@@ -57,20 +63,6 @@ class _SeeExpenseScreenState extends State<SeeExpenseScreen> {
     final apiService = Provider.of<ApiService>(context, listen: false);
 
     try {
-      me = await apiService.userApi.mustGetCurrentUser();
-      if (me == null) {
-        _logger.warning('Current user not found');
-        if (!mounted) return;
-
-        showCustomSnackBar(context, normalText: 'Unable to find current user');
-        setState(() => isLoading = false);
-
-        Navigator.of(context).pushNamed('/');
-        return;
-      }
-      setState(() {
-        me = me;
-      });
       final fetchedExpense = await apiService.expenseApi.getExpense(
         widget.expenseId,
       );
@@ -114,12 +106,13 @@ class _SeeExpenseScreenState extends State<SeeExpenseScreen> {
   }
 
   ExpenseCreate? _currentExpense;
-  void updateExpense(ExpenseCreate expense) {
+  void updateExpense(ExpenseCreate expense, String? _) {
     _currentExpense = expense;
   }
 
   Future<void> saveExpense() async {
     final apiService = Provider.of<ApiService>(context, listen: false);
+    _logger.info("Expense to save: ${_currentExpense?.toJson()}");
 
     if (_currentExpense == null) {
       showCustomSnackBar(context, normalText: "Please fill in all fields");
@@ -195,7 +188,7 @@ class _SeeExpenseScreenState extends State<SeeExpenseScreen> {
       return const Center(child: CircularProgressIndicator());
     }
 
-    if (expense == null || me == null) {
+    if (expense == null || user == null) {
       _logger.warning("Expense is null");
       return const Scaffold(body: Center(child: Text("Expense not found")));
     }
@@ -219,7 +212,7 @@ class _SeeExpenseScreenState extends State<SeeExpenseScreen> {
                 child:
                     selectedSegment == ExpenseViewSegment.information
                         ? SeeExpenseView(
-                          currentUser: me!,
+                          currentUser: user!,
                           expense: expense!,
                           currentExpense: _currentExpense,
                           isEditMode: isEditMode,
@@ -240,7 +233,7 @@ class _SeeExpenseScreenState extends State<SeeExpenseScreen> {
                         : SeeExpenseApprovals(
                           expense: expense!,
                           splitStatuses: splitStatuses,
-                          currentUser: me!,
+                          currentUser: user!,
                           onApprovePressed: changeExpenseState,
                         ),
               ),
@@ -248,10 +241,7 @@ class _SeeExpenseScreenState extends State<SeeExpenseScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: const BottomNavBar(
-        currentScreen: 'See',
-        inactive: false,
-      ),
+      bottomNavigationBar: const BottomNavBar(inactive: false),
     );
   }
 }
