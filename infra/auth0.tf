@@ -11,6 +11,8 @@ resource "auth0_client" "expenseflow_ui_client" {
   callbacks           = [local.ui_url]
   grant_types         = ["authorization_code", "refresh_token"]
 
+  depends_on = [aws_route53_record.expenseflow_ui]
+
   jwt_configuration {
     alg                 = "RS256"
     lifetime_in_seconds = 36000
