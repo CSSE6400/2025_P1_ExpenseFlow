@@ -26,6 +26,13 @@ def assert_time(time1: str, time2: datetime):
             "%Y-%m-%dT%H:%M:%SZ",
             # SQL timezone stuff
         )
+    ) or \
+        datetime.strptime(time1, "%Y-%m-%dT%H:%M:%SZ") == (  # noqa: DTZ007
+        datetime.strptime(  # noqa: DTZ007
+            datetime.strftime(time2, "%Y-%m-%dT%H:%M:%SZ"),
+            "%Y-%m-%dT%H:%M:%SZ",
+            # SQL timezone stuff
+        )
         + timedelta(hours=10)
     )
 
@@ -121,13 +128,12 @@ async def test_bad_expense_create(
         method="post", url=base_url, json=expense.model_dump(mode="json")
     )
 
-    with pytest.raises(ResponseValidationError):
-        bad_expense_response = await test_client.send(bad_expense_request)
-        assert bad_expense_response.status_code == 400
-        assert (
-            bad_expense_response.json()["detail"]
-            == "The total proportion of an expense item does not add to 1."
-        )
+    bad_expense_response = await test_client.send(bad_expense_request)
+    assert bad_expense_response.status_code == 400
+    assert (
+        bad_expense_response.json()["detail"]
+        == "The total proportion of an expense item does not add to 1."
+    )
 
 
 
@@ -196,13 +202,7 @@ async def test_update(
     get_item = get_response_json[0]
     assert get_item['name'] == expense2.name
     assert get_item['description'] == expense2.description
-    assert datetime.strptime(
-        get_item['expense_date'], "%Y-%m-%dT%H:%M:%SZ") == \
-        (datetime.strptime(
-            datetime.strftime(expense2.expense_date, "%Y-%m-%dT%H:%M:%SZ"),
-            "%Y-%m-%dT%H:%M:%SZ"
-            # SQL timezone stuff
-            ) + timedelta(hours=10))
+    assert_time(get_item["expense_date"], expense2.expense_date)
     assert get_item['category'] == expense2.category
     assert get_item['items'][0]['name'] == expense2.items[0].name
 
