@@ -5,9 +5,9 @@ services:
     restart: always
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U admin -d expense_db"]
-      interval: 5s
-      retries: 5
-      start_period: 20s
+      interval: 1s
+      retries: 30
+      start_period: 2s
       timeout: 10s
     volumes:
       - db-data:/var/lib/postgresql/data/pgdata
@@ -25,12 +25,6 @@ services:
       dockerfile: Dockerfile.test
     ports:
       - 8080:8080
-    healthcheck:
-      test: curl --fail http://localhost:8080/health || exit 1
-      interval: 5s
-      retries: 5
-      start_period: 20s
-      timeout: 10s
     environment:
       - DB_URL=postgresql+asyncpg://admin:password@database:5432/expense_db
     depends_on:
