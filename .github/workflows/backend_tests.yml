@@ -1,9 +1,12 @@
 name: Backend Tests
 
 on:
+  workflow_dispatch:
   pull_request:
     branches:
       - main
+    paths:
+      - "api/**"
 
 jobs:
   backend_static_type_checking:
