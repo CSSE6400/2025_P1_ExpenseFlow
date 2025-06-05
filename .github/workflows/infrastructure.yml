@@ -30,7 +30,7 @@ jobs:
       - name: Export credentials
         run: |
           mkdir ~/.aws
-          echo ${{ github.event.inputs.aws }} | tr " " "\n" > ~/.aws/credentials
+          echo ${{ github.event.inputs.aws }} | tr " " "\n" > ~/credentials
 
       - name: Terraform fmt
         id: fmt

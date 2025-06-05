@@ -30,6 +30,8 @@ jobs:
         run: |
           mkdir ~/.aws
           echo ${{ github.event.inputs.aws }} | tr " " "\n" > ~/.aws/credentials
+          echo "[default]" > ~/.aws/config
+          echo "region = us-east-2" >> ~/.aws/config
 
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
@@ -79,8 +81,11 @@ jobs:
           mkdir ~/.aws
           echo ${{ github.event.inputs.aws }} | tr " " "\n" > ~/.aws/credentials
 
-      - name: Login to ECR
+      - name: Login to Amazon ECR
+        id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
+        with:
+          mask-password: "true"
 
       - name: Build and push docker image
         run: |
