@@ -1,7 +1,7 @@
 name: Backend Tests
 
 on:
-  #   push: # Temp because we don't want to run this on every push.
+  push:
   pull_request:
     branches:
       - main
