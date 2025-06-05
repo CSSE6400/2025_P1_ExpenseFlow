@@ -1,4 +1,4 @@
-name: Backend Deployment
+name: Backend Tests
 
 on:
   push:
@@ -77,11 +77,3 @@ jobs:
         with:
           name: htmlcov
           path: ./api/htmlcov
-#   backend_build:
-#     name: Build the backend.
-#     runs-on: ubuntu-latest
-#     needs: backend_tests
-#   backend_deploy:
-#     name: Deploy the backend.
-#     runs-on: ubuntu-latest
-#     needs: backend_build
