@@ -52,7 +52,7 @@ async def create(
             status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
         ) from e
     except ExpenseFlowError as e:
-        if "does not add to 1" in e.message:
+        if "do not add up to 1" in e.message:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="The total proportion of an expense item does not add to 1.",
