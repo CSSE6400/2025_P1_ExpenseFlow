@@ -151,18 +151,34 @@ class _SplitWithScreenState extends State<SplitWithScreen> {
                       selectedGroupId: _selectedGroupId,
                     ),
                 if (!widget.isReadOnly)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 16.0),
-                    child: CustomButton(
-                      label: 'Confirm Splits',
-                      onPressed: _saveAndReturn,
-                      state:
-                          isContinueEnabled
-                              ? ButtonState.enabled
-                              : ButtonState.disabled,
-                      sizeType: ButtonSizeType.full,
-                    ),
+                  // write some text to explain the splits
+                  // please ensure that the splits add up to 100%
+                  !isContinueEnabled
+                      ? Padding(
+                        padding: EdgeInsets.symmetric(
+                          vertical: proportionalSizes.scaleHeight(16),
+                        ),
+                        child: Text(
+                          'Please ensure that the splits add up to 100%',
+                          style: TextStyle(
+                            color: ColorPalette.secondaryText,
+                            fontSize: 18,
+                          ),
+                        ),
+                      )
+                      : const SizedBox.shrink(),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: CustomButton(
+                    label: 'Confirm Splits',
+                    onPressed: _saveAndReturn,
+                    state:
+                        isContinueEnabled
+                            ? ButtonState.enabled
+                            : ButtonState.disabled,
+                    sizeType: ButtonSizeType.full,
                   ),
+                ),
               ],
             ),
           ),

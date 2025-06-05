@@ -309,7 +309,10 @@ class _ExpenseFormState extends State<ExpenseForm> {
           label: 'Split With',
           value: '',
           isEnabled: true,
-          hintText: 'Select Group or Friends',
+          hintText:
+              _expenseSplits.isEmpty
+                  ? 'Select Group or Friends'
+                  : 'Split between ${_expenseSplits.length} people',
           trailingIconPath: 'assets/icons/search.png',
           inactive: _expenseItems.isEmpty,
           onTap: () {
