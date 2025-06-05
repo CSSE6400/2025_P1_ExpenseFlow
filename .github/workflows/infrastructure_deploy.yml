@@ -83,18 +83,6 @@ jobs:
           name: tfplan
           path: infra/tfplan.binary
 
-      - uses: trstringer/manual-approval@v1
-        with:
-          secret: ${{ secrets.GITHUB_TOKEN }}
-          approvers: lucashicks1,aadityayadav17,DonghyugDavidJeong,EllaBerglas,aa879861
-          minimum-approvals: 1
-          issue-title: "Deploying infra"
-          issue-body: "Please approve or deny the deployment of infra"
-          exclude-workflow-initiator-as-approver: false
-          fail-on-denial: true
-          additional-approved-words: "approve,yes,y"
-          additional-denied-words: "no,deny,n"
-
       - name: Terraform Apply
         id: apply
         run: terraform apply -auto-approve -input=false tfplan.binary
