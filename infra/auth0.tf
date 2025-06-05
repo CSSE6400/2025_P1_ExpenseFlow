@@ -1,15 +1,23 @@
 data "auth0_tenant" "expenseflow" {}
 
+data "aws_s3_object" "expenseflow_logo" {
+  bucket = "expenseflow-assets"
+  key    = "auth0_logo.png"
+}
+
 resource "auth0_client" "expenseflow_ui_client" {
   name                = "ExpenseFlow UI Client"
   description         = "ExpenseFlow UI Client"
-  app_type            = "spa" // Flutter is spa, something server-side would be 'spa'
+  app_type            = "spa"
   oidc_conformant     = true
   is_first_party      = true
   allowed_logout_urls = [local.ui_url]
   allowed_origins     = [local.ui_url]
+  web_origins         = [local.ui_url]
   callbacks           = [local.ui_url]
   grant_types         = ["authorization_code", "refresh_token"]
+
+  logo_uri = "https://${data.aws_s3_object.expenseflow_logo.bucket}.s3.amazonaws.com/${data.aws_s3_object.expenseflow_logo.key}"
 
   depends_on = [aws_route53_record.expenseflow_ui]
 
