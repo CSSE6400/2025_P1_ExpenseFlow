@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/common/snack_bar.dart';
 import 'package:flutter_frontend/screens/add_friends_to_group_screen/add_friends_to_group_screen.dart';
 import 'package:flutter_frontend/screens/create_group_screen/create_group_screen.dart';
 import 'package:flutter_frontend/services/api_service.dart' show ApiService;
@@ -51,7 +50,6 @@ void main() async {
 
   logger.info("Starting App");
   // create route observer for navigation events
-  final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
   runApp(
     MultiProvider(
@@ -59,7 +57,6 @@ void main() async {
         Provider<Config>.value(value: config),
         Provider<AuthService>.value(value: authService),
         Provider<ApiService>.value(value: apiService),
-        Provider<RouteObserver<PageRoute>>.value(value: routeObserver),
         ChangeNotifierProvider<AuthGuardProvider>(
           create: (context) => AuthGuardProvider(authService, apiService),
         ),
@@ -76,16 +73,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthService>(context, listen: false);
 
-    final routeObserver = Provider.of<RouteObserver<PageRoute>>(
-      context,
-      listen: false,
-    );
-
     return MaterialApp(
       title: 'Expense Flow',
       debugShowCheckedModeBanner: false,
       themeMode: ThemeMode.light,
-      navigatorObservers: [routeObserver], // Add the route observer
 
       initialRoute: auth.isLoggedIn ? '/' : '/initial_startup',
       onGenerateRoute: (RouteSettings settings) {
