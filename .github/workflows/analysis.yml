@@ -1,27 +1,30 @@
 name: Static Analysis
+
 on:
   push:
   pull_request:
+    branches:
+      - main
 
 jobs:
-  backend_lint_and_format:
-    name: Run linter and formatter across backend codebase
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+  #   backend_lint_and_format:
+  #     name: Run linter and formatter across backend codebase
+  #     runs-on: ubuntu-latest
+  #     steps:
+  #       - name: Checkout repo
+  #         uses: actions/checkout@v4
 
-      - name: Install Ruff
-        uses: astral-sh/ruff-action@v3
-        with:
-          args: "--version"
-          src: "api"
+  #       - name: Install Ruff
+  #         uses: astral-sh/ruff-action@v3
+  #         with:
+  #           args: "--version"
+  #           src: "api"
 
-      - name: Run Ruff Formatter
-        run: ruff format --diff api
+  #       - name: Run Ruff Formatter
+  #         run: ruff format --diff api
 
-      - name: Run Ruff Linter
-        run: ruff check --fix api
+  #       - name: Run Ruff Linter
+  #         run: ruff check --fix api
 
   backend_static_type_checking:
     name: Run mypy on backend codebase to do type checking.

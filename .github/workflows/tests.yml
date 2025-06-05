@@ -1,7 +1,11 @@
 name: Run tests and collect coverage
+
 on:
   push:
   pull_request:
+    branches:
+      - main
+
 jobs:
   backend_tests:
     name: Runs backend tests and generates a coverage report for them.
@@ -17,6 +21,17 @@ jobs:
         uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
+
+      - name: Create .env file
+        run: |
+          cat <<EOF > .env
+          POSTGRES_USER=admin
+          POSTGRES_PASSWORD=password
+          POSTGRES_DB=expense_db
+          AUTH0_DOMAIN=an-auth0-domain
+          JWT_AUDIENCE=a-jwt-audience
+          AUTH0_CLIENT_ID=a-auth0-client-id
+          EOF
 
       - name: Install the project
         run: uv sync --locked --all-extras --dev
