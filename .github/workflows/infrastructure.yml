@@ -1,12 +1,12 @@
 name: Infrastructure Deployment
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+  workflow_dispatch:
+    inputs:
+      aws:
+        type: string
+        description: AWS credentials because I can't create a runner user so it has to be manual
+        required: true
 
 jobs:
   terraform_plan:
