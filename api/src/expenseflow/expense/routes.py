@@ -9,7 +9,7 @@ from expenseflow.auth.deps import CurrentUser
 from expenseflow.database.deps import DbSession
 from expenseflow.entity.service import get_entity
 from expenseflow.enums import ExpenseStatus
-from expenseflow.errors import NotFoundError, RoleError, ExpenseFlowError
+from expenseflow.errors import ExpenseFlowError, NotFoundError, RoleError
 from expenseflow.expense.models import ExpenseModel
 from expenseflow.expense.schemas import (
     ExpenseCreate,
@@ -57,11 +57,14 @@ async def create(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="The total proportion of an expense item does not add to 1.",
             ) from e
-        elif "A user_id is duplicated" in e.message:
+        if "A user_id is duplicated" in e.message:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="A user_id is duplicated in splits for an item.",
             ) from e
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
+        ) from e
 
 
 @r.put("/{expense_id}", response_model=ExpenseRead)
@@ -88,6 +91,7 @@ async def update(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="The total proportion of an expense item does not add to 1.",
         ) from e
+
 
 @r.get("", response_model=list[ExpenseRead])
 async def get_uploaded_by_me(db: DbSession, user: CurrentUser) -> list[ExpenseModel]:
