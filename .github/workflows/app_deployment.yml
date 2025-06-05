@@ -3,10 +3,19 @@ name: App Deployment
 on:
   workflow_dispatch:
     inputs:
-      aws:
+      aws_access_key_id:
         type: string
-        description: AWS credentials because I can't create a runner user so it has to be manual
         required: true
+      aws_secret_access_key:
+        type: string
+        required: true
+      aws_session_token:
+        type: string
+        required: true
+      aws_region:
+        type: string
+        required: true
+        default: "us-east-1"
       branch:
         description: "Branch to run workflow on"
         required: true
@@ -30,16 +39,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Export credentials
-        run: |
-          mkdir -p ~/.aws
-
-          echo "${{ github.event.inputs.aws }}" > ~/.aws/credentials
-
-          PROFILE_NAME=$(head -n 1 ~/.aws/credentials | tr -d '[]')
-
-          echo "[$PROFILE_NAME]" > ~/.aws/config
-          echo "region = us-east-1" >> ~/.aws/config
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ github.event.inputs.aws_access_key_id }}
+          aws-secret-access-key: ${{ github.event.inputs.aws_secret_access_key }}
+          aws-session-token: ${{ github.event.inputs.aws_session_token }}
+          aws-region: ${{ github.event.inputs.aws_region }}
 
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
@@ -86,16 +92,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Export credentials
-        run: |
-          mkdir -p ~/.aws
-
-          echo "${{ github.event.inputs.aws }}" > ~/.aws/credentials
-
-          PROFILE_NAME=$(head -n 1 ~/.aws/credentials | tr -d '[]')
-
-          echo "[$PROFILE_NAME]" > ~/.aws/config
-          echo "region = us-east-1" >> ~/.aws/config
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ github.event.inputs.aws_access_key_id }}
+          aws-secret-access-key: ${{ github.event.inputs.aws_secret_access_key }}
+          aws-session-token: ${{ github.event.inputs.aws_session_token }}
+          aws-region: ${{ github.event.inputs.aws_region }}
 
       - name: Login to Amazon ECR
         id: login-ecr
