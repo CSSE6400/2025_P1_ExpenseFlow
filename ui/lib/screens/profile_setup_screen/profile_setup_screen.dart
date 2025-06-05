@@ -23,7 +23,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
 
     return Scaffold(
       backgroundColor: backgroundColor,
-      appBar: AppBarWidget(screenName: '', showBackButton: true),
+      appBar: AppBarWidget(screenName: '', showBackButton: false),
       body: GestureDetector(
         onTap: () {
           FocusScope.of(context).unfocus(); // Dismiss keyboard

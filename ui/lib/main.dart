@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/common/snack_bar.dart';
 import 'package:flutter_frontend/screens/add_friends_to_group_screen/add_friends_to_group_screen.dart';
 import 'package:flutter_frontend/screens/create_group_screen/create_group_screen.dart';
 import 'package:flutter_frontend/services/api_service.dart' show ApiService;
@@ -128,9 +129,7 @@ class MyApp extends StatelessWidget {
             final args = settings.arguments as Map<String, dynamic>?;
             final expenseId = args?['expenseId'] as String?;
             if (expenseId == null) {
-              screen = const Scaffold(
-                body: Center(child: Text('Error: Missing expense ID')),
-              );
+              return null;
             } else {
               screen = SeeExpenseScreen(expenseId: expenseId);
             }
@@ -140,9 +139,7 @@ class MyApp extends StatelessWidget {
             final userId = args?['userId'] as String?;
 
             if (userId == null) {
-              screen = const Scaffold(
-                body: Center(child: Text('Error: Missing user ID')),
-              );
+              return null;
             } else {
               screen = ViewFriendScreen(userId: userId);
             }
@@ -153,9 +150,7 @@ class MyApp extends StatelessWidget {
             final groupId = args?['groupId'] as String?;
 
             if (groupId == null) {
-              screen = const Scaffold(
-                body: Center(child: Text('Error: Missing group ID')),
-              );
+              return null;
             } else {
               screen = ViewGroupScreen(groupId: groupId);
             }
@@ -163,14 +158,22 @@ class MyApp extends StatelessWidget {
           default:
             final logger = Logger("MyApp");
             logger.warning("Unknown route: ${settings.name}");
-            screen = const Scaffold(
-              body: Center(child: Text('404: Page not found')),
-            );
+            return null;
         }
 
         return MaterialPageRoute(
           builder:
               (context) => AuthGuardWidget(builder: (context, user) => screen),
+          settings: settings,
+        );
+      },
+      onUnknownRoute: (RouteSettings settings) {
+        final logger = Logger("MyApp");
+        logger.warning("Unknown route (onUnknownRoute): ${settings.name}");
+        return MaterialPageRoute(
+          builder:
+              (context) =>
+                  AuthGuardWidget(builder: (context, user) => HomeScreen()),
           settings: settings,
         );
       },
