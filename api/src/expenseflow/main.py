@@ -7,6 +7,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 
+from expenseflow.audit.routes import router as audit_router
 from expenseflow.config import CONFIG
 from expenseflow.database.core import db_engine
 from expenseflow.database.service import initialise_database
@@ -37,6 +38,7 @@ app.include_router(expense_router, prefix="/expenses")
 app.include_router(user_router, prefix="/users")
 app.include_router(group_router, prefix="/groups")
 app.include_router(friend_router, prefix="/friends")
+app.include_router(audit_router, prefix="/audits")
 
 
 app.add_middleware(

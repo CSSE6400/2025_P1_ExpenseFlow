@@ -2,6 +2,8 @@
 
 import random
 
+from expenseflow.audit.models import AuditModel
+from expenseflow.audit.schemas import AuditCreate, AuditRead
 from expenseflow.enums import EntityKind
 from expenseflow.expense.models import (
     ExpenseItemModel,
@@ -95,3 +97,15 @@ class ExpenseModelFactory(SQLAlchemyFactory[ExpenseModel]): ...
 class ExpenseCreateFactory(ModelFactory[ExpenseCreate]):
     items = Use(ExpenseItemCreateFactory.batch, size=3)
     splits = Use(ExpenseItemSplitCreateFactory.generate_splits, n=2)
+
+
+# Audits
+
+
+class AuditModelFactory(SQLAlchemyFactory[AuditModel]): ...
+
+
+class AuditCreateFactory(ModelFactory[AuditCreate]): ...
+
+
+class AuditReadFactory(ModelFactory[AuditRead]): ...
