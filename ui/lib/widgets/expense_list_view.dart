@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/common/search_bar.dart' as search;
-import 'package:flutter_frontend/models/enums.dart' show ExpenseStatus;
+import 'package:flutter_frontend/models/enums.dart'
+    show EntityKind, ExpenseStatus;
 import 'package:flutter_frontend/models/expense.dart';
+import 'package:flutter_frontend/models/user.dart' show UserRead;
+import 'package:flutter_frontend/services/auth_guard_provider.dart'
+    show AuthGuardProvider;
 import 'package:flutter_frontend/widgets/expense_list_segment_control.dart';
 import 'package:flutter_frontend/widgets/expense_view.dart';
 import 'package:flutter_frontend/common/time_period_dropdown.dart';
 import 'package:flutter_frontend/common/proportional_sizes.dart';
+import 'package:provider/provider.dart' show Provider;
+
+enum ExpenseViewType { mine, friend, group }
 
 class ExpenseListView extends StatefulWidget {
   final List<ExpenseRead> expenses;
@@ -25,6 +32,14 @@ class _ExpenseListViewState extends State<ExpenseListView> {
   String selectedPeriod = 'Last 30 Days';
   String searchText = '';
   ExpenseListSegment selectedSegment = ExpenseListSegment.unpaid;
+  late UserRead user;
+
+  @override
+  void initState() {
+    super.initState();
+    final authGuard = Provider.of<AuthGuardProvider>(context, listen: false);
+    user = authGuard.mustGetUser(context);
+  }
 
   List<ExpenseRead> get filteredExpenses {
     final now = DateTime.now();
@@ -118,6 +133,12 @@ class _ExpenseListViewState extends State<ExpenseListView> {
             (expense) => ExpenseView(
               expense: expense,
               onButtonPressed: () => widget.onExpenseTap(expense),
+              type:
+                  expense.uploader.userId == user.userId
+                      ? ExpenseViewType.mine
+                      : (expense.parentKind == EntityKind.group
+                          ? ExpenseViewType.group
+                          : ExpenseViewType.friend),
             ),
           ),
       ],

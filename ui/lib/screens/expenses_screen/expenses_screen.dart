@@ -67,10 +67,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
 
     return Scaffold(
       backgroundColor: backgroundColor,
-      appBar: AppBarWidget(
-        screenName: "View My Personal Expenses",
-        showBackButton: false,
-      ),
+      appBar: AppBarWidget(screenName: "View Expenses", showBackButton: false),
 
       body: SwipeDetector(
         onDragLeft: () {

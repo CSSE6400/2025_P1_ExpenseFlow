@@ -64,6 +64,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
   bool isLoading = true;
 
   late TextEditingController _amountController;
+  late TextEditingController _splitAmountController;
 
   final _logger = Logger('ExpenseForm');
 
@@ -86,6 +87,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
     _expenseSplits = widget.initialExpense?.splits ?? [];
 
     _amountController = TextEditingController(text: '0.00');
+    _splitAmountController = TextEditingController(text: '0.00');
 
     // update total amount
     _updateCalculatedAmount();
@@ -155,6 +157,14 @@ class _ExpenseFormState extends State<ExpenseForm> {
       total += item.price * item.quantity;
     }
     _amountController.text = total.toStringAsFixed(2);
+    _logger.info('Total amount calculated: $total');
+    _logger.info('Total number of splits : ${_expenseSplits.length}');
+    _splitAmountController.text = (total /
+            (_expenseSplits.isNotEmpty ? _expenseSplits.length : 1))
+        .toStringAsFixed(2);
+    _logger.info(
+      'Your split amount calculated: ${_splitAmountController.text}',
+    );
   }
 
   String get formattedItemsString {
@@ -266,8 +276,16 @@ class _ExpenseFormState extends State<ExpenseForm> {
         ),
         CustomDivider(),
         GeneralField(
-          label: 'Amount (\$)',
+          label: 'Total (\$)',
           controller: _amountController,
+          isEditable: false,
+          showStatusIcon: false,
+          validationRule: (value) => true,
+          maxLength: 10,
+        ),
+        GeneralField(
+          label: 'Your Split (\$)',
+          controller: _splitAmountController,
           isEditable: false,
           showStatusIcon: false,
           validationRule: (value) => true,
