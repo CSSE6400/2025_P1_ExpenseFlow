@@ -1,9 +1,7 @@
-resource "local_file" "ui_url" {
-  content  = local.ui_url
-  filename = "./ui.txt"
+output "ui_url" {
+  value = local.ui_url
 }
 
-resource "local_file" "api_url" {
-  content  = local.api_url
-  filename = "./api.txt"
+output "api_url" {
+  value = local.api_url
 }
