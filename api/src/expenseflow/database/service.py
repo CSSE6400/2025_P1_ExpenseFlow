@@ -19,6 +19,7 @@ async def initialise_database(engine: AsyncEngine) -> None:
         ExpenseItemModel,
         ExpenseItemSplitModel,
     )
+    from expenseflow.audit.models import AuditModel  # noqa: F401
 
     async with engine.begin() as conn:
         await conn.run_sync(BaseDBModel.metadata.create_all)

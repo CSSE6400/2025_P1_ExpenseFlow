@@ -240,19 +240,11 @@ def is_valid_expense_change(
     input_status: ExpenseStatus, usr_status: ExpenseStatus, exp_status: ExpenseStatus
 ) -> bool:
     """Function to manage expense state changes."""
-    status_map = {
-        ExpenseStatus.requested: 1,
-        ExpenseStatus.accepted: 2,
-        ExpenseStatus.paid: 3,
-    }
-    input_status_num = status_map[input_status]
-    usr_status_num = status_map[usr_status]
-    exp_status_num = status_map[exp_status]
     INVALID_SKIP_NUM = 2  # noqa: N806
 
     if (
-        exp_status_num > usr_status_num
-        or abs(usr_status_num - exp_status_num) == INVALID_SKIP_NUM
+        exp_status.ranking() > usr_status.ranking()
+        or abs(usr_status.ranking() - exp_status.ranking()) == INVALID_SKIP_NUM
     ):
         msg = (
             f"The expense should only be in state '{exp_status}' if everyone is in state "
@@ -263,18 +255,25 @@ def is_valid_expense_change(
 
     # Don't do anything when the status are the same
     if input_status == usr_status and usr_status == exp_status:
+        logger.debug("No change in expense status, skipping update")
         return True
 
     if (
-        abs(input_status_num - usr_status_num) == INVALID_SKIP_NUM
-        or abs(input_status_num - exp_status_num) == INVALID_SKIP_NUM
+        abs(input_status.ranking() - usr_status.ranking()) == INVALID_SKIP_NUM
+        or abs(input_status.ranking() - exp_status.ranking()) == INVALID_SKIP_NUM
     ):
+        logger.debug(
+            "Invalid expense status change, skipping update. "
+            f"Input: {input_status.value}, User: {usr_status.value}, Expense: {exp_status.value}"
+        )
         return False
 
     # Can't decrease usr's state when everything is requested or accepted or paid
-    if (  # noqa: SIM103
-        exp_status == usr_status and input_status_num - usr_status_num == -1
-    ):
+    if exp_status == usr_status and input_status.ranking() - usr_status.ranking() == -1:
+        logger.debug(
+            "Invalid expense status change, skipping update. "
+            f"Input: {input_status.value}, User: {usr_status.value}, Expense: {exp_status.value}"
+        )
         return False
 
     return True
@@ -299,6 +298,10 @@ async def get_user_split_status(
 
     if len(statuses) == 0:
         if expense.uploader_id == user.user_id or expense.parent_id == user.entity_id:
+            logger.debug(
+                f"User '{user.user_id}' has no splits in expense '{expense.expense_id}', "
+                "but is the uploader or parent, so returning paid status."
+            )
             return ExpenseStatus.paid
 
         msg = f"User '{user.user_id}' does not have any splits in this expense."
@@ -307,6 +310,7 @@ async def get_user_split_status(
     uniques = set(statuses)
     if len(uniques) != 1:
         msg = f"User '{user.user_id}' has splits in expense '{expense.expense_id}' that don't have the same status"
+        logger.error(msg)
         raise Exception(msg)  # noqa: TRY002
 
     return uniques.pop()
@@ -346,13 +350,12 @@ async def get_expense_status(
 
     statuses: list[ExpenseStatus] = list((await session.execute(stmt)).scalars().all())
 
-    if all(status == ExpenseStatus.paid for status in statuses):
-        return ExpenseStatus.paid
+    lowest_status: ExpenseStatus = ExpenseStatus.paid
+    for status in statuses:
+        if status.ranking() < lowest_status.ranking():
+            lowest_status = status
 
-    if all(status == ExpenseStatus.accepted for status in statuses):
-        return ExpenseStatus.accepted
-
-    return ExpenseStatus.requested
+    return lowest_status
 
 
 async def get_uploaded_expenses(
@@ -405,6 +408,32 @@ async def get_owned_expenses(
         .scalars()
         .all()
     )
+
+
+async def get_all_expenses(
+    session: AsyncSession, user: UserModel
+) -> list[ExpenseModel]:
+    """Gets all expenses that a user is involved in."""
+    exists_in_split_q = (
+        select(1)
+        .select_from(ExpenseItemModel)
+        .join(
+            ExpenseItemSplitModel,
+            ExpenseItemModel.expense_item_id == ExpenseItemSplitModel.expense_item_id,
+        )
+        .where(ExpenseItemSplitModel.user_id == user.user_id)
+        .exists()
+    )
+
+    stmt = select(ExpenseModel).where(
+        or_(
+            ExpenseModel.uploader_id == user.user_id,
+            ExpenseModel.parent_id == user.entity_id,
+            exists_in_split_q,
+        )
+    )
+
+    return list((await session.execute(stmt)).scalars().all())
 
 
 async def get_expense(

@@ -1,0 +1,6 @@
+# textract:
+sentry:
+  sentry_dsn: "{{env_SENTRY_DSN}}"
+report_gen:
+# s3_attachment:
+#   bucket_name: "expenseflow-attachments"

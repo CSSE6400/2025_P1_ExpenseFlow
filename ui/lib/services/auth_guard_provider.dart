@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart' show SchedulerBinding;
-import 'package:flutter_frontend/common/snack_bar.dart';
-import 'package:flutter_frontend/screens/initial_startup_screen/initial_startup_screen.dart'
+import 'package:expenseflow/common/snack_bar.dart';
+import 'package:expenseflow/screens/initial_startup_screen/initial_startup_screen.dart'
     show InitialStartupScreen;
-import 'package:flutter_frontend/services/api_service.dart';
-import 'package:flutter_frontend/services/auth_service.dart';
-import 'package:flutter_frontend/models/user.dart' show UserRead;
+import 'package:expenseflow/services/api_service.dart';
+import 'package:expenseflow/services/auth_service.dart';
+import 'package:expenseflow/models/user.dart' show UserRead;
 import 'package:logging/logging.dart';
 
 class AuthGuardProvider extends ChangeNotifier {

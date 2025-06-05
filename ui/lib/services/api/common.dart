@@ -1,6 +1,6 @@
 import 'dart:convert' show jsonDecode;
 
-import 'package:flutter_frontend/services/auth_service.dart'
+import 'package:expenseflow/services/auth_service.dart'
     show AuthenticatedClient;
 import 'package:logging/logging.dart' show Logger;
 

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/screens/add_friends_to_group_screen/add_friends_to_group_screen.dart';
-import 'package:flutter_frontend/screens/create_group_screen/create_group_screen.dart';
-import 'package:flutter_frontend/services/api_service.dart' show ApiService;
-import 'package:flutter_frontend/services/auth_guard.dart' show AuthGuardWidget;
-import 'package:flutter_frontend/services/auth_guard_provider.dart'
+import 'package:expenseflow/screens/add_friends_to_group_screen/add_friends_to_group_screen.dart';
+import 'package:expenseflow/screens/create_group_screen/create_group_screen.dart';
+import 'package:expenseflow/services/api_service.dart' show ApiService;
+import 'package:expenseflow/services/auth_guard.dart' show AuthGuardWidget;
+import 'package:expenseflow/services/auth_guard_provider.dart'
     show AuthGuardProvider;
-import 'package:flutter_frontend/services/auth_service.dart' show AuthService;
-import 'package:flutter_frontend/screens/overview_screen/overview_screen.dart';
-import 'package:flutter_frontend/utils/config.dart' show Config;
+import 'package:expenseflow/services/auth_service.dart' show AuthService;
+import 'package:expenseflow/screens/overview_screen/overview_screen.dart';
+import 'package:expenseflow/utils/config.dart' show Config;
 import 'package:provider/provider.dart'
     show ChangeNotifierProvider, MultiProvider, Provider;
 import 'package:logging/logging.dart' show Level, Logger;

@@ -1,12 +1,12 @@
 import 'dart:convert';
 
-import 'package:flutter_frontend/common/scan_receipt.dart' show WebImageInfo;
-import 'package:flutter_frontend/models/enums.dart'
+import 'package:expenseflow/common/scan_receipt.dart' show WebImageInfo;
+import 'package:expenseflow/models/enums.dart'
     show ExpenseStatus, ExpenseStatusConverter;
-import 'package:flutter_frontend/models/expense.dart'
+import 'package:expenseflow/models/expense.dart'
     show ExpenseCreate, ExpenseOverview, ExpenseRead, SplitStatusInfo;
-import 'package:flutter_frontend/services/api/common.dart';
-import 'package:flutter_frontend/services/api_service.dart' show ApiException;
+import 'package:expenseflow/services/api/common.dart';
+import 'package:expenseflow/services/api_service.dart' show ApiException;
 import 'package:http/http.dart' as http;
 
 class ExpenseApiClient extends BaseApiClient {
@@ -113,6 +113,23 @@ class ExpenseApiClient extends BaseApiClient {
     }
   }
 
+  Future<List<ExpenseRead>> getAllExpenses() async {
+    final response = await client.get(backendUri("/expenses/all"));
+
+    if (response.statusCode == 200) {
+      return safeJsonDecodeList(response.body, ExpenseRead.fromJson);
+    } else {
+      logger.info(
+        "Failed to fetch expenses: ${response.statusCode} ${response.body}",
+      );
+      throw ApiException(
+        response.statusCode,
+        'Failed to fetch expenses',
+        response.body,
+      );
+    }
+  }
+
   Future<ExpenseStatus?> getMyExpenseStatus(String expenseId) async {
     final response = await client.get(
       backendUri("/expenses/$expenseId/my-status"),
@@ -179,7 +196,7 @@ class ExpenseApiClient extends BaseApiClient {
     }
   }
 
-  Future<ExpenseRead> createExpenseFromImage(
+  Future<ExpenseRead?> createExpenseFromImage(
     WebImageInfo image,
     String? parentId,
   ) async {
@@ -213,6 +230,9 @@ class ExpenseApiClient extends BaseApiClient {
 
     if (response.statusCode == 200) {
       return ExpenseRead.fromJson(safeJsonDecode((respStr)));
+    } else if (response.statusCode == 405) {
+      logger.info("Image gen plugin is not loaded");
+      return null;
     } else {
       logger.info(
         "Failed to create expense from image: ${response.statusCode} $respStr",
@@ -221,6 +241,55 @@ class ExpenseApiClient extends BaseApiClient {
         response.statusCode,
         'Failed to create expense from image',
         respStr,
+      );
+    }
+  }
+
+  Future<bool?> checkExpenseAttachmentExists(String expenseId) async {
+    final response = await client.get(
+      backendUri("/expenses/$expenseId/attach/exists"),
+    );
+
+    if (response.statusCode == 200) {
+      return safeJsonDecode(response.body) as bool;
+    } else if (response.statusCode == 404) {
+      return false;
+    } else if (response.statusCode == 405) {
+      return null;
+    } else {
+      logger.info(
+        "Failed to get attachment exists: ${response.statusCode} ${response.body}",
+      );
+      throw ApiException(
+        response.statusCode,
+        'Failed to get attachment exists',
+        response.body,
+      );
+    }
+  }
+
+  Future<void> uploadExpenseAttachment({
+    required String expenseId,
+    required http.MultipartFile file,
+  }) async {
+    final uri = backendUri("/expenses/$expenseId/attach");
+
+    final request = http.MultipartRequest('POST', uri);
+
+    request.files.add(file);
+
+    final token = await client.authService.getAccessToken();
+    if (token == null) {
+      throw Exception('No access token found. Please log in.');
+    }
+    request.headers["Authorization"] = "Bearer $token";
+
+    final response = await request.send();
+    final respStr = await response.stream.bytesToString();
+
+    if (response.statusCode != 200) {
+      throw Exception(
+        'Failed to upload attachment: ${response.statusCode} $respStr',
       );
     }
   }

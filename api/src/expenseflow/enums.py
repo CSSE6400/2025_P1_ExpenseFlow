@@ -55,3 +55,14 @@ class ExpenseStatus(ExpenseFlowEnum):
     requested = "requested"
     accepted = "accepted"
     paid = "paid"
+
+    def ranking(self) -> int:
+        """Return the ranking of the expense status."""
+        return EXPENSE_STATUS_MAP[self]
+
+
+EXPENSE_STATUS_MAP = {
+    ExpenseStatus.requested: 1,
+    ExpenseStatus.accepted: 2,
+    ExpenseStatus.paid: 3,
+}

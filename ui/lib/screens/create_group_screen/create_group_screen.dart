@@ -2,19 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:logging/logging.dart';
 
-import 'package:flutter_frontend/common/app_bar.dart';
-import 'package:flutter_frontend/common/bottom_nav_bar.dart';
-import 'package:flutter_frontend/common/color_palette.dart';
-import 'package:flutter_frontend/common/custom_button.dart';
-import 'package:flutter_frontend/common/proportional_sizes.dart';
-import 'package:flutter_frontend/common/snack_bar.dart';
+import 'package:expenseflow/common/app_bar.dart';
+import 'package:expenseflow/common/bottom_nav_bar.dart';
+import 'package:expenseflow/common/color_palette.dart';
+import 'package:expenseflow/common/custom_button.dart';
+import 'package:expenseflow/common/proportional_sizes.dart';
+import 'package:expenseflow/common/snack_bar.dart';
 
-import 'package:flutter_frontend/models/enums.dart';
-import 'package:flutter_frontend/models/group.dart' show GroupCreate;
-import 'package:flutter_frontend/screens/add_friends_to_group_screen/add_friends_to_group_screen.dart';
-import 'package:flutter_frontend/screens/create_group_screen/elements/add_group_fields.dart';
-import 'package:flutter_frontend/services/api_service.dart';
-import 'package:flutter_frontend/types.dart' show Friend;
+import 'package:expenseflow/models/enums.dart';
+import 'package:expenseflow/models/group.dart' show GroupCreate;
+import 'package:expenseflow/screens/add_friends_to_group_screen/add_friends_to_group_screen.dart';
+import 'package:expenseflow/screens/create_group_screen/elements/add_group_fields.dart';
+import 'package:expenseflow/services/api_service.dart';
+import 'package:expenseflow/types.dart' show Friend;
 
 class CreateGroupScreen extends StatefulWidget {
   const CreateGroupScreen({super.key});

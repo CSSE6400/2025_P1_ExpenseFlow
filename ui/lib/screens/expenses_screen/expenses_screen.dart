@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/common/proportional_sizes.dart'
+import 'package:expenseflow/common/proportional_sizes.dart'
     show ProportionalSizes;
-import 'package:flutter_frontend/common/snack_bar.dart' show showCustomSnackBar;
-import 'package:flutter_frontend/models/expense.dart' show ExpenseRead;
-import 'package:flutter_frontend/services/api_service.dart' show ApiService;
-import 'package:flutter_frontend/widgets/expense_list_view.dart'
+import 'package:expenseflow/common/snack_bar.dart' show showCustomSnackBar;
+import 'package:expenseflow/common/swipe_detector.dart' show SwipeDetector;
+import 'package:expenseflow/models/expense.dart' show ExpenseRead;
+import 'package:expenseflow/services/api_service.dart' show ApiService;
+import 'package:expenseflow/widgets/expense_list_view.dart'
     show ExpenseListView;
 import 'package:provider/provider.dart' show Provider;
 import '../../common/color_palette.dart';
@@ -33,8 +34,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
     final apiService = Provider.of<ApiService>(context, listen: false);
 
     try {
-      final fetchedExpenses =
-          await apiService.expenseApi.getExpensesUploadedByMe();
+      final fetchedExpenses = await apiService.expenseApi.getAllExpenses();
 
       setState(() {
         expenses = fetchedExpenses;
@@ -66,28 +66,26 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
 
     return Scaffold(
       backgroundColor: backgroundColor,
-      appBar: AppBarWidget(
-        screenName: "View My Personal Expenses",
-        showBackButton: false,
-      ),
+      appBar: AppBarWidget(screenName: "View Expenses", showBackButton: false),
 
-      body: (GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        child: SafeArea(
-          child: SingleChildScrollView(
+      body: SwipeDetector(
+        onDragLeft: () {
+          Navigator.of(context).popUntil((route) => route.isFirst);
+        },
+        child: RefreshIndicator(
+          onRefresh: _loadData,
+          child: ListView(
             padding: EdgeInsets.symmetric(
               horizontal: proportionalSizes.scaleWidth(20),
-              vertical: proportionalSizes.scaleHeight(0),
+              vertical: proportionalSizes.scaleHeight(20),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                ExpenseListView(expenses: expenses, onExpenseTap: onExpenseTap),
-              ],
-            ),
+            physics: const AlwaysScrollableScrollPhysics(),
+            children: [
+              ExpenseListView(expenses: expenses, onExpenseTap: onExpenseTap),
+            ],
           ),
         ),
-      )),
+      ),
 
       bottomNavigationBar: BottomNavBar(
         currentScreen: BottomNavBarScreen.expenses,

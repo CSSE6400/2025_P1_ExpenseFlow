@@ -6,7 +6,7 @@ import '../../common/bottom_nav_bar.dart';
 import '../../common/custom_button.dart';
 import '../../types.dart' show Friend;
 import 'elements/add_friends_to_group_friends.dart';
-import 'package:flutter_frontend/services/api_service.dart';
+import 'package:expenseflow/services/api_service.dart';
 import 'package:provider/provider.dart' show Provider;
 
 class AddFriendsScreen extends StatefulWidget {

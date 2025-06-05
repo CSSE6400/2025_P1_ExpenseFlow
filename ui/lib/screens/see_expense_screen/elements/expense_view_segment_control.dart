@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_frontend/common/color_palette.dart';
-import 'package:flutter_frontend/utils/string_utils.dart';
+import 'package:expenseflow/common/color_palette.dart';
+import 'package:expenseflow/utils/string_utils.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../../common/proportional_sizes.dart';
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/models/expense.dart' show ExpenseRead;
-import 'package:flutter_frontend/widgets/expense_view_basic.dart';
+import 'package:expenseflow/models/expense.dart' show ExpenseRead;
+import 'package:expenseflow/widgets/expense_view_basic.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../common/color_palette.dart';
 import '../../../common/proportional_sizes.dart';
@@ -40,7 +40,7 @@ class HomeScreenRecentExpenses extends StatelessWidget {
             Padding(
               padding: EdgeInsets.all(proportionalSizes.scaleWidth(16)),
               child: Text(
-                'Recent Expenses',
+                'Recent Expenses By Me',
                 style: GoogleFonts.roboto(
                   fontSize: proportionalSizes.scaleText(24),
                   fontWeight: FontWeight.bold,

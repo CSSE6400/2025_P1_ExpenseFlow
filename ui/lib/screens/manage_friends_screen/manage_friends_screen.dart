@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/common/dialogs/app_dialog_box.dart'
+import 'package:expenseflow/common/dialogs/app_dialog_box.dart'
     show AppDialogBox;
-import 'package:flutter_frontend/common/snack_bar.dart'
+import 'package:expenseflow/common/snack_bar.dart'
     show SnackBarType, showCustomSnackBar;
-import 'package:flutter_frontend/models/user.dart';
-import 'package:flutter_frontend/screens/manage_friends_screen/elements/find_friends.dart'
+import 'package:expenseflow/models/user.dart';
+import 'package:expenseflow/screens/manage_friends_screen/elements/find_friends.dart'
     show ManageFriendsFind;
-import 'package:flutter_frontend/services/api_service.dart' show ApiService;
+import 'package:expenseflow/services/api_service.dart' show ApiService;
 import 'package:logging/logging.dart' show Logger;
 import 'package:provider/provider.dart' show Provider;
 

@@ -1,6 +1,6 @@
 // Flutter imports
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/services/auth_service.dart' show AuthService;
+import 'package:expenseflow/services/auth_service.dart' show AuthService;
 // Third-party imports
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart' show Provider;

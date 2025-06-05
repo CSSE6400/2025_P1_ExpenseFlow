@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/types.dart' show Friend;
+import 'package:expenseflow/types.dart' show Friend;
 // Common imports
 import '../../../common/fields/general_field.dart';
 import '../../../common/custom_divider.dart';

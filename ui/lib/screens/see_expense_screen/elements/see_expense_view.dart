@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/models/expense.dart';
-import 'package:flutter_frontend/models/user.dart' show UserRead;
-import 'package:flutter_frontend/widgets/expense_form.dart';
+import 'package:expenseflow/models/expense.dart';
+import 'package:expenseflow/models/user.dart' show UserRead;
+import 'package:expenseflow/widgets/expense_form.dart';
 import 'package:google_fonts/google_fonts.dart' show GoogleFonts;
 import '../../../common/custom_button.dart';
 import '../../../common/proportional_sizes.dart';
@@ -45,7 +45,7 @@ class SeeExpenseView extends StatelessWidget {
     return SingleChildScrollView(
       padding: EdgeInsets.symmetric(
         horizontal: proportionalSizes.scaleWidth(20),
-        vertical: proportionalSizes.scaleHeight(20),
+        vertical: proportionalSizes.scaleHeight(10),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -67,7 +67,7 @@ class SeeExpenseView extends StatelessWidget {
             onValidityChanged: onValidityChanged,
             onExpenseChanged: onExpenseChanged,
           ),
-          SizedBox(height: proportionalSizes.scaleHeight(24)),
+          SizedBox(height: proportionalSizes.scaleHeight(12)),
           CustomButton(
             label: isEditMode ? 'Save' : 'Edit',
             onPressed: isEditMode ? (isFormValid ? onSave : () {}) : onEdit,
@@ -77,7 +77,7 @@ class SeeExpenseView extends StatelessWidget {
                     ? (isFormValid ? ButtonState.enabled : ButtonState.disabled)
                     : ButtonState.enabled,
           ),
-          SizedBox(height: proportionalSizes.scaleHeight(16)),
+          SizedBox(height: proportionalSizes.scaleHeight(12)),
           if (isEditMode)
             CustomButton(
               label: 'Cancel',
@@ -85,7 +85,6 @@ class SeeExpenseView extends StatelessWidget {
               sizeType: ButtonSizeType.full,
               state: ButtonState.enabled,
             ),
-          SizedBox(height: proportionalSizes.scaleHeight(96)),
         ],
       ),
     );

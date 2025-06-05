@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/models/group.dart' show GroupRead;
+import 'package:expenseflow/models/group.dart' show GroupRead;
 import 'package:google_fonts/google_fonts.dart';
 import '../../../common/proportional_sizes.dart';
 import '../../../common/color_palette.dart';

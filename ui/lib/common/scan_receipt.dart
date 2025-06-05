@@ -1,11 +1,13 @@
 import 'dart:io';
+import 'package:http/http.dart' as http;
 import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/common/color_palette.dart';
-import 'package:flutter_frontend/services/api_service.dart' show ApiService;
+import 'package:expenseflow/common/color_palette.dart';
+import 'package:expenseflow/services/api_service.dart' show ApiService;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:logging/logging.dart';
 import 'package:provider/provider.dart' show Provider;
 import 'dialogs/app_dialog_box.dart';
 import 'snack_bar.dart';
@@ -88,6 +90,17 @@ Future<void> handleScanReceiptUpload({required BuildContext context}) async {
             image,
             null,
           );
+          if (expense == null) {
+            if (!context.mounted) return;
+
+            Navigator.of(context).pop(); // close loading
+            showCustomSnackBar(
+              context,
+              normalText:
+                  'Scan receipt plugin is not loaded, please try again later.',
+            );
+            return;
+          }
 
           // show success dialog
           if (!context.mounted) return;
@@ -121,7 +134,6 @@ Future<void> handleScanReceiptUpload({required BuildContext context}) async {
   );
 }
 
-/// Internal bottom sheet — lets user choose camera or gallery
 Future<void> showScanReceiptSourceOptions({
   required BuildContext context,
   required Function(WebImageInfo?) onSelected,
@@ -137,7 +149,7 @@ Future<void> showScanReceiptSourceOptions({
           highlightColor: ColorPalette.primaryAction.withOpacity(0.1),
         ),
         child: FractionallySizedBox(
-          heightFactor: 0.35, // Adjust height as needed
+          heightFactor: 0.35,
           child: Align(
             alignment: Alignment.bottomCenter,
             child: ClipRRect(
@@ -147,12 +159,10 @@ Future<void> showScanReceiptSourceOptions({
               ),
               child: Stack(
                 children: [
-                  // Blurred background just behind modal
                   BackdropFilter(
                     filter: ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
                     child: Container(color: Colors.white.withOpacity(0.3)),
                   ),
-                  // Actual modal content
                   Container(
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.95),

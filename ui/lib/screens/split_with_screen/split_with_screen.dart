@@ -1,17 +1,17 @@
 // Flutter imports
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/common/custom_button.dart'
+import 'package:expenseflow/common/custom_button.dart'
     show ButtonSizeType, ButtonState, CustomButton;
-import 'package:flutter_frontend/common/proportional_sizes.dart'
+import 'package:expenseflow/common/proportional_sizes.dart'
     show ProportionalSizes;
-import 'package:flutter_frontend/models/expense.dart';
-import 'package:flutter_frontend/models/group.dart' show GroupReadWithMembers;
-import 'package:flutter_frontend/models/user.dart';
-import 'package:flutter_frontend/screens/split_with_screen/elements/split_with_screen_friend.dart'
+import 'package:expenseflow/models/expense.dart';
+import 'package:expenseflow/models/group.dart' show GroupReadWithMembers;
+import 'package:expenseflow/models/user.dart';
+import 'package:expenseflow/screens/split_with_screen/elements/split_with_screen_friend.dart'
     show SplitWithScreenFriend;
-import 'package:flutter_frontend/screens/split_with_screen/elements/split_with_screen_group.dart'
+import 'package:expenseflow/screens/split_with_screen/elements/split_with_screen_group.dart'
     show SplitWithScreenGroup, SplitWithScreenGroupState;
-import 'package:flutter_frontend/screens/split_with_screen/elements/split_with_screen_segment_control.dart'
+import 'package:expenseflow/screens/split_with_screen/elements/split_with_screen_segment_control.dart'
     show SplitWithScreenSegmentControl, SplitWithSegment;
 import 'package:logging/logging.dart';
 // Common imports
@@ -151,18 +151,34 @@ class _SplitWithScreenState extends State<SplitWithScreen> {
                       selectedGroupId: _selectedGroupId,
                     ),
                 if (!widget.isReadOnly)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 16.0),
-                    child: CustomButton(
-                      label: 'Confirm Splits',
-                      onPressed: _saveAndReturn,
-                      state:
-                          isContinueEnabled
-                              ? ButtonState.enabled
-                              : ButtonState.disabled,
-                      sizeType: ButtonSizeType.full,
-                    ),
+                  // write some text to explain the splits
+                  // please ensure that the splits add up to 100%
+                  !isContinueEnabled
+                      ? Padding(
+                        padding: EdgeInsets.symmetric(
+                          vertical: proportionalSizes.scaleHeight(16),
+                        ),
+                        child: Text(
+                          'Please ensure that the splits add up to 100%',
+                          style: TextStyle(
+                            color: ColorPalette.secondaryText,
+                            fontSize: 18,
+                          ),
+                        ),
+                      )
+                      : const SizedBox.shrink(),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: CustomButton(
+                    label: 'Confirm Splits',
+                    onPressed: _saveAndReturn,
+                    state:
+                        isContinueEnabled
+                            ? ButtonState.enabled
+                            : ButtonState.disabled,
+                    sizeType: ButtonSizeType.full,
                   ),
+                ),
               ],
             ),
           ),

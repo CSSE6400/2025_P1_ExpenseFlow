@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/common/color_palette.dart';
-import 'package:flutter_frontend/models/enums.dart' show ExpenseStatus;
-import 'package:flutter_frontend/models/user.dart';
+import 'package:expenseflow/common/color_palette.dart';
+import 'package:expenseflow/models/enums.dart' show ExpenseStatus;
+import 'package:expenseflow/models/user.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_frontend/models/expense.dart';
-import 'package:flutter_frontend/utils/colors.dart';
-import 'package:flutter_frontend/utils/string_utils.dart';
+import 'package:expenseflow/models/expense.dart';
+import 'package:expenseflow/utils/colors.dart';
+import 'package:expenseflow/utils/string_utils.dart';
 import '../../../common/proportional_sizes.dart';
 import '../../../common/icon_maker.dart';
 

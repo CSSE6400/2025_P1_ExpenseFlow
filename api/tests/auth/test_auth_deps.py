@@ -1,12 +1,49 @@
 """Auth dependency tests."""
 
 import pytest
+from expenseflow.audit.schemas import AuditCreate
 from expenseflow.auth.deps import get_current_user, get_user_token_identifier
 from expenseflow.auth.service import JWTError
 from expenseflow.user.models import UserModel
-from fastapi import HTTPException
+from fastapi import HTTPException, Request
 from fastapi.security import HTTPAuthorizationCredentials
 from sqlalchemy.ext.asyncio import AsyncSession
+from starlette.datastructures import URL
+
+
+class MockRequest(Request):
+    """Mock request for testing purposes."""
+
+    _method: str
+    _url: URL
+    _json_data: dict | None
+
+    def __init__(
+        self,
+        method: str = "POST",
+        url: str = "/some-endpoint",
+        json_data: dict | None = None,
+    ) -> None:
+        """Creates."""
+        self._method = method
+        self._url = URL(url)
+        self._json_data = json_data
+
+    @property
+    def method(self) -> str:
+        """Get method."""
+        return self._method
+
+    @property
+    def url(self) -> URL:
+        """Get url."""
+        return self._url
+
+    async def json(self) -> dict | None:
+        """Get json."""
+        if isinstance(self._json_data, Exception):
+            raise self._json_data
+        return self._json_data
 
 
 @pytest.mark.asyncio
@@ -46,6 +83,7 @@ async def test_get_current_user_success(
     monkeypatch: pytest.MonkeyPatch, user_model: UserModel, session: AsyncSession
 ):
     mock_user_token_id = "user123"  # noqa: S105
+    mock_request = MockRequest(json_data={"key": "value"})
 
     async def mock_get_user_by_token_id(
         sess: AsyncSession, user_token_id: str
@@ -54,11 +92,22 @@ async def test_get_current_user_success(
         assert user_token_id == mock_user_token_id
         return user_model
 
+    async def mock_create_audit(
+        session_: AsyncSession, user_: UserModel, audit_create: AuditCreate
+    ) -> None:
+        assert session_ == session
+        assert user_ == user_model
+        assert audit_create.method == "POST"
+        assert audit_create.endpoint == "/some-endpoint"
+        assert audit_create.request_body == {"key": "value"}
+
     monkeypatch.setattr(
         "expenseflow.auth.deps.get_user_by_token_id", mock_get_user_by_token_id
     )
+    monkeypatch.setattr("expenseflow.auth.deps.create_audit", mock_create_audit)
 
-    result = await get_current_user(session, mock_user_token_id)
+    result = await get_current_user(session, mock_user_token_id, mock_request)
+
     assert result == user_model
 
 
@@ -67,6 +116,7 @@ async def test_get_current_user_not_found(
     monkeypatch: pytest.MonkeyPatch, user_model: UserModel, session: AsyncSession
 ):
     mock_user_token_id = "user123"  # noqa: S105
+    mock_request = MockRequest(json_data={"irrelevant": True})
 
     async def mock_get_user_by_token_id(
         session: AsyncSession, user_token_id: str
@@ -78,7 +128,7 @@ async def test_get_current_user_not_found(
     )
 
     with pytest.raises(HTTPException) as exc_info:
-        await get_current_user(session, mock_user_token_id)
+        await get_current_user(session, mock_user_token_id, mock_request)
 
     assert exc_info.value.status_code == 401
     assert "Unable to match" in exc_info.value.detail

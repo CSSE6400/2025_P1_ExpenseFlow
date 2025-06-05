@@ -1,27 +1,30 @@
-import 'package:flutter_frontend/common/app_bar.dart' show AppBarWidget;
-import 'package:flutter_frontend/common/bottom_nav_bar.dart'
+import 'package:expenseflow/common/app_bar.dart' show AppBarWidget;
+import 'package:expenseflow/common/bottom_nav_bar.dart'
     show BottomNavBar, BottomNavBarScreen;
-import 'package:flutter_frontend/common/color_palette.dart' show ColorPalette;
-import 'package:flutter_frontend/common/dialogs/app_dialog_box.dart'
+import 'package:expenseflow/common/color_palette.dart' show ColorPalette;
+import 'package:expenseflow/common/dialogs/app_dialog_box.dart'
     show AppDialogBox;
-import 'package:flutter_frontend/models/group.dart' show GroupRead;
-import 'package:flutter_frontend/screens/groups_and_friends_screen/elements/friend_list.dart'
+import 'package:expenseflow/common/proportional_sizes.dart'
+    show ProportionalSizes;
+import 'package:expenseflow/common/swipe_detector.dart';
+import 'package:expenseflow/models/group.dart' show GroupRead;
+import 'package:expenseflow/screens/groups_and_friends_screen/elements/friend_list.dart'
     show FriendsListView;
-import 'package:flutter_frontend/screens/groups_and_friends_screen/elements/group_list.dart'
+import 'package:expenseflow/screens/groups_and_friends_screen/elements/group_list.dart'
     show GroupsListView;
-import 'package:flutter_frontend/screens/groups_and_friends_screen/elements/groups_and_friends_segment_control.dart'
+import 'package:expenseflow/screens/groups_and_friends_screen/elements/groups_and_friends_segment_control.dart'
     show GroupsAndFriendsSegmentControl;
-import 'package:flutter_frontend/services/api_service.dart' show ApiService;
-import 'package:flutter_frontend/types.dart'
+import 'package:expenseflow/services/api_service.dart' show ApiService;
+import 'package:expenseflow/types.dart'
     show Friend, FriendRequest, FriendRequestViewStatus;
 import 'package:logging/logging.dart' show Logger;
 import 'package:provider/provider.dart' show Provider;
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/common/custom_button.dart';
+import 'package:expenseflow/common/custom_button.dart';
 import '../../../common/search_bar.dart' as search;
-import 'package:flutter_frontend/services/api_service.dart';
+import 'package:expenseflow/services/api_service.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_frontend/common/snack_bar.dart';
+import 'package:expenseflow/common/snack_bar.dart';
 import 'package:logging/logging.dart';
 
 class GroupsAndFriendsScreen extends StatefulWidget {
@@ -47,6 +50,7 @@ class _GroupsAndFriendsScreenState extends State<GroupsAndFriendsScreen> {
   }
 
   Future<void> _fetchGroupsAndFriends() async {
+    _logger.info("Fetching groups and friends data...");
     final apiService = Provider.of<ApiService>(context, listen: false);
     try {
       final userGroups = await apiService.groupApi.getUserGroups();
@@ -209,6 +213,8 @@ class _GroupsAndFriendsScreenState extends State<GroupsAndFriendsScreen> {
             )
             .toList();
 
+    final proportionalSizes = ProportionalSizes(context: context);
+
     return _loading
         ? const Center(child: CircularProgressIndicator())
         : Scaffold(
@@ -217,52 +223,61 @@ class _GroupsAndFriendsScreenState extends State<GroupsAndFriendsScreen> {
             screenName: 'Groups & Friends',
             showBackButton: false,
           ),
-          body: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                GroupsAndFriendsSegmentControl(
-                  selectedSegment: _selected,
-                  onSegmentChanged:
-                      (value) => setState(() => _selected = value),
+          body: SwipeDetector(
+            onDragLeft: () {
+              Navigator.of(context).popUntil((route) => route.isFirst);
+            },
+            child: RefreshIndicator(
+              onRefresh: _fetchGroupsAndFriends,
+              child: ListView(
+                padding: EdgeInsets.symmetric(
+                  horizontal: proportionalSizes.scaleWidth(20),
+                  vertical: proportionalSizes.scaleHeight(20),
                 ),
-                const SizedBox(height: 16),
-                search.SearchBar(
-                  hintText: 'Search ${_selected.toLowerCase()}',
-                  onChanged: _onSearchChanged,
-                ),
-                const SizedBox(height: 16),
-                if (_selected == 'Groups') ...[
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 16.0),
-                    child: CustomButton(
-                      label: 'Create Group',
-                      onPressed:
-                          () => Navigator.pushNamed(context, '/create_group'),
-                      state: ButtonState.enabled,
-                      sizeType: ButtonSizeType.full,
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: [
+                  GroupsAndFriendsSegmentControl(
+                    selectedSegment: _selected,
+                    onSegmentChanged:
+                        (value) => setState(() => _selected = value),
+                  ),
+                  const SizedBox(height: 16),
+                  search.SearchBar(
+                    hintText: 'Search ${_selected.toLowerCase()}',
+                    onChanged: _onSearchChanged,
+                  ),
+                  const SizedBox(height: 16),
+                  if (_selected == 'Groups') ...[
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: CustomButton(
+                        label: 'Create Group',
+                        onPressed:
+                            () => Navigator.pushNamed(context, '/create_group'),
+                        state: ButtonState.enabled,
+                        sizeType: ButtonSizeType.full,
+                      ),
                     ),
-                  ),
-                  GroupsListView(groups: filteredGroups),
-                ] else ...[
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 16.0),
-                    child: CustomButton(
-                      label: 'Find Friends',
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/manage_friends');
-                      },
-                      state: ButtonState.enabled,
-                      sizeType: ButtonSizeType.full,
+                    GroupsListView(groups: filteredGroups),
+                  ] else ...[
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: CustomButton(
+                        label: 'Find Friends',
+                        onPressed:
+                            () =>
+                                Navigator.pushNamed(context, '/manage_friends'),
+                        state: ButtonState.enabled,
+                        sizeType: ButtonSizeType.full,
+                      ),
                     ),
-                  ),
-                  FriendsListView(
-                    friends: filteredFriends,
-                    onAccepted: _onAccepted,
-                  ),
+                    FriendsListView(
+                      friends: filteredFriends,
+                      onAccepted: _onAccepted,
+                    ),
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
           bottomNavigationBar: const BottomNavBar(
