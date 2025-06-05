@@ -4,9 +4,9 @@
 
 ## Description
 
-Have you ever had to explain a suspiciously large 'business lunch', wonder where all your money went, or chase down friends for their share of last night's dinner? With ExpenseFlow, budget leaks become a thing of the past and you'll never have to play detective with your finances again. 
+Have you ever had to explain a suspiciously large 'business lunch', wonder where all your money went, or chase down friends for their share of last night's dinner? With ExpenseFlow, budget leaks become a thing of the past and you'll never have to play detective with your finances again.
 
-ExpenseFlow is a comprehensive expense management tool aimed at both individuals and businesses. It simplifies financial tracking and reporting through an intuitive interface. With automated document scanning and auto-generated reports, ExpenseFlow empowers users to gain financial clarity and control. It offers easy budget management and spending analysis for individuals, making expense management effortless and transparent. 
+ExpenseFlow is a comprehensive expense management tool aimed at both individuals and businesses. It simplifies financial tracking and reporting through an intuitive interface. With automated document scanning and auto-generated reports, ExpenseFlow empowers users to gain financial clarity and control. It offers easy budget management and spending analysis for individuals, making expense management effortless and transparent.
 
 ## Authors
 
@@ -18,7 +18,16 @@ This project has been completed solely by members of Team ExpenseFlow.
 - [Ella Berglas](https://github.com/EllaBerglas)
 - [Lucas Hicks](https://github.com/lucashicks1)
 
-### Backend & Plugins
+### Frontend & Backend Integration
+
+- [Ella Berglas](https://github.com/EllaBerglas)
+- [Lucas Hicks](https://github.com/lucashicks1)
+
+### Backend
+
+- [Lucas Hicks](https://github.com/lucashicks1)
+
+### Plugins
 
 - [Donghyug David Jeong](https://github.com/DonghyugDavidJeong)
 - [Lucas Hicks](https://github.com/lucashicks1)
@@ -54,7 +63,6 @@ Below is the project structure for ExpenseFlow:
 
 The quickest and easiest way to get the project running on your local machine is to use [Docker Compose](https://docs.docker.com/compose/). This will let you build and run the backend, frontend and database containers locally.
 
-
 #### Environment Variables
 
 Before running `docker compose`, you must create `.env` file in the project root directory, with the following values:
@@ -88,7 +96,7 @@ Once you are finished, you can stop the containers with `docker compose down`. I
 
 ### Remote Deployment
 
-To deploy remotely, store the AWS credentials in a file called `credentials` (file name must be exact), in the root directory, then run `./infra/deploy-infra.sh [--auto]`, with `--auto` being optional if you want to run confirmations automatically. 
+To deploy remotely, store the AWS credentials in a file called `credentials` (file name must be exact), in the root directory, then run `./infra/deploy-infra.sh [--auto]`, with `--auto` being optional if you want to run confirmations automatically.
 
 This deployment is done using Terraform, and so you will need it installed.
 
