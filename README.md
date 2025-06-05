@@ -84,17 +84,27 @@ Once up and running, the following will be available:
 
 #### Removing Containers
 
-Once you are reading, you can stop the containers with `docker compose down`. If would also like to remove the database volume created when running the containers, add the `--volumes` flag.
+Once you are finished, you can stop the containers with `docker compose down`. If would also like to remove the database volume created when running the containers, add the `--volumes` flag.
 
 ### Remote Deployment
 
 To deploy remotely, store the AWS credentials in a file called `credentials` (file name must be exact), in the root directory, then run `./infra/deploy-infra.sh [--auto]`, with `--auto` being optional if you want to run confirmations automatically. 
+
+This deployment is done using Terraform, and so you will need it installed.
+
+[Official Terraform Install Guide](https://developer.hashicorp.com/terraform/install)
+
+### Remote Teardown
+
+To teardown the remotely deployed service, ensure that the `credentials` file is the same as the file when deploying the service, and run `./infra/teardown.sh [--auto]`, with `--auto` being option if you want to run confirmations automatically.
 
 ## Testing
 
 ### Backend
 
 Backend tests are done using `pytest` and require a running postgres instance to work. The easiest way to run this database is using `docker compose up database`.
+
+To sync the dependencies, run `uv sync` in the `api/` directory with an active virtual environment.
 
 To run the tests, you must navigate to the `api/` directory and run `pytest`.
 
@@ -104,4 +114,4 @@ cd api/                        # Change directory
 pytest                         # Run tests
 ```
 
-For automated tests, we use GitHub Actions which run the same test suite.
+For automated tests, we use GitHub Actions, which run the same test suite.
