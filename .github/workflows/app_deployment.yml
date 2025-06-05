@@ -1,0 +1,113 @@
+name: App Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      aws:
+        type: string
+        description: AWS credentials because I can't create a runner user so it has to be manual
+        required: true
+
+env: # 👈 Global environment variables
+  ECS_API_NAME: expenseflow-api
+  ECR_API_URI: ${{ secrets.ECR_API_URI }}
+
+  ECS_UI_NAME: expenseflow-ui
+  ECR_UI_URI: ${{ secrets.ECR_UI_URI }}
+
+jobs:
+  backend_deploy:
+    name: Deploy Backend to ECS
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - uses: levibostian/action-hide-sensitive-inputs@v1
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Export credentials
+        run: |
+          mkdir ~/.aws
+          echo ${{ github.event.inputs.aws }} | tr " " "\n" > ~/.aws/credentials
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build and push docker image
+        run: |
+          IMAGE_URI=${{ env.ECR_API_URI }}:latest
+          docker build -t $IMAGE_URI ./ui
+          docker push $IMAGE_URI
+        working-directory: api
+
+      - name: Update ECS task definition
+        id: task-def
+        run: |
+          aws ecs describe-task-definition \
+            --task-definition ${{ env.ECS_API_NAME}} \
+            > task-def.json
+
+          jq --arg IMAGE_URI "${{ env.ECR_API_URI }}:latest" \
+            '.taskDefinition.containerDefinitions[0].image = $IMAGE_URI' task-def.json > new-task-def.json
+
+          aws ecs register-task-definition \
+            --cli-input-json file://new-task-def.json > task-def-register.json
+
+          echo "::set-output name=revision_arn::$(jq -r '.taskDefinition.taskDefinitionArn' task-def-register.json)"
+        shell: bash
+
+      - name: Update ECS service with new task definition revision
+        run: |
+          aws ecs update-service \
+            --cluster expenseflow \
+            --service ${{env.ECS_API_NAME}} \
+            --task-definition ${{ steps.task-def.outputs.revision_arn }}
+
+  frontend_deploy:
+    name: Deploy Frontend to ECS
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - uses: levibostian/action-hide-sensitive-inputs@v1
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Export credentials
+        run: |
+          mkdir ~/.aws
+          echo ${{ github.event.inputs.aws }} | tr " " "\n" > ~/.aws/credentials
+
+      - name: Login to ECR
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build and push docker image
+        run: |
+          IMAGE_URI=${{ env.ECR_UI_URI }}:latest
+          docker build -t $IMAGE_URI ./ui
+          docker push $IMAGE_URI
+        working-directory: ui
+
+      - name: Update ECS task definition
+        id: task-def
+        run: |
+          aws ecs describe-task-definition \
+            --task-definition ${{ env.ECS_UI_NAME}} \
+            > task-def.json
+
+          jq --arg IMAGE_URI "${{ env.ECR_UI_URI }}:latest" \
+            '.taskDefinition.containerDefinitions[0].image = $IMAGE_URI' task-def.json > new-task-def.json
+
+          aws ecs register-task-definition \
+            --cli-input-json file://new-task-def.json > task-def-register.json
+
+          echo "::set-output name=revision_arn::$(jq -r '.taskDefinition.taskDefinitionArn' task-def-register.json)"
+        shell: bash
+
+      - name: Update ECS service with new task definition revision
+        run: |
+          aws ecs update-service \
+            --cluster expenseflow \
+            --service ${{env.ECS_UI_NAME}} \
+            --task-definition ${{ steps.task-def.outputs.revision_arn }}
