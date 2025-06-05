@@ -7,11 +7,16 @@ on:
         type: string
         description: AWS credentials because I can't create a runner user so it has to be manual
         required: true
+      branch:
+        description: "Branch to run workflow on"
+        required: true
+        default: "main"
 
 jobs:
-  terraform_plan:
-    name: Runs a terraform plan
+  terraform_deploy:
+    name: Runs a terraform deployment
     runs-on: ubuntu-latest
+    if: github.event.inputs.branch == 'main'
     permissions:
       contents: read
       pull-requests: write
@@ -59,43 +64,6 @@ jobs:
           name: tfplan
           path: infra/tfplan.binary
 
-      - uses: actions/github-script@v7
-        if: github.event_name == 'pull_request'
-        env:
-          PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
-            #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
-            #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
-            <details><summary>Validation Output</summary>
-
-            \`\`\`\n
-            ${{ steps.validate.outputs.stdout }}
-            \`\`\`
-
-            </details>
-
-            #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
-
-            <details><summary>Show Plan</summary>
-
-            \`\`\`\n
-            ${process.env.PLAN}
-            \`\`\`
-
-            </details>
-
-            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`infra\`, Workflow: \`${{ github.workflow }}\`*`;
-
-            github.rest.issues.createComment({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: output
-            })
-              - uses: trstringer/manual-approval@v1
       - uses: trstringer/manual-approval@v1
         with:
           secret: ${{ github.TOKEN }}
@@ -107,3 +75,8 @@ jobs:
           fail-on-denial: true
           additional-approved-words: "approve,yes,y"
           additional-denied-words: "no,deny,n"
+
+      - name: Terraform Apply
+        id: apply
+        run: terraform apply -auto-approve -input=false tfplan.binary
+        working-directory: infra

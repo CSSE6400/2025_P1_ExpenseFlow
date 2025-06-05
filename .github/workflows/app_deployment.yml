@@ -7,6 +7,10 @@ on:
         type: string
         description: AWS credentials because I can't create a runner user so it has to be manual
         required: true
+      branch:
+        description: "Branch to run workflow on"
+        required: true
+        default: "main"
 
 env:
   ECS_API_NAME: expenseflow-api
@@ -19,7 +23,7 @@ jobs:
   backend_deploy:
     name: Deploy Backend to ECS
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.event.inputs.branch == 'main'
     steps:
       - uses: levibostian/action-hide-sensitive-inputs@v1
 
@@ -69,7 +73,7 @@ jobs:
   frontend_deploy:
     name: Deploy Frontend to ECS
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.event.inputs.branch == 'main'
     steps:
       - uses: levibostian/action-hide-sensitive-inputs@v1
 
