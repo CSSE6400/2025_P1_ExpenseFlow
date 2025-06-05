@@ -28,11 +28,15 @@ ExpenseRead _$ExpenseReadFromJson(Map<String, dynamic> json) => ExpenseRead(
     json['category'] as String,
   ),
   expenseDate: DateTime.parse(json['expense_date'] as String),
+  parent: EntityRead.fromJson(json['parent'] as Map<String, dynamic>),
   uploader: UserRead.fromJson(json['uploader'] as Map<String, dynamic>),
   items:
       (json['items'] as List<dynamic>)
           .map((e) => ExpenseItemRead.fromJson(e as Map<String, dynamic>))
           .toList(),
+  parentKind: const EntityKindConverter().fromJson(
+    json['parent_kind'] as String,
+  ),
   expenseTotal: (json['expense_total'] as num).toDouble(),
   status: const ExpenseStatusConverter().fromJson(json['status'] as String),
 );
@@ -45,9 +49,11 @@ Map<String, dynamic> _$ExpenseReadToJson(ExpenseRead instance) =>
       'category': const ExpenseCategoryConverter().toJson(instance.category),
       'expense_date': instance.expenseDate.toIso8601String(),
       'uploader': instance.uploader,
+      'parent': instance.parent,
       'items': instance.items,
       'expense_total': instance.expenseTotal,
       'status': const ExpenseStatusConverter().toJson(instance.status),
+      'parent_kind': const EntityKindConverter().toJson(instance.parentKind),
     };
 
 ExpenseCreate _$ExpenseCreateFromJson(Map<String, dynamic> json) =>

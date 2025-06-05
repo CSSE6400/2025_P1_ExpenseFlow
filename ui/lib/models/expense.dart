@@ -1,5 +1,8 @@
+import 'package:flutter_frontend/models/entity.dart' show EntityRead;
 import 'package:flutter_frontend/models/enums.dart'
     show
+        EntityKind,
+        EntityKindConverter,
         ExpenseCategory,
         ExpenseCategoryConverter,
         ExpenseStatus,
@@ -40,6 +43,7 @@ class ExpenseRead {
   final DateTime expenseDate;
 
   final UserRead uploader;
+  final EntityRead parent;
 
   final List<ExpenseItemRead> items;
 
@@ -48,6 +52,9 @@ class ExpenseRead {
   @ExpenseStatusConverter()
   final ExpenseStatus status;
 
+  @EntityKindConverter()
+  final EntityKind parentKind;
+
   ExpenseRead({
     required this.expenseId,
     required this.name,
@@ -55,9 +62,11 @@ class ExpenseRead {
     required this.category,
     required this.expenseDate,
 
+    required this.parent,
     required this.uploader,
-
     required this.items,
+
+    required this.parentKind,
     required this.expenseTotal,
     required this.status,
   });

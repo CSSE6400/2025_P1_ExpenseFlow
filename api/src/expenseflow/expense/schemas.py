@@ -5,7 +5,8 @@ from uuid import UUID
 
 from pydantic import computed_field
 
-from expenseflow.enums import ExpenseCategory, ExpenseStatus
+from expenseflow.entity.schemas import EntityRead
+from expenseflow.enums import EntityKind, ExpenseCategory, ExpenseStatus
 from expenseflow.schemas import ExpenseFlowBase
 from expenseflow.user.schemas import UserRead
 
@@ -27,8 +28,14 @@ class ExpenseRead(ExpenseFlowBase):
     category: ExpenseCategory
     expense_date: dt.datetime
 
+    parent: EntityRead
     uploader: UserRead
     items: list["ExpenseItemRead"]
+
+    @computed_field
+    def parent_kind(self) -> EntityKind:
+        """Return the kind of parent."""
+        return self.parent.kind
 
     @computed_field
     def expense_total(self) -> float:
