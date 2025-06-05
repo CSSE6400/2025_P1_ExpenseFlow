@@ -113,6 +113,23 @@ class ExpenseApiClient extends BaseApiClient {
     }
   }
 
+  Future<List<ExpenseRead>> getAllExpenses() async {
+    final response = await client.get(backendUri("/expenses/all"));
+
+    if (response.statusCode == 200) {
+      return safeJsonDecodeList(response.body, ExpenseRead.fromJson);
+    } else {
+      logger.info(
+        "Failed to fetch expenses: ${response.statusCode} ${response.body}",
+      );
+      throw ApiException(
+        response.statusCode,
+        'Failed to fetch expenses',
+        response.body,
+      );
+    }
+  }
+
   Future<ExpenseStatus?> getMyExpenseStatus(String expenseId) async {
     final response = await client.get(
       backendUri("/expenses/$expenseId/my-status"),

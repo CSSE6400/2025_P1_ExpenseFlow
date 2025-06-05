@@ -19,6 +19,7 @@ from expenseflow.expense.schemas import (
 )
 from expenseflow.expense.service import (
     create_expense,
+    get_all_expenses,
     get_expense,
     get_expense_status_map,
     get_expenses_overview,
@@ -97,6 +98,12 @@ async def update(
 async def get_uploaded_by_me(db: DbSession, user: CurrentUser) -> list[ExpenseModel]:
     """Get expenses uploaded by me."""
     return await get_uploaded_expenses(db, user)
+
+
+@r.get("/all", response_model=list[ExpenseRead])
+async def get_all(db: DbSession, user: CurrentUser) -> list[ExpenseModel]:
+    """Get expenses uploaded by me."""
+    return await get_all_expenses(db, user)
 
 
 @r.get("/overview", response_model=ExpenseOverview)

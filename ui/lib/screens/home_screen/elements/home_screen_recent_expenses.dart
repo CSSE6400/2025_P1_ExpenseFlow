@@ -40,7 +40,7 @@ class HomeScreenRecentExpenses extends StatelessWidget {
             Padding(
               padding: EdgeInsets.all(proportionalSizes.scaleWidth(16)),
               child: Text(
-                'Recent Expenses',
+                'Recent Expenses By Me',
                 style: GoogleFonts.roboto(
                   fontSize: proportionalSizes.scaleText(24),
                   fontWeight: FontWeight.bold,

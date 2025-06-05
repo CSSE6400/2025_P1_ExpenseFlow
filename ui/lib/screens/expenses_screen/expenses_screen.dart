@@ -34,8 +34,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
     final apiService = Provider.of<ApiService>(context, listen: false);
 
     try {
-      final fetchedExpenses =
-          await apiService.expenseApi.getExpensesUploadedByMe();
+      final fetchedExpenses = await apiService.expenseApi.getAllExpenses();
 
       setState(() {
         expenses = fetchedExpenses;

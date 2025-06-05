@@ -410,6 +410,32 @@ async def get_owned_expenses(
     )
 
 
+async def get_all_expenses(
+    session: AsyncSession, user: UserModel
+) -> list[ExpenseModel]:
+    """Gets all expenses that a user is involved in."""
+    exists_in_split_q = (
+        select(1)
+        .select_from(ExpenseItemModel)
+        .join(
+            ExpenseItemSplitModel,
+            ExpenseItemModel.expense_item_id == ExpenseItemSplitModel.expense_item_id,
+        )
+        .where(ExpenseItemSplitModel.user_id == user.user_id)
+        .exists()
+    )
+
+    stmt = select(ExpenseModel).where(
+        or_(
+            ExpenseModel.uploader_id == user.user_id,
+            ExpenseModel.parent_id == user.entity_id,
+            exists_in_split_q,
+        )
+    )
+
+    return list((await session.execute(stmt)).scalars().all())
+
+
 async def get_expense(
     session: AsyncSession, user: UserModel, expense_id: UUID
 ) -> ExpenseModel | None:
