@@ -46,6 +46,8 @@ resource "aws_ecs_task_definition" "expenseflow_api" {
   execution_role_arn = data.aws_iam_role.lab.arn
   task_role_arn      = data.aws_iam_role.lab.arn
 
+  depends_on = [docker_image.expenseflow_api, aws_db_instance.expenseflow_db, aws_route53_record.expenseflow_ui, data.auth0_resource_server.expenseflow_api]
+
   container_definitions = jsonencode([
     {
       image       = "${docker_image.expenseflow_api.name}",
