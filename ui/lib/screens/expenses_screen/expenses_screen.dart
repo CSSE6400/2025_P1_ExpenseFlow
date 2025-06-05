@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_frontend/common/proportional_sizes.dart'
     show ProportionalSizes;
 import 'package:flutter_frontend/common/snack_bar.dart' show showCustomSnackBar;
+import 'package:flutter_frontend/common/swipe_detector.dart' show SwipeDetector;
 import 'package:flutter_frontend/models/expense.dart' show ExpenseRead;
 import 'package:flutter_frontend/services/api_service.dart' show ApiService;
 import 'package:flutter_frontend/widgets/expense_list_view.dart'
@@ -71,23 +72,24 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
         showBackButton: false,
       ),
 
-      body: (GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        child: SafeArea(
-          child: SingleChildScrollView(
+      body: SwipeDetector(
+        onDragLeft: () {
+          Navigator.of(context).popUntil((route) => route.isFirst);
+        },
+        child: RefreshIndicator(
+          onRefresh: _loadData,
+          child: ListView(
             padding: EdgeInsets.symmetric(
               horizontal: proportionalSizes.scaleWidth(20),
-              vertical: proportionalSizes.scaleHeight(0),
+              vertical: proportionalSizes.scaleHeight(20),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                ExpenseListView(expenses: expenses, onExpenseTap: onExpenseTap),
-              ],
-            ),
+            physics: const AlwaysScrollableScrollPhysics(),
+            children: [
+              ExpenseListView(expenses: expenses, onExpenseTap: onExpenseTap),
+            ],
           ),
         ),
-      )),
+      ),
 
       bottomNavigationBar: BottomNavBar(
         currentScreen: BottomNavBarScreen.expenses,

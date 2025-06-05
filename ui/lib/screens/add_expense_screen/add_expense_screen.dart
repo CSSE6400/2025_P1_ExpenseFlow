@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/common/snack_bar.dart';
+import 'package:flutter_frontend/common/swipe_detector.dart' show SwipeDetector;
 import 'package:flutter_frontend/models/expense.dart' show ExpenseCreate;
 import 'package:flutter_frontend/services/api_service.dart' show ApiService;
 import 'package:flutter_frontend/widgets/expense_form.dart';
@@ -77,8 +78,10 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBarWidget(screenName: 'Add Expense', showBackButton: false),
-      body: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
+      body: SwipeDetector(
+        onDragLeft: () {
+          Navigator.of(context).popUntil((route) => route.isFirst);
+        },
         child: SafeArea(
           child: SingleChildScrollView(
             padding: EdgeInsets.symmetric(
