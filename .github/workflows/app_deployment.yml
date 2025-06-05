@@ -8,7 +8,7 @@ on:
         description: AWS credentials because I can't create a runner user so it has to be manual
         required: true
 
-env: # 👈 Global environment variables
+env:
   ECS_API_NAME: expenseflow-api
   ECR_API_URI: ${{ secrets.ECR_API_URI }}
 

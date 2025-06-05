@@ -21,17 +21,27 @@ jobs:
     outputs:
       planfile: tfplan.binary
     steps:
-      - uses: actions/checkout@v4
       - uses: hashicorp/setup-terraform@v3
+      - uses: levibostian/action-hide-sensitive-inputs@v1
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Export credentials
+        run: |
+          mkdir ~/.aws
+          echo ${{ github.event.inputs.aws }} | tr " " "\n" > ~/.aws/credentials
 
       - name: Terraform fmt
         id: fmt
         run: terraform fmt -check
         continue-on-error: true
+        working-directory: infra
 
       - name: Terraform Init
         id: init
         run: terraform init -input=false
+        working-directory: infra
 
       - name: Terraform Validate
         id: validate
@@ -85,3 +95,15 @@ jobs:
                 repo: context.repo.repo,
                 body: output
             })
+              - uses: trstringer/manual-approval@v1
+      - uses: trstringer/manual-approval@v1
+        with:
+          secret: ${{ github.TOKEN }}
+          approvers:
+          minimum-approvals: 1
+          issue-title: "Deploying infra"
+          issue-body: "Please approve or deny the deployment of infra"
+          exclude-workflow-initiator-as-approver: false
+          fail-on-denial: true
+          additional-approved-words: "approve,yes,y"
+          additional-denied-words: "no,deny,n"
