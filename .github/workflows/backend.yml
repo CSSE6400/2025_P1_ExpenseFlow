@@ -49,6 +49,7 @@ jobs:
   backend_tests:
     name: Runs backend tests and generates a coverage report for them.
     runs-on: ubuntu-latest
+    needs: backend_static_type_checking
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -95,3 +96,12 @@ jobs:
         with:
           name: htmlcov
           path: ./api/htmlcov
+  backend_build:
+    name: Build the backend.
+    runs-on: ubuntu-latest
+    needs: backend_tests
+
+  backend_deploy:
+    name: Deploy the backend.
+    runs-on: ubuntu-latest
+    needs: backend_build
