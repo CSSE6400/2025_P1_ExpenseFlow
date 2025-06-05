@@ -62,18 +62,23 @@ jobs:
         id: task-def
 
         run: |
-          aws ecs describe-task-definition \
-          --task-definition ${{env.ECS_API_NAME}} \
-          > task-def.json
+          # get task def
+           aws ecs describe-task-definition \
+           --task-definition ${{env.ECS_API_NAME}} \
+           > task-def.json
 
-          jq --arg IMAGE_URI "***:latest" \
-          '.taskDefinition | .containerDefinitions[0].image = $IMAGE_URI' task-def.json > new-task-def.json
+          # filter data
+          jq --arg IMAGE_URI "${{ env.ECR_API_URI }}:latest" \
+          '.taskDefinition | del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy, .deregisteredAt) | .containerDefinitions[0].image = $IMAGE_URI' \
+          task-def.json > new-task-def.json
 
+          # register new task def
           aws ecs register-task-definition \
           --cli-input-json file://new-task-def.json > task-def-register.json
 
-          echo "::set-output name=revision_arn::$(jq -r '.taskDefinition.taskDefinitionArn' task-def-register.json)"
-
+          # Output the new task definition ARN
+          REVISION_ARN=$(jq -r '.taskDefinition.taskDefinitionArn' task-def-register.json)
+          echo "revision_arn=$REVISION_ARN" >> $GITHUB_OUTPUT
         shell: bash
 
       - name: Update ECS service with new task definition revision
@@ -117,23 +122,28 @@ jobs:
         id: task-def
 
         run: |
-          aws ecs describe-task-definition \
-          --task-definition ${{env.ECS_UI_NAME}} \
-          > task-def.json
+          # get task def
+           aws ecs describe-task-definition \
+           --task-definition ${{env.ECS_UI_NAME}} \
+           > task-def.json
 
-          jq --arg IMAGE_URI "***:latest" \
-          '.taskDefinition | .containerDefinitions[0].image = $IMAGE_URI' task-def.json > new-task-def.json
+          # filter data
+          jq --arg IMAGE_URI "${{ env.ECR_UI_URI }}:latest" \
+          '.taskDefinition | del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy, .deregisteredAt) | .containerDefinitions[0].image = $IMAGE_URI' \
+          task-def.json > new-task-def.json
 
+          # register new task def
           aws ecs register-task-definition \
           --cli-input-json file://new-task-def.json > task-def-register.json
 
-          echo "::set-output name=revision_arn::$(jq -r '.taskDefinition.taskDefinitionArn' task-def-register.json)"
-
+          # Output the new task definition ARN
+          REVISION_ARN=$(jq -r '.taskDefinition.taskDefinitionArn' task-def-register.json)
+          echo "revision_arn=$REVISION_ARN" >> $GITHUB_OUTPUT
         shell: bash
 
       - name: Update ECS service with new task definition revision
         run: |
           aws ecs update-service \
             --cluster expenseflow \
-            --service ${{env.ECS_API_NAME}} \
+            --service ${{env.ECS_UI_NAME}} \
             --task-definition ${{ steps.task-def.outputs.revision_arn }}
