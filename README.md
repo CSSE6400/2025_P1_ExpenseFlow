@@ -110,16 +110,12 @@ To teardown the remotely deployed service, ensure that the `credentials` file is
 
 ### Backend
 
-Backend tests are done using `pytest` and require a running postgres instance to work. The easiest way to run this database is using `docker compose up database`.
-
-To sync the dependencies, run `uv sync` in the `api/` directory with an active virtual environment.
-
-To run the tests, you must navigate to the `api/` directory and run `pytest`.
+Backend tests are done using `pytest` and require a running postgres instance to work. The easiest way to do this is to run `test.sh` in the root directory (Note: This requires `docker compose` to be installed and a internet connection to pull the postgres image).
 
 ```bash
-docker compose up database -d  # Run DB used for testing
-cd api/                        # Change directory
-pytest                         # Run tests
+./test.sh
 ```
+
+This scripts sets up the db with the necessary environment variables and runs the tests. Once down, it will output the code coverage.
 
 For automated tests, we use GitHub Actions, which run the same test suite.
