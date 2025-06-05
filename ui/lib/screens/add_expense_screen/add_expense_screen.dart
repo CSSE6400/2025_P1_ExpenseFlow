@@ -34,6 +34,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     setState(() => isFormValid = isValid);
   }
 
+  // optional parentId is used when adding a group expense
   void updateExpense(ExpenseCreate expense, String? parentId) {
     _currentExpense = expense;
     _parentId = parentId;

@@ -137,7 +137,7 @@ class ExpenseItemRead {
   final String name;
   final int quantity;
   final double price;
-  final List<ExpenseItemSplitCreate> splits;
+  final List<ExpenseItemSplitRead> splits;
 
   ExpenseItemRead({
     required this.expenseItemId,

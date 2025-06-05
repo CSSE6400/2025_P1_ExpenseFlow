@@ -90,8 +90,7 @@ ExpenseItemRead _$ExpenseItemReadFromJson(Map<String, dynamic> json) =>
       splits:
           (json['splits'] as List<dynamic>)
               .map(
-                (e) =>
-                    ExpenseItemSplitCreate.fromJson(e as Map<String, dynamic>),
+                (e) => ExpenseItemSplitRead.fromJson(e as Map<String, dynamic>),
               )
               .toList(),
     );
