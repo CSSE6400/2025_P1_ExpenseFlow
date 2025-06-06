@@ -422,13 +422,14 @@ async def get_all_expenses(
             ExpenseItemModel.expense_item_id == ExpenseItemSplitModel.expense_item_id,
         )
         .where(ExpenseItemSplitModel.user_id == user.user_id)
+        .where(ExpenseItemModel.expense_id == ExpenseModel.expense_id)
+        .limit(1)
         .exists()
     )
 
     stmt = select(ExpenseModel).where(
         or_(
             ExpenseModel.uploader_id == user.user_id,
-            ExpenseModel.parent_id == user.entity_id,
             exists_in_split_q,
         )
     )
