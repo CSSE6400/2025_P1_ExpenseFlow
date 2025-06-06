@@ -2,6 +2,11 @@ name: Backend Tests
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "api/**"
   pull_request:
     branches:
       - main
