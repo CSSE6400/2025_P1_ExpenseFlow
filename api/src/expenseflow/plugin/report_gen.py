@@ -155,7 +155,7 @@ class ReportGenPlugin(Plugin[ReportGenSettings]):
             )
 
             plt.title(
-                f"Expenses Distribution ({dt.now(tz=dt.UTC).strftime('%Y-%m-%d')})",
+                f"Expenses Distribution ({dt.datetime.now(tz=dt.UTC).strftime('%Y-%m-%d')})",
                 fontsize=14,
                 fontweight="bold",
             )
