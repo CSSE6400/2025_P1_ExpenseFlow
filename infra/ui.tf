@@ -52,8 +52,6 @@ resource "aws_ecs_task_definition" "expenseflow_ui" {
       memory      = 2048,
       name        = "expenseflow-ui",
       networkMode = "awsvpc",
-      readonlyRootFilesystem = true,
-
       portMappings = [
         {
           containerPort = 3000,
