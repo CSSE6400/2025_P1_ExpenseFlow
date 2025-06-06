@@ -56,6 +56,10 @@ data "auth0_resource_server" "expenseflow_api" {
 
 resource "aws_secretsmanager_secret" "auth0_details" {
   name = "auth0-details"
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "aws_secretsmanager_secret_version" "auth0_details" {
