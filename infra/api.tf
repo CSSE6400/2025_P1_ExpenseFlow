@@ -53,6 +53,8 @@ resource "aws_ecs_task_definition" "expenseflow_api" {
       memory      = 2048,
       name        = "expenseflow-api",
       networkMode = "awsvpc",
+      readonlyRootFilesystem = true,
+
       portMappings = [
         {
           containerPort = 8080,
