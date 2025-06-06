@@ -52,5 +52,3 @@ README.md
 *.tf
 terraform.tfstate
 terraform.tfstate.backup
-
-tests

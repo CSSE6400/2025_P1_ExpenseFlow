@@ -57,12 +57,11 @@ from tests.factories import (
 )
 
 # Hardcoded docker compose db so that no-one runs tests on prod db
-TEST_DB_URL = "postgresql+asyncpg://admin:password@localhost:5432/expense_db"
-SYNC_TEST_DB_URL = "postgresql://admin:password@localhost:5432/expense_db"
+TEST_DB_URL = os.environ["DB_URL"]
+SYNC_TEST_DB_URL = os.environ["DB_URL"].replace("+asyncpg", "")
 
 
 os.environ["FRONTEND_URL"] = ""
-os.environ["DB_URL"] = TEST_DB_URL
 os.environ["JWT_AUDIENCE"] = ""
 os.environ["AUTH0_DOMAIN"] = ""
 
