@@ -61,7 +61,7 @@ class SeeExpenseView extends StatelessWidget {
 
           ExpenseForm(
             initialExpense: currentExpense,
-            canEdit: false,
+            canEdit: isEditable,
             canEditItems: isItemsAndSplitsEditable,
             canEditSplits: isItemsAndSplitsEditable,
             onValidityChanged: onValidityChanged,
