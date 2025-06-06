@@ -1,23 +1,16 @@
-// Flutter imports
 import 'package:flutter/material.dart';
-// Third-party imports
 import 'package:google_fonts/google_fonts.dart';
-// Common Files
 import '../../proportional_sizes.dart';
 import '../../color_palette.dart';
 import 'open_calender_popup.dart';
 
 class DateField extends StatefulWidget {
-  /// Label shown to the left of the date (e.g., "Date of Birth", "Expense Date")
   final String label;
 
-  /// Optional initial date to pre-fill the field
   final DateTime? initialDate;
 
-  /// Callback when a new date is selected
   final ValueChanged<DateTime>? onChanged;
 
-  /// Whether field is editable
   final bool isEditable;
 
   const DateField({
@@ -49,8 +42,18 @@ class _DateFieldState extends State<DateField> {
 
   String _monthName(int month) {
     const List<String> monthNames = [
-      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
     ];
     return monthNames[month - 1];
   }
@@ -83,23 +86,24 @@ class _DateFieldState extends State<DateField> {
           SizedBox(width: proportionalSizes.scaleWidth(8)),
 
           GestureDetector(
-            onTap: widget.isEditable
-              ? () {
-                  openCalendarPopup(
-                    context: context,
-                    initialDate: _selectedDate ?? DateTime.now(),
-                    onChanged: (selectedDate) {
-                      setState(() {
-                        _selectedDate = selectedDate;
-                        hasValidDate = true;
-                      });
-                      if (widget.onChanged != null) {
-                        widget.onChanged!(selectedDate);
-                      }
-                    },
-                  );
-                }
-              : null,
+            onTap:
+                widget.isEditable
+                    ? () {
+                      openCalendarPopup(
+                        context: context,
+                        initialDate: _selectedDate ?? DateTime.now(),
+                        onChanged: (selectedDate) {
+                          setState(() {
+                            _selectedDate = selectedDate;
+                            hasValidDate = true;
+                          });
+                          if (widget.onChanged != null) {
+                            widget.onChanged!(selectedDate);
+                          }
+                        },
+                      );
+                    }
+                    : null,
             child: Container(
               padding: EdgeInsets.symmetric(
                 horizontal: proportionalSizes.scaleWidth(10),
@@ -111,12 +115,10 @@ class _DateFieldState extends State<DateField> {
                   proportionalSizes.scaleWidth(10),
                 ),
               ),
-              child:Text(
+              child: Text(
                 hasValidDate ? _formatDate(_selectedDate!) : "Not set",
                 style: GoogleFonts.roboto(
-                  color: hasValidDate
-                      ? labelColor
-                      : ColorPalette.secondaryText,
+                  color: hasValidDate ? labelColor : ColorPalette.secondaryText,
                   fontSize: proportionalSizes.scaleText(16),
                 ),
               ),

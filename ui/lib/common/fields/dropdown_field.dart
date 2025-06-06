@@ -1,9 +1,6 @@
-// Flutter imports
 import 'dart:ui';
 import 'package:flutter/material.dart';
-// Third-party imports
 import 'package:google_fonts/google_fonts.dart';
-// Common imports
 import '../proportional_sizes.dart';
 import '../color_palette.dart';
 import '../icon_maker.dart';
@@ -79,7 +76,8 @@ class _DropdownFieldState extends State<DropdownField> {
                       color: Colors.transparent,
                       child: Container(
                         height: proportionalSizes.scaleHeight(200),
-                        width: button.size.width -
+                        width:
+                            button.size.width -
                             proportionalSizes.scaleWidth(150),
                         decoration: BoxDecoration(
                           color: Colors.grey.withAlpha(30),
@@ -88,12 +86,13 @@ class _DropdownFieldState extends State<DropdownField> {
                           ),
                         ),
                         child: ListView.builder(
-                          itemCount: options.length + 2, // +1 for placeholder, +1 for add new
+                          itemCount:
+                              options.length +
+                              2, // +1 for placeholder, +1 for add new
                           itemExtent: proportionalSizes.scaleHeight(40),
                           padding: EdgeInsets.zero,
                           itemBuilder: (context, index) {
                             if (index == 0) {
-                              // Placeholder
                               return InkWell(
                                 onTap: () {
                                   setState(() => selectedOption = null);
@@ -103,29 +102,29 @@ class _DropdownFieldState extends State<DropdownField> {
                                 child: Container(
                                   alignment: Alignment.centerLeft,
                                   padding: EdgeInsets.symmetric(
-                                    horizontal:
-                                        proportionalSizes.scaleWidth(16),
+                                    horizontal: proportionalSizes.scaleWidth(
+                                      16,
+                                    ),
                                   ),
                                   child: Text(
                                     widget.placeholder ?? 'Select',
                                     style: GoogleFonts.roboto(
                                       color: hintColor,
-                                      fontSize:
-                                          proportionalSizes.scaleText(16),
+                                      fontSize: proportionalSizes.scaleText(16),
                                     ),
                                   ),
                                 ),
                               );
                             } else if (index == options.length + 1) {
-                              // Add new category
                               return InkWell(
                                 onTap: () async {
-                                  final newCategory = await showAddCategoryDialog(
-                                    context,
-                                    heading: widget.addDialogHeading,
-                                    hintText: widget.addDialogHintText,
-                                    maxLength: widget.addDialogMaxLength,
-                                  );
+                                  final newCategory =
+                                      await showAddCategoryDialog(
+                                        context,
+                                        heading: widget.addDialogHeading,
+                                        hintText: widget.addDialogHintText,
+                                        maxLength: widget.addDialogMaxLength,
+                                      );
                                   if (newCategory != null &&
                                       newCategory.trim().isNotEmpty) {
                                     setState(() {
@@ -133,14 +132,15 @@ class _DropdownFieldState extends State<DropdownField> {
                                       selectedOption = newCategory;
                                     });
                                     widget.onChanged?.call(newCategory);
-                                    // Save new category to persistent store. No
                                   }
                                   Navigator.pop(context);
                                 },
                                 child: Container(
                                   alignment: Alignment.centerLeft,
                                   padding: EdgeInsets.symmetric(
-                                    horizontal: proportionalSizes.scaleWidth(16),
+                                    horizontal: proportionalSizes.scaleWidth(
+                                      16,
+                                    ),
                                   ),
                                   child: Text(
                                     '+ Add New Category',
@@ -166,21 +166,21 @@ class _DropdownFieldState extends State<DropdownField> {
                               child: Container(
                                 alignment: Alignment.centerLeft,
                                 padding: EdgeInsets.symmetric(
-                                  horizontal:
-                                      proportionalSizes.scaleWidth(16),
+                                  horizontal: proportionalSizes.scaleWidth(16),
                                 ),
-                                color: isSelected
-                                    ? labelColor.withAlpha(80)
-                                    : Colors.transparent,
+                                color:
+                                    isSelected
+                                        ? labelColor.withAlpha(80)
+                                        : Colors.transparent,
                                 child: Text(
                                   option,
                                   style: GoogleFonts.roboto(
                                     color: labelColor,
-                                    fontWeight: isSelected
-                                        ? FontWeight.bold
-                                        : FontWeight.normal,
-                                    fontSize:
-                                        proportionalSizes.scaleText(16),
+                                    fontWeight:
+                                        isSelected
+                                            ? FontWeight.bold
+                                            : FontWeight.normal,
+                                    fontSize: proportionalSizes.scaleText(16),
                                   ),
                                 ),
                               ),
@@ -228,7 +228,8 @@ class _DropdownFieldState extends State<DropdownField> {
           SizedBox(width: proportionalSizes.scaleWidth(8)),
           Expanded(
             child: GestureDetector(
-              onTap: widget.isEditable ? () => _showDropdownDialog(context) : null,
+              onTap:
+                  widget.isEditable ? () => _showDropdownDialog(context) : null,
               child: Container(
                 padding: EdgeInsets.symmetric(
                   vertical: proportionalSizes.scaleHeight(4),
@@ -239,9 +240,7 @@ class _DropdownFieldState extends State<DropdownField> {
                     Text(
                       selectedOption ?? (widget.placeholder ?? 'Select'),
                       style: GoogleFonts.roboto(
-                        color: selectedOption == null
-                            ? hintColor
-                            : labelColor,
+                        color: selectedOption == null ? hintColor : labelColor,
                         fontSize: proportionalSizes.scaleText(18),
                       ),
                     ),
@@ -249,9 +248,7 @@ class _DropdownFieldState extends State<DropdownField> {
                       padding: EdgeInsets.only(
                         left: proportionalSizes.scaleWidth(8),
                       ),
-                      child: IconMaker(
-                        assetPath: 'assets/icons/dropdown.png',
-                      ),
+                      child: IconMaker(assetPath: 'assets/icons/dropdown.png'),
                     ),
                   ],
                 ),

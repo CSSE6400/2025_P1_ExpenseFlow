@@ -75,7 +75,6 @@ class _OverviewScreenState extends State<OverviewScreen> {
       setState(() {
         selectedPeriod = newPeriod;
       });
-      // TODO: Refresh on time period change
     }
   }
 

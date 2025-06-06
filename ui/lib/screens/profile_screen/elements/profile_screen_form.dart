@@ -1,4 +1,3 @@
-// Flutter imports
 import 'package:flutter/material.dart';
 import 'package:expenseflow/common/custom_button.dart'
     show ButtonSizeType, ButtonState, CustomButton;
@@ -8,17 +7,14 @@ import 'package:expenseflow/services/api_service.dart';
 import 'package:expenseflow/services/auth_guard_provider.dart'
     show AuthGuardProvider;
 import 'package:expenseflow/services/auth_service.dart' show AuthService;
-// Third-party imports
 import 'package:google_fonts/google_fonts.dart';
 import 'package:logging/logging.dart';
 import 'package:provider/provider.dart' show Provider;
-// Common imports
 import '../../../common/color_palette.dart';
 import '../../../common/proportional_sizes.dart';
 import '../../../common/fields/general_field.dart';
 import '../../../common/custom_divider.dart';
 import '../../../common/icon_maker.dart';
-// import '../../../common/custom_button.dart';
 
 class ProfileScreenForm extends StatefulWidget {
   const ProfileScreenForm({super.key});

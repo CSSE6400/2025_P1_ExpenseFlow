@@ -1,12 +1,7 @@
-// Flutter imports
 import 'package:flutter/material.dart';
-// Common imports
 import 'proportional_sizes.dart';
 import 'color_palette.dart';
 
-/// A reusable divider widget for separating profile fields.
-/// - Thin grey line
-/// - Proportional thickness and spacing
 class CustomDivider extends StatelessWidget {
   const CustomDivider({super.key});
 

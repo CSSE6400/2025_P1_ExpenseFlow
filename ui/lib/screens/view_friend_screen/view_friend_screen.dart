@@ -85,16 +85,33 @@ class _ViewFriendScreenState extends State<ViewFriendScreen> {
               horizontal: proportionalSizes.scaleWidth(20),
               vertical: proportionalSizes.scaleHeight(0),
             ),
-            // TODO: add a header with friend's name
-            child: ExpenseListView(
-              expenses: expenses, // Pass full list; filtering is now internal
-              onExpenseTap: (expense) {
-                Navigator.pushNamed(
-                  context,
-                  '/see_expense',
-                  arguments: {'expenseId': expense.expenseId},
-                );
-              },
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(
+                    top: proportionalSizes.scaleHeight(16),
+                    bottom: proportionalSizes.scaleHeight(16),
+                  ),
+                  child: Text(
+                    "Nickname: ${friend!.nickname}",
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: ColorPalette.primaryText,
+                    ),
+                  ),
+                ),
+                ExpenseListView(
+                  expenses: expenses,
+                  onExpenseTap: (expense) {
+                    Navigator.pushNamed(
+                      context,
+                      '/see_expense',
+                      arguments: {'expenseId': expense.expenseId},
+                    );
+                  },
+                ),
+              ],
             ),
           ),
         ),

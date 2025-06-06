@@ -1,4 +1,3 @@
-// Flutter imports
 import 'package:flutter/material.dart';
 import 'package:expenseflow/common/custom_button.dart'
     show ButtonSizeType, ButtonState, CustomButton;
@@ -14,10 +13,8 @@ import 'package:expenseflow/screens/split_with_screen/elements/split_with_screen
 import 'package:expenseflow/screens/split_with_screen/elements/split_with_screen_segment_control.dart'
     show SplitWithScreenSegmentControl, SplitWithSegment;
 import 'package:logging/logging.dart';
-// Common imports
 import '../../common/color_palette.dart';
 import '../../common/app_bar.dart';
-// Elements
 
 class UserSplit {
   String name;
@@ -89,7 +86,6 @@ class _SplitWithScreenState extends State<SplitWithScreen> {
     _splits = widget.splits;
   }
 
-  // callback to update item splits
   void _updateItemSplits(List<ExpenseItemSplitCreate> newSplits) {
     setState(() {
       _splits = newSplits;
@@ -151,8 +147,6 @@ class _SplitWithScreenState extends State<SplitWithScreen> {
                       selectedGroupId: _selectedGroupId,
                     ),
                 if (!widget.isReadOnly)
-                  // write some text to explain the splits
-                  // please ensure that the splits add up to 100%
                   !isContinueEnabled
                       ? Padding(
                         padding: EdgeInsets.symmetric(

@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:expenseflow/common/custom_button.dart'
-    show ButtonSizeType, ButtonState, CustomButton;
-import 'package:expenseflow/common/scan_receipt.dart';
 import 'package:expenseflow/common/snack_bar.dart'
     show SnackBarType, showCustomSnackBar;
 import 'package:expenseflow/models/enums.dart';
@@ -37,7 +34,6 @@ class _SeeExpenseScreenState extends State<SeeExpenseScreen> {
   ExpenseViewSegment selectedSegment = ExpenseViewSegment.information;
 
   bool isLoading = true;
-  bool? _attachmentExists;
 
   @override
   void initState() {
@@ -99,15 +95,6 @@ class _SeeExpenseScreenState extends State<SeeExpenseScreen> {
       _logger.severe('Error fetching expense: $e');
       showCustomSnackBar(context, normalText: 'Failed to fetch expense');
       setState(() => isLoading = false);
-    }
-
-    try {
-      final fetchedExists = await apiService.expenseApi
-          .checkExpenseAttachmentExists(widget.expenseId);
-
-      setState(() => _attachmentExists = fetchedExists);
-    } catch (e) {
-      _logger.severe('Error checking attachment existence: $e');
     }
   }
 

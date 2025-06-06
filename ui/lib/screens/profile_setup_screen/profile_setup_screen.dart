@@ -1,10 +1,7 @@
-// Flutter imports
 import 'package:flutter/material.dart';
-// Common imports
 import '../../common/color_palette.dart';
 import '../../common/app_bar.dart';
 import '../../common/proportional_sizes.dart';
-// Elements
 import 'elements/profile_setup_screen_avatar_icon.dart';
 import 'elements/profile_setup_screen_sub_rectangle.dart';
 

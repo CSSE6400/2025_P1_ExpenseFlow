@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:http/http.dart' as http;
 import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +6,6 @@ import 'package:expenseflow/common/color_palette.dart';
 import 'package:expenseflow/services/api_service.dart' show ApiService;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:logging/logging.dart';
 import 'package:provider/provider.dart' show Provider;
 import 'dialogs/app_dialog_box.dart';
 import 'snack_bar.dart';

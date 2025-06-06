@@ -134,7 +134,6 @@ class SeeExpenseApprovals extends StatelessWidget {
         ),
       ),
 
-      // Show button only if buttonText is not null
       bottomNavigationBar:
           buttonText != null
               ? Padding(

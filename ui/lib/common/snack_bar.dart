@@ -1,19 +1,14 @@
-// Flutter imports
 import 'package:flutter/material.dart';
-// Third-party imports
 import 'package:google_fonts/google_fonts.dart';
-// Common imports
 import 'color_palette.dart';
 
-/// Shows a customizable snackbar with optional bold and normal text,
-/// and a type (success or failed) that sets the background color.
 enum SnackBarType { success, failed }
 
 void showCustomSnackBar(
   BuildContext context, {
-  required String normalText, // Required normal part
+  required String normalText,
   SnackBarType type = SnackBarType.failed,
-  String? boldText, // Optional bold part
+  String? boldText,
   Color? textColor,
 }) {
   final bgColor =
