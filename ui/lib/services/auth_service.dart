@@ -1,4 +1,3 @@
-// lib/services/auth_service.dart
 import 'package:auth0_flutter/auth0_flutter.dart' show UserProfile;
 import 'package:http/http.dart' as http;
 

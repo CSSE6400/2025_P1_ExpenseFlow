@@ -49,7 +49,6 @@ void main() async {
   );
 
   logger.info("Starting App");
-  // create route observer for navigation events
 
   runApp(
     MultiProvider(

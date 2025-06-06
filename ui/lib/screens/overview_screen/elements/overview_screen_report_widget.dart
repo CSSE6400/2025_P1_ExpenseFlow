@@ -34,7 +34,7 @@ class OverviewScreenReportWidget extends StatelessWidget {
 
           SizedBox(height: proportionalSizes.scaleHeight(10)),
 
-          // Generate new report
+          // gen report
           GestureDetector(
             onTap: () {
               showCustomSnackBar(
@@ -43,7 +43,6 @@ class OverviewScreenReportWidget extends StatelessWidget {
                 normalText: 'Please wait 5 minutes and then return.',
                 type: SnackBarType.failed,
               );
-              // TODO: Trigger actual report generation request to backend here.
             },
             child: Text(
               '+ Generate a spending report',

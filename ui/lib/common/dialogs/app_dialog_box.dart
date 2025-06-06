@@ -1,17 +1,13 @@
-// Flutter imports
 import 'dart:ui';
 import 'package:flutter/material.dart';
-// Third-party imports
 import 'package:google_fonts/google_fonts.dart';
-// Common imports
 import '../proportional_sizes.dart';
 import '../custom_button.dart';
 
-/// A reusable dialog box that supports 1 or 2 buttons with custom text, styling, and behavior.
 class AppDialogBox extends StatelessWidget {
   final String heading;
   final String description;
-  final int buttonCount; // Accepts 1 or 2
+  final int buttonCount;
   final String button1Text;
   final VoidCallback onButton1Pressed;
   final String? button2Text;
@@ -52,7 +48,9 @@ class AppDialogBox extends StatelessWidget {
             padding: EdgeInsets.all(proportionalSizes.scaleWidth(20)),
             decoration: BoxDecoration(
               color: Colors.white.withValues(alpha: 0.4),
-              borderRadius: BorderRadius.circular(proportionalSizes.scaleWidth(20)),
+              borderRadius: BorderRadius.circular(
+                proportionalSizes.scaleWidth(20),
+              ),
               border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
             ),
             child: Column(
@@ -109,7 +107,6 @@ class AppDialogBox extends StatelessWidget {
     );
   }
 
-  /// Call this method to show the dialog
   static Future<void> show(
     BuildContext context, {
     required String heading,
@@ -126,17 +123,18 @@ class AppDialogBox extends StatelessWidget {
       context: context,
       barrierDismissible: false,
       barrierColor: Colors.black.withValues(alpha: 0.2),
-      builder: (_) => AppDialogBox(
-        heading: heading,
-        description: description,
-        buttonCount: buttonCount,
-        button1Text: button1Text,
-        onButton1Pressed: onButton1Pressed,
-        button2Text: button2Text,
-        onButton2Pressed: onButton2Pressed,
-        button1Color: button1Color,
-        button2Color: button2Color,
-      ),
+      builder:
+          (_) => AppDialogBox(
+            heading: heading,
+            description: description,
+            buttonCount: buttonCount,
+            button1Text: button1Text,
+            onButton1Pressed: onButton1Pressed,
+            button2Text: button2Text,
+            onButton2Pressed: onButton2Pressed,
+            button1Color: button1Color,
+            button2Color: button2Color,
+          ),
     );
   }
 }

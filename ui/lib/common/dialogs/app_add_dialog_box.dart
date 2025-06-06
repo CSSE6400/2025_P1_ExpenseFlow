@@ -25,16 +25,19 @@ Future<String?> showAddCategoryDialog(
     builder: (context) {
       return GestureDetector(
         onTap: () {
-          // Dismiss keyboard if user taps outside
           FocusScope.of(context).unfocus();
         },
         child: Dialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(proportionalSizes.scaleWidth(20)),
+            borderRadius: BorderRadius.circular(
+              proportionalSizes.scaleWidth(20),
+            ),
           ),
           backgroundColor: Colors.transparent,
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(proportionalSizes.scaleWidth(20)),
+            borderRadius: BorderRadius.circular(
+              proportionalSizes.scaleWidth(20),
+            ),
             child: BackdropFilter(
               filter: ImageFilter.blur(
                 sigmaX: proportionalSizes.scaleWidth(15),
@@ -44,7 +47,9 @@ Future<String?> showAddCategoryDialog(
                 padding: EdgeInsets.all(proportionalSizes.scaleWidth(20)),
                 decoration: BoxDecoration(
                   color: Colors.white.withAlpha(100),
-                  borderRadius: BorderRadius.circular(proportionalSizes.scaleWidth(20)),
+                  borderRadius: BorderRadius.circular(
+                    proportionalSizes.scaleWidth(20),
+                  ),
                   border: Border.all(color: Colors.white.withAlpha(50)),
                 ),
                 child: Column(
@@ -69,22 +74,27 @@ Future<String?> showAddCategoryDialog(
                         fontSize: proportionalSizes.scaleText(16),
                       ),
                       onChanged: (value) {
-                        // Filter: keep only letters, numbers, and spaces
-                        final cleaned = value.replaceAll(RegExp(r'[^a-zA-Z0-9 ]'), '');
+                        final cleaned = value.replaceAll(
+                          RegExp(r'[^a-zA-Z0-9 ]'),
+                          '',
+                        );
 
-                        // Format: each word starts with uppercase
                         final formatted = cleaned
                             .split(' ')
-                            .map((word) => word.isEmpty
-                                ? ''
-                                : '${word[0].toUpperCase()}${word.substring(1).toLowerCase()}')
+                            .map(
+                              (word) =>
+                                  word.isEmpty
+                                      ? ''
+                                      : '${word[0].toUpperCase()}${word.substring(1).toLowerCase()}',
+                            )
                             .join(' ');
 
-                        // Update the field only if formatting changed
                         if (formatted != controller.text) {
                           controller.value = TextEditingValue(
                             text: formatted,
-                            selection: TextSelection.collapsed(offset: formatted.length),
+                            selection: TextSelection.collapsed(
+                              offset: formatted.length,
+                            ),
                           );
                         }
                       },
@@ -96,16 +106,25 @@ Future<String?> showAddCategoryDialog(
                         ),
                         counterText: '',
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(proportionalSizes.scaleWidth(12)),
+                          borderRadius: BorderRadius.circular(
+                            proportionalSizes.scaleWidth(12),
+                          ),
                           borderSide: BorderSide(color: boundaryColor),
                         ),
                         enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(proportionalSizes.scaleWidth(12)),
+                          borderRadius: BorderRadius.circular(
+                            proportionalSizes.scaleWidth(12),
+                          ),
                           borderSide: BorderSide(color: boundaryColor),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(proportionalSizes.scaleWidth(12)),
-                          borderSide: BorderSide(color: boundaryColor, width: 2),
+                          borderRadius: BorderRadius.circular(
+                            proportionalSizes.scaleWidth(12),
+                          ),
+                          borderSide: BorderSide(
+                            color: boundaryColor,
+                            width: 2,
+                          ),
                         ),
                         contentPadding: EdgeInsets.symmetric(
                           vertical: proportionalSizes.scaleHeight(12),

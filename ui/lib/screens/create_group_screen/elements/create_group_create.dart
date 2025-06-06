@@ -25,9 +25,6 @@ class _AddGroupScreenMainBodyState extends State<AddGroupScreenMainBody> {
   List<Friend> _selectedFriends = [];
   final Logger _logger = Logger("AddGroupScreenMainBody");
 
-  // void updateFormValid(bool isValid) {
-  //   setState(() => isFormValid = isValid);
-  // }
   void updateFormValid(bool isValidFields) {
     final isFormValidWithFriends = isValidFields && _selectedUserIds.isNotEmpty;
     setState(() => isFormValid = isFormValidWithFriends);

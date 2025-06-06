@@ -1,16 +1,12 @@
-// Flutter imports
 import 'package:flutter/material.dart';
 import 'package:expenseflow/services/auth_service.dart' show AuthService;
-// Third-party imports
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart' show Provider;
-// Common imports
 import '../../common/color_palette.dart';
 import '../../common/proportional_sizes.dart';
 import '../../common/custom_button.dart';
 
 class InitialStartupScreen extends StatefulWidget {
-  /// Constructor for InitialStartupScreen
   const InitialStartupScreen({super.key});
 
   @override

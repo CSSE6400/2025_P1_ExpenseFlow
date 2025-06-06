@@ -1,9 +1,6 @@
-// Flutter imports
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-// Third-party imports
 import 'package:google_fonts/google_fonts.dart';
-// Common imports
 import '../../common/color_palette.dart';
 import '../../common/proportional_sizes.dart';
 import '../../common/icon_maker.dart';
@@ -11,44 +8,29 @@ import '../../common/snack_bar.dart';
 
 enum InputRuleType { noSpaces, numericOnly, decimalWithTwoPlaces, lettersOnly }
 
-/// Custom field for user input.
-/// This widget is used to create a general input field with validation
-/// and optional status icons. It is designed to be reusable across different screens.
 class GeneralField extends StatefulWidget {
-  /// Label for the input field
   final String label;
 
-  /// Initial value for the input field
   final String initialValue;
 
-  /// Whether the field is filled with a value
   final String? filledValue;
 
-  /// Whether to show a check/cross icon
   final bool showStatusIcon;
 
-  /// Function to validate the input
   final List<InputRuleType>? inputRules;
 
-  /// Rule to decide if input is valid
   final bool Function(String value)? validationRule;
 
-  /// Whether field is editable
   final bool isEditable;
 
-  /// Callback to inform parent when validity changes
   final void Function(bool isValid)? onValidityChanged;
 
-  /// Constructor for the GeneralField widget.
   final ValueChanged<String>? onChanged;
 
-  /// Maximum length of the input
   final int? maxLength;
 
-  /// Focus instruction for the field
   final String? focusInstruction;
 
-  /// Optional external controller to manage the text field
   final TextEditingController? controller;
 
   const GeneralField({
@@ -77,13 +59,10 @@ class GeneralFieldState extends State<GeneralField> {
   bool isLabelExpanded = true;
   late FocusNode _focusNode;
 
-  /// Initializes the TextEditingController and sets up a listener to update validation
-  /// status based on the input text.
   @override
   void initState() {
     super.initState();
 
-    // Use provided controller or create a new one
     _controller =
         widget.controller ??
         TextEditingController(
@@ -113,11 +92,6 @@ class GeneralFieldState extends State<GeneralField> {
     });
   }
 
-  /// Updates the validation status based on the current text in the field.
-  /// If the validation rule is provided, it checks if the trimmed text is valid.
-  /// If the validity changes, it updates the state and calls the callback if provided.
-  /// This method is called whenever the text in the field changes.
-  /// It also trims the text to remove leading and trailing spaces.
   void _updateValidation(String text) {
     final trimmed = text.trim();
     if (widget.validationRule != null) {
@@ -133,11 +107,8 @@ class GeneralFieldState extends State<GeneralField> {
     }
   }
 
-  /// Disposes the TextEditingController when the widget is removed from the widget tree.
-  /// This is important to free up resources and avoid memory leaks.
   @override
   void dispose() {
-    // Only dispose the controller if we created it internally
     if (widget.controller == null) {
       _controller.dispose();
     }
@@ -145,7 +116,6 @@ class GeneralFieldState extends State<GeneralField> {
     super.dispose();
   }
 
-  /// Builds a list of input formatters based on the provided input rules.
   List<TextInputFormatter>? _buildInputFormatters() {
     if (widget.inputRules == null) return null;
 
@@ -190,7 +160,6 @@ class GeneralFieldState extends State<GeneralField> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Label aligned to the left
           GestureDetector(
             onTap: () {
               setState(() {
@@ -215,7 +184,6 @@ class GeneralFieldState extends State<GeneralField> {
             ),
           ),
 
-          // TextField fills remaining horizontal space
           Expanded(
             child: TextField(
               focusNode: _focusNode,
@@ -247,7 +215,6 @@ class GeneralFieldState extends State<GeneralField> {
             ),
           ),
 
-          // Status Icon (check or cross)
           if (widget.showStatusIcon && widget.validationRule != null)
             Padding(
               padding: EdgeInsets.only(left: proportionalSizes.scaleWidth(8)),

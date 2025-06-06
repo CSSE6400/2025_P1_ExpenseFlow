@@ -31,14 +31,6 @@ class _AddFriendsScreenState extends State<AddFriendsScreen> {
   void initState() {
     _fetchFriends();
     super.initState();
-    // allFriends = widget.existingFriends.isNotEmpty
-    //   ? List.from(widget.existingFriends)
-    //   : [
-    //       Friend(userId: '1', name: '@alice'),
-    //       Friend(userId: '2', name: '@bob'),
-    //       Friend(userId: '3', name: '@charlie'),
-    //       Friend(userId: '4', name: '@diana'),
-    //     ];
   }
 
   Future<void> _fetchFriends() async {

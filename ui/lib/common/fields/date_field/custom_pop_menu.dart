@@ -1,37 +1,33 @@
-// Flutter imports
 import 'package:flutter/material.dart';
-// Third-party imports
 import 'package:google_fonts/google_fonts.dart';
-// Common Files
 import '../../proportional_sizes.dart';
 import '../../color_palette.dart';
 
-/// Returns the full English month name (e.g., "January") from its 1-based index.
 String monthName(int month) {
   const List<String> monthNames = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ];
   return monthNames[month - 1];
 }
 
-/// A custom popup menu widget for displaying a scrollable list of items,
-/// from which the user can make a single selection.
-///
-/// Features:
-/// - Highlights the currently selected item.
-/// - Displays items in a compact dialog that appears at the widget's position.
 class CustomPopupMenu<T> extends StatelessWidget {
-  /// The current selection in the menu.
   final T initialValue;
 
-  /// The list of items to be displayed and selectable.
   final List<T> items;
 
-  /// A function that converts an item to its string representation for display.
   final String Function(T) itemBuilder;
 
-  /// Callback for when a user selects an item.
   final ValueChanged<T> onSelected;
 
   const CustomPopupMenu({
@@ -49,7 +45,6 @@ class CustomPopupMenu<T> extends StatelessWidget {
     final backgroundColor = ColorPalette.buttonText;
 
     return GestureDetector(
-      // Displays the text for the currently selected item.
       child: Text(
         itemBuilder(initialValue),
         style: GoogleFonts.roboto(
@@ -58,11 +53,9 @@ class CustomPopupMenu<T> extends StatelessWidget {
         ),
       ),
       onTap: () {
-        // Position the menu near the tapped widget.
         final RenderBox button = context.findRenderObject() as RenderBox;
         final Offset position = button.localToGlobal(Offset.zero);
 
-        // Show a dialog-based dropdown at the computed position.
         showDialog(
           context: context,
           barrierColor: Colors.transparent,
@@ -71,8 +64,8 @@ class CustomPopupMenu<T> extends StatelessWidget {
             final currentIndex = items.indexOf(initialValue);
             final scrollController = ScrollController(
               initialScrollOffset:
-                  currentIndex * proportionalSizes.scaleHeight(40.0)
-                  - proportionalSizes.scaleHeight(120.0),
+                  currentIndex * proportionalSizes.scaleHeight(40.0) -
+                  proportionalSizes.scaleHeight(120.0),
             );
 
             return Stack(
@@ -84,7 +77,9 @@ class CustomPopupMenu<T> extends StatelessWidget {
                     onTap: () {}, // Prevents closing when tapped inside
                     child: Material(
                       elevation: proportionalSizes.scaleHeight(8),
-                      borderRadius: BorderRadius.circular(proportionalSizes.scaleWidth(8)),
+                      borderRadius: BorderRadius.circular(
+                        proportionalSizes.scaleWidth(8),
+                      ),
                       clipBehavior: Clip.antiAlias,
                       child: Container(
                         height: proportionalSizes.scaleHeight(360),
@@ -109,16 +104,20 @@ class CustomPopupMenu<T> extends StatelessWidget {
                                   horizontal: proportionalSizes.scaleWidth(16),
                                 ),
                                 decoration: BoxDecoration(
-                                  color: isSelected
-                                      ? primaryColor.withValues(alpha: 0.1)
-                                      : Colors.transparent,
+                                  color:
+                                      isSelected
+                                          ? primaryColor.withValues(alpha: 0.1)
+                                          : Colors.transparent,
                                 ),
                                 alignment: Alignment.centerLeft,
                                 child: Text(
                                   itemBuilder(item),
                                   style: GoogleFonts.roboto(
                                     color: primaryColor,
-                                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                    fontWeight:
+                                        isSelected
+                                            ? FontWeight.bold
+                                            : FontWeight.normal,
                                     fontSize: proportionalSizes.scaleText(16),
                                   ),
                                 ),

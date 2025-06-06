@@ -1,19 +1,11 @@
-// Flutter imports
 import 'dart:ui';
 import 'package:flutter/material.dart';
-// Third-party imports
 import 'package:google_fonts/google_fonts.dart';
 import 'package:table_calendar/table_calendar.dart';
-// Common Files
 import 'custom_pop_menu.dart';
 import '../../proportional_sizes.dart';
 import '../../color_palette.dart';
 
-/// Opens a dialog-based calendar for selecting dates, restricted to between 1905 and the current year.
-///
-/// Features:
-/// - Arrows and a custom year/month dropdown for navigation.
-/// - Disables future dates beyond the current day.
 void openCalendarPopup({
   required BuildContext context,
   required DateTime initialDate,
@@ -27,21 +19,20 @@ void openCalendarPopup({
   final proportionalSizes = ProportionalSizes(context: context);
   final primaryColor = ColorPalette.primaryText;
 
-  // Checks if the focused date is the earliest allowed month.
   bool isFirstMonth(DateTime date) {
-    return date.year == firstViewableDate.year && date.month == firstViewableDate.month;
+    return date.year == firstViewableDate.year &&
+        date.month == firstViewableDate.month;
   }
 
-  // Checks if the focused date is the latest allowed month.
   bool isLastMonth(DateTime date) {
-    return date.year == lastViewableDate.year && date.month == lastViewableDate.month;
+    return date.year == lastViewableDate.year &&
+        date.month == lastViewableDate.month;
   }
 
   showDialog(
     context: context,
     builder: (BuildContext context) {
       return Dialog(
-        // Rounded corners for the calendar dialog.
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(proportionalSizes.scaleWidth(20)),
         ),
@@ -56,7 +47,9 @@ void openCalendarPopup({
             child: Container(
               decoration: BoxDecoration(
                 color: Colors.white.withValues(alpha: 0.4),
-                borderRadius: BorderRadius.circular(proportionalSizes.scaleWidth(20)),
+                borderRadius: BorderRadius.circular(
+                  proportionalSizes.scaleWidth(20),
+                ),
               ),
               padding: EdgeInsets.all(proportionalSizes.scaleWidth(20)),
               child: StatefulBuilder(
@@ -75,7 +68,6 @@ void openCalendarPopup({
                       ),
                       SizedBox(height: proportionalSizes.scaleHeight(20)),
 
-                      // Navigation Row (Month & Year Dropdowns + Left/Right Arrows)
                       Stack(
                         children: [
                           Row(
@@ -99,7 +91,9 @@ void openCalendarPopup({
                               CustomPopupMenu<int>(
                                 initialValue: focusedDate.year,
                                 items: List.generate(
-                                  lastViewableDate.year - firstViewableDate.year + 1,
+                                  lastViewableDate.year -
+                                      firstViewableDate.year +
+                                      1,
                                   (index) => lastViewableDate.year - index,
                                 ),
                                 itemBuilder: (year) => year.toString(),
@@ -116,7 +110,6 @@ void openCalendarPopup({
                             ],
                           ),
 
-                          // Left arrow button to go back one month (if not at earliest month)
                           if (!isFirstMonth(focusedDate))
                             Positioned(
                               left: 0,
@@ -133,7 +126,9 @@ void openCalendarPopup({
                                   });
                                 },
                                 child: Container(
-                                  padding: EdgeInsets.all(proportionalSizes.scaleWidth(8.0)),
+                                  padding: EdgeInsets.all(
+                                    proportionalSizes.scaleWidth(8.0),
+                                  ),
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     color: Colors.black.withValues(alpha: 0.1),
@@ -148,7 +143,6 @@ void openCalendarPopup({
                               ),
                             ),
 
-                          // Right arrow button to go forward one month (if not at latest month)
                           if (!isLastMonth(focusedDate))
                             Positioned(
                               right: 0,
@@ -165,13 +159,16 @@ void openCalendarPopup({
                                   });
                                 },
                                 child: Container(
-                                  padding: EdgeInsets.all(proportionalSizes.scaleWidth(8.0)),
+                                  padding: EdgeInsets.all(
+                                    proportionalSizes.scaleWidth(8.0),
+                                  ),
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     color: Colors.black.withValues(alpha: 0.1),
                                   ),
                                   child: Transform.rotate(
-                                    angle: 3.14159, // Flip the back button horizontally
+                                    angle:
+                                        3.14159, // Flip the back button horizontally
                                     child: Image.asset(
                                       'assets/icons/back_button.png',
                                       width: proportionalSizes.scaleWidth(12),
@@ -187,13 +184,13 @@ void openCalendarPopup({
 
                       SizedBox(height: proportionalSizes.scaleHeight(10)),
 
-                      // Calendar widget from table_calendar package
                       TableCalendar(
                         firstDay: firstViewableDate,
                         lastDay: lastViewableDate,
                         focusedDay: focusedDate,
                         currentDay: currentDate,
-                        selectedDayPredicate: (day) => isSameDay(selectedDate, day),
+                        selectedDayPredicate:
+                            (day) => isSameDay(selectedDate, day),
                         enabledDayPredicate: (day) => !day.isAfter(currentDate),
                         onDaySelected: (selectedDay, focusedDay) {
                           // Allow selection only if the day is not after today

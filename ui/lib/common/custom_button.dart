@@ -1,47 +1,31 @@
-// Flutter imports
 import 'package:flutter/material.dart';
-// Third-party imports
 import 'package:google_fonts/google_fonts.dart';
-// Common imports
 import 'proportional_sizes.dart';
 import 'color_palette.dart';
 
-/// Enum representing predefined button sizes.
+// helpful for common buttons
 enum ButtonSizeType {
-  full,     // 363x50, fontSize 18
-  half,     // 220x40, fontSize 18
-  quarter,  // 90x30, fontSize 12
-  custom,   // Custom dimensions provided manually
+  full, // 363x50, fontSize 18
+  half, // 220x40, fontSize 18
+  quarter, // 90x30, fontSize 12
+  custom,
 }
 
-/// Enum to control whether the button is enabled or disabled.
-enum ButtonState {
-  enabled,
-  disabled,
-}
+enum ButtonState { enabled, disabled }
 
-/// A highly reusable and responsive button widget
-/// Supports full, half, quarter, and custom sizes
 class CustomButton extends StatelessWidget {
-  /// Text shown on the button
   final String label;
 
-  /// Action to execute when button is tapped (only if enabled)
   final VoidCallback onPressed;
 
-  /// Background color override (optional)
   final Color? backgroundColor;
 
-  /// Button size type (full, half, quarter, or custom)
   final ButtonSizeType sizeType;
 
-  /// If true, button will show only border with white background
   final bool boundary;
 
-  /// Current state of the button (enabled or disabled)
   final ButtonState state;
 
-  // Only used when sizeType == custom
   final double? customWidth;
   final double? customHeight;
   final double? customFontSize;
@@ -61,10 +45,8 @@ class CustomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Initialize proportional proportionalSizes to adjust sizes responsively
     final proportionalSizes = ProportionalSizes(context: context);
 
-    // Set size and font based on button type
     double width;
     double height;
     double fontSize;
@@ -91,16 +73,15 @@ class CustomButton extends StatelessWidget {
         break;
     }
 
-    // Determine actual background and text color based on state
     final bool isEnabled = state == ButtonState.enabled;
 
-    final Color bgColor = isEnabled
-        ? (backgroundColor ?? ColorPalette.primaryAction)
-        : ColorPalette.secondaryAction;
+    final Color bgColor =
+        isEnabled
+            ? (backgroundColor ?? ColorPalette.primaryAction)
+            : ColorPalette.secondaryAction;
 
-    final Color textColor = isEnabled
-        ? ColorPalette.buttonText
-        : ColorPalette.secondaryText;
+    final Color textColor =
+        isEnabled ? ColorPalette.buttonText : ColorPalette.secondaryText;
 
     return SizedBox(
       width: width,
@@ -108,14 +89,17 @@ class CustomButton extends StatelessWidget {
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: boundary ? Colors.white : bgColor,
-          side: boundary
-              ? BorderSide(
-                  color: bgColor,
-                  width: proportionalSizes.scaleWidth(2),
-                )
-              : BorderSide.none,
+          side:
+              boundary
+                  ? BorderSide(
+                    color: bgColor,
+                    width: proportionalSizes.scaleWidth(2),
+                  )
+                  : BorderSide.none,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(proportionalSizes.scaleWidth(8)),
+            borderRadius: BorderRadius.circular(
+              proportionalSizes.scaleWidth(8),
+            ),
           ),
         ),
         onPressed: isEnabled ? onPressed : null,
