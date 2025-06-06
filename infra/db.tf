@@ -34,6 +34,10 @@ resource "aws_security_group" "expenseflow_db" {
 
 resource "aws_secretsmanager_secret" "db_secret" {
   name = "db-secret"
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "aws_secretsmanager_secret_version" "db_secret" {

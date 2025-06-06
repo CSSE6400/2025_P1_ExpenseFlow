@@ -1,10 +1,5 @@
 data "auth0_tenant" "expenseflow" {}
 
-data "aws_s3_object" "expenseflow_logo" {
-  bucket = "expenseflow-assets"
-  key    = "auth0_logo.png"
-}
-
 resource "auth0_client" "expenseflow_ui_client" {
   name                = "ExpenseFlow UI Client"
   description         = "ExpenseFlow UI Client"
@@ -17,7 +12,7 @@ resource "auth0_client" "expenseflow_ui_client" {
   callbacks           = [local.ui_url]
   grant_types         = ["authorization_code", "refresh_token"]
 
-  logo_uri = "https://${data.aws_s3_object.expenseflow_logo.bucket}.s3.amazonaws.com/${data.aws_s3_object.expenseflow_logo.key}"
+  logo_uri = "https://${aws_s3_bucket.expenseflow_assets.bucket}.s3.amazonaws.com/${aws_s3_object.auth0_logo.key}"
 
   depends_on = [aws_route53_record.expenseflow_ui]
 
@@ -61,6 +56,10 @@ data "auth0_resource_server" "expenseflow_api" {
 
 resource "aws_secretsmanager_secret" "auth0_details" {
   name = "auth0-details"
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "aws_secretsmanager_secret_version" "auth0_details" {
