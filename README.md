@@ -77,7 +77,7 @@ JWT_AUDIENCE=...        # Identifier of your Auth0 API Application (Resource Ser
 ```
 
 > [!IMPORTANT]
-> You must also have an Auth0 tenant setup to run this project. To can be deployed using [Terraform](infra/auth0.tf) or if you have access to the repo settings, you will be able to find our Auth0 secrets in **Settings** > **Secrets and Variables** > **Actions**
+> You must also have an Auth0 tenant setup to run this project. This can be deployed using [Terraform](infra/auth0.tf) or if you have access to the repo settings, you will be able to find our Auth0 secrets in **Settings** > **Secrets and Variables** > **Actions**
 
 Then run `./local.sh`. This will make the following will be available:
 
