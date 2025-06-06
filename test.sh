@@ -1,3 +1,5 @@
+#!/bin/bash
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" # directory where script lives
 
 cd $SCRIPT_DIR

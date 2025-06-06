@@ -63,59 +63,76 @@ Below is the project structure for ExpenseFlow:
 
 The quickest and easiest way to get the project running on your local machine is to use [Docker Compose](https://docs.docker.com/compose/). This will let you build and run the backend, frontend and database containers locally.
 
+> [!NOTE]
+> The `local.sh` and `kill_local.sh` all require Docker Compose to be installed on your machine.
+
 #### Environment Variables
 
-Before running `docker compose`, you must create `.env` file in the project root directory, with the following values:
+Before starting the app with `./local.sh ` you must have Docker compose installed and must have a `.env` file in the project root directory, with the following values:
 
 ```bash
-POSTGRES_PASSWORD=...   # Password for the local PostgreSQL DB.
-POSTGRES_USER=...       # Username for the local PostgreSQL DB.
-POSTGRES_DB=...         # Database name for the local PostgreSQL DB.
 AUTH0_DOMAIN=...        # Domain name of your Auth0 Tenant (Auth0 is used for authentication in the project).
 AUTH0_CLIENT_ID=...     # Client ID of your Auth0 Client Application
 JWT_AUDIENCE=...        # Identifier of your Auth0 API Application (Resource Server)
 ```
 
-_Notes:_
+> [!IMPORTANT]
+> You must also have an Auth0 tenant setup to run this project. This can be deployed using [Terraform](infra/auth0.tf) or if you have access to the repo settings, you will be able to find our Auth0 secrets in **Settings** > **Secrets and Variables** > **Actions**
 
-- The values for the `POSTGRES_` variables are completely up to you.
-- You must also have an Auth0 tenant setup to run this project. To deploy this using Terraform, view [here](infra/auth0.tf).
+Then run `./local.sh`. This will make the API and UI available at the following ports:
 
-#### Docker Compose
-
-Then you must run `docker compose up -d` to build the containers and run them. To force the images to be built again use the `--build` flag.
-
-Once up and running, the following will be available:
-
-- UI -> `localhost:3000`
+- Web UI -> `localhost:3000`
 - API -> `localhost:8080` (The base path `/` will redirect you to the docs `/docs`)
 
-#### Removing Containers
-
-Once you are finished, you can stop the containers with `docker compose down`. If would also like to remove the database volume created when running the containers, add the `--volumes` flag.
+Once you are finished with the application, run `./kill_local.sh` to stop everything.
 
 ### Remote Deployment
 
-To deploy remotely, store the AWS credentials in a file called `credentials` (file name must be exact), in the root directory, then run `./infra/deploy-infra.sh [--auto]`, with `--auto` being optional if you want to run confirmations automatically.
+> [!NOTE]
+> Our deployment is done using Terraform, so you will need it installed. [Official Terraform Install Guide](https://developer.hashicorp.com/terraform/install)
 
-This deployment is done using Terraform, and so you will need it installed.
+> [!TIP]
+> You can skip this process by running the [Infrastructure Deployment](https://github.com/CSSE6400/2025_P1_ExpenseFlow/actions/workflows/infrastructure_deploy.yml) workflow with your aws credentials as input.
 
-[Official Terraform Install Guide](https://developer.hashicorp.com/terraform/install)
+To deploy to AWS, put your aws credentials in a file called `credentials` in the root directory (file name must be **exact**).
 
-### Remote Teardown
+> [!NOTE] Your AWS credentials must be in the following format:
 
-To teardown the remotely deployed service, ensure that the `credentials` file is the same as the file when deploying the service, and run `./infra/teardown.sh [--auto]`, with `--auto` being option if you want to run confirmations automatically.
+```bash
+[profile_name]
+aws_access_key_id=...
+aws_secret_access_key=...
+aws_session_token=...
+```
+
+You must also have a `terraform.tfvars` file in the `/infra` directory to contain the following values:
+
+```bash
+db_password         = ...
+auth0_domain        = ... # Same value as local deployment
+auth0_client_id     = ... # Same value as local deployment
+auth0_client_secret = ... # Same value as local deployment
+sentry_dsn          = "https://f0e2babc247dfbc9bef0b233664acab0@o4509370795032576.ingest.us.sentry.io/4509370811219968"
+```
+
+Once complete, run `./infra/deploy-infra.sh [--auto]`, with `--auto` being optional if you want to run confirmations automatically.
+
+To remove the infrastructure, run `./infra/teardown.sh [--auto]`, with `--auto` being optional if you want to run confirmations automatically.
 
 ## Testing
 
 ### Backend
 
-Backend tests are done using `pytest` and require a running postgres instance to work. The easiest way to do this is to run `test.sh` in the root directory (Note: This requires `docker compose` to be installed and a internet connection to pull the postgres image).
+To run the unit and integration tests on the backend, run:
 
 ```bash
 ./test.sh
 ```
 
-This scripts sets up the db with the necessary environment variables and runs the tests. Once down, it will output the code coverage.
+> [!NOTE]
+> This requires Docker Compose to be installed and an internet connection to pull the postgres image.
 
-For automated tests, we use GitHub Actions, which run the same test suite.
+This script uses Docker Compose as a running postgres instance is required to run the Pytest tests. Once complete, this script will also output the code coverage details.
+
+> [!TIP]
+> You can skip this process by running the [Backend Tests](https://github.com/CSSE6400/2025_P1_ExpenseFlow/actions/workflows/backend_tests.yml) workflow which will run tests and a static type checking tool on the code.
