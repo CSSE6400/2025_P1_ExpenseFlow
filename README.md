@@ -1,6 +1,6 @@
 # CSSE6400 ExpenseFlow project
 
-## [Website](https://expenseflow.g3.csse6400.xyz/) | [Proposal](https://csse6400.github.io/project-proposal-2025/s4744008/proposal.html) | [Report](report/report.pdf) | [Video]()
+## [Website](https://expenseflow.g3.csse6400.xyz/) [Api Docs]((https://expenseflow-api.g3.csse6400.xyz/)) | [Proposal](https://csse6400.github.io/project-proposal-2025/s4744008/proposal.html) | [Report](report/report.pdf) | [Video]()
 
 ## Description
 
