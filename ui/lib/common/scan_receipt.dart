@@ -119,7 +119,7 @@ Future<void> handleScanReceiptUpload({required BuildContext context}) async {
 
           showCustomSnackBar(
             context,
-            normalText: 'Failed to create expense: ${e.toString()}',
+            normalText: 'Unable to analyse image, please try another one',
           );
         }
       } else {
