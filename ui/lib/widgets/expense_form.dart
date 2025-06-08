@@ -158,12 +158,16 @@ class _ExpenseFormState extends State<ExpenseForm> {
     _amountController.text = total.toStringAsFixed(2);
     _logger.info('Total amount calculated: $total');
     _logger.info('Total number of splits : ${_expenseSplits.length}');
-    _splitAmountController.text = (total /
-            (_expenseSplits.isNotEmpty ? _expenseSplits.length : 1))
-        .toStringAsFixed(2);
-    _logger.info(
-      'Your split amount calculated: ${_splitAmountController.text}',
+    final userSplit = _expenseSplits.firstWhere(
+      (split) => split.userId == user!.userId,
+      orElse: () => ExpenseItemSplitCreate(userId: user!.userId, proportion: 0),
     );
+    if (userSplit.proportion > 0) {
+      _splitAmountController.text = (total / userSplit.proportion)
+          .toStringAsFixed(2);
+    } else {
+      _splitAmountController.text = '0.00';
+    }
   }
 
   String get formattedItemsString {
