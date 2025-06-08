@@ -1,5 +1,3 @@
-Other ADRs to talk about
-
 # GROUPS AND USERS
 
 Modelling them seperately
@@ -28,6 +26,3 @@ Mobile devices
 
 - ExpenseFlow is aimed at personal use for the MVP
 - more difficult to build phone application
-- ...
-
-# INFRA Security
