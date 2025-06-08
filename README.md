@@ -2,6 +2,10 @@
 
 ## [Website](https://expenseflow.g3.csse6400.xyz/) | [Api Docs](https://expenseflow-api.g3.csse6400.xyz/) | [Proposal](https://csse6400.github.io/project-proposal-2025/s4744008/proposal.html) | [Report](report/report.pdf) | [Video]()
 
+[![Backend Tests](https://github.com/CSSE6400/2025_P1_ExpenseFlow/actions/workflows/backend_tests.yml/badge.svg)](https://github.com/CSSE6400/2025_P1_ExpenseFlow/actions/workflows/backend_tests.yml)
+[![App Deployment](https://github.com/CSSE6400/2025_P1_ExpenseFlow/actions/workflows/app_deployment.yml/badge.svg)](https://github.com/CSSE6400/2025_P1_ExpenseFlow/actions/workflows/app_deployment.yml)
+[![Infrastructure Deployment](https://github.com/CSSE6400/2025_P1_ExpenseFlow/actions/workflows/infrastructure_deploy.yml/badge.svg)](https://github.com/CSSE6400/2025_P1_ExpenseFlow/actions/workflows/infrastructure_deploy.yml)
+
 ## Description
 
 Have you ever had to explain a suspiciously large 'business lunch', wonder where all your money went, or chase down friends for their share of last night's dinner? With ExpenseFlow, budget leaks become a thing of the past and you'll never have to play detective with your finances again.
