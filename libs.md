@@ -6,15 +6,15 @@
 
 - [Fastapi](https://fastapi.tiangolo.com/) - API Framework
 - [SQLAlchemy](https://www.sqlalchemy.org/) - Database ORM
-- [asyncpg](https://magicstack.github.io/asyncpg/current/) - Database client lib for postgres
-- [Boto3](https://boto3.amazonaws.com/v1/documentation/api/latest/index.html) - AWS SDK for python
+- [asyncpg](https://magicstack.github.io/asyncpg/current/) - Database client library for postgres
+- [Boto3](https://boto3.amazonaws.com/v1/documentation/api/latest/index.html) - AWS SDK for Python
 - [httpx](https://www.python-httpx.org/) - HTTP Toolkit used for sending/receiving requests and integration testing
-- [Loguru](https://loguru.readthedocs.io/en/stable/) - Lib for simplify python logging
-- [matplotlib](https://matplotlib.org/) - Plotting lib (used for report generation)
-- [Pydantic](https://docs.pydantic.dev/latest/) - python validation library
-- [pyjwt](https://pyjwt.readthedocs.io/en/stable/) - JWT lib for python (used for auth)
+- [Loguru](https://loguru.readthedocs.io/en/stable/) - Library for simplifying Python logging
+- [matplotlib](https://matplotlib.org/) - Plotting library (used for report generation)
+- [Pydantic](https://docs.pydantic.dev/latest/) - Python validation library
+- [pyjwt](https://pyjwt.readthedocs.io/en/stable/) - JWT library for Python (used for auth)
 - [Reportlab](https://docs.reportlab.com/) - PDF generation tool
-- [Sentry](https://sentry.io/) - monitoring tool
+- [Sentry](https://sentry.io/) - Monitoring tool
 
 ### Dev
 
@@ -30,7 +30,7 @@
 - [pytest](https://docs.pytest.org/en/stable/) - Testing framework
 - [pytest-asyncio](https://pytest-asyncio.readthedocs.io/en/stable/) - Async support for pytest
 - [pytest-cov](https://pytest-cov.readthedocs.io/en/latest/) - Coverage plugin for pytest
-- [sqlalchemy-utils](https://github.com/kvesteri/sqlalchemy-utils) - Utils lib for sqlalchemy
+- [sqlalchemy-utils](https://githuf.com/kvesteri/sqlalchemy-utils) - Utils library for sqlalchemy
 
 ## Frontend
 
@@ -38,7 +38,7 @@
 - [http](https://pub.dev/packages/http) - HTTP Package for flutter
 - [Cupertino Icons](https://pub.dev/packages/cupertino_icons) - Icon Library
 - [Google Fonts](https://pub.dev/packages/google_fonts) - Font Library
-- [Auth0](https://auth0.com/) - Authenticationa and Authorisation
+- [Auth0](https://auth0.com/) - Authentication and Authorisation
 - [Provider](https://pub.dev/packages/provider) - State management tool
 - [Image Picker](https://pub.dev/packages/image_picker) - Image picker plugin
 - [Table Calendar](https://pub.dev/packages/table_calendar) - Calendar widget
