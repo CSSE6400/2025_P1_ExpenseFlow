@@ -1,6 +1,6 @@
 # CSSE6400 ExpenseFlow project
 
-## [Website](https://expenseflow.g3.csse6400.xyz/) | [Api Docs](https://expenseflow-api.g3.csse6400.xyz/) | [Proposal](https://csse6400.github.io/project-proposal-2025/s4744008/proposal.html) | [Report](report/report.pdf) | [Video]()
+## [Website](https://expenseflow.g3.csse6400.xyz/) | [Api Docs](https://expenseflow-api.g3.csse6400.xyz/) | [Proposal](https://csse6400.github.io/project-proposal-2025/s4744008/proposal.html) | [Report](report/report.pdf) | [Video](https://drive.google.com/file/d/1N2AWD4DaCEsOFLkMk3GqZVLTKzTo0GK8/view?usp=sharing)
 
 [![Backend Tests](https://github.com/CSSE6400/2025_P1_ExpenseFlow/actions/workflows/backend_tests.yml/badge.svg)](https://github.com/CSSE6400/2025_P1_ExpenseFlow/actions/workflows/backend_tests.yml)
 [![App Deployment](https://github.com/CSSE6400/2025_P1_ExpenseFlow/actions/workflows/app_deployment.yml/badge.svg)](https://github.com/CSSE6400/2025_P1_ExpenseFlow/actions/workflows/app_deployment.yml)
