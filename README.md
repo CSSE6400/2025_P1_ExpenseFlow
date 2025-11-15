@@ -100,7 +100,8 @@ Once you are finished with the application, run `./kill_local.sh` to stop everyt
 
 To deploy to AWS, put your aws credentials in a file called `credentials` in the root directory (file name must be **exact**).
 
-> [!NOTE] Your AWS credentials must be in the following format:
+> [!NOTE]
+> Your AWS credentials must be in the following format:
 
 ```bash
 [profile_name]
